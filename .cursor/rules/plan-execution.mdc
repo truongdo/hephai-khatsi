@@ -24,3 +24,4 @@ git worktree add ...
 ```
 
 Do not start implementing the plan until the branch situation is resolved.
+After merge squash into main, always delete the local branch, unless ask otherwise.
