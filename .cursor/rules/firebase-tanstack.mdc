@@ -1,0 +1,56 @@
+---
+description: Firebase data access with TanStack Query — structure and minimize reads
+alwaysApply: true
+---
+
+# Firebase + TanStack Query
+
+Companion to `tech-stack.mdc` (Firebase required) and `frontend-tanstack.mdc` (Query/Router UI patterns).
+
+## Layering
+
+```
+firebase/init → repositories (SDK only) → queryOptions / mutations → hooks / route loaders → UI
+```
+
+- One Firebase app init; export typed `db` helpers from a single module.
+- Repositories own `getDoc` / `getDocs` / writes / converters. Components and routes must not call the Firestore SDK directly.
+- Define domain reads as `queryOptions` + key factories so loaders, hooks, and prefetch share the same key/`queryFn`/`staleTime`.
+
+## Default: one-shot reads via Query
+
+- Prefer `getDoc` / `getDocs` in `queryFn`. Do **not** default to `onSnapshot`.
+- Use realtime only when the UX truly needs live updates. Then: one shared subscription per key, `staleTime: Infinity`, disable `refetchOnWindowFocus` / `refetchOnReconnect` for that query, and unsubscribe when observer count hits 0.
+- Never open listeners inside many components for the same path.
+
+## Minimize billed reads
+
+- Always `limit()` list queries; paginate with cursors (`startAfter` / `startAt`). Never use `offset` (skipped docs are still billed).
+- Prefer `getCountFromServer` / aggregations over fetching documents just to count or sum.
+- Fetch only fields the screen needs (lean list shapes; fat detail docs on demand).
+- Seed detail cache from list data with `setQueryData` when the list already has enough — avoid an immediate duplicate `getDoc`.
+- Denormalize small display fields onto list docs when it prevents N+1 detail reads.
+- After mutations: invalidate **targeted** keys only; prefer updating cache from the write result when safe.
+
+## Caching (Firestore-aware)
+
+- Set intentional `staleTime` (default `0` causes extra refetches → extra reads). Match data volatility.
+- Route loaders: `ensureQueryData` / `prefetchQuery` with the shared `queryOptions` — do not ad-hoc fetch in the loader and again in the component.
+- Use Query `select` for UI slices; keep `select` stable (module-level).
+
+## Types and rules
+
+- Use `FirestoreDataConverter` (or equivalent) for documents; keep app types and stored shapes explicit.
+- Client queries must match security rules; never rely on the client alone to hide data.
+
+```typescript
+// ✅ repository + queryOptions
+export const templeQuery = (id: string) =>
+  queryOptions({
+    queryKey: templeKeys.detail(id),
+    queryFn: () => templeRepo.getById(id),
+    staleTime: 5 * 60_000,
+  })
+
+// ❌ getDocs(entireCollection) in a component / onSnapshot by default / offset pagination
+```
