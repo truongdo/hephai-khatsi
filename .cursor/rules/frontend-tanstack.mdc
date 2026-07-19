@@ -1,0 +1,42 @@
+---
+description: Frontend structure, TanStack best practices, and re-paint performance
+globs: tanstack-app/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Frontend — Reusability, TanStack, Performance
+
+## Component structure
+
+- Prefer small, reusable presentational components + thin containers/hooks.
+- Colocate feature UI under feature folders; put shared UI in a shared/components area.
+- Extract shared logic into hooks (`useX`) or pure utils — do not copy-paste query/UI logic.
+- Keep props focused; avoid dumping entire domain objects when a few fields suffice.
+
+## TanStack Query
+
+- Keep **server state in Query**, local UI state in `useState`/lightweight stores — never mirror query data into `useState` to “sync”.
+- Create **one stable `QueryClient`** at module/app level (or SSR request cache). Never `new QueryClient()` inside a component render.
+- Use **query key factories** + **`queryOptions()`** so keys/`queryFn`/`staleTime` are shared by `useQuery`, loaders, and prefetch.
+- Include every variable the `queryFn` depends on in the query key.
+- Set intentional **`staleTime`** (default `0` refetches too aggressively). Match volatility of the data.
+- After mutations: invalidate **targeted** keys (`invalidateQueries`); use optimistic updates with cancel → snapshot → update → rollback → `onSettled` invalidate when UX needs it.
+- Prefer object-style v5 APIs (`useQuery({ ... })`, `useMutation({ ... })`).
+
+## TanStack Router / Start
+
+- Use typed routes; validate search with `validateSearch` (e.g. Zod) and sensible defaults/fallbacks.
+- For loaders that depend on search: use **`loaderDeps` with only the params the loader reads** — never return the whole `search` object (causes unnecessary reloads).
+- Prefer route loaders + `ensureQueryData`/`prefetchQuery` with shared `queryOptions` over ad-hoc fetches in components.
+
+## Avoid unnecessary re-paints / re-renders
+
+When planning or coding, treat re-renders as a first-class concern:
+
+- Push state down; lift only what must be shared. Isolate frequently updating state (inputs, hover, timers) from heavy trees.
+- Prefer **composition** (`children` / slots) over wrapping large trees in context that changes often.
+- Use Query **`select`** so components subscribe to a data slice; keep `select` functions **stable** (module-level), not inline recreations.
+- Rely on Query structural sharing; avoid spreading/cloning query results into new object identities without need.
+- Prefer Mantine props/`styles`/`classNames` over new React state for pure visual toggles when possible.
+- Do not add `useMemo`/`useCallback` by default; use them only for proven unstable deps or expensive work.
+- In plans: call out high-frequency update paths and how the tree is split to limit re-paints.

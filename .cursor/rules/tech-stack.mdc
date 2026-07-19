@@ -1,0 +1,26 @@
+---
+description: Required tech stack — Firebase database and Mantine UI
+alwaysApply: true
+---
+
+# Tech Stack
+
+## Database — Firebase
+
+- Use **Firebase** for the database (Firestore and/or Realtime Database as appropriate to the feature).
+- Do not introduce alternate primary databases (e.g. Supabase Postgres, custom SQL) unless the user explicitly requests it.
+- Centralize Firebase app/init and data access (repositories/services). Components and hooks should not scatter raw SDK calls with duplicated config.
+- Prefer typed converters/helpers for documents; keep security rules and client assumptions aligned.
+- For client reads/writes that map to UI lists/details, integrate through TanStack Query (keys, `queryOptions`, invalidation) rather than one-off listeners inside many components unless realtime is required.
+
+## UI — Mantine
+
+- Use **Mantine** (`@mantine/core` and related packages) for UI components, layout, and theming.
+- Wrap the app with `MantineProvider` + `createTheme` at the root; import required package CSS (e.g. `@mantine/core/styles.css`).
+- Prefer Mantine primitives (`Button`, `TextInput`, `Stack`, `Group`, `Modal`, etc.) over custom one-off equivalents or alternate UI kits (Material, Chakra, shadcn) unless the user asks otherwise.
+- Theme via `createTheme` / component default props; avoid ad-hoc one-off styling systems that fight Mantine.
+- For large lists with repeated responsive style props, consider `deduplicateInlineStyles` on `MantineProvider` (React 19).
+
+## Stack conflict
+
+If a task suggests a different DB or UI library, follow this stack and confirm with the user before diverging.

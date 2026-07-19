@@ -1,0 +1,26 @@
+---
+description: Branching rules when executing implementation plans
+alwaysApply: true
+---
+
+# Plan Execution — Branching
+
+When executing an implementation plan (or starting multi-step feature work from a plan):
+
+1. **Create a new branch from `main`** — checkout `main`, pull latest if needed, then create and switch to a feature branch (e.g. `feat/...`, `fix/...`).
+2. **Do not use git worktrees** — work in the current workspace only (`git checkout -b`, never `git worktree add`).
+3. **Confirm before proceeding if not on `main`** — if the current branch is not `main` (or `master`), stop and ask the user whether to:
+   - stash/commit current work and branch from `main`, or
+   - continue on the current branch.
+
+```bash
+# ✅ Expected flow
+git checkout main
+git pull
+git checkout -b feat/short-description
+
+# ❌ Do not
+git worktree add ...
+```
+
+Do not start implementing the plan until the branch situation is resolved.
