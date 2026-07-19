@@ -18,8 +18,8 @@ Public registration for Hệ phái Khất sĩ (Tăng / Ni / Tịnh xá): trust-f
 Ship one invite-gated public flow where visitors:
 
 1. Open `/f/public` (or any valid token that resolves to the global invite).
-2. Choose form type (Tăng / Ni / Tịnh xá), then Giáo đoàn.
-3. Prove identity (CCCD or phone) and create or resume a draft.
+2. On **one entry page**, choose form type, Giáo đoàn, and identity (CCCD and phone fields both visible), then continue.
+3. Create or resume a draft.
 4. Fill **every field** from the DB / paper templates, save drafts, and view locked records read-only.
 
 ## Product decisions
@@ -27,7 +27,9 @@ Ship one invite-gated public flow where visitors:
 | Topic | Choice |
 |-------|--------|
 | Invite | One global gate; no `formType` / `orgUnitId` on invite |
-| Type + org | Chosen on entry screens; persisted on the record |
+| Entry UX | **Single page** — type + giáo đoàn + CCCD + phone all visible; one **Tiếp tục** (not a multi-step wizard) |
+| Identity fields | Both CCCD and phone always shown; submit validates the field required by type (ignore the other) |
+| Type + org | Chosen on entry; persisted on the record |
 | Field coverage | Full DB design parity (not admin lean fields) |
 | Layout | Single-column sectioned form; sticky save bar |
 | Desktop width | Content column ~720–800px centered on parchment |
@@ -47,15 +49,13 @@ Ship one invite-gated public flow where visitors:
 ```
 /f/$token
   ├─ validate invite (missing → clear error)
-  ├─ Step A: chọn loại form (Tăng | Ni | Tịnh xá)
-  ├─ Step B: chọn Giáo đoàn (filtered by allowsTang / allowsNi / temples)
-  ├─ Step C: định danh
-  │    ├─ member: CCCD → resume draft | view locked | create
-  │    └─ temple: phone → list matches | open draft | view locked | create new
+  ├─ Entry (one page): loại + giáo đoàn + CCCD + điện thoại → Tiếp tục
+  │    ├─ member (Tăng/Ni): CCCD → resume draft | view locked | create
+  │    └─ temple: phone → list matches (inline) | open draft | view locked | create new
   └─ Editor: sectioned full form + sticky Save (hidden if locked)
 ```
 
-URL may keep token in path; type / org / record id can live in search params or nested routes once planned (`/f/$token/member/$id`, etc.). Prefer deep-linkable editor URLs after first save.
+URL keeps token in path. Editor deep-links after identity: `/f/$token/edit/member/...`, `/f/$token/edit/temple/...`.
 
 ## Shell & chrome
 
@@ -77,28 +77,33 @@ URL may keep token in path; type / org / record id can live in search params or 
 - Errors: inline under fields; save-level `DomainError` via alert at top of form.
 - Success: brief confirmation after save (text or notification), stay on editor.
 
-## Entry screens (structure)
+## Entry page (single screen)
 
-### Type chooser
+One form titled **Đăng ký** (or equivalent). All of the following are visible at once:
 
-Three equal choices: **Tăng**, **Ni**, **Tịnh xá**.
+1. **Loại đăng ký** — radio / segmented control: Tăng | Ni | Tịnh xá (`FormType`: `member_tang` | `member_ni` | `temple`).
+2. **Giáo đoàn / Ni giới** — Mantine `Select`. Options filter when type is set:
+   - Tăng: `allowsTang`
+   - Ni: `allowsNi`
+   - Tịnh xá: all seeded units
+   - No type yet: empty or disabled select until type is chosen.
+3. **CCCD** and **Điện thoại** — both inputs always shown, side-by-side on `sm+`, stacked on mobile. Short helper: CCCD for Tăng/Ni; phone for Tịnh xá.
+4. **Tiếp tục** — single primary action.
 
-- Mobile: stacked full-width press targets (min ~48px height).
-- Desktop: three equal columns in one row, or still stacked if that reads clearer; prefer three-up only when `sm+` and labels fit one line.
-- No cards-for-decoration: use bordered interactive surfaces only as the control itself.
+### Submit rules
 
-### Giáo đoàn
+- Require type + giáo đoàn.
+- Tăng / Ni: require valid CCCD; phone may be blank (ignored).
+- Tịnh xá: require valid phone; CCCD may be blank (ignored).
+- Inline field errors; do not navigate away on validation failure.
 
-Mantine `Select` (or radio list on mobile if the list is short) of org units filtered by:
+### After successful identity lookup
 
-- Tăng: `allowsTang`
-- Ni: `allowsNi`
-- Tịnh xá: all units that may host temples (all seeded giáo đoàn / ni giới that apply; follow org seed flags)
+- Member found → editor (draft or view-only if locked).
+- Member not found → new-member editor shell.
+- Temple: 0 matches → new temple; 1 → that temple; many → **inline pick list** on the same entry page (plus “Tạo tịnh xá mới”), then editor.
 
-### Identity gate
-
-- Members: CCCD input → continue. Required normalized digits.
-- Temples: phone input → list temples for that phone + org; pick one or “Tạo tịnh xá mới”.
+No separate `/org` or `/identity` routes.
 
 ## Member form sections (full fields)
 
@@ -151,17 +156,18 @@ Every listed DB field appears once in the appropriate section. Nested objects us
 
 | Breakpoint | Behavior |
 |------------|----------|
-| `< 640px` | Single column; type choices stacked; sticky bar wraps title + Save; array rows stacked |
-| `≥ 640px` | Type chooser up to 3 columns; form column still capped ~760px |
+| `< 640px` | Single column; CCCD/phone stacked; sticky editor bar wraps title + Save; array rows stacked |
+| `≥ 640px` | CCCD/phone can sit in two columns; form column still capped ~760px |
 | Print (optional later) | Out of scope |
 
 ## Testing
 
 | Layer | Focus |
 |-------|--------|
-| Vitest | Section field presence by form type; locked disables Save; identity gate validation messages |
-| Vitest | Repeatable add/remove rows |
-| Cypress | One journey: open invite → pick type → org → identity → save one required field → reload resume (thin E2E; not every field) |
+| Vitest | Entry page: validation by type; org filter; temple multi-match list |
+| Vitest | Section field presence by form type; locked disables Save (later slices) |
+| Vitest | Repeatable add/remove rows (later slices) |
+| Cypress | Thin: open invite → fill entry → land on editor placeholder (or invalid token) |
 
 ## Success criteria
 
@@ -174,7 +180,7 @@ Every listed DB field appears once in the appropriate section. Nested objects us
 
 Prefer separate plans after this UI spec:
 
-1. Filler shell + entry (routes, validate, type, org, identity gate chrome)
+1. Filler shell + **one-page entry** (validate invite, combined form, editor placeholders)
 2. Server wiring (`createServerFn` for existing use-cases)
 3. Full temple editor sections
 4. Full member editor sections (+ photo)

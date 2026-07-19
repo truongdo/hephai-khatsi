@@ -1,74 +1,61 @@
-# Filler Public Form Path (Shell + Entry) Implementation Plan
+# Filler Public Form Path (One-Page Entry) Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship the public invite-gated entry flow at `/f/$token`: validate invite, choose Tăng / Ni / Tịnh xá, pick Giáo đoàn, run identity gate (CCCD / phone), then land on a **placeholder editor shell** (full paper fields come in later slices).
+**Goal:** Ship `/f/$token` with invite validation, a **single entry page** (type + giáo đoàn + CCCD + phone + Tiếp tục), and placeholder editor shells. Full paper fields come later.
 
-**Architecture:** TanStack file routes under `f.$token`. Layout validates the invite via existing `getInviteByToken` + client Firestore (rules already allow `invites` get + `orgUnits` list). Entry steps use search params for `formType` / `orgUnitId`. Resume uses existing `resumeMemberByCccd` / `resumeTemplesByPhone` against client repos. No `createServerFn` in this slice. Hide `AppHeader` on `/f/*` like admin.
+**Architecture:** TanStack file routes under `f.$token`. Layout validates invite via `getInviteByToken`. Index is the combined entry form. Resume uses `resumeMemberByCccd` / `resumeTemplesByPhone` on the client. Hide `AppHeader` on `/f/*`. No `createServerFn` in this slice.
 
-**Tech Stack:** React 19, Mantine 9, TanStack Router + Query, Paraglide, Vitest + Testing Library, Cypress smoke only
+**Tech Stack:** React 19, Mantine 9, TanStack Router + Query, Paraglide, Vitest + Testing Library
 
-**Spec:** `docs/superpowers/specs/2026-07-19-filler-forms-ui-design.md` (shell + entry sections only)
+**Spec:** `docs/superpowers/specs/2026-07-19-filler-forms-ui-design.md` (one-page entry)
 
 ## Global Constraints
 
 - Work in the current workspace only — **never** `git worktree add`
 - Before coding: create branch `feat/filler-public-path` from `main` (Task 0)
-- One global invite token (`public`); visitor chooses `formType` + `orgUnitId`
-- Do **not** build full paper form field sections (temple/member editors stay placeholders)
-- Do **not** add `createServerFn` / `src/server` in this plan
-- Do **not** add `@mantine/notifications`
-- Brand: parchment / ink-teal / saffron; single column ~760px; type choices stacked on mobile, up to 3-up from `sm`
-- Prefer Vitest; one thin Cypress visit for `/f/public` invalid-or-loading UI only if easy
+- **One entry page only** — no `/org` or `/identity` step routes
+- Both CCCD and phone always visible; validate the field required by `formType`
+- Do **not** build full paper form sections or Save
+- Do **not** add `createServerFn` / `src/server`
+- Brand: parchment / ink-teal / saffron; content column ~760px
+- Prefer Vitest; Cypress optional thin invalid-token smoke
 - After merge squash into `main`, delete the local feature branch unless asked otherwise
 
 ## File Structure
 
 | File | Responsibility |
 | --- | --- |
-| `tanstack-app/src/routes/f.$token.tsx` | Layout: validate invite, parchment chrome, `<Outlet />` |
-| `tanstack-app/src/routes/f.$token.index.tsx` | Step A: type chooser |
-| `tanstack-app/src/routes/f.$token.org.tsx` | Step B: Giáo đoàn select |
-| `tanstack-app/src/routes/f.$token.identity.tsx` | Step C: CCCD / phone + resume / create |
-| `tanstack-app/src/routes/f.$token.edit.member.tsx` | New-member editor placeholder (search: org, sangha, cccd) |
+| `tanstack-app/src/routes/f.$token.tsx` | Layout: validate invite, frame, `<Outlet />` |
+| `tanstack-app/src/routes/f.$token.index.tsx` | One-page entry form |
+| `tanstack-app/src/routes/f.$token.edit.member.tsx` | New member placeholder |
 | `tanstack-app/src/routes/f.$token.edit.member.$memberId.tsx` | Resume member placeholder |
-| `tanstack-app/src/routes/f.$token.edit.temple.tsx` | New-temple placeholder (search: org, phone) |
+| `tanstack-app/src/routes/f.$token.edit.temple.tsx` | New temple placeholder |
 | `tanstack-app/src/routes/f.$token.edit.temple.$templeId.tsx` | Resume temple placeholder |
-| `tanstack-app/src/components/filler/FillerPageFrame.tsx` | Centered max-w ~760 parchment stack |
-| `tanstack-app/src/components/filler/FillerTypeChooser.tsx` | Three type buttons |
-| `tanstack-app/src/components/filler/FillerOrgPicker.tsx` | Filtered org `Select` |
-| `tanstack-app/src/components/filler/FillerIdentityGate.tsx` | CCCD / phone UI + temple pick list |
-| `tanstack-app/src/components/filler/FillerEditorShell.tsx` | Sticky title/status bar; placeholder body |
-| `tanstack-app/src/query/fillerQueries.ts` | Invite + orgUnits `queryOptions` |
-| `tanstack-app/src/query/fillerKeys.ts` | Query key factory |
-| `tanstack-app/src/components/filler/*.test.tsx` | Component tests |
-| `tanstack-app/messages/vi.json` | Public filler copy |
+| `tanstack-app/src/components/filler/FillerPageFrame.tsx` | Centered parchment stack |
+| `tanstack-app/src/components/filler/FillerEntryForm.tsx` | Combined entry UI + submit |
+| `tanstack-app/src/components/filler/FillerEditorShell.tsx` | Sticky title/status; placeholder body |
+| `tanstack-app/src/components/filler/filterOrgUnitsForFormType.ts` | Org filter helper |
+| `tanstack-app/src/query/fillerKeys.ts` | Query keys |
+| `tanstack-app/src/query/fillerQueries.ts` | Invite + orgUnits queries |
+| `tanstack-app/messages/vi.json` | Filler copy |
 | `tanstack-app/src/routes/__root.tsx` | Hide `AppHeader` on `/f` |
-| `tanstack-app/cypress/e2e/filler.cy.ts` | Thin smoke visit |
 
 ## URL map
 
 | Path | Purpose |
 | --- | --- |
-| `/f/$token` | Type chooser |
-| `/f/$token/org?formType=` | Org picker (`formType`: `member_tang` \| `member_ni` \| `temple`) |
-| `/f/$token/identity?formType=&orgUnitId=` | Identity gate |
-| `/f/$token/edit/member?orgUnitId=&sanghaType=&cccd=` | New member shell (no save yet) |
+| `/f/$token` | Entry (type + org + CCCD + phone) |
+| `/f/$token/edit/member?orgUnitId=&sanghaType=&cccd=` | New member shell |
 | `/f/$token/edit/member/$memberId` | Existing member shell |
 | `/f/$token/edit/temple?orgUnitId=&phone=` | New temple shell |
 | `/f/$token/edit/temple/$templeId` | Existing temple shell |
-
-`formType` search values match domain `FormType`.
 
 ---
 
 ### Task 0: Create feature branch
 
-**Files:** none (git only)
-
-**Interfaces:**
-- Consumes: none
-- Produces: branch `feat/filler-public-path`
+**Files:** none
 
 - [ ] **Step 1: Branch from main**
 
@@ -79,43 +66,37 @@ git pull
 git checkout -b feat/filler-public-path
 ```
 
-Expected: on `feat/filler-public-path`. If not on `main` / dirty tree: stop and ask.
+If not on `main` / dirty: stop and ask.
 
 ---
 
-### Task 1: i18n keys for filler entry
+### Task 1: i18n keys
 
 **Files:**
 - Modify: `tanstack-app/messages/vi.json`
-- Regenerates: `tanstack-app/src/paraglide/**` via `pnpm run paraglide`
 
-**Interfaces:**
-- Produces: Paraglide messages listed below
-
-- [ ] **Step 1: Add keys to `vi.json`**
+- [ ] **Step 1: Add keys**
 
 ```json
   "filler_invite_invalid_title": "Liên kết không hợp lệ",
   "filler_invite_invalid_body": "Không tìm thấy lời mời. Vui lòng kiểm tra lại đường dẫn.",
-  "filler_type_title": "Chọn loại đăng ký",
-  "filler_type_helper": "Chọn một trong các mẫu dưới đây để tiếp tục.",
+  "filler_entry_title": "Đăng ký",
+  "filler_entry_type_label": "Loại đăng ký",
   "filler_type_tang": "Tăng",
   "filler_type_ni": "Ni",
   "filler_type_temple": "Tịnh xá",
-  "filler_org_title": "Chọn giáo đoàn",
   "filler_org_label": "Giáo đoàn / Ni giới",
-  "filler_org_continue": "Tiếp tục",
-  "filler_org_back": "Quay lại",
-  "filler_identity_title_member": "Nhập số CCCD",
-  "filler_identity_title_temple": "Nhập số điện thoại",
-  "filler_identity_cccd_label": "CCCD",
-  "filler_identity_phone_label": "Điện thoại",
-  "filler_identity_continue": "Tiếp tục",
-  "filler_identity_back": "Quay lại",
+  "filler_org_placeholder": "Chọn…",
+  "filler_cccd_label": "CCCD",
+  "filler_phone_label": "Điện thoại",
+  "filler_identity_helper": "Dùng CCCD cho Tăng/Ni; điện thoại cho Tịnh xá.",
+  "filler_continue": "Tiếp tục",
   "filler_identity_create_member": "Tạo hồ sơ mới",
   "filler_identity_create_temple": "Tạo tịnh xá mới",
   "filler_identity_pick_temple": "Chọn tịnh xá đã có",
   "filler_identity_not_found": "Chưa có hồ sơ. Bạn có thể tạo mới.",
+  "filler_error_type_required": "Chọn loại đăng ký.",
+  "filler_error_org_required": "Chọn giáo đoàn.",
   "filler_status_draft": "Bản nháp",
   "filler_status_view": "Chỉ xem",
   "filler_editor_placeholder": "Nội dung form đầy đủ sẽ có ở bước sau. Bạn đã vào đúng luồng đăng ký.",
@@ -126,20 +107,16 @@ Expected: on `feat/filler-public-path`. If not on `main` / dirty tree: stop and 
   "filler_error_generic": "Có lỗi xảy ra. Vui lòng thử lại."
 ```
 
-- [ ] **Step 2: Compile Paraglide**
+Reuse existing domain error messages for CCCD/phone invalid where already mapped in UI, or surface `error.message` / `DomainError` codes with short Vietnamese strings if needed.
 
-```bash
-cd /Users/truong-d/Documents/code/phatgiaokhatsi/tanstack-app && pnpm run paraglide
-```
-
-Expected: exit 0.
+- [ ] **Step 2: `pnpm run paraglide`**
 
 - [ ] **Step 3: Commit**
 
 ```bash
 git add tanstack-app/messages/vi.json
 git commit -m "$(cat <<'EOF'
-feat: add Paraglide strings for filler public entry
+feat: add Paraglide strings for one-page filler entry
 
 EOF
 )"
@@ -147,43 +124,21 @@ EOF
 
 ---
 
-### Task 2: Query keys + invite/org queryOptions
+### Task 2: Query keys + helpers
 
 **Files:**
 - Create: `tanstack-app/src/query/fillerKeys.ts`
 - Create: `tanstack-app/src/query/fillerQueries.ts`
 - Create: `tanstack-app/src/query/fillerKeys.test.ts`
+- Create: `tanstack-app/src/components/filler/filterOrgUnitsForFormType.ts`
+- Create: `tanstack-app/src/components/filler/filterOrgUnitsForFormType.test.ts`
 
-**Interfaces:**
-- Produces:
-  - `fillerKeys.invite(token)`, `fillerKeys.orgUnits()`
-  - `inviteByTokenQuery(token)`, `fillerOrgUnitsQuery()`
+- [ ] **Step 1: Failing tests** for `fillerKeys.invite('public')` and org filter (tang/ni/temple).
 
-- [ ] **Step 1: Failing key test**
-
-```ts
-import { describe, expect, it } from 'vitest'
-import { fillerKeys } from './fillerKeys'
-
-describe('fillerKeys', () => {
-  it('nests invite under filler', () => {
-    expect(fillerKeys.invite('public')[0]).toBe('filler')
-    expect(fillerKeys.invite('public')).toEqual(['filler', 'invite', 'public'])
-  })
-})
-```
-
-- [ ] **Step 2: Run — expect FAIL**
-
-```bash
-pnpm exec vitest run src/query/fillerKeys.test.ts
-```
-
-- [ ] **Step 3: Implement**
-
-`fillerKeys.ts`:
+- [ ] **Step 2: Implement**
 
 ```ts
+// fillerKeys.ts
 export const fillerKeys = {
   all: ['filler'] as const,
   invite: (token: string) => [...fillerKeys.all, 'invite', token] as const,
@@ -191,40 +146,21 @@ export const fillerKeys = {
 }
 ```
 
-`fillerQueries.ts`:
-
 ```ts
-import { queryOptions } from '@tanstack/react-query'
-import { getInviteByToken } from '#/use-cases/getInviteByToken'
-import { listOrgUnits } from '#/repositories/orgUnitRepo'
-import { fillerKeys } from './fillerKeys'
-
-export function inviteByTokenQuery(token: string) {
-  return queryOptions({
-    queryKey: fillerKeys.invite(token),
-    queryFn: () => getInviteByToken(token),
-    staleTime: 5 * 60_000,
-    retry: false,
-  })
-}
-
-export function fillerOrgUnitsQuery() {
-  return queryOptions({
-    queryKey: fillerKeys.orgUnits(),
-    queryFn: listOrgUnits,
-    staleTime: 5 * 60_000,
-  })
-}
+// fillerQueries.ts — inviteByTokenQuery(token), fillerOrgUnitsQuery()
+// queryFn: getInviteByToken / listOrgUnits; invite retry: false; staleTime 5min
 ```
 
-- [ ] **Step 4: Run — expect PASS**
+```ts
+// filterOrgUnitsForFormType(units, formType)
+// member_tang → allowsTang; member_ni → allowsNi; temple → all
+```
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 3: Vitest PASS → commit**
 
 ```bash
-git add tanstack-app/src/query/fillerKeys.ts tanstack-app/src/query/fillerKeys.test.ts tanstack-app/src/query/fillerQueries.ts
 git commit -m "$(cat <<'EOF'
-feat: add filler invite and orgUnits queryOptions
+feat: add filler queries and org-unit filter helper
 
 EOF
 )"
@@ -232,71 +168,47 @@ EOF
 
 ---
 
-### Task 3: `FillerPageFrame` + type chooser
+### Task 3: `FillerPageFrame` + `FillerEntryForm`
 
 **Files:**
 - Create: `tanstack-app/src/components/filler/FillerPageFrame.tsx`
-- Create: `tanstack-app/src/components/filler/FillerTypeChooser.tsx`
-- Create: `tanstack-app/src/components/filler/FillerTypeChooser.test.tsx`
+- Create: `tanstack-app/src/components/filler/FillerEntryForm.tsx`
+- Create: `tanstack-app/src/components/filler/FillerEntryForm.test.tsx`
 
 **Interfaces:**
-- `FillerPageFrame({ children, title?, helper? })`
-- `FillerTypeChooser({ onSelect: (formType: FormType) => void })`
+- `FillerPageFrame({ children })`
+- `FillerEntryForm` props:
+  - `orgUnits: OrgUnit[]`
+  - `pending?: boolean`
+  - `templeMatches?: Array<{ id: string; label: string }>`
+  - `onSubmit: (payload: { formType: FormType; orgUnitId: string; cccd: string; phone: string }) => void`
+  - `onPickTemple?: (templeId: string) => void`
+  - `onCreateTemple?: () => void`
+  - `onCreateMember?: () => void`
+  - `notFound?: boolean`
+  - `error?: string | null`
 
-- [ ] **Step 1: Failing test — three choices call onSelect**
+- [ ] **Step 1: Failing tests**
+  - Renders type radios, org select, CCCD, phone, Tiếp tục
+  - Submit without type → shows type required error; `onSubmit` not called
+  - With type `member_tang`, org, CCCD → `onSubmit` called with those values (phone may be empty)
+  - With type `temple`, org, phone → `onSubmit` with phone (cccd may be empty)
+  - When `templeMatches` provided, shows pick list + create temple
 
-```tsx
-import { MantineProvider } from '@mantine/core'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi, beforeAll } from 'vitest'
-import { m } from '#/paraglide/messages'
-import { theme } from '../../theme'
-import { FillerTypeChooser } from './FillerTypeChooser'
+- [ ] **Step 2: Implement UI**
+  - Title `filler_entry_title`
+  - `Radio.Group` or `SegmentedControl` for type
+  - `Select` with `filterOrgUnitsForFormType` (disabled until type set)
+  - `SimpleGrid` / `Group` for CCCD + phone (`cols={{ base: 1, sm: 2 }}`)
+  - Helper text
+  - Primary **Tiếp tục**
+  - Client-side validation before `onSubmit` (type, org, then CCCD or phone via `normalizeCccd` / `normalizeVnPhone` try/catch → field errors)
 
-beforeAll(() => {
-  class RO { observe(){} unobserve(){} disconnect(){} }
-  globalThis.ResizeObserver = RO as unknown as typeof ResizeObserver
-})
-
-describe('FillerTypeChooser', () => {
-  it('offers tang, ni, temple and calls onSelect', async () => {
-    const user = userEvent.setup()
-    const onSelect = vi.fn()
-    render(
-      <MantineProvider theme={theme}>
-        <FillerTypeChooser onSelect={onSelect} />
-      </MantineProvider>,
-    )
-    expect(screen.getByRole('button', { name: m.filler_type_tang() })).toBeTruthy()
-    expect(screen.getByRole('button', { name: m.filler_type_ni() })).toBeTruthy()
-    expect(screen.getByRole('button', { name: m.filler_type_temple() })).toBeTruthy()
-    await user.click(screen.getByRole('button', { name: m.filler_type_tang() }))
-    expect(onSelect).toHaveBeenCalledWith('member_tang')
-  })
-})
-```
-
-- [ ] **Step 2: Run — expect FAIL**
-
-- [ ] **Step 3: Implement frame + chooser**
-
-`FillerPageFrame`: `Container`/`Box` with `maw={760}`, `mx="auto"`, `px="md"`, `py="lg"`, background inherits parchment; optional `Title` (display font via theme) + dimmed helper `Text`.
-
-`FillerTypeChooser`: `Stack` gap; title/helper from messages; `SimpleGrid` `cols={{ base: 1, sm: 3 }}`; each option is `UnstyledButton` or `Button` full width, minHeight 48, bordered (`var(--line)`), label from messages. Map:
-
-- tang → `member_tang`
-- ni → `member_ni`
-- temple → `temple`
-
-- [ ] **Step 4: Run — expect PASS**
-
-- [ ] **Step 5: Commit**
+- [ ] **Step 3: PASS → commit**
 
 ```bash
-git add tanstack-app/src/components/filler/
 git commit -m "$(cat <<'EOF'
-feat: add filler page frame and type chooser
+feat: add one-page filler entry form
 
 EOF
 )"
@@ -304,90 +216,19 @@ EOF
 
 ---
 
-### Task 4: Org picker + identity gate components
-
-**Files:**
-- Create: `tanstack-app/src/components/filler/FillerOrgPicker.tsx`
-- Create: `tanstack-app/src/components/filler/FillerOrgPicker.test.tsx`
-- Create: `tanstack-app/src/components/filler/FillerIdentityGate.tsx`
-- Create: `tanstack-app/src/components/filler/FillerIdentityGate.test.tsx`
-- Create: `tanstack-app/src/components/filler/filterOrgUnitsForFormType.ts`
-- Create: `tanstack-app/src/components/filler/filterOrgUnitsForFormType.test.ts`
-
-**Interfaces:**
-- `filterOrgUnitsForFormType(units: OrgUnit[], formType: FormType): OrgUnit[]`
-  - `member_tang` → `allowsTang`
-  - `member_ni` → `allowsNi`
-  - `temple` → all units (no filter beyond seeded list)
-- `FillerOrgPicker({ formType, orgUnits, value, onChange, onBack, onContinue })`
-- `FillerIdentityGate` props:
-  - member: `{ mode: 'member'; sanghaType, cccd, onCccdChange, onSubmit, onBack, error?, pending? }`
-  - temple: `{ mode: 'temple'; phone, onPhoneChange, onSubmit, onBack, matches?, onPickTemple?, onCreateNew?, error?, pending? }`
-
-- [ ] **Step 1: Failing filter + org picker tests**
-
-```ts
-import { describe, expect, it } from 'vitest'
-import { filterOrgUnitsForFormType } from './filterOrgUnitsForFormType'
-import type { OrgUnit } from '#/domain/types'
-
-const units: OrgUnit[] = [
-  { id: 'gd-i', code: 'gd-i', name: 'GD I', kind: 'giao_doan', order: 1, allowsTang: true, allowsNi: false },
-  { id: 'ni', code: 'ni', name: 'Ni giới', kind: 'ni_gioi', order: 2, allowsTang: false, allowsNi: true },
-]
-
-describe('filterOrgUnitsForFormType', () => {
-  it('filters tang and ni; temple keeps all', () => {
-    expect(filterOrgUnitsForFormType(units, 'member_tang').map((u) => u.id)).toEqual(['gd-i'])
-    expect(filterOrgUnitsForFormType(units, 'member_ni').map((u) => u.id)).toEqual(['ni'])
-    expect(filterOrgUnitsForFormType(units, 'temple')).toHaveLength(2)
-  })
-})
-```
-
-Identity gate test: render member mode, type CCCD, click continue → `onSubmit` called; show `filler_identity_not_found` when `error` prop set.
-
-- [ ] **Step 2: Run — expect FAIL**
-
-- [ ] **Step 3: Implement filter, org picker, identity gate**
-
-Org picker: Mantine `Select` with filtered data; Continue disabled until value set; Back button.
-
-Identity gate: `TextInput` + Continue; for temple with `matches.length > 0`, list buttons showing `danhHieu` or id + “Tạo tịnh xá mới”.
-
-- [ ] **Step 4: Run — expect PASS**
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add tanstack-app/src/components/filler/
-git commit -m "$(cat <<'EOF'
-feat: add filler org picker and identity gate UI
-
-EOF
-)"
-```
-
----
-
-### Task 5: Editor shell placeholder
+### Task 4: `FillerEditorShell` placeholder
 
 **Files:**
 - Create: `tanstack-app/src/components/filler/FillerEditorShell.tsx`
 - Create: `tanstack-app/src/components/filler/FillerEditorShell.test.tsx`
 
-**Interfaces:**
-- `FillerEditorShell({ title: string; status: 'draft' | 'view'; children? })`
-- Sticky top `Group`: title `Text` fw 600, status `Badge`/`Text` (`filler_status_draft` / `filler_status_view`); **no Save button** in this slice
-- Body default: `m.filler_editor_placeholder()`
-
-- [ ] **Step 1–4: TDD implement as above**
+- [ ] **Step 1–4: TDD** — sticky title + status badge (`draft`/`view`); body default placeholder; **no Save button**
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git commit -m "$(cat <<'EOF'
-feat: add filler editor shell placeholder chrome
+feat: add filler editor shell placeholder
 
 EOF
 )"
@@ -395,138 +236,39 @@ EOF
 
 ---
 
-### Task 6: Routes layout + entry flow wiring
+### Task 5: Routes — layout, entry, editors
 
 **Files:**
-- Create: `tanstack-app/src/routes/f.$token.tsx`
-- Create: `tanstack-app/src/routes/f.$token.index.tsx`
-- Create: `tanstack-app/src/routes/f.$token.org.tsx`
-- Create: `tanstack-app/src/routes/f.$token.identity.tsx`
-- Modify: `tanstack-app/src/routes/__root.tsx` (hide header on `/f`)
-- Regenerates: `tanstack-app/src/routeTree.gen.ts` via `pnpm run generate-routes`
+- Create route files listed in File Structure
+- Modify: `tanstack-app/src/routes/__root.tsx`
+- Run: `pnpm run generate-routes`
 
-**Interfaces:**
-- Layout uses `inviteByTokenQuery(token)`; loading → `Loader`; error `INVITE_NOT_FOUND` → invalid invite messages
-- Index navigates to `/f/$token/org` with `search: { formType }`
-- Org validates `formType` in search; loads `fillerOrgUnitsQuery`; navigates to identity with `formType` + `orgUnitId`
-- Identity:
-  - member: call `resumeMemberByCccd`; on success → `/f/$token/edit/member/$memberId`; on `NOT_FOUND` → offer create → `/f/$token/edit/member` with search `{ orgUnitId, sanghaType, cccd }`
-  - temple: call `resumeTemplesByPhone`; if empty → create new route; if one → that temple; if many → pick list then navigate
+- [ ] **Step 1: Layout `f.$token.tsx`**
+  - `useQuery(inviteByTokenQuery(token))`
+  - Loading / invalid invite UI / `<Outlet />` inside `FillerPageFrame`
 
-Search validation: use route `validateSearch` returning typed objects; invalid `formType` → redirect to index.
+- [ ] **Step 2: Index entry page**
+  - Load org units
+  - On submit:
+    - Map `member_tang`→`tang`, `member_ni`→`ni`
+    - Call `resumeMemberByCccd` or `resumeTemplesByPhone` with `token` from params
+    - Success member → navigate `edit/member/$memberId`
+    - `NOT_FOUND` member → set `notFound` / navigate new member with search
+    - Temples empty → new temple search route
+    - One temple → `$templeId`
+    - Many → set `templeMatches` on form state; pick / create handlers navigate
 
-Map `formType` → `sanghaType`: `member_tang`→`tang`, `member_ni`→`ni`.
+- [ ] **Step 3: Editor routes** — `FillerEditorShell` with titles; id routes optionally `getById` for status chip
 
-- [ ] **Step 1: Add routes + `generate-routes`**
+- [ ] **Step 4: `__root.tsx`** — hide AppHeader when path starts with `/f/`
 
-```bash
-cd tanstack-app && pnpm run generate-routes
-```
+- [ ] **Step 5: `pnpm run generate-routes` + focused Vitest**
 
-Layout sketch:
-
-```tsx
-import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { Center, Loader, Stack, Text, Title } from '@mantine/core'
-import { useQuery } from '@tanstack/react-query'
-import { m } from '#/paraglide/messages'
-import { inviteByTokenQuery } from '#/query/fillerQueries'
-import { FillerPageFrame } from '#/components/filler/FillerPageFrame'
-import { isDomainError } from '#/domain/errors'
-
-export const Route = createFileRoute('/f/$token')({
-  component: FillerLayout,
-})
-
-function FillerLayout() {
-  const { token } = Route.useParams()
-  const invite = useQuery(inviteByTokenQuery(token))
-  if (invite.isPending) {
-    return (
-      <Center p="xl">
-        <Loader aria-label="loading" />
-      </Center>
-    )
-  }
-  if (invite.isError) {
-    return (
-      <FillerPageFrame>
-        <Title order={2}>{m.filler_invite_invalid_title()}</Title>
-        <Text>{m.filler_invite_invalid_body()}</Text>
-      </FillerPageFrame>
-    )
-  }
-  return (
-    <FillerPageFrame>
-      <Outlet />
-    </FillerPageFrame>
-  )
-}
-```
-
-`__root.tsx`: treat filler like admin for header:
-
-```ts
-  const hideAppHeader = useRouterState({
-    select: (s) =>
-      s.location.pathname.startsWith('/admin') ||
-      s.location.pathname.startsWith('/f/'),
-  })
-  // ...
-  {!hideAppHeader ? <AppHeader /> : null}
-```
-
-- [ ] **Step 2: Wire index/org/identity pages** using components from Tasks 3–4 and `useNavigate` / `Link`.
-
-Org route `validateSearch`:
-
-```ts
-function parseFormType(raw: unknown): FormType | undefined {
-  if (raw === 'temple' || raw === 'member_tang' || raw === 'member_ni') return raw
-  return undefined
-}
-```
-
-If missing, `<Navigate to="/f/$token" />` (use params).
-
-- [ ] **Step 3: Component tests for layout invalid invite** (mock `inviteByTokenQuery` / useQuery) optional but preferred: at least one route-level test file `f.$token.test.tsx` or test layout component extracted as `FillerInviteGate`.
-
-Prefer extract `FillerInviteGate` if route testing is awkward — keep route files thin.
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add tanstack-app/src/routes tanstack-app/src/components/filler tanstack-app/src/routeTree.gen.ts
-git commit -m "$(cat <<'EOF'
-feat: add /f/$token layout and entry step routes
-
-EOF
-)"
-```
-
----
-
-### Task 7: Editor placeholder routes
-
-**Files:**
-- Create: `tanstack-app/src/routes/f.$token.edit.member.tsx`
-- Create: `tanstack-app/src/routes/f.$token.edit.member.$memberId.tsx`
-- Create: `tanstack-app/src/routes/f.$token.edit.temple.tsx`
-- Create: `tanstack-app/src/routes/f.$token.edit.temple.$templeId.tsx`
-- Regenerates: `routeTree.gen.ts`
-
-**Interfaces:**
-- Each renders `FillerEditorShell` with appropriate title + status `draft` (new) or load status from repo getById when id present (`draft`→draft, `locked`→view)
-- For `$memberId` / `$templeId`: `useQuery` with `memberRepo.getById` / `templeRepo.getById` (add thin queryOptions in `fillerQueries.ts` if needed)
-- New routes: require search params; if missing → redirect to `/f/$token`
-
-- [ ] **Step 1–3: Implement + generate-routes + Vitest for shell titles**
-
-- [ ] **Step 4: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 git commit -m "$(cat <<'EOF'
-feat: add filler editor placeholder routes for member and temple
+feat: wire /f/$token layout, one-page entry, and editor placeholders
 
 EOF
 )"
@@ -534,59 +276,31 @@ EOF
 
 ---
 
-### Task 8: Cypress smoke + final verification
+### Task 6: Final verification
 
-**Files:**
-- Create: `tanstack-app/cypress/e2e/filler.cy.ts` (optional thin)
+- [ ] **Step 1: `cd tanstack-app && pnpm test`** — expect PASS
 
-- [ ] **Step 1: Cypress**
+- [ ] **Step 2 (optional):** Cypress invalid token smoke if Firebase env allows
 
-```ts
-describe('Filler public path', () => {
-  it('shows invalid invite UI for unknown token', () => {
-    cy.visit('/f/token-does-not-exist-xyz')
-    cy.contains('Liên kết không hợp lệ').should('be.visible')
-  })
-})
-```
-
-Note: requires Firebase client configured in Cypress env; if visit hangs without Firebase, skip Cypress and rely on Vitest — document in report.
-
-- [ ] **Step 2: Full unit suite**
-
-```bash
-cd tanstack-app && pnpm test
-```
-
-Expected: PASS
-
-- [ ] **Step 3: Commit only if fixes needed**
+- [ ] **Step 3:** Commit only if fixes needed
 
 ---
 
-## Spec coverage (self-review)
+## Spec coverage
 
-| Spec (slice 2) | Task |
+| Spec | Task |
 | --- | --- |
-| `/f/$token` validate invite | 6 |
-| Type chooser Tăng/Ni/Tịnh xá | 3, 6 |
-| Giáo đoàn filtered | 4, 6 |
-| Identity CCCD / phone + resume/create navigation | 4, 6, 7 |
-| Shell sticky bar + placeholder (no full fields) | 5, 7 |
-| Mobile/desktop type layout | 3 |
-| Hide marketing/admin chrome on filler | 6 (`AppHeader`) |
-| No server fns / no full forms | Global constraint |
-
-## Out of scope (later slices)
-
-- Full paper field sections + Save
-- `createServerFn` wiring
-- Photo upload
-- Invite ensure from public (admin header already creates)
+| One-page entry (type+org+CCCD+phone) | 3, 5 |
+| Validate by type; ignore unused identity field | 3 |
+| Org filter by type | 2, 3 |
+| Temple multi-match inline | 3, 5 |
+| Invite invalid UI | 5 |
+| Editor placeholder shell | 4, 5 |
+| No multi-step org/identity routes | Global |
+| No full forms / no server fns | Global |
 
 ## Type consistency
 
 - `FormType` = `'temple' | 'member_tang' | 'member_ni'`
-- Search `formType` always `FormType`
-- Member routes use `SanghaType` `'tang' | 'ni'`
-- Resume APIs: `resumeMemberByCccd`, `resumeTemplesByPhone` unchanged signatures
+- Entry submit payload includes both `cccd` and `phone` strings; route layer picks which to use
+- Resume APIs unchanged: `resumeMemberByCccd`, `resumeTemplesByPhone`
