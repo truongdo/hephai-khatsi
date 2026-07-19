@@ -30,7 +30,8 @@ Full paper-form filler UI is intentional product work, but too large for one pla
 4. **Full temple form** — every temple field from DB design + phone resume + draft/locked  
 5. **Full member forms** — every member field for Tăng and Ni (precept diffs) + CCCD resume + photo  
 
-Each later slice gets its own design amendment or dedicated spec before planning.
+UI direction for slices 2–5: `docs/superpowers/specs/2026-07-19-filler-forms-ui-design.md`.  
+Each later slice still gets its own implementation plan.
 
 ## Non-goals (this slice)
 
