@@ -5,8 +5,7 @@ export default defineConfig({
   plugins: [viteReact()],
   resolve: { tsconfigPaths: true },
   test: {
-    environment: 'jsdom',
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
-    exclude: ['src/**/*.integration.test.{ts,tsx}'],
+    environment: 'node',
+    include: ['src/**/*.integration.test.{ts,tsx}'],
   },
 })

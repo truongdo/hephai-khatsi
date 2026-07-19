@@ -1,0 +1,48 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "members",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgUnitId", "order": "ASCENDING" },
+        { "fieldPath": "sanghaType", "order": "ASCENDING" },
+        { "fieldPath": "cccd", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "members",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgUnitId", "order": "ASCENDING" },
+        { "fieldPath": "sanghaType", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "temples",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgUnitId", "order": "ASCENDING" },
+        { "fieldPath": "managerPhones", "arrayConfig": "CONTAINS" }
+      ]
+    },
+    {
+      "collectionGroup": "temples",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgUnitId", "order": "ASCENDING" },
+        { "fieldPath": "managerPhones", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "temples",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgUnitId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

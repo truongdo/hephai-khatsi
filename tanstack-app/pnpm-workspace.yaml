@@ -1,6 +1,8 @@
 allowBuilds:
+  '@firebase/util': false
   cypress: true
   esbuild: true
   lightningcss: true
+  protobufjs: false
   sharp: true
   workerd: true

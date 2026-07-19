@@ -27,6 +27,26 @@ This project uses [Vitest](https://vitest.dev/) and Testing Library for unit and
 pnpm test
 ```
 
+### Firestore emulator integration (optional)
+
+Requires [Java](https://www.java.com/) for the Firestore emulator.
+
+Terminal A — start emulator from repo root config:
+
+```bash
+cd tanstack-app
+pnpm emulator:firestore
+```
+
+Terminal B — run the smoke test (no service account; uses projectId-only Admin init):
+
+```bash
+cd tanstack-app
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 \
+FIREBASE_PROJECT_ID=demo-khatsi \
+pnpm test:integration
+```
+
 ### End-to-end (Cypress)
 
 [Cypress](https://www.cypress.io/) covers browser e2e flows against the running app (`http://localhost:3000`).
