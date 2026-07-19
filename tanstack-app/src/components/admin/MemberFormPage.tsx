@@ -13,6 +13,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
+import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import type { SanghaType } from '#/domain/types'
 import { adminKeys } from '#/query/adminKeys'
 import { memberQuery, orgUnitsQuery } from '#/query/adminQueries'
@@ -185,10 +186,8 @@ export function MemberFormPage({
       </Group>
 
       {isLoading && <Loader aria-label="loading" />}
-      {member.isError && (
-        <Text c="red" role="alert">
-          {m.auth_error_unknown()}
-        </Text>
+      {member.isError && member.error && (
+        <QueryErrorAlert error={member.error} />
       )}
       {(mode === 'create' || member.data) && !member.isError && (
         <Stack maw={480}>

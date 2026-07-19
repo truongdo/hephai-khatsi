@@ -34,6 +34,7 @@
   "admin_notifications_title": "Thông báo",
   "admin_notifications_empty": "Chưa có thông báo",
   "admin_table_empty": "Chưa có dữ liệu",
+  "admin_error_load": "Không tải được dữ liệu. Vui lòng thử lại.",
   "admin_filter_all": "Tất cả",
   "admin_invites_create": "Tạo lời mời",
   "admin_invites_modal_title": "Tạo lời mời",

@@ -1,8 +1,9 @@
-import { Stack, Table, Text, Title } from '@mantine/core'
+import { Stack, Table, Title } from '@mantine/core'
 import { useQuery } from '@tanstack/react-query'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
+import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import type { OrgUnitKind } from '#/domain/types'
 import { orgUnitsQuery } from '#/query/adminQueries'
 
@@ -17,7 +18,7 @@ function orgUnitKindLabel(kind: OrgUnitKind): string {
 
 export function OrgUnitsPage() {
   const claim = useAdminClaim()
-  const { data, isPending, isError } = useQuery({
+  const { data, isPending, isError, error } = useQuery({
     ...orgUnitsQuery(),
     enabled: claim.status === 'admin',
   })
@@ -25,11 +26,7 @@ export function OrgUnitsPage() {
   return (
     <Stack>
       <Title order={2}>{m.admin_nav_org_units()}</Title>
-      {isError && (
-        <Text c="red" role="alert">
-          {m.auth_error_unknown()}
-        </Text>
-      )}
+      {isError && error && <QueryErrorAlert error={error} />}
       {!isError && (
         <AdminDataTable
           loading={isPending}

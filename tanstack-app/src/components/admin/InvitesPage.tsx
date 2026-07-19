@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
+import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { adminKeys } from '#/query/adminKeys'
 import { inviteQuery } from '#/query/adminQueries'
 import { createInvite } from '#/use-cases/createInvite'
@@ -46,10 +47,8 @@ export function InvitesPage() {
       <Title order={2}>{m.admin_nav_invites()}</Title>
 
       {invite.isPending && <Loader aria-label="loading" />}
-      {invite.isError && (
-        <Text c="red" role="alert">
-          {m.auth_error_unknown()}
-        </Text>
+      {invite.isError && invite.error && (
+        <QueryErrorAlert error={invite.error} />
       )}
 
       {!invite.isPending && !invite.isError && inviteData && (

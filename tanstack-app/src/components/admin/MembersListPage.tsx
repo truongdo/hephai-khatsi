@@ -14,6 +14,7 @@ import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { emptyCell } from '#/components/admin/emptyCell'
+import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
 import type { Member, RecordStatus, SanghaType } from '#/domain/types'
 import { membersQuery, orgUnitsQuery } from '#/query/adminQueries'
@@ -145,10 +146,8 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
         />
       </Group>
 
-      {members.isError && (
-        <Text c="red" role="alert">
-          {m.auth_error_unknown()}
-        </Text>
+      {members.isError && members.error && (
+        <QueryErrorAlert error={members.error} />
       )}
       {!members.isError && (
         <>

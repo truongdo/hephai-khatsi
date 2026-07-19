@@ -13,6 +13,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
+import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { adminKeys } from '#/query/adminKeys'
 import { orgUnitsQuery, templeQuery } from '#/query/adminQueries'
 import { lockTemple } from '#/use-cases/lockTemple'
@@ -150,10 +151,8 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
       </Group>
 
       {isLoading && <Loader aria-label="loading" />}
-      {temple.isError && (
-        <Text c="red" role="alert">
-          {m.auth_error_unknown()}
-        </Text>
+      {temple.isError && temple.error && (
+        <QueryErrorAlert error={temple.error} />
       )}
       {(mode === 'create' || temple.data) && !temple.isError && (
         <Stack maw={480}>

@@ -14,6 +14,7 @@ import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { emptyCell } from '#/components/admin/emptyCell'
+import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
 import type { RecordStatus, Temple } from '#/domain/types'
 import { templesQuery, orgUnitsQuery } from '#/query/adminQueries'
@@ -128,10 +129,8 @@ export function TemplesListPage() {
         />
       </Group>
 
-      {temples.isError && (
-        <Text c="red" role="alert">
-          {m.auth_error_unknown()}
-        </Text>
+      {temples.isError && temples.error && (
+        <QueryErrorAlert error={temples.error} />
       )}
       {!temples.isError && (
         <>
