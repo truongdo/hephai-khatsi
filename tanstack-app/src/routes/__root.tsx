@@ -8,6 +8,8 @@ import {
 } from '@mantine/core'
 
 import '@mantine/core/styles.css'
+import { AuthProvider } from '#/auth/AuthProvider'
+import { AppHeader } from '#/components/AppHeader'
 import { m } from '#/paraglide/messages'
 import { getLocale } from '#/paraglide/runtime'
 import appCss from '../styles.css?url'
@@ -50,7 +52,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           defaultColorScheme="auto"
           deduplicateInlineStyles
         >
-          {children}
+          <AuthProvider>
+            <AppHeader />
+            {children}
+          </AuthProvider>
         </MantineProvider>
         <TanStackDevtools
           config={{

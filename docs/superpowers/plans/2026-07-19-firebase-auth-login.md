@@ -251,6 +251,8 @@ pnpm exec vitest run src/firebase/client.test.ts
 
 Expected: PASS.
 
+If `vi.stubEnv` does not affect `import.meta.env` in this Vitest setup, fall back to assigning the needed keys on `import.meta.env` in the test (or `vi.stubGlobal`) before dynamic import — keep the same assertions.
+
 - [ ] **Step 5: Commit**
 
 ```bash
@@ -542,7 +544,6 @@ Expected: PASS.
 cd /Users/truong-d/Documents/code/phatgiaokhatsi
 git add \
   tanstack-app/messages/vi.json \
-  tanstack-app/src/paraglide \
   tanstack-app/src/auth/authErrors.ts \
   tanstack-app/src/auth/authErrors.test.ts \
   tanstack-app/src/repositories/authRepo.ts \
@@ -553,6 +554,8 @@ Add auth repository, error mapping, and login copy.
 EOF
 )"
 ```
+
+Note: `src/paraglide/` is gitignored (generated). Do **not** commit it. `pnpm test` / `pnpm run paraglide` regenerates it.
 
 ---
 
@@ -857,6 +860,15 @@ pnpm exec vitest run src/components/AppHeader.test.tsx src/components/Home.test.
 
 Expected: PASS.
 
+- [ ] **Step 5b: Verify SSR/dev still boots after AuthProvider wiring**
+
+```bash
+cd /Users/truong-d/Documents/code/phatgiaokhatsi/tanstack-app
+pnpm exec vite build
+```
+
+Expected: build succeeds. If Cloudflare SSR fails because `firebase/auth` touches browser APIs at import time, switch `authRepo` / `client.ts` to dynamic `import('firebase/auth')` / `import('firebase/app')` inside browser-only helpers, then re-run the build.
+
 - [ ] **Step 6: Commit**
 
 ```bash
@@ -901,7 +913,7 @@ Create `tanstack-app/src/components/LoginPage.test.tsx`:
 import { MantineProvider } from '@mantine/core'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { m } from '#/paraglide/messages'
 import { AuthContext } from '#/auth/AuthProvider'
 import { theme } from '../theme'
@@ -909,6 +921,7 @@ import { LoginPage } from './LoginPage'
 
 const signInWithGoogle = vi.fn()
 const signInWithEmailPassword = vi.fn()
+const navigateMock = vi.fn()
 
 vi.mock('#/repositories/authRepo', () => ({
   signInWithGoogle: (...args: unknown[]) => signInWithGoogle(...args),
@@ -922,7 +935,7 @@ vi.mock('@tanstack/react-router', async () => {
   )
   return {
     ...actual,
-    useNavigate: () => vi.fn(),
+    useNavigate: () => navigateMock,
   }
 })
 
@@ -942,11 +955,26 @@ beforeAll(() => {
   })
 })
 
-function renderLogin() {
+beforeEach(() => {
+  navigateMock.mockReset()
+  signInWithGoogle.mockReset()
+  signInWithEmailPassword.mockReset()
+})
+
+function renderLogin(
+  auth: { user: unknown; loading: boolean } = {
+    user: null,
+    loading: false,
+  },
+) {
   return render(
     <MantineProvider theme={theme} defaultColorScheme="light">
       <AuthContext.Provider
-        value={{ user: null, loading: false, signOut: async () => {} }}
+        value={{
+          user: auth.user as never,
+          loading: auth.loading,
+          signOut: async () => {},
+        }}
       >
         <LoginPage />
       </AuthContext.Provider>
@@ -957,6 +985,7 @@ function renderLogin() {
 describe('LoginPage', () => {
   it('renders Google and email/password controls', () => {
     renderLogin()
+    expect(screen.getByText(m.app_title())).toBeTruthy()
     expect(
       screen.getByRole('heading', { name: m.auth_login_title() }),
     ).toBeTruthy()
@@ -985,6 +1014,16 @@ describe('LoginPage', () => {
       )
     })
   })
+
+  it('navigates home when already signed in', async () => {
+    renderLogin({
+      user: { uid: 'u1', email: 'a@b.c' },
+      loading: false,
+    })
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith({ to: '/' })
+    })
+  })
 })
 ```
 
@@ -999,7 +1038,7 @@ Expected: FAIL.
 - [ ] **Step 4: Implement `LoginPage.tsx`**
 
 ```tsx
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import {
   Alert,
   Button,
@@ -1008,6 +1047,7 @@ import {
   Loader,
   PasswordInput,
   Stack,
+  Text,
   TextInput,
   Title,
 } from '@mantine/core'
@@ -1055,8 +1095,16 @@ export function LoginPage() {
     }
   }
 
+  function onSubmit(e: FormEvent) {
+    e.preventDefault()
+    void run(() => signInWithEmailPassword(email, password))
+  }
+
   return (
     <Stack maw={400} mx="auto" p="xl" gap="md">
+      <Text size="sm" c="dimmed">
+        {m.app_title()}
+      </Text>
       <Title order={1}>{m.auth_login_title()}</Title>
       {error ? <Alert color="red">{error}</Alert> : null}
       <Button
@@ -1067,30 +1115,28 @@ export function LoginPage() {
         {m.auth_login_google()}
       </Button>
       <Divider label={m.auth_login_or()} labelPosition="center" />
-      <TextInput
-        label={m.auth_login_email()}
-        type="email"
-        autoComplete="email"
-        value={email}
-        disabled={pending}
-        onChange={(e) => setEmail(e.currentTarget.value)}
-      />
-      <PasswordInput
-        label={m.auth_login_password()}
-        autoComplete="current-password"
-        value={password}
-        disabled={pending}
-        onChange={(e) => setPassword(e.currentTarget.value)}
-      />
-      <Button
-        fullWidth
-        disabled={pending}
-        onClick={() =>
-          void run(() => signInWithEmailPassword(email, password))
-        }
-      >
-        {m.auth_login_submit()}
-      </Button>
+      <form onSubmit={onSubmit}>
+        <Stack gap="md">
+          <TextInput
+            label={m.auth_login_email()}
+            type="email"
+            autoComplete="email"
+            value={email}
+            disabled={pending}
+            onChange={(e) => setEmail(e.currentTarget.value)}
+          />
+          <PasswordInput
+            label={m.auth_login_password()}
+            autoComplete="current-password"
+            value={password}
+            disabled={pending}
+            onChange={(e) => setPassword(e.currentTarget.value)}
+          />
+          <Button fullWidth type="submit" disabled={pending}>
+            {m.auth_login_submit()}
+          </Button>
+        </Stack>
+      </form>
     </Stack>
   )
 }

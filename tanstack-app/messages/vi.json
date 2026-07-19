@@ -2,5 +2,18 @@
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "app_title": "TanStack Start",
   "home_welcome": "Chào mừng đến với TanStack Start",
-  "home_get_started": "Chỉnh sửa src/routes/index.tsx để bắt đầu."
+  "home_get_started": "Chỉnh sửa src/routes/index.tsx để bắt đầu.",
+  "auth_login_title": "Đăng nhập",
+  "auth_login_google": "Tiếp tục với Google",
+  "auth_login_or": "hoặc",
+  "auth_login_email": "Email",
+  "auth_login_password": "Mật khẩu",
+  "auth_login_submit": "Đăng nhập",
+  "auth_login_link": "Đăng nhập",
+  "auth_logout": "Đăng xuất",
+  "auth_error_invalid_credential": "Email hoặc mật khẩu không đúng.",
+  "auth_error_too_many_requests": "Quá nhiều lần thử. Vui lòng thử lại sau.",
+  "auth_error_popup_closed": "Cửa sổ đăng nhập đã đóng.",
+  "auth_error_config": "Thiếu cấu hình Firebase. Kiểm tra biến môi trường VITE_FIREBASE_*.",
+  "auth_error_unknown": "Không đăng nhập được. Vui lòng thử lại."
 }
