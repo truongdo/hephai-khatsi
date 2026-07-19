@@ -1,4 +1,9 @@
-Welcome to your new TanStack Start app! 
+Hệ phái Khất sĩ admin app — a client-only single-page app built with
+[TanStack Router](https://tanstack.com/router), [React Query](https://tanstack.com/query),
+[Mantine](https://mantine.dev/), and [Firebase](https://firebase.google.com/)
+(Auth, Firestore, Storage). There is no server: the browser talks to Firebase
+directly, and Firestore/Storage security rules (see `../firebase/`) are the
+authorization boundary.
 
 # Getting Started
 
@@ -27,23 +32,21 @@ This project uses [Vitest](https://vitest.dev/) and Testing Library for unit and
 pnpm test
 ```
 
-### Firestore emulator integration (optional)
+### Firebase emulator integration (optional)
 
-Requires [Java](https://www.java.com/) for the Firestore emulator.
+Requires [Java](https://www.java.com/) for the Firestore/Storage emulators.
 
-Terminal A — start emulator from repo root config:
+Terminal A — start the emulators from the repo root config:
 
 ```bash
 cd tanstack-app
-pnpm emulator:firestore
+pnpm emulator
 ```
 
-Terminal B — run the smoke test (no service account; uses projectId-only Admin init):
+Terminal B — run the integration suite (repository logic + security rules) against them:
 
 ```bash
 cd tanstack-app
-FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 \
-FIREBASE_PROJECT_ID=demo-khatsi \
 pnpm test:integration
 ```
 
@@ -67,19 +70,15 @@ pnpm test:e2e
 
 This project uses [Mantine](https://mantine.dev/) for UI components and theming (`@mantine/core` + `@mantine/hooks`).
 
-## Deploy to Cloudflare Workers
+## Deploy to Firebase Hosting
 
-This project uses the Cloudflare Vite plugin (configured in `vite.config.ts`) and `wrangler.jsonc`:
+```bash
+pnpm deploy
+```
 
-1. Install Wrangler: `npm install -g wrangler`
-2. Authenticate: `wrangler login`
-3. Deploy: `npx wrangler deploy`
-
-For production env vars, run `wrangler secret put MY_VAR` for each secret listed in `.env.example`. Public (non-secret) vars go in `wrangler.jsonc` under `vars`.
-
-KV, D1, R2, and Durable Object bindings are configured in `wrangler.jsonc` — see https://developers.cloudflare.com/workers/wrangler/configuration/.
-
-
+This builds the static app and runs `firebase deploy --only hosting,firestore:rules,storage:rules`
+against the monorepo-root `../firebase.json`. Client Firebase config (`VITE_FIREBASE_*`) lives in
+`.env` — see `.env.example`.
 
 ## Routing
 
@@ -113,122 +112,34 @@ More information on the `Link` component can be found in the [Link documentation
 
 ### Using A Layout
 
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
+The root layout lives in `src/routes/__root.tsx`. Anything rendered there (providers, headers, devtools) wraps every route; the matched route's own content renders where `<Outlet />` appears.
 
 ```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { Outlet, createRootRoute, Link } from '@tanstack/react-router'
 
 export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
+  component: () => (
+    <>
+      <header>
+        <nav>
+          <Link to="/">Home</Link>
+          <Link to="/about">About</Link>
+        </nav>
+      </header>
+      <Outlet />
+    </>
   ),
 })
 ```
 
 More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
 
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
 ## Data Fetching
 
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
+Data access goes through the repository/use-case layers in `src/repositories` and
+`src/use-cases` (thin wrappers around the Firebase client SDK), called directly from
+`src/query/*` React Query hooks — there's no server RPC layer to cross.
 
 # Learn More
 
 You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).

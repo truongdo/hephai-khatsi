@@ -1,10 +1,16 @@
+import { ref, uploadBytes } from 'firebase/storage'
 import { DomainError } from '#/domain/errors'
 import { normalizeCccd } from '#/domain/normalize'
-import { getAdminStorage } from '#/firebase/admin'
+import { getClientStorage } from '#/firebase/storage'
 import { memberRepo, type MemberStore } from '#/repositories/memberRepo'
 
 export type StoragePort = {
-  put(path: string, bytes: Uint8Array, contentType: string): Promise<void>
+  put(
+    path: string,
+    bytes: Uint8Array,
+    contentType: string,
+    inviteToken?: string,
+  ): Promise<void>
 }
 
 export type UploadMemberPhotoInput = {
@@ -12,16 +18,23 @@ export type UploadMemberPhotoInput = {
   cccd: string
   bytes: Uint8Array
   contentType: string
+  // Required for the public invite-claim flow; omitted for admin uploads
+  // (see firebase/storage.rules — admin bypasses this check).
+  inviteToken?: string
 }
 
 export type UploadMemberPhotoResult = {
   photoPath: string
 }
 
-const adminStorage: StoragePort = {
-  async put(path, bytes, contentType) {
-    const bucket = getAdminStorage().bucket()
-    await bucket.file(path).save(bytes, { contentType })
+const clientStorage: StoragePort = {
+  async put(path, bytes, contentType, inviteToken) {
+    const storage = getClientStorage()
+    if (!storage) throw new Error('Storage is not configured')
+    await uploadBytes(ref(storage, path), bytes, {
+      contentType,
+      customMetadata: inviteToken ? { inviteToken } : undefined,
+    })
   },
 }
 
@@ -32,7 +45,7 @@ function memberPhotoPath(memberId: string): string {
 export async function uploadMemberPhoto(
   input: UploadMemberPhotoInput,
   memberStore: MemberStore = memberRepo,
-  storage: StoragePort = adminStorage,
+  storage: StoragePort = clientStorage,
 ): Promise<UploadMemberPhotoResult> {
   const cccd = normalizeCccd(input.cccd)
   const member = await memberStore.getById(input.memberId)
@@ -50,7 +63,7 @@ export async function uploadMemberPhoto(
   }
 
   const photoPath = memberPhotoPath(input.memberId)
-  await storage.put(photoPath, input.bytes, input.contentType)
+  await storage.put(photoPath, input.bytes, input.contentType, input.inviteToken)
   await memberStore.setPhotoPath(input.memberId, photoPath)
 
   return { photoPath }

@@ -1,6 +1,6 @@
 import { buildManagerPhones, mergeManagerPhones } from '#/domain/templePhones'
 import { DomainError } from '#/domain/errors'
-import type { Invite, Temple } from '#/domain/types'
+import type { Temple } from '#/domain/types'
 import { inviteRepo, type InviteStore } from '#/repositories/inviteRepo'
 import {
   templeRepo,
@@ -11,6 +11,7 @@ import { getInviteByToken } from './getInviteByToken'
 
 export type SaveTempleDraftInput = {
   token: string
+  orgUnitId: string
   templeId?: string
   patch: TempleProfilePatch
   explicitPhones?: string[]
@@ -28,17 +29,6 @@ const protectedPatchKeys = [
   'lockedBy',
 ] satisfies Array<keyof Temple>
 
-export async function getTempleInviteContext(
-  token: string,
-  inviteStore: InviteStore = inviteRepo,
-): Promise<{ invite: Invite }> {
-  const invite = await getInviteByToken(token, inviteStore)
-  if (invite.formType !== 'temple') {
-    throw new DomainError('FORBIDDEN', 'Invite is not valid for temple drafts')
-  }
-  return { invite }
-}
-
 function sanitizePatch(patch: TempleProfilePatch): TempleProfilePatch {
   const sanitized: Partial<Temple> = { ...patch }
   for (const key of protectedPatchKeys) {
@@ -52,7 +42,9 @@ export async function saveTempleDraft(
   templeStore: TempleStore = templeRepo,
   inviteStore: InviteStore = inviteRepo,
 ): Promise<{ temple: Temple; mode: 'created' | 'updated' }> {
-  const { invite } = await getTempleInviteContext(input.token, inviteStore)
+  // The invite only gates access to the form now (see PUBLIC_INVITE_ID) —
+  // org unit is the visitor's own choice, not derived from it.
+  const invite = await getInviteByToken(input.token, inviteStore)
   const patch = sanitizePatch(input.patch)
   const incomingPhones = {
     explicitPhones: input.explicitPhones ?? [],
@@ -71,7 +63,7 @@ export async function saveTempleDraft(
   }
 
   return templeStore.createOrUpdateDraft({
-    orgUnitId: invite.orgUnitId,
+    orgUnitId: input.orgUnitId,
     inviteId: invite.id,
     managerPhones,
     templeId: input.templeId,

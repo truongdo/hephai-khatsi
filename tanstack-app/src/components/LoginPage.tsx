@@ -13,7 +13,9 @@ import {
 } from '@mantine/core'
 import { useNavigate } from '@tanstack/react-router'
 import { m } from '#/paraglide/messages'
+import { safeRedirectPath } from '#/auth/safeRedirect'
 import { useAuth } from '#/auth/useAuth'
+import { Route } from '#/routes/login'
 import { authErrorMessage } from '#/auth/authErrors'
 import {
   signInWithEmailPassword,
@@ -22,6 +24,7 @@ import {
 
 export function LoginPage() {
   const { user, loading } = useAuth()
+  const { redirect } = Route.useSearch()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -30,9 +33,9 @@ export function LoginPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      void navigate({ to: '/' })
+      void navigate({ to: safeRedirectPath(redirect) })
     }
-  }, [loading, user, navigate])
+  }, [loading, user, navigate, redirect])
 
   if (loading || user) {
     return (
@@ -47,7 +50,7 @@ export function LoginPage() {
     setPending(true)
     try {
       await action()
-      await navigate({ to: '/' })
+      await navigate({ to: safeRedirectPath(redirect) })
     } catch (err) {
       setError(authErrorMessage(err))
     } finally {

@@ -1,8 +1,7 @@
 import { defineConfig } from 'vite'
 import { devtools } from '@tanstack/devtools-vite'
-import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import viteReact from '@vitejs/plugin-react'
-import { cloudflare } from '@cloudflare/vite-plugin'
 import { paraglideVitePlugin } from '@inlang/paraglide-js'
 
 const config = defineConfig({
@@ -14,8 +13,7 @@ const config = defineConfig({
       strategy: ['baseLocale'],
     }),
     devtools(),
-    cloudflare({ viteEnvironment: { name: 'ssr' } }),
-    tanstackStart(),
+    tanstackRouter({ target: 'react', autoCodeSplitting: true }),
     viteReact(),
   ],
 })

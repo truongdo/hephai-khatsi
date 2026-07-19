@@ -1,6 +1,5 @@
-import { DomainError } from '#/domain/errors'
 import { normalizeCccd } from '#/domain/normalize'
-import type { FormType, Invite, Member, SanghaType } from '#/domain/types'
+import type { Member, SanghaType } from '#/domain/types'
 import { inviteRepo, type InviteStore } from '#/repositories/inviteRepo'
 import {
   memberRepo,
@@ -11,6 +10,8 @@ import { getInviteByToken } from './getInviteByToken'
 
 export type SaveMemberDraftInput = {
   token: string
+  orgUnitId: string
+  sanghaType: SanghaType
   cccd: string
   patch: MemberProfilePatch
 }
@@ -28,23 +29,6 @@ const protectedPatchKeys = [
   'lockedBy',
 ] satisfies Array<keyof Member>
 
-export function sanghaTypeFromMemberInvite(formType: FormType): SanghaType {
-  if (formType === 'member_tang') return 'tang'
-  if (formType === 'member_ni') return 'ni'
-  throw new DomainError('FORBIDDEN', 'Invite is not valid for member drafts')
-}
-
-export async function getMemberInviteContext(
-  token: string,
-  inviteStore: InviteStore = inviteRepo,
-): Promise<{ invite: Invite; sanghaType: SanghaType }> {
-  const invite = await getInviteByToken(token, inviteStore)
-  return {
-    invite,
-    sanghaType: sanghaTypeFromMemberInvite(invite.formType),
-  }
-}
-
 function sanitizePatch(patch: MemberProfilePatch): MemberProfilePatch {
   const sanitized: Partial<Member> = { ...patch }
   for (const key of protectedPatchKeys) {
@@ -59,14 +43,13 @@ export async function saveMemberDraft(
   inviteStore: InviteStore = inviteRepo,
 ): Promise<{ member: Member; mode: 'created' | 'updated' }> {
   const cccd = normalizeCccd(input.cccd)
-  const { invite, sanghaType } = await getMemberInviteContext(
-    input.token,
-    inviteStore,
-  )
+  // The invite only gates access to the form now (see PUBLIC_INVITE_ID) —
+  // org unit and sangha type are the visitor's own choice, not derived from it.
+  const invite = await getInviteByToken(input.token, inviteStore)
 
   return memberStore.createOrUpdateDraft({
-    orgUnitId: invite.orgUnitId,
-    sanghaType,
+    orgUnitId: input.orgUnitId,
+    sanghaType: input.sanghaType,
     inviteId: invite.id,
     cccd,
     patch: sanitizePatch(input.patch),

@@ -6,3 +6,7 @@ allowBuilds:
   protobufjs: false
   sharp: true
   workerd: true
+minimumReleaseAgeExclude:
+  - '@tanstack/react-start-rsc@0.1.30'
+  - '@tanstack/react-start@1.168.31'
+  - '@tanstack/start-plugin-core@1.171.23'

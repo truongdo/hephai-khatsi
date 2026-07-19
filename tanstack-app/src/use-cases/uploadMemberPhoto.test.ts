@@ -26,10 +26,16 @@ function memberStoreWith(members: Member[]): MemberStore & {
     async createOrUpdateDraft() {
       throw new Error('not implemented')
     },
+    async updateDraftById() {
+      throw new Error('not implemented')
+    },
     async getByCccd() {
       return null
     },
     async lock() {
+      throw new Error('not implemented')
+    },
+    async unlock() {
       throw new Error('not implemented')
     },
     async getById(memberId: string) {
@@ -48,6 +54,9 @@ function memberStoreWith(members: Member[]): MemberStore & {
       }
       map.set(memberId, member)
       return member
+    },
+    async list() {
+      return { items: [], nextCursor: null }
     },
   }
 }

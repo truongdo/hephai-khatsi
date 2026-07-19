@@ -10,6 +10,13 @@ import { LoginPage } from './LoginPage'
 const signInWithGoogle = vi.fn()
 const signInWithEmailPassword = vi.fn()
 const navigateMock = vi.fn()
+const useSearchMock = vi.fn(() => ({ redirect: undefined as string | undefined }))
+
+vi.mock('#/routes/login', () => ({
+  Route: {
+    useSearch: () => useSearchMock(),
+  },
+}))
 
 vi.mock('#/repositories/authRepo', () => ({
   signInWithGoogle: (...args: unknown[]) => signInWithGoogle(...args),
@@ -47,6 +54,8 @@ beforeEach(() => {
   navigateMock.mockReset()
   signInWithGoogle.mockReset()
   signInWithEmailPassword.mockReset()
+  useSearchMock.mockReset()
+  useSearchMock.mockReturnValue({ redirect: undefined })
 })
 
 function renderLogin(
@@ -110,6 +119,19 @@ describe('LoginPage', () => {
     })
     await waitFor(() => {
       expect(navigateMock).toHaveBeenCalledWith({ to: '/' })
+    })
+  })
+
+  it('navigates to redirect path after Google sign-in', async () => {
+    useSearchMock.mockReturnValue({ redirect: '/admin/invites' })
+    signInWithGoogle.mockResolvedValueOnce(undefined)
+    const user = userEvent.setup()
+    renderLogin()
+    await user.click(
+      screen.getByRole('button', { name: m.auth_login_google() }),
+    )
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith({ to: '/admin/invites' })
     })
   })
 })

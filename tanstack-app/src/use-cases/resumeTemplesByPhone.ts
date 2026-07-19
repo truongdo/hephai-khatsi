@@ -2,10 +2,11 @@ import { normalizeVnPhone } from '#/domain/normalize'
 import type { Temple } from '#/domain/types'
 import { inviteRepo, type InviteStore } from '#/repositories/inviteRepo'
 import { templeRepo, type TempleStore } from '#/repositories/templeRepo'
-import { getTempleInviteContext } from './saveTempleDraft'
+import { getInviteByToken } from './getInviteByToken'
 
 export type ResumeTemplesByPhoneInput = {
   token: string
+  orgUnitId: string
   phone: string
 }
 
@@ -15,9 +16,9 @@ export async function resumeTemplesByPhone(
   inviteStore: InviteStore = inviteRepo,
 ): Promise<{ temples: Array<{ temple: Temple; access: 'edit' | 'view' }> }> {
   const phone = normalizeVnPhone(input.phone)
-  const { invite } = await getTempleInviteContext(input.token, inviteStore)
+  await getInviteByToken(input.token, inviteStore)
   const temples = await templeStore.listByOrgAndPhone({
-    orgUnitId: invite.orgUnitId,
+    orgUnitId: input.orgUnitId,
     phone,
   })
 

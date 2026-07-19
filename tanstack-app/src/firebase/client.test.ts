@@ -20,6 +20,8 @@ describe('readFirebaseWebConfig', () => {
     vi.stubEnv('VITE_FIREBASE_AUTH_DOMAIN', 'demo.firebaseapp.com')
     vi.stubEnv('VITE_FIREBASE_PROJECT_ID', 'demo')
     vi.stubEnv('VITE_FIREBASE_APP_ID', '1:123:web:abc')
+    vi.stubEnv('VITE_FIREBASE_MESSAGING_SENDER_ID', '')
+    vi.stubEnv('VITE_FIREBASE_STORAGE_BUCKET', '')
     const { readFirebaseWebConfig } = await import('./client')
     expect(readFirebaseWebConfig()).toEqual({
       apiKey: 'key',

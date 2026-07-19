@@ -6,13 +6,13 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "dev": "vite dev --port 3000",
+    "dev": "vite --port 3000",
     "generate-routes": "tsr generate",
     "build": "vite build",
     "preview": "vite preview",
     "paraglide": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide --strategy baseLocale",
     "test": "pnpm run paraglide && vitest run",
-    "emulator:firestore": "firebase emulators:start --only firestore --config ../firebase.json",
+    "emulator": "firebase emulators:start --only firestore,storage,auth --config ../firebase.json",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
@@ -21,22 +21,22 @@
     "seed:org-units": "node --env-file=.env --import tsx scripts/seed-org-units.ts"
   },
   "dependencies": {
-    "@cloudflare/vite-plugin": "^1.26.0",
+    "@fontsource/be-vietnam-pro": "^5.2.8",
+    "@fontsource/noto-serif": "^5.2.9",
     "@mantine/core": "^9.4.1",
     "@mantine/hooks": "^9.4.1",
     "@tanstack/react-devtools": "latest",
+    "@tanstack/react-query": "^5.101.2",
     "@tanstack/react-router": "latest",
     "@tanstack/react-router-devtools": "latest",
-    "@tanstack/react-router-ssr-query": "latest",
-    "@tanstack/react-start": "latest",
     "@tanstack/router-plugin": "^1.132.0",
     "firebase": "^12.16.0",
-    "firebase-admin": "^14.2.0",
     "lucide-react": "^0.545.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.1",
     "@inlang/paraglide-js": "^2.22.0",
     "@tanstack/devtools-vite": "latest",
     "@tanstack/router-cli": "^1.132.0",

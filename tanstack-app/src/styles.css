@@ -1,3 +1,37 @@
+/*
+ * Brand palette — drawn from the subject itself: the deep teal of temple
+ * roofs and formal signage, the saffron of monastic robes, and the warm
+ * parchment of aged documents. Fixed (not color-scheme dependent): this is
+ * a single deliberate identity, not a light/dark pair.
+ */
+:root {
+  --ink-teal: #123832;
+  --teal-mid: #1c534a;
+  --teal-soft: #2a6d61;
+
+  --saffron: #c97a2b;
+  --saffron-light: #e8b36b;
+  --saffron-pale: #f6e3c8;
+
+  --parchment: #f2eee1;
+  --paper: #fdfbf4;
+
+  --ink: #23302b;
+  --ink-soft: #66756c;
+
+  --jade: #4f7d6c;
+  --jade-pale: #e2ede7;
+
+  --clay: #a8503b;
+  --clay-pale: #f3e0da;
+
+  --line: #ddd6c1;
+  --gold: #b8860b;
+
+  --font-display: 'Noto Serif', 'Times New Roman', serif;
+  --font-body: 'Be Vietnam Pro', system-ui, sans-serif;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -10,4 +44,16 @@ body,
 
 body {
   margin: 0;
+  background-color: var(--parchment);
+  color: var(--ink);
+}
+
+/*
+ * Admin sidebar sits on deep teal, so Mantine's default near-white NavLink
+ * hover (gray-0) leaves white text unreadable. Override both the inactive
+ * and active hover with a lighter teal that keeps white text legible. The
+ * `a.` element+class selector outranks Mantine's `.m_*:hover` rule.
+ */
+a.admin-nav-link:hover {
+  background-color: var(--teal-soft);
 }

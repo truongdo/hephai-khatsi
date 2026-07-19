@@ -3,5 +3,5 @@ export const COLLECTIONS = {
   invites: 'invites',
   temples: 'temples',
   members: 'members',
-  memberCccdIndex: 'memberCccdIndex',
+  templeManagerPhoneIndex: 'templeManagerPhoneIndex',
 } as const

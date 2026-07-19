@@ -16,19 +16,13 @@ function memoryInviteStore() {
 }
 
 describe('invites', () => {
-  it('creates and loads by token', async () => {
+  it('creates the one invite and loads it by token', async () => {
     const store = memoryInviteStore()
-    const invite = await createInvite(
-      {
-        orgUnitId: 'gd-i',
-        formType: 'member_tang',
-        createdBy: 'admin-1',
-      },
-      store,
-    )
-    expect(invite.token.length).toBeGreaterThan(10)
+    const invite = await createInvite({ createdBy: 'admin-1' }, store)
+    expect(invite.token).toBe('public')
+    expect(invite.createdBy).toBe('admin-1')
     const loaded = await getInviteByToken(invite.token, store)
-    expect(loaded.orgUnitId).toBe('gd-i')
+    expect(loaded.id).toBe('public')
   })
 
   it('throws INVITE_NOT_FOUND', async () => {

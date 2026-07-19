@@ -1,75 +1,58 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { useState } from 'react'
+import { Outlet, createRootRoute, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import {
-  ColorSchemeScript,
-  MantineProvider,
-  mantineHtmlProps,
-} from '@mantine/core'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { MantineProvider } from '@mantine/core'
 
 import '@mantine/core/styles.css'
+import '@fontsource/be-vietnam-pro/vietnamese-400.css'
+import '@fontsource/be-vietnam-pro/vietnamese-500.css'
+import '@fontsource/be-vietnam-pro/vietnamese-600.css'
+import '@fontsource/be-vietnam-pro/vietnamese-700.css'
+import '@fontsource/be-vietnam-pro/latin-400.css'
+import '@fontsource/be-vietnam-pro/latin-500.css'
+import '@fontsource/be-vietnam-pro/latin-600.css'
+import '@fontsource/be-vietnam-pro/latin-700.css'
+import '@fontsource/noto-serif/vietnamese-600.css'
+import '@fontsource/noto-serif/vietnamese-700.css'
+import '@fontsource/noto-serif/latin-600.css'
+import '@fontsource/noto-serif/latin-700.css'
+import '../styles.css'
 import { AuthProvider } from '#/auth/AuthProvider'
 import { AppHeader } from '#/components/AppHeader'
-import { m } from '#/paraglide/messages'
-import { getLocale } from '#/paraglide/runtime'
-import appCss from '../styles.css?url'
+import { createAppQueryClient } from '#/query/queryClient'
 import { theme } from '../theme'
 
 export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      {
-        charSet: 'utf-8',
-      },
-      {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
-      },
-      {
-        title: m.app_title(),
-      },
-    ],
-    links: [
-      {
-        rel: 'stylesheet',
-        href: appCss,
-      },
-    ],
-  }),
-  shellComponent: RootDocument,
+  component: RootComponent,
 })
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RootComponent() {
+  const [queryClient] = useState(() => createAppQueryClient())
+  const isAdmin = useRouterState({
+    select: (s) => s.location.pathname.startsWith('/admin'),
+  })
+
   return (
-    <html lang={getLocale()} {...mantineHtmlProps}>
-      <head>
-        <HeadContent />
-        <ColorSchemeScript defaultColorScheme="auto" />
-      </head>
-      <body>
-        <MantineProvider
-          theme={theme}
-          defaultColorScheme="auto"
-          deduplicateInlineStyles
-        >
-          <AuthProvider>
-            <AppHeader />
-            {children}
-          </AuthProvider>
-        </MantineProvider>
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
-        <Scripts />
-      </body>
-    </html>
+    <MantineProvider theme={theme} defaultColorScheme="light" deduplicateInlineStyles>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          {!isAdmin ? <AppHeader /> : null}
+          <Outlet />
+        </AuthProvider>
+      </QueryClientProvider>
+      <TanStackDevtools
+        config={{
+          position: 'bottom-right',
+        }}
+        plugins={[
+          {
+            name: 'Tanstack Router',
+            render: <TanStackRouterDevtoolsPanel />,
+          },
+        ]}
+      />
+    </MantineProvider>
   )
 }

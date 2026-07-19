@@ -1,58 +1,72 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-
-vi.mock('#/firebase/admin', async () => {
-  const testAdmin = await import('#/firebase/testAdmin')
-  return {
-    getAdminApp: testAdmin.getTestAdminApp,
-    getAdminDb: testAdmin.getTestAdminDb,
-    getAdminStorage: () => {
-      throw new Error('getAdminStorage is not available in integration tests')
-    },
-  }
-})
-
-import { memberCccdIndexId } from '#/domain/memberCccdIndex'
+import {
+  initializeTestEnvironment,
+  type RulesTestEnvironment,
+} from '@firebase/rules-unit-testing'
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Invite } from '#/domain/types'
-import { COLLECTIONS } from '#/firebase/collections'
-import { clearFirestoreEmulator, getTestAdminDb } from '#/firebase/testAdmin'
-import { inviteRepo } from '#/repositories/inviteRepo'
-import { lockMember } from './lockMember'
-import { resumeMemberByCccd } from './resumeMemberByCccd'
-import { saveMemberDraft } from './saveMemberDraft'
 
-const TOKEN = 'smoke-member-tang'
+const PROJECT_ID = 'demo-khatsi-member-draft-usecase'
+
+let testEnv: RulesTestEnvironment
+// See src/repositories/*.integration.test.ts for why this is inferred
+// rather than imported from 'firebase/firestore' directly.
+let adminDb: ReturnType<ReturnType<RulesTestEnvironment['unauthenticatedContext']>['firestore']>
+
+vi.mock('#/firebase/firestore', () => ({
+  getClientFirestore: () => adminDb,
+}))
+
+const TOKEN = 'public'
 const CCCD = '012345678901'
 
-function memberTangInvite(): Invite {
+function publicInvite(): Invite {
   return {
     id: TOKEN,
     token: TOKEN,
-    orgUnitId: 'gd-i',
-    formType: 'member_tang',
     createdAt: '2026-07-19T00:00:00.000Z',
     createdBy: 'integration-test',
   }
 }
 
+beforeEach(async () => {
+  if (!testEnv) {
+    testEnv = await initializeTestEnvironment({
+      projectId: PROJECT_ID,
+      firestore: {
+        rules: 'service cloud.firestore { match /databases/{database}/documents { match /{document=**} { allow read, write: if true; } } }',
+        host: '127.0.0.1',
+        port: 8080,
+      },
+    })
+  }
+  await testEnv.clearFirestore()
+  adminDb = testEnv.unauthenticatedContext().firestore()
+
+  const { inviteRepo } = await import('#/repositories/inviteRepo')
+  await inviteRepo.create(publicInvite())
+})
+
+afterAll(async () => {
+  if (testEnv) await testEnv.cleanup()
+})
+
 describe('member draft emulator smoke', () => {
-  beforeAll(async () => {
-    await clearFirestoreEmulator()
-  })
-
-  beforeEach(async () => {
-    await clearFirestoreEmulator()
-    await inviteRepo.create(memberTangInvite())
-  })
-
   it('creates draft, resumes for edit, locks, and blocks further saves', async () => {
+    const { saveMemberDraft } = await import('./saveMemberDraft')
+    const { resumeMemberByCccd } = await import('./resumeMemberByCccd')
+    const { lockMember } = await import('./lockMember')
+
     const saved = await saveMemberDraft({
       token: TOKEN,
+      orgUnitId: 'gd-i',
+      sanghaType: 'tang',
       cccd: CCCD,
       patch: { phapDanh: 'Minh Tam' },
     })
 
     expect(saved.mode).toBe('created')
     expect(saved.member).toMatchObject({
+      id: 'gd-i_tang_012345678901',
       orgUnitId: 'gd-i',
       sanghaType: 'tang',
       cccd: CCCD,
@@ -60,7 +74,12 @@ describe('member draft emulator smoke', () => {
       phapDanh: 'Minh Tam',
     })
 
-    const resumed = await resumeMemberByCccd({ token: TOKEN, cccd: CCCD })
+    const resumed = await resumeMemberByCccd({
+      token: TOKEN,
+      orgUnitId: 'gd-i',
+      sanghaType: 'tang',
+      cccd: CCCD,
+    })
     expect(resumed.access).toBe('edit')
     expect(resumed.member.id).toBe(saved.member.id)
 
@@ -69,23 +88,19 @@ describe('member draft emulator smoke', () => {
     await expect(
       saveMemberDraft({
         token: TOKEN,
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
         cccd: CCCD,
         patch: { phapDanh: 'Should not write' },
       }),
     ).rejects.toMatchObject({ code: 'RECORD_LOCKED' })
 
-    const indexId = memberCccdIndexId('gd-i', 'tang', CCCD)
-    const indexSnap = await getTestAdminDb()
-      .collection(COLLECTIONS.memberCccdIndex)
-      .doc(indexId)
-      .get()
-
-    expect(indexSnap.exists).toBe(true)
-    expect(indexSnap.data()).toMatchObject({
-      memberId: saved.member.id,
+    const resumedAfterLock = await resumeMemberByCccd({
+      token: TOKEN,
       orgUnitId: 'gd-i',
       sanghaType: 'tang',
       cccd: CCCD,
     })
+    expect(resumedAfterLock.access).toBe('view')
   })
 })

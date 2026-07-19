@@ -92,7 +92,7 @@ URL shape (UI later): `/f/{token}`. Phase 1 has no `status: revoked` / `expiresA
 | `orgUnitId` | string | |
 | `status` | `draft` \| `locked` | |
 | `managerPhones` | string[] | VN phones normalized to digits-only (`0xxxxxxxxx`); **required ≥ 1 on first save**; array-contains for resume |
-| `inviteId` | string | Invite used to create |
+| `inviteId` | string \| null | Invite used to create; **null** when created by admin without an invite |
 | `createdAt` / `updatedAt` | timestamp | |
 | `lockedAt` / `lockedBy` | timestamp / string \| null | Set on lock |
 
@@ -143,7 +143,7 @@ Mandatory uniqueness helper; only written inside member create transactions (Adm
 | `sanghaType` | `tang` \| `ni` | |
 | `status` | `draft` \| `locked` | |
 | `cccd` | string | Digits-only normalized; **required on first save**; unique per `orgUnitId` + `sanghaType` |
-| `inviteId` | string | Invite used to create |
+| `inviteId` | string \| null | Invite used to create; **null** when created by admin without an invite |
 | `currentTempleId` | string \| null | Optional FK to `temples` |
 | `photoPath` | string \| null | Storage path |
 | `createdAt` / `updatedAt` | timestamp | |

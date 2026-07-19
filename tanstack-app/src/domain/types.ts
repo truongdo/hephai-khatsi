@@ -13,11 +13,13 @@ export type OrgUnit = {
   allowsNi: boolean
 }
 
+// There is a single, global invite (see PUBLIC_INVITE_ID in inviteRepo.ts) —
+// it only gates access to the public registration form; it no longer scopes
+// which org unit or record type a visitor can create (the visitor picks
+// those themselves in the form).
 export type Invite = {
   id: string
   token: string
-  orgUnitId: string
-  formType: FormType
   createdAt: string
   createdBy: string
 }
@@ -41,7 +43,7 @@ export type Member = {
   sanghaType: SanghaType
   status: RecordStatus
   cccd: string
-  inviteId: string
+  inviteId: string | null
   currentTempleId: string | null
   photoPath: string | null
   theDanh?: string
@@ -125,7 +127,7 @@ export type Temple = {
   orgUnitId: string
   status: RecordStatus
   managerPhones: string[]
-  inviteId: string
+  inviteId: string | null
   danhHieu?: string
   phanDoan?: string
   dacDiem?: string[]

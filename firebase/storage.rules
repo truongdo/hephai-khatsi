@@ -1,0 +1,30 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    function memberDoc(memberId) {
+      return firestore.get(/databases/(default)/documents/members/$(memberId)).data;
+    }
+
+    // Path segment `memberId` is the deterministic members/{orgUnitId}_{sanghaType}_{cccd}
+    // id (see firestore.rules), so constructing this path already requires
+    // knowing the member's CCCD — no separate secret needed here.
+    match /members/{memberId}/photo.jpg {
+      allow read: if true;
+
+      allow write: if request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*')
+        && memberDoc(memberId).status != 'locked'
+        && (
+          isAdmin()
+          || (
+            request.resource.metadata.inviteToken is string
+            && firestore.get(/databases/(default)/documents/invites/$(request.resource.metadata.inviteToken)).data.orgUnitId == memberDoc(memberId).orgUnitId
+          )
+        );
+    }
+  }
+}

@@ -10,11 +10,28 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminInvitesRouteImport } from './routes/admin/invites'
+import { Route as AdminOrgUnitsRouteImport } from './routes/admin/org-units'
+import { Route as AdminTemplesRouteImport } from './routes/admin/temples'
+import { Route as AdminMembersIdRouteImport } from './routes/admin/members.$id'
+import { Route as AdminMembersNewRouteImport } from './routes/admin/members.new'
+import { Route as AdminMembersNiRouteImport } from './routes/admin/members.ni'
+import { Route as AdminMembersTangRouteImport } from './routes/admin/members.tang'
+import { Route as AdminTemplesIndexRouteImport } from './routes/admin/temples.index'
+import { Route as AdminTemplesIdRouteImport } from './routes/admin/temples.$id'
+import { Route as AdminTemplesNewRouteImport } from './routes/admin/temples.new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -22,30 +39,161 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInvitesRoute = AdminInvitesRouteImport.update({
+  id: '/invites',
+  path: '/invites',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrgUnitsRoute = AdminOrgUnitsRouteImport.update({
+  id: '/org-units',
+  path: '/org-units',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTemplesRoute = AdminTemplesRouteImport.update({
+  id: '/temples',
+  path: '/temples',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMembersIdRoute = AdminMembersIdRouteImport.update({
+  id: '/members/$id',
+  path: '/members/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMembersNewRoute = AdminMembersNewRouteImport.update({
+  id: '/members/new',
+  path: '/members/new',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMembersNiRoute = AdminMembersNiRouteImport.update({
+  id: '/members/ni',
+  path: '/members/ni',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMembersTangRoute = AdminMembersTangRouteImport.update({
+  id: '/members/tang',
+  path: '/members/tang',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTemplesIndexRoute = AdminTemplesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminTemplesRoute,
+} as any)
+const AdminTemplesIdRoute = AdminTemplesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminTemplesRoute,
+} as any)
+const AdminTemplesNewRoute = AdminTemplesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminTemplesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
+  '/admin/invites': typeof AdminInvitesRoute
+  '/admin/org-units': typeof AdminOrgUnitsRoute
+  '/admin/temples': typeof AdminTemplesRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
+  '/admin/members/$id': typeof AdminMembersIdRoute
+  '/admin/members/new': typeof AdminMembersNewRoute
+  '/admin/members/ni': typeof AdminMembersNiRoute
+  '/admin/members/tang': typeof AdminMembersTangRoute
+  '/admin/temples/$id': typeof AdminTemplesIdRoute
+  '/admin/temples/new': typeof AdminTemplesNewRoute
+  '/admin/temples/': typeof AdminTemplesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/admin/invites': typeof AdminInvitesRoute
+  '/admin/org-units': typeof AdminOrgUnitsRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/members/$id': typeof AdminMembersIdRoute
+  '/admin/members/new': typeof AdminMembersNewRoute
+  '/admin/members/ni': typeof AdminMembersNiRoute
+  '/admin/members/tang': typeof AdminMembersTangRoute
+  '/admin/temples/$id': typeof AdminTemplesIdRoute
+  '/admin/temples/new': typeof AdminTemplesNewRoute
+  '/admin/temples': typeof AdminTemplesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
+  '/admin/invites': typeof AdminInvitesRoute
+  '/admin/org-units': typeof AdminOrgUnitsRoute
+  '/admin/temples': typeof AdminTemplesRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
+  '/admin/members/$id': typeof AdminMembersIdRoute
+  '/admin/members/new': typeof AdminMembersNewRoute
+  '/admin/members/ni': typeof AdminMembersNiRoute
+  '/admin/members/tang': typeof AdminMembersTangRoute
+  '/admin/temples/$id': typeof AdminTemplesIdRoute
+  '/admin/temples/new': typeof AdminTemplesNewRoute
+  '/admin/temples/': typeof AdminTemplesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/login'
+    | '/admin/invites'
+    | '/admin/org-units'
+    | '/admin/temples'
+    | '/admin/'
+    | '/admin/members/$id'
+    | '/admin/members/new'
+    | '/admin/members/ni'
+    | '/admin/members/tang'
+    | '/admin/temples/$id'
+    | '/admin/temples/new'
+    | '/admin/temples/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login'
-  id: '__root__' | '/' | '/login'
+  to:
+    | '/'
+    | '/login'
+    | '/admin/invites'
+    | '/admin/org-units'
+    | '/admin'
+    | '/admin/members/$id'
+    | '/admin/members/new'
+    | '/admin/members/ni'
+    | '/admin/members/tang'
+    | '/admin/temples/$id'
+    | '/admin/temples/new'
+    | '/admin/temples'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/login'
+    | '/admin/invites'
+    | '/admin/org-units'
+    | '/admin/temples'
+    | '/admin/'
+    | '/admin/members/$id'
+    | '/admin/members/new'
+    | '/admin/members/ni'
+    | '/admin/members/tang'
+    | '/admin/temples/$id'
+    | '/admin/temples/new'
+    | '/admin/temples/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
 
@@ -58,6 +206,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -65,22 +220,131 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/invites': {
+      id: '/admin/invites'
+      path: '/invites'
+      fullPath: '/admin/invites'
+      preLoaderRoute: typeof AdminInvitesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/org-units': {
+      id: '/admin/org-units'
+      path: '/org-units'
+      fullPath: '/admin/org-units'
+      preLoaderRoute: typeof AdminOrgUnitsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/temples': {
+      id: '/admin/temples'
+      path: '/temples'
+      fullPath: '/admin/temples'
+      preLoaderRoute: typeof AdminTemplesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/members/$id': {
+      id: '/admin/members/$id'
+      path: '/members/$id'
+      fullPath: '/admin/members/$id'
+      preLoaderRoute: typeof AdminMembersIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/members/new': {
+      id: '/admin/members/new'
+      path: '/members/new'
+      fullPath: '/admin/members/new'
+      preLoaderRoute: typeof AdminMembersNewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/members/ni': {
+      id: '/admin/members/ni'
+      path: '/members/ni'
+      fullPath: '/admin/members/ni'
+      preLoaderRoute: typeof AdminMembersNiRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/members/tang': {
+      id: '/admin/members/tang'
+      path: '/members/tang'
+      fullPath: '/admin/members/tang'
+      preLoaderRoute: typeof AdminMembersTangRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/temples/': {
+      id: '/admin/temples/'
+      path: '/'
+      fullPath: '/admin/temples/'
+      preLoaderRoute: typeof AdminTemplesIndexRouteImport
+      parentRoute: typeof AdminTemplesRoute
+    }
+    '/admin/temples/$id': {
+      id: '/admin/temples/$id'
+      path: '/$id'
+      fullPath: '/admin/temples/$id'
+      preLoaderRoute: typeof AdminTemplesIdRouteImport
+      parentRoute: typeof AdminTemplesRoute
+    }
+    '/admin/temples/new': {
+      id: '/admin/temples/new'
+      path: '/new'
+      fullPath: '/admin/temples/new'
+      preLoaderRoute: typeof AdminTemplesNewRouteImport
+      parentRoute: typeof AdminTemplesRoute
+    }
   }
 }
 
+interface AdminTemplesRouteChildren {
+  AdminTemplesIdRoute: typeof AdminTemplesIdRoute
+  AdminTemplesNewRoute: typeof AdminTemplesNewRoute
+  AdminTemplesIndexRoute: typeof AdminTemplesIndexRoute
+}
+
+const AdminTemplesRouteChildren: AdminTemplesRouteChildren = {
+  AdminTemplesIdRoute: AdminTemplesIdRoute,
+  AdminTemplesNewRoute: AdminTemplesNewRoute,
+  AdminTemplesIndexRoute: AdminTemplesIndexRoute,
+}
+
+const AdminTemplesRouteWithChildren = AdminTemplesRoute._addFileChildren(
+  AdminTemplesRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminInvitesRoute: typeof AdminInvitesRoute
+  AdminOrgUnitsRoute: typeof AdminOrgUnitsRoute
+  AdminTemplesRoute: typeof AdminTemplesRouteWithChildren
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminMembersIdRoute: typeof AdminMembersIdRoute
+  AdminMembersNewRoute: typeof AdminMembersNewRoute
+  AdminMembersNiRoute: typeof AdminMembersNiRoute
+  AdminMembersTangRoute: typeof AdminMembersTangRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminInvitesRoute: AdminInvitesRoute,
+  AdminOrgUnitsRoute: AdminOrgUnitsRoute,
+  AdminTemplesRoute: AdminTemplesRouteWithChildren,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminMembersIdRoute: AdminMembersIdRoute,
+  AdminMembersNewRoute: AdminMembersNewRoute,
+  AdminMembersNiRoute: AdminMembersNiRoute,
+  AdminMembersTangRoute: AdminMembersTangRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

@@ -1,1 +1,1 @@
-// Cypress e2e support entry (add shared commands here later).
+// Cypress e2e support entry.

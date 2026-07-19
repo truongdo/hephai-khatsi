@@ -5,28 +5,148 @@ service cloud.firestore {
       return request.auth != null && request.auth.token.admin == true;
     }
 
+    // --- orgUnits: public read, admin write (unchanged) ---
     match /orgUnits/{id} {
-      allow read: if true;
+      allow get, list: if true;
       allow write: if isAdmin();
     }
 
+    // --- invites: there is exactly one invite for the whole app (fixed doc
+    // id "public", see PUBLIC_INVITE_ID) — it just gates the public
+    // registration form; it does not scope org unit or record type (the
+    // visitor picks those themselves). The bearer credential is knowing the
+    // id/token for a single get(); listing (enumeration) stays admin-only. ---
     match /invites/{id} {
-      allow read: if isAdmin();
-      allow write: if false;
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create: if isAdmin()
+        && id == request.resource.data.token
+        && request.resource.data.token is string
+        && request.resource.data.createdAt is string
+        && request.resource.data.createdBy == request.auth.uid;
+      allow update, delete: if false;
     }
 
-    match /temples/{id} {
-      allow read: if isAdmin();
-      allow write: if false;
+    // --- members: doc id is deterministic ({orgUnitId}_{sanghaType}_{cccd}),
+    // mirroring the invites/{token} pattern. Knowing a member's CCCD (plus
+    // the small, effectively-public set of orgUnitId/sanghaType values) is
+    // the same bearer-secret model already used for invite tokens and for
+    // "resume by CCCD" today — this just makes it possible to enforce with
+    // rules by collapsing the old two-hop (memberCccdIndex -> members)
+    // lookup into a single deterministic id. ---
+    match /members/{memberId} {
+      function coreIdentityUnchanged() {
+        return request.resource.data.orgUnitId == resource.data.orgUnitId
+          && request.resource.data.sanghaType == resource.data.sanghaType
+          && request.resource.data.cccd == resource.data.cccd
+          && request.resource.data.createdAt == resource.data.createdAt;
+      }
+
+      function lockFieldsUnchanged() {
+        return request.resource.data.status == resource.data.status
+          && request.resource.data.lockedAt == resource.data.lockedAt
+          && request.resource.data.lockedBy == resource.data.lockedBy;
+      }
+
+      function isLockTransition() {
+        return request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'lockedAt', 'lockedBy', 'updatedAt']);
+      }
+
+      // Re-validated (not frozen) on every non-admin write: the caller must
+      // currently hold a valid invite. With a single global invite this is
+      // just an existence check — org unit / sangha type are the visitor's
+      // own choice, not something the invite scopes.
+      function validInviteScope(data) {
+        return data.inviteId is string
+          && exists(/databases/$(database)/documents/invites/$(data.inviteId));
+      }
+
+      allow get: if true;
+      allow list: if isAdmin();
+
+      allow create: if memberId == (request.resource.data.orgUnitId + '_' + request.resource.data.sanghaType + '_' + request.resource.data.cccd)
+        && request.resource.data.status == 'draft'
+        && request.resource.data.lockedAt == null
+        && request.resource.data.lockedBy == null
+        && request.resource.data.createdAt is string
+        && request.resource.data.updatedAt is string
+        && ((isAdmin() && request.resource.data.inviteId == null)
+            || (!isAdmin() && validInviteScope(request.resource.data)));
+
+      allow update: if coreIdentityUnchanged() && (
+        (isAdmin() && isLockTransition() && request.resource.data.inviteId == resource.data.inviteId)
+        || (isAdmin() && resource.data.status != 'locked' && !isLockTransition()
+            && lockFieldsUnchanged() && request.resource.data.inviteId == resource.data.inviteId)
+        || (!isAdmin() && resource.data.status != 'locked'
+            && lockFieldsUnchanged() && validInviteScope(request.resource.data))
+      );
+
+      allow delete: if false;
     }
 
-    match /members/{id} {
-      allow read: if isAdmin();
-      allow write: if false;
+    // --- temples: ids stay random (a phone can map to several temples, so
+    // it can't collapse to one deterministic id the way members can). The
+    // bearer credential is "a currently valid invite" — re-checked on every
+    // non-admin write, same pattern as members. ---
+    match /temples/{templeId} {
+      function coreIdentityUnchanged() {
+        return request.resource.data.orgUnitId == resource.data.orgUnitId
+          && request.resource.data.createdAt == resource.data.createdAt;
+      }
+
+      function lockFieldsUnchanged() {
+        return request.resource.data.status == resource.data.status
+          && request.resource.data.lockedAt == resource.data.lockedAt
+          && request.resource.data.lockedBy == resource.data.lockedBy;
+      }
+
+      function isLockTransition() {
+        return request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'lockedAt', 'lockedBy', 'updatedAt']);
+      }
+
+      function validInviteScope(data) {
+        return data.inviteId is string
+          && exists(/databases/$(database)/documents/invites/$(data.inviteId));
+      }
+
+      allow get: if true;
+      allow list: if isAdmin();
+
+      allow create: if request.resource.data.status == 'draft'
+        && request.resource.data.lockedAt == null
+        && request.resource.data.lockedBy == null
+        && request.resource.data.managerPhones is list
+        && request.resource.data.managerPhones.size() > 0
+        && request.resource.data.createdAt is string
+        && request.resource.data.updatedAt is string
+        && ((isAdmin() && request.resource.data.inviteId == null)
+            || (!isAdmin() && validInviteScope(request.resource.data)));
+
+      allow update: if coreIdentityUnchanged() && (
+        (isAdmin() && isLockTransition())
+        || (isAdmin() && resource.data.status != 'locked' && !isLockTransition() && lockFieldsUnchanged())
+        || (!isAdmin() && resource.data.status != 'locked' && lockFieldsUnchanged() && validInviteScope(request.resource.data))
+      );
+
+      allow delete: if false;
     }
 
-    match /memberCccdIndex/{id} {
-      allow read, write: if false;
+    // --- templeManagerPhoneIndex: secondary lookup index, {orgUnitId}_{phone}
+    // -> {templeIds: [...]}, so resumeTemplesByPhone can find candidate ids
+    // with a get() instead of an open list() query on temples. This is
+    // defense-in-depth only, not the primary gate: the temples/{id} rules
+    // above are what actually authorize reading/editing each record, so a
+    // malformed index entry can at worst point at a temple id the caller
+    // could already get() directly (get is public), not leak anything new. ---
+    match /templeManagerPhoneIndex/{indexId} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create, update: if request.resource.data.templeIds is list
+        && request.resource.data.templeIds.size() <= 20
+        && request.resource.data.templeIds.size() >= (resource == null ? 0 : resource.data.templeIds.size());
+      allow delete: if false;
     }
   }
 }

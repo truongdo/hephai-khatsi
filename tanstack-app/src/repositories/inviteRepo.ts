@@ -1,23 +1,32 @@
-import { getAdminDb } from '#/firebase/admin'
-import { COLLECTIONS } from '#/firebase/collections'
+import { doc, getDoc, setDoc, type Firestore } from 'firebase/firestore'
 import type { Invite } from '#/domain/types'
+import { COLLECTIONS } from '#/firebase/collections'
+import { getClientFirestore } from '#/firebase/firestore'
+
+// There is exactly one invite for the whole app — a fixed doc id, not a
+// per-registration token — so "creating an invite" is really "creating the
+// invite" (idempotent: see createInvite.ts).
+export const PUBLIC_INVITE_ID = 'public'
 
 export type InviteStore = {
   create(invite: Invite): Promise<void>
   getByToken(token: string): Promise<Invite | null>
 }
 
+function requireDb(): Firestore {
+  const db = getClientFirestore()
+  if (!db) throw new Error('Firestore is not configured')
+  return db
+}
+
 async function create(invite: Invite): Promise<void> {
   const { id, ...data } = invite
-  await getAdminDb().collection(COLLECTIONS.invites).doc(id).set(data)
+  await setDoc(doc(requireDb(), COLLECTIONS.invites, id), data)
 }
 
 async function getByToken(token: string): Promise<Invite | null> {
-  const snap = await getAdminDb()
-    .collection(COLLECTIONS.invites)
-    .doc(token)
-    .get()
-  if (!snap.exists) return null
+  const snap = await getDoc(doc(requireDb(), COLLECTIONS.invites, token))
+  if (!snap.exists()) return null
   return { id: snap.id, ...(snap.data() as Omit<Invite, 'id'>) }
 }
 
