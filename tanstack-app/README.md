@@ -19,10 +19,28 @@ pnpm build
 
 ## Testing
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+### Unit / component (Vitest)
+
+This project uses [Vitest](https://vitest.dev/) and Testing Library for unit and component tests:
 
 ```bash
 pnpm test
+```
+
+### End-to-end (Cypress)
+
+[Cypress](https://www.cypress.io/) covers browser e2e flows against the running app (`http://localhost:3000`).
+
+Interactive (start the app first with `pnpm dev` if it is not already running):
+
+```bash
+pnpm cy:open
+```
+
+Headless one-shot (starts `pnpm dev`, waits for the URL, runs Cypress, then stops the server):
+
+```bash
+pnpm test:e2e
 ```
 
 ## Styling

@@ -11,6 +11,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "test:e2e": "start-server-and-test dev http://localhost:3000 cy:run",
     "deploy": "pnpm run build && wrangler deploy"
   },
   "dependencies": {
@@ -36,19 +39,15 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^6.0.1",
+    "cypress": "^15.18.1",
     "jsdom": "^28.1.0",
     "postcss": "^8.5.19",
     "postcss-preset-mantine": "^1.18.0",
     "postcss-simple-vars": "^7.0.1",
+    "start-server-and-test": "^3.0.11",
     "typescript": "^6.0.2",
     "vite": "^8.0.0",
     "vitest": "^4.1.5",
     "wrangler": "^4.70.0"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "lightningcss"
-    ]
   }
 }
