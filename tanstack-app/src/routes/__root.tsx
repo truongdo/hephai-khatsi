@@ -30,15 +30,15 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   const [queryClient] = useState(() => createAppQueryClient())
-  const isAdmin = useRouterState({
-    select: (s) => s.location.pathname.startsWith('/admin'),
+  const showAppHeader = useRouterState({
+    select: (s) => shouldShowAppHeader(s.location.pathname),
   })
 
   return (
     <MantineProvider theme={theme} defaultColorScheme="light" deduplicateInlineStyles>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          {!isAdmin ? <AppHeader /> : null}
+          {showAppHeader ? <AppHeader /> : null}
           <Outlet />
         </AuthProvider>
       </QueryClientProvider>
@@ -55,4 +55,8 @@ function RootComponent() {
       />
     </MantineProvider>
   )
+}
+
+export function shouldShowAppHeader(pathname: string): boolean {
+  return !pathname.startsWith('/admin') && !pathname.startsWith('/f/')
 }
