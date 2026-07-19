@@ -5,7 +5,8 @@ import {
   createRootRoute,
   createRouter,
 } from '@tanstack/react-router'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { m } from '#/paraglide/messages'
 import { theme } from '../../theme'
@@ -41,7 +42,7 @@ beforeAll(() => {
   })
 })
 
-function renderShell() {
+function renderShell(initialPath = '/admin/invites') {
   const rootRoute = createRootRoute({
     component: () => (
       <MantineProvider theme={theme} defaultColorScheme="light">
@@ -53,7 +54,7 @@ function renderShell() {
   })
   const router = createRouter({
     routeTree: rootRoute,
-    history: createMemoryHistory({ initialEntries: ['/admin/invites'] }),
+    history: createMemoryHistory({ initialEntries: [initialPath] }),
   })
   return render(<RouterProvider router={router} />)
 }
@@ -61,10 +62,28 @@ function renderShell() {
 describe('AdminShell', () => {
   it('renders nav link text from Paraglide', async () => {
     renderShell()
-    expect(await screen.findByText(m.admin_nav_invites())).toBeTruthy()
-    expect(screen.getByText(m.admin_nav_temples())).toBeTruthy()
-    expect(screen.getByText(m.admin_nav_tang())).toBeTruthy()
-    expect(screen.getByText(m.admin_nav_ni())).toBeTruthy()
-    expect(screen.getByText(m.admin_nav_org_units())).toBeTruthy()
+    const nav = await screen.findByRole('navigation')
+    expect(within(nav).getByText(m.admin_nav_invites())).toBeTruthy()
+    expect(within(nav).getByText(m.admin_nav_temples())).toBeTruthy()
+    expect(within(nav).getByText(m.admin_nav_tang())).toBeTruthy()
+    expect(within(nav).getByText(m.admin_nav_ni())).toBeTruthy()
+    expect(within(nav).getByText(m.admin_nav_org_units())).toBeTruthy()
+  })
+
+  it('renders breadcrumbs for the current path', async () => {
+    renderShell('/admin/invites')
+    const header = await screen.findByRole('banner')
+    expect(header.parentElement?.getAttribute('data-layout')).toBe('alt')
+    expect(within(header).getByText(m.admin_title())).toBeTruthy()
+    expect(within(header).getByText(m.admin_nav_invites())).toBeTruthy()
+  })
+
+  it('opens empty notifications popover', async () => {
+    const user = userEvent.setup()
+    renderShell()
+    await user.click(
+      await screen.findByRole('button', { name: m.admin_notifications_aria() }),
+    )
+    expect(await screen.findByText(m.admin_notifications_empty())).toBeTruthy()
   })
 })

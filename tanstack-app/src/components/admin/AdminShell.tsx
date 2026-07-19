@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react'
 import {
+  Anchor,
   AppShell,
   Box,
+  Breadcrumbs,
   Button,
   Divider,
   Group,
@@ -15,6 +17,8 @@ import { Home, Link2, List, LogOut } from 'lucide-react'
 import { m } from '#/paraglide/messages'
 import { useAuth } from '#/auth/useAuth'
 import { DharmaWheel } from '#/components/icons/DharmaWheel'
+import { AdminNotificationsButton } from './AdminNotificationsButton'
+import { buildAdminBreadcrumbs } from './adminBreadcrumbs'
 
 const navItems = [
   { label: () => m.admin_nav_invites(), to: '/admin/invites', icon: Link2 },
@@ -27,9 +31,15 @@ const navItems = [
 export function AdminShell({ children }: { children: ReactNode }) {
   const { signOut } = useAuth()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const crumbs = buildAdminBreadcrumbs(pathname)
 
   return (
-    <AppShell navbar={{ width: 260, breakpoint: 'sm' }} padding="md">
+    <AppShell
+      navbar={{ width: 260, breakpoint: 'sm' }}
+      header={{ height: 56 }}
+      layout="alt"
+      padding="md"
+    >
       <AppShell.Navbar style={{ backgroundColor: 'var(--ink-teal)', border: 'none' }}>
         <Stack gap={0} h="100%">
           <Group gap="sm" p="lg" wrap="nowrap">
@@ -105,6 +115,46 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </Group>
         </Stack>
       </AppShell.Navbar>
+      <AppShell.Header
+        px="md"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          borderBottom: '1px solid var(--mantine-color-gray-2)',
+        }}
+      >
+        <Group justify="space-between" w="100%" wrap="nowrap">
+          <Breadcrumbs separator="›">
+            {crumbs.map((crumb, index, all) => {
+              const isLast = index === all.length - 1
+              if (!isLast && crumb.href) {
+                return (
+                  <Anchor
+                    key={`${crumb.href}-${crumb.title}`}
+                    component={Link}
+                    to={crumb.href}
+                    size="sm"
+                    c="dimmed"
+                    underline="hover"
+                  >
+                    {crumb.title}
+                  </Anchor>
+                )
+              }
+              return (
+                <Text
+                  key={`${crumb.title}-${index}`}
+                  size="sm"
+                  fw={isLast ? 600 : 400}
+                >
+                  {crumb.title}
+                </Text>
+              )
+            })}
+          </Breadcrumbs>
+          <AdminNotificationsButton />
+        </Group>
+      </AppShell.Header>
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
   )
