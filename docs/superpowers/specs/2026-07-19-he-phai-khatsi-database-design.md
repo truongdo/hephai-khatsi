@@ -23,9 +23,10 @@ Design the Firestore data model and access patterns for managing **Hệ phái Kh
 | Resume temple | Phone number → list of temples (`managerPhones`); one phone may manage many temples |
 | Org unit source of truth | `orgUnitId` comes from the invite (authoritative); form label “Giáo đoàn hiện đang sinh hoạt” is display-only from that unit |
 | Photos (phase 1) | Member 3×4 only (`photoPath` → Storage) |
-| Public writes | Via server API validating invite token — not open client list/query on PII (hosting choice: see Open decision — server API) |
+| Public writes | Via **TanStack Start server routes/functions** + Firebase Admin SDK validating invite token — not open client list/query on PII |
 | Admin | Firebase Auth + custom claims; lock / list / manage invites |
 | Invite revoke | Not in phase 1 |
+| Server API host | TanStack Start (same app deploy); domain use-cases stay host-agnostic for later extraction |
 
 ## Out of scope
 
@@ -222,11 +223,20 @@ firebase/init → repositories → queryOptions / mutations → hooks / loaders 
 
 - Repositories own Firestore/Storage access and converters (Admin SDK on server; typed converters shared where possible).
 - Admin UI uses `queryOptions` with intentional `staleTime`, `limit`, cursor pagination — no default `onSnapshot`.
-- Filler flows call the **server API**; client cache keys scoped to the loaded record id after resume.
+- Filler flows call **TanStack Start server routes**; client cache keys scoped to the loaded record id after resume.
 
-### Open decision — server API
+### Server API shape
 
-Hosting choice for filler/admin mutations is decided below after product confirmation (see conversation). Spec requirement that does not change: **all public PII reads/writes go through a server boundary** with Admin SDK; clients do not query `members`/`temples` by CCCD/phone directly.
+```
+UI / form client
+  → Start server route (HTTP)
+    → domain use-case (createDraft, resumeByCccd, lockMember, …)
+      → repository (Firestore / Storage Admin SDK)
+```
+
+- Phase 1: all filler and privileged mutations live in Start server routes under one deploy with the app.
+- Keep use-cases free of HTTP/Cloudflare specifics so a later move of heavy jobs to Functions/Queues does not change collections or client contracts.
+- Firestore rules deny public client writes on `members`, `temples`, and `memberCccdIndex`.
 
 ## Error handling
 
