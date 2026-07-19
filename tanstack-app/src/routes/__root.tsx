@@ -8,6 +8,8 @@ import {
 } from '@mantine/core'
 
 import '@mantine/core/styles.css'
+import { m } from '#/paraglide/messages'
+import { getLocale } from '#/paraglide/runtime'
 import appCss from '../styles.css?url'
 import { theme } from '../theme'
 
@@ -22,7 +24,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: m.app_title(),
       },
     ],
     links: [
@@ -37,7 +39,7 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" {...mantineHtmlProps}>
+    <html lang={getLocale()} {...mantineHtmlProps}>
       <head>
         <HeadContent />
         <ColorSchemeScript defaultColorScheme="auto" />

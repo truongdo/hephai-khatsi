@@ -10,7 +10,8 @@
     "generate-routes": "tsr generate",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run",
+    "paraglide": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide --strategy baseLocale",
+    "test": "pnpm run paraglide && vitest run",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "test:e2e": "start-server-and-test dev http://localhost:3000 cy:run",
@@ -31,6 +32,7 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@inlang/paraglide-js": "^2.22.0",
     "@tanstack/devtools-vite": "latest",
     "@tanstack/router-cli": "^1.132.0",
     "@testing-library/dom": "^10.4.1",

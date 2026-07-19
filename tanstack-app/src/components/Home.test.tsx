@@ -1,6 +1,7 @@
 import { MantineProvider } from '@mantine/core'
 import { render, screen } from '@testing-library/react'
 import { beforeAll, describe, expect, it } from 'vitest'
+import { m } from '#/paraglide/messages'
 import { theme } from '../theme'
 import { Home } from './Home'
 
@@ -29,7 +30,7 @@ describe('Home', () => {
     )
 
     expect(
-      screen.getByRole('heading', { name: /welcome to tanstack start/i }),
+      screen.getByRole('heading', { name: m.home_welcome() }),
     ).toBeTruthy()
   })
 })
