@@ -21,9 +21,11 @@ Design the Firestore data model and access patterns for managing **Hệ phái Kh
 | Draft / lock | `status: draft \| locked`; fillers edit until admin locks |
 | Resume member | CCCD within same `orgUnitId` + `sanghaType` |
 | Resume temple | Phone number → list of temples (`managerPhones`); one phone may manage many temples |
+| Org unit source of truth | `orgUnitId` comes from the invite (authoritative); form label “Giáo đoàn hiện đang sinh hoạt” is display-only from that unit |
 | Photos (phase 1) | Member 3×4 only (`photoPath` → Storage) |
-| Public writes | Via Cloud Functions (or equivalent server) validating invite token — not open client list/query on PII |
+| Public writes | Via server API validating invite token — not open client list/query on PII (hosting choice: see Open decision — server API) |
 | Admin | Firebase Auth + custom claims; lock / list / manage invites |
+| Invite revoke | Not in phase 1 |
 
 ## Out of scope
 
@@ -32,6 +34,7 @@ Design the Firestore data model and access patterns for managing **Hệ phái Kh
 - Multi-level approval workflows beyond draft → locked
 - Full edit-history / versioning of each save
 - Realtime listeners as the default read path
+- Invite revoke / expire workflows (links stay usable until replaced operationally)
 - Complex inter-unit transfer workflows (can store `hePhaiGoc` / `giaoDoanGoc` fields now; process later)
 
 ## Domain hierarchy
@@ -72,14 +75,12 @@ Seed all seven units from the org chart. Whether a given giáo đoàn currently 
 | Field | Type | Notes |
 | --- | --- | --- |
 | `token` | string | Public URL segment; prefer doc id = token for O(1) lookup |
-| `orgUnitId` | string | |
+| `orgUnitId` | string | Authoritative giáo đoàn / ni giới for every record created via this invite |
 | `formType` | `temple` \| `member_tang` \| `member_ni` | |
-| `status` | `active` \| `revoked` | |
 | `createdAt` | timestamp | |
 | `createdBy` | string | Admin uid |
-| `expiresAt` | timestamp \| null | Optional |
 
-URL shape (UI later): `/f/{token}`.
+URL shape (UI later): `/f/{token}`. Phase 1 has no `status: revoked` / `expiresAt`; rotate by creating a new invite and stopping distribution of the old link if needed.
 
 ### `temples/{templeId}`
 
@@ -89,10 +90,12 @@ URL shape (UI later): `/f/{token}`.
 | --- | --- | --- |
 | `orgUnitId` | string | |
 | `status` | `draft` \| `locked` | |
-| `managerPhones` | string[] | VN phones normalized to digits-only (`0xxxxxxxxx`); array-contains for resume |
+| `managerPhones` | string[] | VN phones normalized to digits-only (`0xxxxxxxxx`); **required ≥ 1 on first save**; array-contains for resume |
 | `inviteId` | string | Invite used to create |
 | `createdAt` / `updatedAt` | timestamp | |
 | `lockedAt` / `lockedBy` | timestamp / string \| null | Set on lock |
+
+**Phone mapping (temples):** On every save, the server upserts into `managerPhones` at least `truTriHienNay.dienThoai` when present, plus any explicit manager phones the filler adds. Resume always uses `managerPhones`, never only the nested trụ trì field.
 
 **Form content** (map mẫu danh bạ Tịnh xá / Tịnh thất)
 
@@ -118,6 +121,17 @@ URL shape (UI later): `/f/{token}`.
 
 No temple document file uploads in phase 1.
 
+### `memberCccdIndex/{orgUnitId}_{sanghaType}_{cccd}`
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `memberId` | string | Points at `members/{memberId}` |
+| `orgUnitId` | string | Denormalized for clarity |
+| `sanghaType` | `tang` \| `ni` | |
+| `cccd` | string | Same normalized value as in the doc id |
+
+Mandatory uniqueness helper; only written inside member create transactions (Admin SDK / server).
+
 ### `members/{memberId}`
 
 **Lifecycle / access**
@@ -127,8 +141,8 @@ No temple document file uploads in phase 1.
 | `orgUnitId` | string | Current giáo đoàn / ni giới |
 | `sanghaType` | `tang` \| `ni` | |
 | `status` | `draft` \| `locked` | |
-| `cccd` | string | Digits-only normalized; unique per `orgUnitId` + `sanghaType` |
-| `inviteId` | string | |
+| `cccd` | string | Digits-only normalized; **required on first save**; unique per `orgUnitId` + `sanghaType` |
+| `inviteId` | string | Invite used to create |
 | `currentTempleId` | string \| null | Optional FK to `temples` |
 | `photoPath` | string \| null | Storage path |
 | `createdAt` / `updatedAt` | timestamp | |
@@ -137,6 +151,8 @@ No temple document file uploads in phase 1.
 **Identity & contact**
 
 `theDanh`, `phapDanh`, `ngaySinh`, `noiSinh`, `nguyenQuan`, `cccdMeta` `{ ngayCap, noiCap }`, `cntn` `{ so, ngayCap, noiCap }`, `danToc`, `dienThoai`, `email`, `diaChiThuongTru`, `ngayXuatGia`, `noiXuatGia`, `hienTuHoc` (free text; may duplicate temple name/address before `currentTempleId` is linked).
+
+**Giáo đoàn hiện đang sinh hoạt:** Do not store a separate free-text org field as source of truth. Persist `orgUnitId` from the invite; UI may show `orgUnits.name` for that id. Optional notes about origin belong in `hePhaiGoc` / `giaoDoanGoc` only.
 
 **Precept records**
 
@@ -160,31 +176,33 @@ Shared shape per precept: `{ ngayGh, taiGh, tonHieuGioiDan, ngayHePhai, taiHePha
 
 | Case | Rule |
 | --- | --- |
-| Member create | If `orgUnitId + sanghaType + cccd` exists as `draft` → resume that doc; if `locked` → reject create/edit by filler |
+| Member first save | `cccd` required; reject if missing/invalid |
+| Member create / resume | If `orgUnitId + sanghaType + cccd` exists as `draft` → resume that doc; if `locked` → reject create; allow **read-only** view for filler |
 | Member uniqueness | At most one member doc per `orgUnitId + sanghaType + cccd` |
-| Temple resume | Query `temples` where `orgUnitId == invite.orgUnitId` and `managerPhones` array-contains normalized phone; filler picks a draft temple or creates a new one (appending phone to `managerPhones`) |
-| Invite | `token` unique; revoked/expired invites reject all filler operations |
+| Temple first save | At least one phone in `managerPhones` required (from trụ trì phone and/or explicit manager phones); reject if none |
+| Temple resume | Query `temples` where `orgUnitId == invite.orgUnitId` and `managerPhones` array-contains normalized phone. **Draft** → editable; **locked** → listed as **view-only** (no update). Filler may still create a **new** temple with that phone |
+| Invite | `token` unique; phase 1 always accepts existing invite docs (no revoke/expiry check) |
 
-Enforce uniqueness in the Cloud Function with a transaction. Optional helper collection `memberCccdIndex/{orgUnitId}_{sanghaType}_{cccd}` → `memberId` if stronger uniqueness under concurrent creates is needed.
+**Required CCCD index:** `memberCccdIndex/{orgUnitId}_{sanghaType}_{cccd}` → `{ memberId }`. Every member create/resume runs in a **transaction** that reads/writes this index so concurrent first-saves cannot duplicate CCCD. This index is mandatory in phase 1 (not optional).
 
 ## Data flows
 
-1. **Admin creates invite** → `invites` doc → share `/f/{token}`.
-2. **Filler creates** → validate invite → create `temples` or `members` with `status: draft`.
+1. **Admin creates invite** → `invites` doc (`orgUnitId` + `formType`) → share `/f/{token}`.
+2. **Filler creates** → validate invite exists → create `temples` / `members` with `status: draft`, `orgUnitId` copied from invite; enforce required CCCD or `managerPhones`.
 3. **Filler resumes** → same invite page “already submitted”:
-   - Members: CCCD → load draft (or deny if locked).
-   - Temples: phone → list matching temples → edit draft or create another temple.
-4. **Admin locks** → `status: locked`; fillers can no longer mutate via CCCD/phone.
+   - Members: CCCD → draft editable; locked view-only.
+   - Temples: phone → list matches; draft editable; locked view-only; option to create another temple.
+4. **Admin locks** → `status: locked`; fillers cannot mutate (view-only only).
 5. **Photo** → upload to `members/{memberId}/photo.jpg` (or equivalent) while draft; store `photoPath`. Lock does not delete the file.
 
 ## Access control
 
 | Actor | Capabilities |
 | --- | --- |
-| Anonymous filler | Only through server endpoints that require a valid invite token: create draft, update own draft (after CCCD/phone proof), upload photo for that member |
+| Anonymous filler | Only through server endpoints that require an existing invite token: create draft, update **draft** (after CCCD/phone proof), read locked record view-only, upload photo for **draft** member |
 | Admin (Auth + claim) | CRUD invites, list/filter temples & members by org unit, lock records, read PII |
 
-Firestore security rules must **deny** public `list` on `members` and `temples`. Do not expose collection queries that return CCCD/phone directories to the client.
+Firestore security rules must **deny** public `list` / client writes on `members`, `temples`, and `memberCccdIndex`. Do not expose collection queries that return CCCD/phone directories to the client.
 
 ## Indexes (minimum)
 
@@ -202,19 +220,26 @@ Follow workspace Firebase + TanStack Query rules:
 firebase/init → repositories → queryOptions / mutations → hooks / loaders → UI
 ```
 
-- Repositories own Firestore/Storage access and converters.
+- Repositories own Firestore/Storage access and converters (Admin SDK on server; typed converters shared where possible).
 - Admin UI uses `queryOptions` with intentional `staleTime`, `limit`, cursor pagination — no default `onSnapshot`.
-- Filler flows call Functions; client cache keys scoped to the loaded draft id after resume.
+- Filler flows call the **server API**; client cache keys scoped to the loaded record id after resume.
+
+### Open decision — server API
+
+Hosting choice for filler/admin mutations is decided below after product confirmation (see conversation). Spec requirement that does not change: **all public PII reads/writes go through a server boundary** with Admin SDK; clients do not query `members`/`temples` by CCCD/phone directly.
 
 ## Error handling
 
 | Situation | Behavior |
 | --- | --- |
-| Invite revoked / expired | Reject with clear error |
-| CCCD matches locked member | Reject edit; do not create duplicate |
-| CCCD matches draft | Return that draft |
+| Invite token not found | Reject with clear error |
+| Member save without CCCD | Reject |
+| Temple save with empty `managerPhones` | Reject |
+| CCCD matches locked member | View-only; do not create duplicate; reject update |
+| CCCD matches draft | Return that draft for edit |
 | Phone matches zero temples | Allow create new temple |
-| Phone matches many temples | Require selection before edit |
+| Phone matches draft temples | Allow select + edit |
+| Phone matches locked temples | Show view-only; updates rejected |
 | Photo upload fails | Persist text fields; leave or keep previous `photoPath` |
 
 ## Testing
@@ -228,7 +253,10 @@ firebase/init → repositories → queryOptions / mutations → hooks / loaders 
 - All fields from the three Word templates are representable on `temples` / `members`.
 - Seven org units are modeled and seedable.
 - Multi-use invites create many drafts; resume works via CCCD (members) and phone (temples, many-to-one).
-- Draft vs locked lifecycle is explicit; fillers cannot mutate locked records.
+- First save requires CCCD (members) and ≥1 `managerPhones` (temples); trụ trì phone is synced into `managerPhones`.
+- `memberCccdIndex` enforces CCCD uniqueness under concurrency.
+- `orgUnitId` is always taken from the invite (authoritative).
+- Draft vs locked lifecycle is explicit; locked records are view-only for fillers.
 - PII is not publicly listable; member photos stored in Storage with path on the member doc.
 
 ## Future extensions (non-blocking)
@@ -236,4 +264,7 @@ firebase/init → repositories → queryOptions / mutations → hooks / loaders 
 - Lean list projections or subcollections if history arrays grow large.
 - Temple attachment uploads.
 - Unlock + audit log.
+- Invite revoke / expiry.
+- Temple duplicate detection by `danhHieu` within an org unit.
 - Stronger PII protection (hashed CCCD index, field-level encryption).
+- Dedicate heavy/async jobs to a separate worker platform if the Start server API grows too large.
