@@ -112,8 +112,26 @@ export const theme = createTheme({
       },
     },
     Table: {
+      defaultProps: {
+        highlightOnHover: true,
+        highlightOnHoverColor: 'var(--saffron-pale)',
+        horizontalSpacing: 'md',
+        verticalSpacing: 'sm',
+        borderColor: 'var(--line)',
+        withRowBorders: true,
+      },
       styles: {
         table: { backgroundColor: 'var(--paper)' },
+        thead: { backgroundColor: 'var(--jade-pale)' },
+        th: {
+          color: 'var(--ink-soft)',
+          fontWeight: 600,
+          fontSize: '0.8125rem',
+          borderBottomColor: 'var(--line)',
+        },
+        td: {
+          borderBottomColor: 'var(--line)',
+        },
       },
     },
     Paper: {

@@ -1,7 +1,6 @@
 import {
   Button,
   Group,
-  Loader,
   Select,
   Stack,
   Table,
@@ -13,6 +12,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
+import { AdminDataTable } from '#/components/admin/AdminDataTable'
+import { emptyCell } from '#/components/admin/emptyCell'
 import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
 import type { Member, RecordStatus, SanghaType } from '#/domain/types'
 import { membersQuery, orgUnitsQuery } from '#/query/adminQueries'
@@ -144,15 +145,18 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
         />
       </Group>
 
-      {isLoading && <Loader aria-label="loading" />}
       {members.isError && (
         <Text c="red" role="alert">
           {m.auth_error_unknown()}
         </Text>
       )}
-      {!isLoading && !members.isError && (
+      {!members.isError && (
         <>
-          <Table>
+          <AdminDataTable
+            loading={isLoading}
+            empty={!isLoading && allItems.length === 0}
+            aria-label={listTitle(sanghaType)}
+          >
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>{m.admin_members_col_phap_danh()}</Table.Th>
@@ -176,7 +180,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
                       {memberDisplayName(member)}
                     </Text>
                   </Table.Td>
-                  <Table.Td>{member.theDanh ?? '—'}</Table.Td>
+                  <Table.Td>{emptyCell(member.theDanh)}</Table.Td>
                   <Table.Td>{member.cccd}</Table.Td>
                   <Table.Td>
                     <RecordStatusBadge
@@ -190,7 +194,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
                 </Table.Tr>
               ))}
             </Table.Tbody>
-          </Table>
+          </AdminDataTable>
           {nextCursor && (
             <Button
               variant="light"

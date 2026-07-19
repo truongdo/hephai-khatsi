@@ -1,7 +1,6 @@
 import {
   Button,
   Group,
-  Loader,
   Select,
   Stack,
   Table,
@@ -13,6 +12,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
+import { AdminDataTable } from '#/components/admin/AdminDataTable'
+import { emptyCell } from '#/components/admin/emptyCell'
 import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
 import type { RecordStatus, Temple } from '#/domain/types'
 import { templesQuery, orgUnitsQuery } from '#/query/adminQueries'
@@ -127,15 +128,18 @@ export function TemplesListPage() {
         />
       </Group>
 
-      {isLoading && <Loader aria-label="loading" />}
       {temples.isError && (
         <Text c="red" role="alert">
           {m.auth_error_unknown()}
         </Text>
       )}
-      {!isLoading && !temples.isError && (
+      {!temples.isError && (
         <>
-          <Table>
+          <AdminDataTable
+            loading={isLoading}
+            empty={!isLoading && allItems.length === 0}
+            aria-label={m.admin_nav_temples()}
+          >
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>{m.admin_temples_col_danh_hieu()}</Table.Th>
@@ -158,7 +162,7 @@ export function TemplesListPage() {
                       {temple.danhHieu ?? temple.id}
                     </Text>
                   </Table.Td>
-                  <Table.Td>{temple.managerPhones[0] ?? '—'}</Table.Td>
+                  <Table.Td>{emptyCell(temple.managerPhones[0])}</Table.Td>
                   <Table.Td>
                     <RecordStatusBadge
                       status={temple.status}
@@ -171,7 +175,7 @@ export function TemplesListPage() {
                 </Table.Tr>
               ))}
             </Table.Tbody>
-          </Table>
+          </AdminDataTable>
           {nextCursor && (
             <Button
               variant="light"
