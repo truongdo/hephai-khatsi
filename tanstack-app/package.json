@@ -18,7 +18,7 @@
     "cy:run": "cypress run",
     "test:e2e": "start-server-and-test dev http://localhost:3000 cy:run",
     "deploy": "pnpm run build && wrangler deploy",
-    "seed:org-units": "node --import tsx scripts/seed-org-units.ts"
+    "seed:org-units": "node --env-file=.env --import tsx scripts/seed-org-units.ts"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.26.0",

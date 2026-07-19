@@ -1,0 +1,53 @@
+---
+description: When to write Cypress E2E vs Vitest — keep E2E thin
+alwaysApply: true
+---
+
+# Cypress E2E vs Vitest
+
+Do **not** add a Cypress test for every small UI change. Prefer a thin E2E suite; put most coverage in Vitest + Testing Library.
+
+## Use Cypress when
+
+- Protecting a **critical user journey** end-to-end (e.g. login → create → save → see result)
+- Behavior depends on **routing, auth, Firebase, network**, or real browser behavior
+- Guarding a regression unit tests cannot catch (full page load, redirects, cookies)
+- Adding/updating a **smoke** that the app boots and a main route renders
+
+## Prefer Vitest / Testing Library when
+
+- Component render, props, local UI state, validation messages
+- Copy/layout/styling tweaks (often no new test; update existing component test only if assertion must change)
+- Fast feedback while iterating on isolated UI
+
+## Do not
+
+- Add one Cypress spec per PR or per UI polish
+- Assert spacing, colors, or decorative layout in E2E
+- Duplicate the same assertion in both Cypress and Vitest when one layer is enough (component for render; Cypress for the journey)
+
+## Decision table
+
+| Change | Test layer |
+|--------|------------|
+| Spacing, colors, minor copy | Usually none; update Vitest only if an existing assertion breaks |
+| Form field / component behavior | Vitest + Testing Library |
+| New feature critical path | **One** Cypress journey covering the path (not every UI detail) |
+| Refactor with same UX | Keep existing E2E; do not expand the suite |
+
+## Repo conventions (`tanstack-app`)
+
+- Component/unit: colocated `*.test.tsx` with Vitest (see `src/components/Home.test.tsx`)
+- E2E: `cypress/e2e/*.cy.ts`; run via `pnpm test:e2e` / `pnpm cy:run`
+- Default for new work: Vitest first; Cypress only for smoke or a high-value journey
+
+```typescript
+// ✅ Vitest — component renders correctly
+expect(screen.getByRole('heading', { name: m.home_welcome() })).toBeTruthy()
+
+// ✅ Cypress — thin smoke / journey
+cy.visit('/')
+cy.contains('h1', '...').should('be.visible')
+
+// ❌ Cypress for every Button padding / label tweak
+```
