@@ -19,9 +19,10 @@ UI only — no notification fetch, unread badge, or mark-as-read logic.
 |-------|--------|
 | Placement | `AppShell.Header` inside existing `AdminShell` |
 | Breadcrumb source | Pathname → label map (not per-route `staticData`) |
-| Trail style | Full trail, e.g. `Quản trị › Chùa › Chi tiết chùa` |
+| Trail style | Full trail, e.g. `Quản trị › Tịnh xá › Chi tiết tịnh xá` |
+| Temple wording | Use **Tịnh xá** (not “Chùa”) in nav, breadcrumbs, and related temple titles |
 | Notifications UI | Bell `ActionIcon` + popover/menu with empty state |
-| Page titles | Keep existing page `Title`s unchanged this pass |
+| Page titles | Keep page `Title` components; update temple copy via Paraglide strings |
 
 ## Layout
 
@@ -45,17 +46,18 @@ UI only — no notification fetch, unread badge, or mark-as-read logic.
 - Root crumb **Quản trị** (`m.admin_title`) links to `/admin` (which already redirects to `/admin/invites`).
 - Intermediate crumbs are `Link`s; the last crumb is plain text (current page).
 - Labels reuse existing Paraglide keys where possible; add keys only for missing crumbs / notifications copy.
-- Dynamic IDs (`$id`) use the existing form detail titles (e.g. “Chi tiết chùa”), not the entity name.
+- Dynamic IDs (`$id`) use the form detail titles (e.g. “Chi tiết tịnh xá”), not the entity name.
 - Unknown path segments fall back to the raw segment string.
+- Rename temple copy in `messages/vi.json`: `admin_nav_temples`, `admin_invites_form_type_temple`, `admin_temples_form_title_create`, `admin_temples_form_title_edit` — replace “Chùa”/“chùa” with “Tịnh xá”/“tịnh xá”.
 
 ### Mapping
 
 | Path | Trail |
 |------|--------|
 | `/admin/invites` | Quản trị › Lời mời |
-| `/admin/temples` | Quản trị › Chùa |
-| `/admin/temples/new` | Quản trị › Chùa › Thêm chùa |
-| `/admin/temples/$id` | Quản trị › Chùa › Chi tiết chùa |
+| `/admin/temples` | Quản trị › Tịnh xá |
+| `/admin/temples/new` | Quản trị › Tịnh xá › Thêm tịnh xá |
+| `/admin/temples/$id` | Quản trị › Tịnh xá › Chi tiết tịnh xá |
 | `/admin/members/tang` | Quản trị › Tăng ni |
 | `/admin/members/ni` | Quản trị › Ni |
 | `/admin/members/new` | Quản trị › Thêm thành viên |
