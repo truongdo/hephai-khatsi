@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.26.0",
-    "@tailwindcss/vite": "^4.1.18",
+    "@mantine/core": "^9.4.1",
+    "@mantine/hooks": "^9.4.1",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-router": "latest",
     "@tanstack/react-router-devtools": "latest",
@@ -24,11 +25,9 @@
     "@tanstack/router-plugin": "^1.132.0",
     "lucide-react": "^0.545.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "tailwindcss": "^4.1.18"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.16",
     "@tanstack/devtools-vite": "latest",
     "@tanstack/router-cli": "^1.132.0",
     "@testing-library/dom": "^10.4.1",
@@ -38,6 +37,9 @@
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^6.0.1",
     "jsdom": "^28.1.0",
+    "postcss": "^8.5.19",
+    "postcss-preset-mantine": "^1.18.0",
+    "postcss-simple-vars": "^7.0.1",
     "typescript": "^6.0.2",
     "vite": "^8.0.0",
     "vitest": "^4.1.5",
