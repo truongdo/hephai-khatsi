@@ -21,10 +21,6 @@ export function buildAdminBreadcrumbs(pathname: string): AdminBreadcrumb[] {
   const section = parts[1]
   const rest = parts.slice(2)
 
-  if (section === 'invites') {
-    return [rootCrumb(), { title: m.admin_nav_invites() }]
-  }
-
   if (section === 'org-units') {
     return [rootCrumb(), { title: m.admin_nav_org_units() }]
   }

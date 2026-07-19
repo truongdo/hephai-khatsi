@@ -123,7 +123,7 @@ describe('LoginPage', () => {
   })
 
   it('navigates to redirect path after Google sign-in', async () => {
-    useSearchMock.mockReturnValue({ redirect: '/admin/invites' })
+    useSearchMock.mockReturnValue({ redirect: '/admin/temples' })
     signInWithGoogle.mockResolvedValueOnce(undefined)
     const user = userEvent.setup()
     renderLogin()
@@ -131,7 +131,7 @@ describe('LoginPage', () => {
       screen.getByRole('button', { name: m.auth_login_google() }),
     )
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith({ to: '/admin/invites' })
+      expect(navigateMock).toHaveBeenCalledWith({ to: '/admin/temples' })
     })
   })
 })

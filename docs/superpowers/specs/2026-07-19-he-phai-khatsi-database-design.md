@@ -17,14 +17,14 @@ Design the Firestore data model and access patterns for managing **Hệ phái Kh
 | Org model | Seeded `orgUnits` (7 units); no separate “Danh bộ” entity |
 | Members | One `members` collection; `sanghaType: tang \| ni` |
 | Temples | Flat `temples` with `orgUnitId` |
-| Invite links | Multi-use; scoped by `orgUnitId` + `formType`; first save creates the record |
+| Invite links | One multi-use global invite (`token` / doc id `public`) gates public writes; `orgUnitId` and form type are **not** on the invite — visitor chooses on the filler form (see `2026-07-19-filler-forms-ui-design.md`) |
 | Draft / lock | `status: draft \| locked`; fillers edit until admin locks |
 | Resume member | CCCD within same `orgUnitId` + `sanghaType` |
 | Resume temple | Phone number → list of temples (`managerPhones`); one phone may manage many temples |
-| Org unit source of truth | `orgUnitId` comes from the invite (authoritative); form label “Giáo đoàn hiện đang sinh hoạt” is display-only from that unit |
+| Org unit source of truth | `orgUnitId` is chosen by the visitor on the filler form and persisted on the record; form label “Giáo đoàn hiện đang sinh hoạt” is display-only from that unit |
 | Photos (phase 1) | Member 3×4 only (`photoPath` → Storage) |
 | Public writes | Via **TanStack Start server routes/functions** + Firebase Admin SDK validating invite token — not open client list/query on PII |
-| Admin | Firebase Auth + custom claims; lock / list / manage invites |
+| Admin | Firebase Auth + custom claims; ensure global invite; lock / list records |
 | Invite revoke | Not in phase 1 |
 | Server API host | TanStack Start (same app deploy); domain use-cases stay host-agnostic for later extraction |
 
@@ -73,15 +73,15 @@ Seed all seven units from the org chart. Whether a given giáo đoàn currently 
 
 ### `invites/{inviteId}`
 
+Phase 1 uses **one** global invite: doc id and `token` = `public`. It gates public writes only; it does **not** carry `orgUnitId` or form type (visitor picks those on the filler form — see `2026-07-19-filler-forms-ui-design.md`).
+
 | Field | Type | Notes |
 | --- | --- | --- |
-| `token` | string | Public URL segment; prefer doc id = token for O(1) lookup |
-| `orgUnitId` | string | Authoritative giáo đoàn / ni giới for every record created via this invite |
-| `formType` | `temple` \| `member_tang` \| `member_ni` | |
+| `token` | string | Public URL segment; phase 1 fixed to `public` (doc id = token for O(1) lookup) |
 | `createdAt` | timestamp | |
 | `createdBy` | string | Admin uid |
 
-URL shape (UI later): `/f/{token}`. Phase 1 has no `status: revoked` / `expiresAt`; rotate by creating a new invite and stopping distribution of the old link if needed.
+URL shape: `/f/public`. Phase 1 has no `status: revoked` / `expiresAt`; operational rotation is out of scope.
 
 ### `temples/{templeId}`
 
@@ -153,7 +153,7 @@ Mandatory uniqueness helper; only written inside member create transactions (Adm
 
 `theDanh`, `phapDanh`, `ngaySinh`, `noiSinh`, `nguyenQuan`, `cccdMeta` `{ ngayCap, noiCap }`, `cntn` `{ so, ngayCap, noiCap }`, `danToc`, `dienThoai`, `email`, `diaChiThuongTru`, `ngayXuatGia`, `noiXuatGia`, `hienTuHoc` (free text; may duplicate temple name/address before `currentTempleId` is linked).
 
-**Giáo đoàn hiện đang sinh hoạt:** Do not store a separate free-text org field as source of truth. Persist `orgUnitId` from the invite; UI may show `orgUnits.name` for that id. Optional notes about origin belong in `hePhaiGoc` / `giaoDoanGoc` only.
+**Giáo đoàn hiện đang sinh hoạt:** Do not store a separate free-text org field as source of truth. Persist `orgUnitId` from the visitor’s filler-form choice; UI may show `orgUnits.name` for that id. Optional notes about origin belong in `hePhaiGoc` / `giaoDoanGoc` only.
 
 **Precept records**
 
@@ -181,15 +181,15 @@ Shared shape per precept: `{ ngayGh, taiGh, tonHieuGioiDan, ngayHePhai, taiHePha
 | Member create / resume | If `orgUnitId + sanghaType + cccd` exists as `draft` → resume that doc; if `locked` → reject create; allow **read-only** view for filler |
 | Member uniqueness | At most one member doc per `orgUnitId + sanghaType + cccd` |
 | Temple first save | At least one phone in `managerPhones` required (from trụ trì phone and/or explicit manager phones); reject if none |
-| Temple resume | Query `temples` where `orgUnitId == invite.orgUnitId` and `managerPhones` array-contains normalized phone. **Draft** → editable; **locked** → listed as **view-only** (no update). Filler may still create a **new** temple with that phone |
+| Temple resume | Query `temples` where `orgUnitId` matches the filler’s chosen giáo đoàn and `managerPhones` array-contains normalized phone. **Draft** → editable; **locked** → listed as **view-only** (no update). Filler may still create a **new** temple with that phone |
 | Invite | `token` unique; phase 1 always accepts existing invite docs (no revoke/expiry check) |
 
 **Required CCCD index:** `memberCccdIndex/{orgUnitId}_{sanghaType}_{cccd}` → `{ memberId }`. Every member create/resume runs in a **transaction** that reads/writes this index so concurrent first-saves cannot duplicate CCCD. This index is mandatory in phase 1 (not optional).
 
 ## Data flows
 
-1. **Admin creates invite** → `invites` doc (`orgUnitId` + `formType`) → share `/f/{token}`.
-2. **Filler creates** → validate invite exists → create `temples` / `members` with `status: draft`, `orgUnitId` copied from invite; enforce required CCCD or `managerPhones`.
+1. **Admin ensures global invite** → idempotent create of `invites/public` if missing → share `/f/public` (header copy in admin UI).
+2. **Filler creates** → validate invite token exists → visitor chooses form type + `orgUnitId` on filler form → create `temples` / `members` with `status: draft` and chosen `orgUnitId`; enforce required CCCD or `managerPhones`.
 3. **Filler resumes** → same invite page “already submitted”:
    - Members: CCCD → draft editable; locked view-only.
    - Temples: phone → list matches; draft editable; locked view-only; option to create another temple.
@@ -201,7 +201,7 @@ Shared shape per precept: `{ ngayGh, taiGh, tonHieuGioiDan, ngayHePhai, taiHePha
 | Actor | Capabilities |
 | --- | --- |
 | Anonymous filler | Only through server endpoints that require an existing invite token: create draft, update **draft** (after CCCD/phone proof), read locked record view-only, upload photo for **draft** member |
-| Admin (Auth + claim) | CRUD invites, list/filter temples & members by org unit, lock records, read PII |
+| Admin (Auth + claim) | Ensure global invite; list/filter temples & members by org unit; lock records; read PII |
 
 Firestore security rules must **deny** public `list` / client writes on `members`, `temples`, and `memberCccdIndex`. Do not expose collection queries that return CCCD/phone directories to the client.
 
@@ -265,7 +265,7 @@ UI / form client
 - Multi-use invites create many drafts; resume works via CCCD (members) and phone (temples, many-to-one).
 - First save requires CCCD (members) and ≥1 `managerPhones` (temples); trụ trì phone is synced into `managerPhones`.
 - `memberCccdIndex` enforces CCCD uniqueness under concurrency.
-- `orgUnitId` is always taken from the invite (authoritative).
+- `orgUnitId` on filler-created records comes from the visitor’s form choice (not from the invite doc).
 - Draft vs locked lifecycle is explicit; locked records are view-only for fillers.
 - PII is not publicly listable; member photos stored in Storage with path on the member doc.
 

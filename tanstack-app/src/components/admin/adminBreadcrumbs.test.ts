@@ -3,13 +3,6 @@ import { m } from '#/paraglide/messages'
 import { buildAdminBreadcrumbs } from './adminBreadcrumbs'
 
 describe('buildAdminBreadcrumbs', () => {
-  it('builds invites trail', () => {
-    expect(buildAdminBreadcrumbs('/admin/invites')).toEqual([
-      { title: m.admin_title(), href: '/admin' },
-      { title: m.admin_nav_invites() },
-    ])
-  })
-
   it('builds temples list trail', () => {
     expect(buildAdminBreadcrumbs('/admin/temples')).toEqual([
       { title: m.admin_title(), href: '/admin' },

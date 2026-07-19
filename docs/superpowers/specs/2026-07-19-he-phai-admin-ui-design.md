@@ -6,15 +6,15 @@ Depends on: `docs/superpowers/specs/2026-07-19-he-phai-khatsi-database-design.md
 
 ## Goal
 
-Ship an **admin ops console** with a flat sidebar so claimed admins can manage invitation links, browse and lean-edit temples and sangha members (Tăng / Ni), lock and unlock records, and view org units — without opening client Firestore access to PII.
+Ship an **admin ops console** with a flat sidebar so claimed admins can browse and lean-edit temples and sangha members (Tăng / Ni), lock and unlock records, and view org units — without opening client Firestore access to PII. Public invite link copy lives in the header (see `2026-07-19-admin-copy-form-link-design.md`); filler forms are a separate plan.
 
 ## Decisions
 
 | Topic | Choice |
 | --- | --- |
-| Scope | Full ops shell: invites + temples + members + org units |
+| Scope | Full ops shell: temples + members + org units; header copy-link for global invite |
 | Layout | Nested `/admin` routes + Mantine `AppShell` sidebar |
-| Sidebar IA | Flat: Lời mời · Tịnh xá/thất · Tăng · Ni · Tổ chức |
+| Sidebar IA | Flat: Tịnh xá/thất · Tăng · Ni · Tổ chức (no **Lời mời**) |
 | Access | Signed-in + Firebase custom claim `admin === true`; non-admins see an explicit denied page |
 | Record actions | List / filter / detail; lean create & edit drafts; lock + unlock |
 | Admin create vs invites | Admin may create drafts without an invite; `inviteId` becomes `string \| null` |
@@ -22,7 +22,7 @@ Ship an **admin ops console** with a flat sidebar so claimed admins can manage i
 | Form depth (this phase) | Lean identity/required fields only; full paper-form editors deferred |
 | Data access | All PII via `createServerFn` + Admin SDK; keep Firestore rules deny-public on PII |
 | Unlock | Supported (new use-cases + server fns + UI) |
-| Invite lifecycle | Create + list + copy `/f/{token}`; no revoke/expiry |
+| Invite lifecycle | Header **Sao chép link form** ensures `invites/public` exists (idempotent) and copies `/f/public`; no invites page, list, or create modal |
 | Session | Client Firebase Auth ID token passed to admin server fns (no session cookies yet) |
 | i18n | Paraglide, Vietnamese default |
 | Public site chrome | Unchanged `AppHeader` on non-admin routes; admin uses AppShell header |
@@ -59,8 +59,7 @@ AuthProvider (user + loading)
 
 | Path | Purpose |
 | --- | --- |
-| `/admin` | Redirect to `/admin/invites` |
-| `/admin/invites` | Invite list + create + copy link |
+| `/admin` | Redirect to `/admin/temples` |
 | `/admin/temples` | Temple list + filters |
 | `/admin/temples/new` | Lean temple create |
 | `/admin/temples/$id` | Temple detail / lean edit / lock / unlock |
@@ -74,22 +73,20 @@ AuthProvider (user + loading)
 
 Flat `NavLink`s (active state from route):
 
-- Lời mời → `/admin/invites`
 - Tịnh xá / Tịnh thất → `/admin/temples`
 - Tăng → `/admin/members/tang`
 - Ni → `/admin/members/ni`
 - Tổ chức → `/admin/org-units`
 
-Desktop-first; collapse to burger drawer on small screens. AppShell header: product/admin title + signed-in identity + sign out.
+Desktop-first; collapse to burger drawer on small screens. AppShell header: product/admin title + **Sao chép link form** (ensure global invite + copy `/f/public`) + notifications + signed-in identity + sign out.
 
 ## Screens
 
-### Invites
+### Header copy link (not a sidebar page)
 
-- Table: org unit name, form type, createdAt, createdBy.
-- Create modal/form: org unit + form type → `createInviteFn` → show and copy `/f/{token}`.
-- Optional filters: org unit, form type.
-- No revoke UI.
+- Compact header control **Sao chép link form** (see `2026-07-19-admin-copy-form-link-design.md`).
+- On click: ensure `invites/public` exists (create if missing, idempotent), build `${origin}/f/public`, copy to clipboard, show success feedback.
+- No `/admin/invites` route, invites table, or create modal with org unit / form type.
 
 ### Temples / Tăng / Ni lists
 
@@ -119,12 +116,12 @@ Desktop-first; collapse to burger drawer on small screens. AppShell header: prod
 | --- | --- |
 | Types | `inviteId: string \| null` on `Temple` / `Member` |
 | Use-cases | `unlockTemple`, `unlockMember`; admin create/update temple & member (no token) |
-| Repos | List invites; list temples/members with filters + cursor; list org units (if missing) |
-| Server fns | List/get/save admin fns; `unlockTempleFn` / `unlockMemberFn`; keep existing create invite + lock |
+| Repos | List temples/members with filters + cursor; list org units (if missing) |
+| Server fns | List/get/save admin fns; `unlockTempleFn` / `unlockMemberFn`; `ensurePublicInvite` for header copy-link |
 | Indexes | Add/confirm composite indexes for admin list filters (org unit + status + sanghaType as needed) |
 | Rules | Remain deny-public for PII; Admin SDK bypasses rules |
 
-Filler invite-token flows stay unchanged and continue to set `inviteId` from the invite.
+Filler invite-token flows validate the global gate and set `inviteId` on created records; `orgUnitId` / form type come from the filler form, not the invite doc.
 
 ## Data flow
 
@@ -147,13 +144,13 @@ Filler invite-token flows stay unchanged and continue to set `inviteId` from the
 | --- | --- |
 | Vitest (domain) | Unlock; admin create/update with null `inviteId`; CCCD/phone rules still hold |
 | Vitest (UI) | Claim gate (login / denied / shell); sidebar links; one list + one detail with mocked server fns |
-| Cypress | One thin journey: reach `/admin` as admin (or stub) → sidebar visible → Invites page |
+| Cypress | One thin journey: reach `/admin` as admin (or stub) → lands on temples; header copy-link control visible |
 
 Prefer Vitest for component behavior; do not add a Cypress spec per screen.
 
 ## Success criteria
 
-- Claimed admin can create invites, copy filler links, list/filter temples and members, create/edit lean drafts, lock and unlock, and view org units.
+- Claimed admin can copy `/f/public` from the header, list/filter temples and members, create/edit lean drafts, lock and unlock, and view org units.
 - Non-admin signed-in users see an explicit denied state, not the ops sidebar.
 - Unsigned users hitting `/admin` are sent to login with a return path.
 - PII list/detail/mutations never go through the client Firestore SDK.
@@ -171,5 +168,7 @@ Prefer Vitest for component behavior; do not add a Cypress spec per screen.
 ## Related docs
 
 - Database: `docs/superpowers/specs/2026-07-19-he-phai-khatsi-database-design.md`
+- Copy link: `docs/superpowers/specs/2026-07-19-admin-copy-form-link-design.md`
+- Filler forms: `docs/superpowers/specs/2026-07-19-filler-forms-ui-design.md`
 - Database plan: `docs/superpowers/plans/2026-07-19-he-phai-database.md` (UI was deferred there)
 - Auth: `docs/superpowers/specs/2026-07-19-firebase-auth-login-design.md`

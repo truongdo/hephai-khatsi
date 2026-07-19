@@ -1,7 +1,6 @@
 import { queryOptions } from '@tanstack/react-query'
 import { DomainError } from '#/domain/errors'
-import type { Invite, Member, Temple } from '#/domain/types'
-import { PUBLIC_INVITE_ID, inviteRepo } from '#/repositories/inviteRepo'
+import type { Member, Temple } from '#/domain/types'
 import { memberRepo } from '#/repositories/memberRepo'
 import { listOrgUnits } from '#/repositories/orgUnitRepo'
 import { templeRepo } from '#/repositories/templeRepo'
@@ -16,14 +15,6 @@ export function orgUnitsQuery() {
     queryKey: adminKeys.orgUnits(),
     queryFn: listOrgUnits,
     staleTime: 5 * 60_000,
-    retry: 3,
-  })
-}
-
-export function inviteQuery() {
-  return queryOptions({
-    queryKey: adminKeys.invite(),
-    queryFn: (): Promise<Invite | null> => inviteRepo.getByToken(PUBLIC_INVITE_ID),
     retry: 3,
   })
 }

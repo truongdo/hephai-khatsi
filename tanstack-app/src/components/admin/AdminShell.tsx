@@ -13,15 +13,15 @@ import {
   Text,
 } from '@mantine/core'
 import { Link, useRouterState } from '@tanstack/react-router'
-import { Home, Link2, List, LogOut } from 'lucide-react'
+import { Home, List, LogOut } from 'lucide-react'
 import { m } from '#/paraglide/messages'
 import { useAuth } from '#/auth/useAuth'
 import { DharmaWheel } from '#/components/icons/DharmaWheel'
+import { AdminCopyFormLinkButton } from './AdminCopyFormLinkButton'
 import { AdminNotificationsButton } from './AdminNotificationsButton'
 import { buildAdminBreadcrumbs } from './adminBreadcrumbs'
 
 const navItems = [
-  { label: () => m.admin_nav_invites(), to: '/admin/invites', icon: Link2 },
   { label: () => m.admin_nav_temples(), to: '/admin/temples', icon: Home },
   { label: () => m.admin_nav_tang(), to: '/admin/members/tang', icon: DharmaWheel },
   { label: () => m.admin_nav_ni(), to: '/admin/members/ni', icon: DharmaWheel },
@@ -152,7 +152,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
               )
             })}
           </Breadcrumbs>
-          <AdminNotificationsButton />
+          <Group gap="sm" wrap="nowrap">
+            <AdminCopyFormLinkButton />
+            <AdminNotificationsButton />
+          </Group>
         </Group>
       </AppShell.Header>
       <AppShell.Main>{children}</AppShell.Main>

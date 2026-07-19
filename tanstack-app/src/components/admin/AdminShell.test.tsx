@@ -18,6 +18,19 @@ vi.mock('#/auth/useAuth', () => ({
   useAuth: () => ({ signOut: signOutMock }),
 }))
 
+vi.mock('#/auth/useAdminClaim', () => ({
+  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid' }),
+}))
+
+vi.mock('#/use-cases/ensurePublicInvite', () => ({
+  ensurePublicInvite: vi.fn(async () => ({
+    id: 'public',
+    token: 'public',
+    createdBy: 'admin-uid',
+    createdAt: '2026-07-19T00:00:00.000Z',
+  })),
+}))
+
 beforeAll(() => {
   class ResizeObserverMock {
     observe() {}
@@ -42,7 +55,7 @@ beforeAll(() => {
   })
 })
 
-function renderShell(initialPath = '/admin/invites') {
+function renderShell(initialPath = '/admin/temples') {
   const rootRoute = createRootRoute({
     component: () => (
       <MantineProvider theme={theme} defaultColorScheme="light">
@@ -63,7 +76,6 @@ describe('AdminShell', () => {
   it('renders nav link text from Paraglide', async () => {
     renderShell()
     const nav = await screen.findByRole('navigation')
-    expect(within(nav).getByText(m.admin_nav_invites())).toBeTruthy()
     expect(within(nav).getByText(m.admin_nav_temples())).toBeTruthy()
     expect(within(nav).getByText(m.admin_nav_tang())).toBeTruthy()
     expect(within(nav).getByText(m.admin_nav_ni())).toBeTruthy()
@@ -71,11 +83,22 @@ describe('AdminShell', () => {
   })
 
   it('renders breadcrumbs for the current path', async () => {
-    renderShell('/admin/invites')
+    renderShell('/admin/temples')
     const header = await screen.findByRole('banner')
     expect(header.parentElement?.getAttribute('data-layout')).toBe('alt')
     expect(within(header).getByText(m.admin_title())).toBeTruthy()
-    expect(within(header).getByText(m.admin_nav_invites())).toBeTruthy()
+    expect(within(header).getByText(m.admin_nav_temples())).toBeTruthy()
+  })
+
+  it('renders copy form link next to notifications', async () => {
+    renderShell('/admin/temples')
+    const header = await screen.findByRole('banner')
+    expect(
+      within(header).getByRole('button', { name: m.admin_copy_form_link() }),
+    ).toBeTruthy()
+    expect(
+      within(header).getByRole('button', { name: m.admin_notifications_aria() }),
+    ).toBeTruthy()
   })
 
   it('opens empty notifications popover', async () => {
