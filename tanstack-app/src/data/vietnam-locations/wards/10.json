@@ -1,0 +1,695 @@
+[
+  {
+    "code": "00067",
+    "name": "Bắc Giang",
+    "fullName": "Phường Bắc Giang, Tỉnh Bắc Ninh",
+    "slug": "bac-giang",
+    "type": "ward"
+  },
+  {
+    "code": "00149",
+    "name": "Hiệp Hoà",
+    "fullName": "Xã Hiệp Hoà, Tỉnh Bắc Ninh",
+    "slug": "hiep-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00175",
+    "name": "Kinh Bắc",
+    "fullName": "Phường Kinh Bắc, Tỉnh Bắc Ninh",
+    "slug": "kinh-bac",
+    "type": "ward"
+  },
+  {
+    "code": "00176",
+    "name": "Đại Đồng",
+    "fullName": "Xã Đại Đồng, Tỉnh Bắc Ninh",
+    "slug": "dai-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00238",
+    "name": "Xuân Cẩm",
+    "fullName": "Xã Xuân Cẩm, Tỉnh Bắc Ninh",
+    "slug": "xuan-cam",
+    "type": "commune"
+  },
+  {
+    "code": "00259",
+    "name": "Hợp Thịnh",
+    "fullName": "Xã Hợp Thịnh, Tỉnh Bắc Ninh",
+    "slug": "hop-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "00311",
+    "name": "Võ Cường",
+    "fullName": "Phường Võ Cường, Tỉnh Bắc Ninh",
+    "slug": "vo-cuong",
+    "type": "ward"
+  },
+  {
+    "code": "00320",
+    "name": "Từ Sơn",
+    "fullName": "Phường Từ Sơn, Tỉnh Bắc Ninh",
+    "slug": "tu-son",
+    "type": "ward"
+  },
+  {
+    "code": "00341",
+    "name": "Yên Phong",
+    "fullName": "Xã Yên Phong, Tỉnh Bắc Ninh",
+    "slug": "yen-phong",
+    "type": "commune"
+  },
+  {
+    "code": "00342",
+    "name": "Lạng Giang",
+    "fullName": "Xã Lạng Giang, Tỉnh Bắc Ninh",
+    "slug": "lang-giang",
+    "type": "commune"
+  },
+  {
+    "code": "00404",
+    "name": "Việt Yên",
+    "fullName": "Phường Việt Yên, Tỉnh Bắc Ninh",
+    "slug": "viet-yen",
+    "type": "ward"
+  },
+  {
+    "code": "00406",
+    "name": "Tiên Lục",
+    "fullName": "Xã Tiên Lục, Tỉnh Bắc Ninh",
+    "slug": "tien-luc",
+    "type": "commune"
+  },
+  {
+    "code": "00408",
+    "name": "Bảo Đài",
+    "fullName": "Xã Bảo Đài, Tỉnh Bắc Ninh",
+    "slug": "bao-dai",
+    "type": "commune"
+  },
+  {
+    "code": "00420",
+    "name": "Chũ",
+    "fullName": "Phường Chũ, Tỉnh Bắc Ninh",
+    "slug": "chu",
+    "type": "ward"
+  },
+  {
+    "code": "00422",
+    "name": "Vân Hà",
+    "fullName": "Phường Vân Hà, Tỉnh Bắc Ninh",
+    "slug": "van-ha",
+    "type": "ward"
+  },
+  {
+    "code": "00423",
+    "name": "Lục Nam",
+    "fullName": "Xã Lục Nam, Tỉnh Bắc Ninh",
+    "slug": "luc-nam",
+    "type": "commune"
+  },
+  {
+    "code": "00441",
+    "name": "Ngọc Thiện",
+    "fullName": "Xã Ngọc Thiện, Tỉnh Bắc Ninh",
+    "slug": "ngoc-thien",
+    "type": "commune"
+  },
+  {
+    "code": "00456",
+    "name": "Nếnh",
+    "fullName": "Phường Nếnh, Tỉnh Bắc Ninh",
+    "slug": "nenh",
+    "type": "ward"
+  },
+  {
+    "code": "00503",
+    "name": "Hoàng Vân",
+    "fullName": "Xã Hoàng Vân, Tỉnh Bắc Ninh",
+    "slug": "hoang-van",
+    "type": "commune"
+  },
+  {
+    "code": "00514",
+    "name": "Thuận Thành",
+    "fullName": "Phường Thuận Thành, Tỉnh Bắc Ninh",
+    "slug": "thuan-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "00530",
+    "name": "Đa Mai",
+    "fullName": "Phường Đa Mai, Tỉnh Bắc Ninh",
+    "slug": "da-mai",
+    "type": "ward"
+  },
+  {
+    "code": "00557",
+    "name": "Tân Yên",
+    "fullName": "Xã Tân Yên, Tỉnh Bắc Ninh",
+    "slug": "tan-yen",
+    "type": "commune"
+  },
+  {
+    "code": "00562",
+    "name": "Phù Khê",
+    "fullName": "Phường Phù Khê, Tỉnh Bắc Ninh",
+    "slug": "phu-khe",
+    "type": "ward"
+  },
+  {
+    "code": "00677",
+    "name": "Mỹ Thái",
+    "fullName": "Xã Mỹ Thái, Tỉnh Bắc Ninh",
+    "slug": "my-thai",
+    "type": "commune"
+  },
+  {
+    "code": "00690",
+    "name": "Đồng Nguyên",
+    "fullName": "Phường Đồng Nguyên, Tỉnh Bắc Ninh",
+    "slug": "dong-nguyen",
+    "type": "ward"
+  },
+  {
+    "code": "00704",
+    "name": "Vũ Ninh",
+    "fullName": "Phường Vũ Ninh, Tỉnh Bắc Ninh",
+    "slug": "vu-ninh",
+    "type": "ward"
+  },
+  {
+    "code": "00705",
+    "name": "Tự Lạn",
+    "fullName": "Phường Tự Lạn, Tỉnh Bắc Ninh",
+    "slug": "tu-lan",
+    "type": "ward"
+  },
+  {
+    "code": "00725",
+    "name": "Tiên Du",
+    "fullName": "Xã Tiên Du, Tỉnh Bắc Ninh",
+    "slug": "tien-du",
+    "type": "commune"
+  },
+  {
+    "code": "00746",
+    "name": "Yên Dũng",
+    "fullName": "Phường Yên Dũng, Tỉnh Bắc Ninh",
+    "slug": "yen-dung",
+    "type": "ward"
+  },
+  {
+    "code": "00771",
+    "name": "Nam Sơn",
+    "fullName": "Phường Nam Sơn, Tỉnh Bắc Ninh",
+    "slug": "nam-son",
+    "type": "ward"
+  },
+  {
+    "code": "00792",
+    "name": "Mão Điền",
+    "fullName": "Phường Mão Điền, Tỉnh Bắc Ninh",
+    "slug": "mao-dien",
+    "type": "ward"
+  },
+  {
+    "code": "00796",
+    "name": "Gia Bình",
+    "fullName": "Xã Gia Bình, Tỉnh Bắc Ninh",
+    "slug": "gia-binh",
+    "type": "commune"
+  },
+  {
+    "code": "00803",
+    "name": "Kép",
+    "fullName": "Xã Kép, Tỉnh Bắc Ninh",
+    "slug": "kep",
+    "type": "commune"
+  },
+  {
+    "code": "00810",
+    "name": "Lục Ngạn",
+    "fullName": "Xã Lục Ngạn, Tỉnh Bắc Ninh",
+    "slug": "luc-ngan",
+    "type": "commune"
+  },
+  {
+    "code": "00815",
+    "name": "Phương Liễu",
+    "fullName": "Phường Phương Liễu, Tỉnh Bắc Ninh",
+    "slug": "phuong-lieu",
+    "type": "ward"
+  },
+  {
+    "code": "00843",
+    "name": "Phượng Sơn",
+    "fullName": "Phường Phượng Sơn, Tỉnh Bắc Ninh",
+    "slug": "phuong-son",
+    "type": "ward"
+  },
+  {
+    "code": "00896",
+    "name": "Quế Võ",
+    "fullName": "Phường Quế Võ, Tỉnh Bắc Ninh",
+    "slug": "que-vo",
+    "type": "ward"
+  },
+  {
+    "code": "00976",
+    "name": "Trung Kênh",
+    "fullName": "Xã Trung Kênh, Tỉnh Bắc Ninh",
+    "slug": "trung-kenh",
+    "type": "commune"
+  },
+  {
+    "code": "00998",
+    "name": "Bắc Lũng",
+    "fullName": "Xã Bắc Lũng, Tỉnh Bắc Ninh",
+    "slug": "bac-lung",
+    "type": "commune"
+  },
+  {
+    "code": "01015",
+    "name": "Tân An",
+    "fullName": "Phường Tân An, Tỉnh Bắc Ninh",
+    "slug": "tan-an",
+    "type": "ward"
+  },
+  {
+    "code": "01037",
+    "name": "Văn Môn",
+    "fullName": "Xã Văn Môn, Tỉnh Bắc Ninh",
+    "slug": "van-mon",
+    "type": "commune"
+  },
+  {
+    "code": "01081",
+    "name": "Tam Đa",
+    "fullName": "Xã Tam Đa, Tỉnh Bắc Ninh",
+    "slug": "tam-da",
+    "type": "commune"
+  },
+  {
+    "code": "01096",
+    "name": "Tiền Phong",
+    "fullName": "Phường Tiền Phong, Tỉnh Bắc Ninh",
+    "slug": "tien-phong",
+    "type": "ward"
+  },
+  {
+    "code": "01097",
+    "name": "Yên Trung",
+    "fullName": "Xã Yên Trung, Tỉnh Bắc Ninh",
+    "slug": "yen-trung",
+    "type": "commune"
+  },
+  {
+    "code": "01166",
+    "name": "Tân Dĩnh",
+    "fullName": "Xã Tân Dĩnh, Tỉnh Bắc Ninh",
+    "slug": "tan-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "01192",
+    "name": "Đào Viên",
+    "fullName": "Phường Đào Viên, Tỉnh Bắc Ninh",
+    "slug": "dao-vien",
+    "type": "ward"
+  },
+  {
+    "code": "01201",
+    "name": "Trí Quả",
+    "fullName": "Phường Trí Quả, Tỉnh Bắc Ninh",
+    "slug": "tri-qua",
+    "type": "ward"
+  },
+  {
+    "code": "01213",
+    "name": "Tân Tiến",
+    "fullName": "Phường Tân Tiến, Tỉnh Bắc Ninh",
+    "slug": "tan-tien",
+    "type": "ward"
+  },
+  {
+    "code": "01215",
+    "name": "Liên Bão",
+    "fullName": "Xã Liên Bão, Tỉnh Bắc Ninh",
+    "slug": "lien-bao",
+    "type": "commune"
+  },
+  {
+    "code": "01291",
+    "name": "Nhã Nam",
+    "fullName": "Xã Nhã Nam, Tỉnh Bắc Ninh",
+    "slug": "nha-nam",
+    "type": "commune"
+  },
+  {
+    "code": "01342",
+    "name": "Lâm Thao",
+    "fullName": "Xã Lâm Thao, Tỉnh Bắc Ninh",
+    "slug": "lam-thao",
+    "type": "commune"
+  },
+  {
+    "code": "01378",
+    "name": "Lương Tài",
+    "fullName": "Xã Lương Tài, Tỉnh Bắc Ninh",
+    "slug": "luong-tai",
+    "type": "commune"
+  },
+  {
+    "code": "01384",
+    "name": "Song Liễu",
+    "fullName": "Phường Song Liễu, Tỉnh Bắc Ninh",
+    "slug": "song-lieu",
+    "type": "ward"
+  },
+  {
+    "code": "01451",
+    "name": "Nhân Hòa",
+    "fullName": "Phường Nhân Hòa, Tỉnh Bắc Ninh",
+    "slug": "nhan-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "01472",
+    "name": "Yên Thế",
+    "fullName": "Xã Yên Thế, Tỉnh Bắc Ninh",
+    "slug": "yen-the",
+    "type": "commune"
+  },
+  {
+    "code": "01488",
+    "name": "Quang Trung",
+    "fullName": "Xã Quang Trung, Tỉnh Bắc Ninh",
+    "slug": "quang-trung",
+    "type": "commune"
+  },
+  {
+    "code": "01622",
+    "name": "Tam Sơn",
+    "fullName": "Phường Tam Sơn, Tỉnh Bắc Ninh",
+    "slug": "tam-son",
+    "type": "ward"
+  },
+  {
+    "code": "01626",
+    "name": "Đông Cứu",
+    "fullName": "Xã Đông Cứu, Tỉnh Bắc Ninh",
+    "slug": "dong-cuu",
+    "type": "commune"
+  },
+  {
+    "code": "01674",
+    "name": "Nghĩa Phương",
+    "fullName": "Xã Nghĩa Phương, Tỉnh Bắc Ninh",
+    "slug": "nghia-phuong",
+    "type": "commune"
+  },
+  {
+    "code": "01677",
+    "name": "Tân Chi",
+    "fullName": "Xã Tân Chi, Tỉnh Bắc Ninh",
+    "slug": "tan-chi",
+    "type": "commune"
+  },
+  {
+    "code": "01706",
+    "name": "Bố Hạ",
+    "fullName": "Xã Bố Hạ, Tỉnh Bắc Ninh",
+    "slug": "bo-ha",
+    "type": "commune"
+  },
+  {
+    "code": "01748",
+    "name": "Phù Lãng",
+    "fullName": "Xã Phù Lãng, Tỉnh Bắc Ninh",
+    "slug": "phu-lang",
+    "type": "commune"
+  },
+  {
+    "code": "01749",
+    "name": "Trung Chính",
+    "fullName": "Xã Trung Chính, Tỉnh Bắc Ninh",
+    "slug": "trung-chinh",
+    "type": "commune"
+  },
+  {
+    "code": "01751",
+    "name": "Cảnh Thụy",
+    "fullName": "Phường Cảnh Thụy, Tỉnh Bắc Ninh",
+    "slug": "canh-thuy",
+    "type": "ward"
+  },
+  {
+    "code": "01765",
+    "name": "Nhân Thắng",
+    "fullName": "Xã Nhân Thắng, Tỉnh Bắc Ninh",
+    "slug": "nhan-thang",
+    "type": "commune"
+  },
+  {
+    "code": "01768",
+    "name": "Đồng Việt",
+    "fullName": "Xã Đồng Việt, Tỉnh Bắc Ninh",
+    "slug": "dong-viet",
+    "type": "commune"
+  },
+  {
+    "code": "01848",
+    "name": "Tam Giang",
+    "fullName": "Xã Tam Giang, Tỉnh Bắc Ninh",
+    "slug": "tam-giang",
+    "type": "commune"
+  },
+  {
+    "code": "01870",
+    "name": "Bồng Lai",
+    "fullName": "Phường Bồng Lai, Tỉnh Bắc Ninh",
+    "slug": "bong-lai",
+    "type": "ward"
+  },
+  {
+    "code": "01896",
+    "name": "Phúc Hòa",
+    "fullName": "Xã Phúc Hòa, Tỉnh Bắc Ninh",
+    "slug": "phuc-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01949",
+    "name": "Sơn Động",
+    "fullName": "Xã Sơn Động, Tỉnh Bắc Ninh",
+    "slug": "son-dong",
+    "type": "commune"
+  },
+  {
+    "code": "01983",
+    "name": "Phật Tích",
+    "fullName": "Xã Phật Tích, Tỉnh Bắc Ninh",
+    "slug": "phat-tich",
+    "type": "commune"
+  },
+  {
+    "code": "02003",
+    "name": "Đông Phú",
+    "fullName": "Xã Đông Phú, Tỉnh Bắc Ninh",
+    "slug": "dong-phu",
+    "type": "commune"
+  },
+  {
+    "code": "02037",
+    "name": "Chi Lăng",
+    "fullName": "Xã Chi Lăng, Tỉnh Bắc Ninh",
+    "slug": "chi-lang",
+    "type": "commune"
+  },
+  {
+    "code": "02076",
+    "name": "Đồng Kỳ",
+    "fullName": "Xã Đồng Kỳ, Tỉnh Bắc Ninh",
+    "slug": "dong-ky",
+    "type": "commune"
+  },
+  {
+    "code": "02096",
+    "name": "Hạp Lĩnh",
+    "fullName": "Phường Hạp Lĩnh, Tỉnh Bắc Ninh",
+    "slug": "hap-linh",
+    "type": "ward"
+  },
+  {
+    "code": "02112",
+    "name": "Ninh Xá",
+    "fullName": "Phường Ninh Xá, Tỉnh Bắc Ninh",
+    "slug": "ninh-xa",
+    "type": "ward"
+  },
+  {
+    "code": "02193",
+    "name": "Trạm Lộ",
+    "fullName": "Phường Trạm Lộ, Tỉnh Bắc Ninh",
+    "slug": "tram-lo",
+    "type": "ward"
+  },
+  {
+    "code": "02257",
+    "name": "Cẩm Lý",
+    "fullName": "Xã Cẩm Lý, Tỉnh Bắc Ninh",
+    "slug": "cam-ly",
+    "type": "commune"
+  },
+  {
+    "code": "02306",
+    "name": "Đại Lai",
+    "fullName": "Xã Đại Lai, Tỉnh Bắc Ninh",
+    "slug": "dai-lai",
+    "type": "commune"
+  },
+  {
+    "code": "02311",
+    "name": "Xuân Lương",
+    "fullName": "Xã Xuân Lương, Tỉnh Bắc Ninh",
+    "slug": "xuan-luong",
+    "type": "commune"
+  },
+  {
+    "code": "02327",
+    "name": "Kiên Lao",
+    "fullName": "Xã Kiên Lao, Tỉnh Bắc Ninh",
+    "slug": "kien-lao",
+    "type": "commune"
+  },
+  {
+    "code": "02352",
+    "name": "Trường Sơn",
+    "fullName": "Xã Trường Sơn, Tỉnh Bắc Ninh",
+    "slug": "truong-son",
+    "type": "commune"
+  },
+  {
+    "code": "02416",
+    "name": "Tam Tiến",
+    "fullName": "Xã Tam Tiến, Tỉnh Bắc Ninh",
+    "slug": "tam-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02451",
+    "name": "Biển Động",
+    "fullName": "Xã Biển Động, Tỉnh Bắc Ninh",
+    "slug": "bien-dong",
+    "type": "commune"
+  },
+  {
+    "code": "02460",
+    "name": "Nam Dương",
+    "fullName": "Xã Nam Dương, Tỉnh Bắc Ninh",
+    "slug": "nam-duong",
+    "type": "commune"
+  },
+  {
+    "code": "02463",
+    "name": "Cao Đức",
+    "fullName": "Xã Cao Đức, Tỉnh Bắc Ninh",
+    "slug": "cao-duc",
+    "type": "commune"
+  },
+  {
+    "code": "02492",
+    "name": "Lục Sơn",
+    "fullName": "Xã Lục Sơn, Tỉnh Bắc Ninh",
+    "slug": "luc-son",
+    "type": "commune"
+  },
+  {
+    "code": "02522",
+    "name": "Biên Sơn",
+    "fullName": "Xã Biên Sơn, Tỉnh Bắc Ninh",
+    "slug": "bien-son",
+    "type": "commune"
+  },
+  {
+    "code": "02607",
+    "name": "Tân Sơn",
+    "fullName": "Xã Tân Sơn, Tỉnh Bắc Ninh",
+    "slug": "tan-son",
+    "type": "commune"
+  },
+  {
+    "code": "02616",
+    "name": "Đèo Gia",
+    "fullName": "Xã Đèo Gia, Tỉnh Bắc Ninh",
+    "slug": "deo-gia",
+    "type": "commune"
+  },
+  {
+    "code": "02745",
+    "name": "Dương Hưu",
+    "fullName": "Xã Dương Hưu, Tỉnh Bắc Ninh",
+    "slug": "duong-huu",
+    "type": "commune"
+  },
+  {
+    "code": "02767",
+    "name": "Đại Sơn",
+    "fullName": "Xã Đại Sơn, Tỉnh Bắc Ninh",
+    "slug": "dai-son",
+    "type": "commune"
+  },
+  {
+    "code": "02875",
+    "name": "Tây Yên Tử",
+    "fullName": "Xã Tây Yên Tử, Tỉnh Bắc Ninh",
+    "slug": "tay-yen-tu",
+    "type": "commune"
+  },
+  {
+    "code": "02945",
+    "name": "Sơn Hải",
+    "fullName": "Xã Sơn Hải, Tỉnh Bắc Ninh",
+    "slug": "son-hai",
+    "type": "commune"
+  },
+  {
+    "code": "02970",
+    "name": "Yên Định",
+    "fullName": "Xã Yên Định, Tỉnh Bắc Ninh",
+    "slug": "yen-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "03041",
+    "name": "An Lạc",
+    "fullName": "Xã An Lạc, Tỉnh Bắc Ninh",
+    "slug": "an-lac",
+    "type": "commune"
+  },
+  {
+    "code": "03172",
+    "name": "Tuấn Đạo",
+    "fullName": "Xã Tuấn Đạo, Tỉnh Bắc Ninh",
+    "slug": "tuan-dao",
+    "type": "commune"
+  },
+  {
+    "code": "03177",
+    "name": "Sa Lý",
+    "fullName": "Xã Sa Lý, Tỉnh Bắc Ninh",
+    "slug": "sa-ly",
+    "type": "commune"
+  },
+  {
+    "code": "03193",
+    "name": "Vân Sơn",
+    "fullName": "Xã Vân Sơn, Tỉnh Bắc Ninh",
+    "slug": "van-son",
+    "type": "commune"
+  }
+]

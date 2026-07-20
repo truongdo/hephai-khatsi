@@ -1,0 +1,282 @@
+[
+  {
+    "code": "00049",
+    "name": "Phú Xuân",
+    "fullName": "Phường Phú Xuân, Thành phố Huế",
+    "slug": "phu-xuan",
+    "type": "ward"
+  },
+  {
+    "code": "00123",
+    "name": "Thuận Hóa",
+    "fullName": "Phường Thuận Hóa, Thành phố Huế",
+    "slug": "thuan-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00460",
+    "name": "An Cựu",
+    "fullName": "Phường An Cựu, Thành phố Huế",
+    "slug": "an-cuu",
+    "type": "ward"
+  },
+  {
+    "code": "00467",
+    "name": "Thuận An",
+    "fullName": "Phường Thuận An, Thành phố Huế",
+    "slug": "thuan-an",
+    "type": "ward"
+  },
+  {
+    "code": "00555",
+    "name": "Chân Mây – Lăng Cô",
+    "fullName": "Xã Chân Mây – Lăng Cô, Thành phố Huế",
+    "slug": "chan-may-lang-co",
+    "type": "commune"
+  },
+  {
+    "code": "00583",
+    "name": "Vỹ Dạ",
+    "fullName": "Phường Vỹ Dạ, Thành phố Huế",
+    "slug": "vy-da",
+    "type": "ward"
+  },
+  {
+    "code": "00606",
+    "name": "Kim Long",
+    "fullName": "Phường Kim Long, Thành phố Huế",
+    "slug": "kim-long",
+    "type": "ward"
+  },
+  {
+    "code": "00637",
+    "name": "Phú Vinh",
+    "fullName": "Xã Phú Vinh, Thành phố Huế",
+    "slug": "phu-vinh",
+    "type": "commune"
+  },
+  {
+    "code": "00728",
+    "name": "Mỹ Thượng",
+    "fullName": "Phường Mỹ Thượng, Thành phố Huế",
+    "slug": "my-thuong",
+    "type": "ward"
+  },
+  {
+    "code": "00768",
+    "name": "Thanh Thủy",
+    "fullName": "Phường Thanh Thủy, Thành phố Huế",
+    "slug": "thanh-thuy",
+    "type": "ward"
+  },
+  {
+    "code": "00776",
+    "name": "Thủy Xuân",
+    "fullName": "Phường Thủy Xuân, Thành phố Huế",
+    "slug": "thuy-xuan",
+    "type": "ward"
+  },
+  {
+    "code": "00829",
+    "name": "Quảng Điền",
+    "fullName": "Xã Quảng Điền, Thành phố Huế",
+    "slug": "quang-dien",
+    "type": "commune"
+  },
+  {
+    "code": "00844",
+    "name": "Hóa Châu",
+    "fullName": "Phường Hóa Châu, Thành phố Huế",
+    "slug": "hoa-chau",
+    "type": "ward"
+  },
+  {
+    "code": "00884",
+    "name": "Đan Điền",
+    "fullName": "Xã Đan Điền, Thành phố Huế",
+    "slug": "dan-dien",
+    "type": "commune"
+  },
+  {
+    "code": "00944",
+    "name": "Phú Vang",
+    "fullName": "Xã Phú Vang, Thành phố Huế",
+    "slug": "phu-vang",
+    "type": "commune"
+  },
+  {
+    "code": "00946",
+    "name": "Lộc An",
+    "fullName": "Xã Lộc An, Thành phố Huế",
+    "slug": "loc-an",
+    "type": "commune"
+  },
+  {
+    "code": "00987",
+    "name": "Phú Bài",
+    "fullName": "Phường Phú Bài, Thành phố Huế",
+    "slug": "phu-bai",
+    "type": "ward"
+  },
+  {
+    "code": "01040",
+    "name": "Phong Thái",
+    "fullName": "Phường Phong Thái, Thành phố Huế",
+    "slug": "phong-thai",
+    "type": "ward"
+  },
+  {
+    "code": "01095",
+    "name": "Vinh Lộc",
+    "fullName": "Xã Vinh Lộc, Thành phố Huế",
+    "slug": "vinh-loc",
+    "type": "commune"
+  },
+  {
+    "code": "01098",
+    "name": "Kim Trà",
+    "fullName": "Phường Kim Trà, Thành phố Huế",
+    "slug": "kim-tra",
+    "type": "ward"
+  },
+  {
+    "code": "01131",
+    "name": "Hương An",
+    "fullName": "Phường Hương An, Thành phố Huế",
+    "slug": "huong-an",
+    "type": "ward"
+  },
+  {
+    "code": "01335",
+    "name": "Hưng Lộc",
+    "fullName": "Xã Hưng Lộc, Thành phố Huế",
+    "slug": "hung-loc",
+    "type": "commune"
+  },
+  {
+    "code": "01392",
+    "name": "Dương Nỗ",
+    "fullName": "Phường Dương Nỗ, Thành phố Huế",
+    "slug": "duong-no",
+    "type": "ward"
+  },
+  {
+    "code": "01516",
+    "name": "Hương Trà",
+    "fullName": "Phường Hương Trà, Thành phố Huế",
+    "slug": "huong-tra",
+    "type": "ward"
+  },
+  {
+    "code": "01578",
+    "name": "Hương Thủy",
+    "fullName": "Phường Hương Thủy, Thành phố Huế",
+    "slug": "huong-thuy",
+    "type": "ward"
+  },
+  {
+    "code": "01644",
+    "name": "Phú Lộc",
+    "fullName": "Xã Phú Lộc, Thành phố Huế",
+    "slug": "phu-loc",
+    "type": "commune"
+  },
+  {
+    "code": "01658",
+    "name": "Phong Dinh",
+    "fullName": "Phường Phong Dinh, Thành phố Huế",
+    "slug": "phong-dinh",
+    "type": "ward"
+  },
+  {
+    "code": "01670",
+    "name": "Phong Điền",
+    "fullName": "Phường Phong Điền, Thành phố Huế",
+    "slug": "phong-dien",
+    "type": "ward"
+  },
+  {
+    "code": "01836",
+    "name": "Phong Quảng",
+    "fullName": "Phường Phong Quảng, Thành phố Huế",
+    "slug": "phong-quang",
+    "type": "ward"
+  },
+  {
+    "code": "02017",
+    "name": "Phú Hồ",
+    "fullName": "Xã Phú Hồ, Thành phố Huế",
+    "slug": "phu-ho",
+    "type": "commune"
+  },
+  {
+    "code": "02232",
+    "name": "A Lưới 2",
+    "fullName": "Xã A Lưới 2, Thành phố Huế",
+    "slug": "a-luoi-2",
+    "type": "commune"
+  },
+  {
+    "code": "02320",
+    "name": "Phong Phú",
+    "fullName": "Phường Phong Phú, Thành phố Huế",
+    "slug": "phong-phu",
+    "type": "ward"
+  },
+  {
+    "code": "02580",
+    "name": "Bình Điền",
+    "fullName": "Xã Bình Điền, Thành phố Huế",
+    "slug": "binh-dien",
+    "type": "commune"
+  },
+  {
+    "code": "02716",
+    "name": "Khe Tre",
+    "fullName": "Xã Khe Tre, Thành phố Huế",
+    "slug": "khe-tre",
+    "type": "commune"
+  },
+  {
+    "code": "02752",
+    "name": "A Lưới 1",
+    "fullName": "Xã A Lưới 1, Thành phố Huế",
+    "slug": "a-luoi-1",
+    "type": "commune"
+  },
+  {
+    "code": "02865",
+    "name": "A Lưới 4",
+    "fullName": "Xã A Lưới 4, Thành phố Huế",
+    "slug": "a-luoi-4",
+    "type": "commune"
+  },
+  {
+    "code": "02983",
+    "name": "Nam Đông",
+    "fullName": "Xã Nam Đông, Thành phố Huế",
+    "slug": "nam-dong",
+    "type": "commune"
+  },
+  {
+    "code": "02998",
+    "name": "A Lưới 3",
+    "fullName": "Xã A Lưới 3, Thành phố Huế",
+    "slug": "a-luoi-3",
+    "type": "commune"
+  },
+  {
+    "code": "03004",
+    "name": "Long Quảng",
+    "fullName": "Xã Long Quảng, Thành phố Huế",
+    "slug": "long-quang",
+    "type": "commune"
+  },
+  {
+    "code": "03290",
+    "name": "A Lưới 5",
+    "fullName": "Xã A Lưới 5, Thành phố Huế",
+    "slug": "a-luoi-5",
+    "type": "commune"
+  }
+]

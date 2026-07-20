@@ -1,0 +1,478 @@
+[
+  {
+    "code": "00145",
+    "name": "Thành Sen",
+    "fullName": "Phường Thành Sen, Tỉnh Hà Tĩnh",
+    "slug": "thanh-sen",
+    "type": "ward"
+  },
+  {
+    "code": "00840",
+    "name": "Đức Thịnh",
+    "fullName": "Xã Đức Thịnh, Tỉnh Hà Tĩnh",
+    "slug": "duc-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "00852",
+    "name": "Can Lộc",
+    "fullName": "Xã Can Lộc, Tỉnh Hà Tĩnh",
+    "slug": "can-loc",
+    "type": "commune"
+  },
+  {
+    "code": "00860",
+    "name": "Lộc Hà",
+    "fullName": "Xã Lộc Hà, Tỉnh Hà Tĩnh",
+    "slug": "loc-ha",
+    "type": "commune"
+  },
+  {
+    "code": "00909",
+    "name": "Đức Thọ",
+    "fullName": "Xã Đức Thọ, Tỉnh Hà Tĩnh",
+    "slug": "duc-tho",
+    "type": "commune"
+  },
+  {
+    "code": "00988",
+    "name": "Trần Phú",
+    "fullName": "Phường Trần Phú, Tỉnh Hà Tĩnh",
+    "slug": "tran-phu",
+    "type": "ward"
+  },
+  {
+    "code": "01032",
+    "name": "Nghi Xuân",
+    "fullName": "Xã Nghi Xuân, Tỉnh Hà Tĩnh",
+    "slug": "nghi-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "01043",
+    "name": "Sông Trí",
+    "fullName": "Phường Sông Trí, Tỉnh Hà Tĩnh",
+    "slug": "song-tri",
+    "type": "ward"
+  },
+  {
+    "code": "01194",
+    "name": "Cổ Đạm",
+    "fullName": "Xã Cổ Đạm, Tỉnh Hà Tĩnh",
+    "slug": "co-dam",
+    "type": "commune"
+  },
+  {
+    "code": "01235",
+    "name": "Cẩm Xuyên",
+    "fullName": "Xã Cẩm Xuyên, Tỉnh Hà Tĩnh",
+    "slug": "cam-xuyen",
+    "type": "commune"
+  },
+  {
+    "code": "01303",
+    "name": "Thiên Cầm",
+    "fullName": "Xã Thiên Cầm, Tỉnh Hà Tĩnh",
+    "slug": "thien-cam",
+    "type": "commune"
+  },
+  {
+    "code": "01330",
+    "name": "Kỳ Anh",
+    "fullName": "Xã Kỳ Anh, Tỉnh Hà Tĩnh",
+    "slug": "ky-anh",
+    "type": "commune"
+  },
+  {
+    "code": "01403",
+    "name": "Hương Sơn",
+    "fullName": "Xã Hương Sơn, Tỉnh Hà Tĩnh",
+    "slug": "huong-son",
+    "type": "commune"
+  },
+  {
+    "code": "01430",
+    "name": "Thạch Hà",
+    "fullName": "Xã Thạch Hà, Tỉnh Hà Tĩnh",
+    "slug": "thach-ha",
+    "type": "commune"
+  },
+  {
+    "code": "01514",
+    "name": "Hương Khê",
+    "fullName": "Xã Hương Khê, Tỉnh Hà Tĩnh",
+    "slug": "huong-khe",
+    "type": "commune"
+  },
+  {
+    "code": "01531",
+    "name": "Mai Phụ",
+    "fullName": "Xã Mai Phụ, Tỉnh Hà Tĩnh",
+    "slug": "mai-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01610",
+    "name": "Hà Huy Tập",
+    "fullName": "Phường Hà Huy Tập, Tỉnh Hà Tĩnh",
+    "slug": "ha-huy-tap",
+    "type": "ward"
+  },
+  {
+    "code": "01612",
+    "name": "Bắc Hồng Lĩnh",
+    "fullName": "Phường Bắc Hồng Lĩnh, Tỉnh Hà Tĩnh",
+    "slug": "bac-hong-linh",
+    "type": "ward"
+  },
+  {
+    "code": "01628",
+    "name": "Gia Hanh",
+    "fullName": "Xã Gia Hanh, Tỉnh Hà Tĩnh",
+    "slug": "gia-hanh",
+    "type": "commune"
+  },
+  {
+    "code": "01650",
+    "name": "Đan Hải",
+    "fullName": "Xã Đan Hải, Tỉnh Hà Tĩnh",
+    "slug": "dan-hai",
+    "type": "commune"
+  },
+  {
+    "code": "01681",
+    "name": "Đồng Lộc",
+    "fullName": "Xã Đồng Lộc, Tỉnh Hà Tĩnh",
+    "slug": "dong-loc",
+    "type": "commune"
+  },
+  {
+    "code": "01861",
+    "name": "Xuân Lộc",
+    "fullName": "Xã Xuân Lộc, Tỉnh Hà Tĩnh",
+    "slug": "xuan-loc",
+    "type": "commune"
+  },
+  {
+    "code": "01874",
+    "name": "Cẩm Bình",
+    "fullName": "Xã Cẩm Bình, Tỉnh Hà Tĩnh",
+    "slug": "cam-binh",
+    "type": "commune"
+  },
+  {
+    "code": "01911",
+    "name": "Tiên Điền",
+    "fullName": "Xã Tiên Điền, Tỉnh Hà Tĩnh",
+    "slug": "tien-dien",
+    "type": "commune"
+  },
+  {
+    "code": "01990",
+    "name": "Cẩm Duệ",
+    "fullName": "Xã Cẩm Duệ, Tỉnh Hà Tĩnh",
+    "slug": "cam-due",
+    "type": "commune"
+  },
+  {
+    "code": "01999",
+    "name": "Kỳ Khang",
+    "fullName": "Xã Kỳ Khang, Tỉnh Hà Tĩnh",
+    "slug": "ky-khang",
+    "type": "commune"
+  },
+  {
+    "code": "02014",
+    "name": "Kỳ Xuân",
+    "fullName": "Xã Kỳ Xuân, Tỉnh Hà Tĩnh",
+    "slug": "ky-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "02016",
+    "name": "Trường Lưu",
+    "fullName": "Xã Trường Lưu, Tỉnh Hà Tĩnh",
+    "slug": "truong-luu",
+    "type": "commune"
+  },
+  {
+    "code": "02118",
+    "name": "Nam Hồng Lĩnh",
+    "fullName": "Phường Nam Hồng Lĩnh, Tỉnh Hà Tĩnh",
+    "slug": "nam-hong-linh",
+    "type": "ward"
+  },
+  {
+    "code": "02138",
+    "name": "Cẩm Hưng",
+    "fullName": "Xã Cẩm Hưng, Tỉnh Hà Tĩnh",
+    "slug": "cam-hung",
+    "type": "commune"
+  },
+  {
+    "code": "02178",
+    "name": "Vũng Áng",
+    "fullName": "Phường Vũng Áng, Tỉnh Hà Tĩnh",
+    "slug": "vung-ang",
+    "type": "ward"
+  },
+  {
+    "code": "02204",
+    "name": "Hoành Sơn",
+    "fullName": "Phường Hoành Sơn, Tỉnh Hà Tĩnh",
+    "slug": "hoanh-son",
+    "type": "ward"
+  },
+  {
+    "code": "02205",
+    "name": "Đông Kinh",
+    "fullName": "Xã Đông Kinh, Tỉnh Hà Tĩnh",
+    "slug": "dong-kinh",
+    "type": "commune"
+  },
+  {
+    "code": "02208",
+    "name": "Tùng Lộc",
+    "fullName": "Xã Tùng Lộc, Tỉnh Hà Tĩnh",
+    "slug": "tung-loc",
+    "type": "commune"
+  },
+  {
+    "code": "02210",
+    "name": "Sơn Tiến",
+    "fullName": "Xã Sơn Tiến, Tỉnh Hà Tĩnh",
+    "slug": "son-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02234",
+    "name": "Hải Ninh",
+    "fullName": "Phường Hải Ninh, Tỉnh Hà Tĩnh",
+    "slug": "hai-ninh",
+    "type": "ward"
+  },
+  {
+    "code": "02258",
+    "name": "Tứ Mỹ",
+    "fullName": "Xã Tứ Mỹ, Tỉnh Hà Tĩnh",
+    "slug": "tu-my",
+    "type": "commune"
+  },
+  {
+    "code": "02294",
+    "name": "Cẩm Trung",
+    "fullName": "Xã Cẩm Trung, Tỉnh Hà Tĩnh",
+    "slug": "cam-trung",
+    "type": "commune"
+  },
+  {
+    "code": "02301",
+    "name": "Cẩm Lạc",
+    "fullName": "Xã Cẩm Lạc, Tỉnh Hà Tĩnh",
+    "slug": "cam-lac",
+    "type": "commune"
+  },
+  {
+    "code": "02318",
+    "name": "Kim Hoa",
+    "fullName": "Xã Kim Hoa, Tỉnh Hà Tĩnh",
+    "slug": "kim-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02329",
+    "name": "Sơn Giang",
+    "fullName": "Xã Sơn Giang, Tỉnh Hà Tĩnh",
+    "slug": "son-giang",
+    "type": "commune"
+  },
+  {
+    "code": "02344",
+    "name": "Toàn Lưu",
+    "fullName": "Xã Toàn Lưu, Tỉnh Hà Tĩnh",
+    "slug": "toan-luu",
+    "type": "commune"
+  },
+  {
+    "code": "02347",
+    "name": "Đức Minh",
+    "fullName": "Xã Đức Minh, Tỉnh Hà Tĩnh",
+    "slug": "duc-minh",
+    "type": "commune"
+  },
+  {
+    "code": "02353",
+    "name": "Hương Phố",
+    "fullName": "Xã Hương Phố, Tỉnh Hà Tĩnh",
+    "slug": "huong-pho",
+    "type": "commune"
+  },
+  {
+    "code": "02355",
+    "name": "Đồng Tiến",
+    "fullName": "Xã Đồng Tiến, Tỉnh Hà Tĩnh",
+    "slug": "dong-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02379",
+    "name": "Phúc Trạch",
+    "fullName": "Xã Phúc Trạch, Tỉnh Hà Tĩnh",
+    "slug": "phuc-trach",
+    "type": "commune"
+  },
+  {
+    "code": "02411",
+    "name": "Kỳ Văn",
+    "fullName": "Xã Kỳ Văn, Tỉnh Hà Tĩnh",
+    "slug": "ky-van",
+    "type": "commune"
+  },
+  {
+    "code": "02413",
+    "name": "Thạch Lạc",
+    "fullName": "Xã Thạch Lạc, Tỉnh Hà Tĩnh",
+    "slug": "thach-lac",
+    "type": "commune"
+  },
+  {
+    "code": "02420",
+    "name": "Yên Hòa",
+    "fullName": "Xã Yên Hòa, Tỉnh Hà Tĩnh",
+    "slug": "yen-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02426",
+    "name": "Hương Bình",
+    "fullName": "Xã Hương Bình, Tỉnh Hà Tĩnh",
+    "slug": "huong-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02427",
+    "name": "Thạch Khê",
+    "fullName": "Xã Thạch Khê, Tỉnh Hà Tĩnh",
+    "slug": "thach-khe",
+    "type": "commune"
+  },
+  {
+    "code": "02429",
+    "name": "Đức Quang",
+    "fullName": "Xã Đức Quang, Tỉnh Hà Tĩnh",
+    "slug": "duc-quang",
+    "type": "commune"
+  },
+  {
+    "code": "02435",
+    "name": "Hương Xuân",
+    "fullName": "Xã Hương Xuân, Tỉnh Hà Tĩnh",
+    "slug": "huong-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "02459",
+    "name": "Hồng Lộc",
+    "fullName": "Xã Hồng Lộc, Tỉnh Hà Tĩnh",
+    "slug": "hong-loc",
+    "type": "commune"
+  },
+  {
+    "code": "02461",
+    "name": "Việt Xuyên",
+    "fullName": "Xã Việt Xuyên, Tỉnh Hà Tĩnh",
+    "slug": "viet-xuyen",
+    "type": "commune"
+  },
+  {
+    "code": "02531",
+    "name": "Kỳ Hoa",
+    "fullName": "Xã Kỳ Hoa, Tỉnh Hà Tĩnh",
+    "slug": "ky-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02533",
+    "name": "Thạch Xuân",
+    "fullName": "Xã Thạch Xuân, Tỉnh Hà Tĩnh",
+    "slug": "thach-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "02546",
+    "name": "Kỳ Thượng",
+    "fullName": "Xã Kỳ Thượng, Tỉnh Hà Tĩnh",
+    "slug": "ky-thuong",
+    "type": "commune"
+  },
+  {
+    "code": "02591",
+    "name": "Vũ Quang",
+    "fullName": "Xã Vũ Quang, Tỉnh Hà Tĩnh",
+    "slug": "vu-quang",
+    "type": "commune"
+  },
+  {
+    "code": "02610",
+    "name": "Sơn Tây",
+    "fullName": "Xã Sơn Tây, Tỉnh Hà Tĩnh",
+    "slug": "son-tay",
+    "type": "commune"
+  },
+  {
+    "code": "02639",
+    "name": "Hương Đô",
+    "fullName": "Xã Hương Đô, Tỉnh Hà Tĩnh",
+    "slug": "huong-do",
+    "type": "commune"
+  },
+  {
+    "code": "02717",
+    "name": "Kỳ Lạc",
+    "fullName": "Xã Kỳ Lạc, Tỉnh Hà Tĩnh",
+    "slug": "ky-lac",
+    "type": "commune"
+  },
+  {
+    "code": "02733",
+    "name": "Hà Linh",
+    "fullName": "Xã Hà Linh, Tỉnh Hà Tĩnh",
+    "slug": "ha-linh",
+    "type": "commune"
+  },
+  {
+    "code": "02801",
+    "name": "Đức Đồng",
+    "fullName": "Xã Đức Đồng, Tỉnh Hà Tĩnh",
+    "slug": "duc-dong",
+    "type": "commune"
+  },
+  {
+    "code": "02835",
+    "name": "Mai Hoa",
+    "fullName": "Xã Mai Hoa, Tỉnh Hà Tĩnh",
+    "slug": "mai-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02918",
+    "name": "Thượng Đức",
+    "fullName": "Xã Thượng Đức, Tỉnh Hà Tĩnh",
+    "slug": "thuong-duc",
+    "type": "commune"
+  },
+  {
+    "code": "03034",
+    "name": "Sơn Hồng",
+    "fullName": "Xã Sơn Hồng, Tỉnh Hà Tĩnh",
+    "slug": "son-hong",
+    "type": "commune"
+  },
+  {
+    "code": "03215",
+    "name": "Sơn Kim 1",
+    "fullName": "Xã Sơn Kim 1, Tỉnh Hà Tĩnh",
+    "slug": "son-kim-1",
+    "type": "commune"
+  }
+]

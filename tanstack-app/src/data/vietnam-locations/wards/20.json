@@ -1,0 +1,457 @@
+[
+  {
+    "code": "00569",
+    "name": "Đông Kinh",
+    "fullName": "Phường Đông Kinh, Tỉnh Lạng Sơn",
+    "slug": "dong-kinh",
+    "type": "ward"
+  },
+  {
+    "code": "00832",
+    "name": "Hoàng Văn Thụ",
+    "fullName": "Phường Hoàng Văn Thụ, Tỉnh Lạng Sơn",
+    "slug": "hoang-van-thu",
+    "type": "ward"
+  },
+  {
+    "code": "01457",
+    "name": "Hữu Lũng",
+    "fullName": "Xã Hữu Lũng, Tỉnh Lạng Sơn",
+    "slug": "huu-lung",
+    "type": "commune"
+  },
+  {
+    "code": "01496",
+    "name": "Tam Thanh",
+    "fullName": "Phường Tam Thanh, Tỉnh Lạng Sơn",
+    "slug": "tam-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "01651",
+    "name": "Chi Lăng",
+    "fullName": "Xã Chi Lăng, Tỉnh Lạng Sơn",
+    "slug": "chi-lang",
+    "type": "commune"
+  },
+  {
+    "code": "01898",
+    "name": "Đồng Đăng",
+    "fullName": "Xã Đồng Đăng, Tỉnh Lạng Sơn",
+    "slug": "dong-dang",
+    "type": "commune"
+  },
+  {
+    "code": "01950",
+    "name": "Na Dương",
+    "fullName": "Xã Na Dương, Tỉnh Lạng Sơn",
+    "slug": "na-duong",
+    "type": "commune"
+  },
+  {
+    "code": "02038",
+    "name": "Lộc Bình",
+    "fullName": "Xã Lộc Bình, Tỉnh Lạng Sơn",
+    "slug": "loc-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02053",
+    "name": "Lương Văn Tri",
+    "fullName": "Phường Lương Văn Tri, Tỉnh Lạng Sơn",
+    "slug": "luong-van-tri",
+    "type": "ward"
+  },
+  {
+    "code": "02227",
+    "name": "Tuấn Sơn",
+    "fullName": "Xã Tuấn Sơn, Tỉnh Lạng Sơn",
+    "slug": "tuan-son",
+    "type": "commune"
+  },
+  {
+    "code": "02233",
+    "name": "Tân Thành",
+    "fullName": "Xã Tân Thành, Tỉnh Lạng Sơn",
+    "slug": "tan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02254",
+    "name": "Thất Khê",
+    "fullName": "Xã Thất Khê, Tỉnh Lạng Sơn",
+    "slug": "that-khe",
+    "type": "commune"
+  },
+  {
+    "code": "02292",
+    "name": "Vân Nham",
+    "fullName": "Xã Vân Nham, Tỉnh Lạng Sơn",
+    "slug": "van-nham",
+    "type": "commune"
+  },
+  {
+    "code": "02381",
+    "name": "Tân Thanh",
+    "fullName": "Xã Tân Thanh, Tỉnh Lạng Sơn",
+    "slug": "tan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02468",
+    "name": "Bắc Sơn",
+    "fullName": "Xã Bắc Sơn, Tỉnh Lạng Sơn",
+    "slug": "bac-son",
+    "type": "commune"
+  },
+  {
+    "code": "02488",
+    "name": "Yên Phúc",
+    "fullName": "Xã Yên Phúc, Tỉnh Lạng Sơn",
+    "slug": "yen-phuc",
+    "type": "commune"
+  },
+  {
+    "code": "02590",
+    "name": "Bình Gia",
+    "fullName": "Xã Bình Gia, Tỉnh Lạng Sơn",
+    "slug": "binh-gia",
+    "type": "commune"
+  },
+  {
+    "code": "02606",
+    "name": "Thiện Tân",
+    "fullName": "Xã Thiện Tân, Tỉnh Lạng Sơn",
+    "slug": "thien-tan",
+    "type": "commune"
+  },
+  {
+    "code": "02608",
+    "name": "Yên Bình",
+    "fullName": "Xã Yên Bình, Tỉnh Lạng Sơn",
+    "slug": "yen-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02636",
+    "name": "Thống Nhất",
+    "fullName": "Xã Thống Nhất, Tỉnh Lạng Sơn",
+    "slug": "thong-nhat",
+    "type": "commune"
+  },
+  {
+    "code": "02646",
+    "name": "Vạn Linh",
+    "fullName": "Xã Vạn Linh, Tỉnh Lạng Sơn",
+    "slug": "van-linh",
+    "type": "commune"
+  },
+  {
+    "code": "02653",
+    "name": "Na Sầm",
+    "fullName": "Xã Na Sầm, Tỉnh Lạng Sơn",
+    "slug": "na-sam",
+    "type": "commune"
+  },
+  {
+    "code": "02664",
+    "name": "Quốc Khánh",
+    "fullName": "Xã Quốc Khánh, Tỉnh Lạng Sơn",
+    "slug": "quoc-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "02679",
+    "name": "Bằng Mạc",
+    "fullName": "Xã Bằng Mạc, Tỉnh Lạng Sơn",
+    "slug": "bang-mac",
+    "type": "commune"
+  },
+  {
+    "code": "02683",
+    "name": "Vũ Lăng",
+    "fullName": "Xã Vũ Lăng, Tỉnh Lạng Sơn",
+    "slug": "vu-lang",
+    "type": "commune"
+  },
+  {
+    "code": "02690",
+    "name": "Khánh Khê",
+    "fullName": "Xã Khánh Khê, Tỉnh Lạng Sơn",
+    "slug": "khanh-khe",
+    "type": "commune"
+  },
+  {
+    "code": "02712",
+    "name": "Vũ Lễ",
+    "fullName": "Xã Vũ Lễ, Tỉnh Lạng Sơn",
+    "slug": "vu-le",
+    "type": "commune"
+  },
+  {
+    "code": "02769",
+    "name": "Hưng Vũ",
+    "fullName": "Xã Hưng Vũ, Tỉnh Lạng Sơn",
+    "slug": "hung-vu",
+    "type": "commune"
+  },
+  {
+    "code": "02777",
+    "name": "Cai Kinh",
+    "fullName": "Xã Cai Kinh, Tỉnh Lạng Sơn",
+    "slug": "cai-kinh",
+    "type": "commune"
+  },
+  {
+    "code": "02798",
+    "name": "Chiến Thắng",
+    "fullName": "Xã Chiến Thắng, Tỉnh Lạng Sơn",
+    "slug": "chien-thang",
+    "type": "commune"
+  },
+  {
+    "code": "02802",
+    "name": "Tràng Định",
+    "fullName": "Xã Tràng Định, Tỉnh Lạng Sơn",
+    "slug": "trang-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "02807",
+    "name": "Tân Tri",
+    "fullName": "Xã Tân Tri, Tỉnh Lạng Sơn",
+    "slug": "tan-tri",
+    "type": "commune"
+  },
+  {
+    "code": "02808",
+    "name": "Nhất Hòa",
+    "fullName": "Xã Nhất Hòa, Tỉnh Lạng Sơn",
+    "slug": "nhat-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02813",
+    "name": "Điềm He",
+    "fullName": "Xã Điềm He, Tỉnh Lạng Sơn",
+    "slug": "diem-he",
+    "type": "commune"
+  },
+  {
+    "code": "02833",
+    "name": "Nhân Lý",
+    "fullName": "Xã Nhân Lý, Tỉnh Lạng Sơn",
+    "slug": "nhan-ly",
+    "type": "commune"
+  },
+  {
+    "code": "02879",
+    "name": "Tân Đoàn",
+    "fullName": "Xã Tân Đoàn, Tỉnh Lạng Sơn",
+    "slug": "tan-doan",
+    "type": "commune"
+  },
+  {
+    "code": "02886",
+    "name": "Ba Sơn",
+    "fullName": "Xã Ba Sơn, Tỉnh Lạng Sơn",
+    "slug": "ba-son",
+    "type": "commune"
+  },
+  {
+    "code": "02913",
+    "name": "Tri Lễ",
+    "fullName": "Xã Tri Lễ, Tỉnh Lạng Sơn",
+    "slug": "tri-le",
+    "type": "commune"
+  },
+  {
+    "code": "02923",
+    "name": "Văn Quan",
+    "fullName": "Xã Văn Quan, Tỉnh Lạng Sơn",
+    "slug": "van-quan",
+    "type": "commune"
+  },
+  {
+    "code": "02925",
+    "name": "Đình Lập",
+    "fullName": "Xã Đình Lập, Tỉnh Lạng Sơn",
+    "slug": "dinh-lap",
+    "type": "commune"
+  },
+  {
+    "code": "02941",
+    "name": "Mẫu Sơn",
+    "fullName": "Xã Mẫu Sơn, Tỉnh Lạng Sơn",
+    "slug": "mau-son",
+    "type": "commune"
+  },
+  {
+    "code": "02955",
+    "name": "Tân Văn",
+    "fullName": "Xã Tân Văn, Tỉnh Lạng Sơn",
+    "slug": "tan-van",
+    "type": "commune"
+  },
+  {
+    "code": "02975",
+    "name": "Khuất Xá",
+    "fullName": "Xã Khuất Xá, Tỉnh Lạng Sơn",
+    "slug": "khuat-xa",
+    "type": "commune"
+  },
+  {
+    "code": "03010",
+    "name": "Hữu Liên",
+    "fullName": "Xã Hữu Liên, Tỉnh Lạng Sơn",
+    "slug": "huu-lien",
+    "type": "commune"
+  },
+  {
+    "code": "03040",
+    "name": "Thái Bình",
+    "fullName": "Xã Thái Bình, Tỉnh Lạng Sơn",
+    "slug": "thai-binh",
+    "type": "commune"
+  },
+  {
+    "code": "03062",
+    "name": "Kiên Mộc",
+    "fullName": "Xã Kiên Mộc, Tỉnh Lạng Sơn",
+    "slug": "kien-moc",
+    "type": "commune"
+  },
+  {
+    "code": "03077",
+    "name": "Văn Lãng",
+    "fullName": "Xã Văn Lãng, Tỉnh Lạng Sơn",
+    "slug": "van-lang",
+    "type": "commune"
+  },
+  {
+    "code": "03088",
+    "name": "Hội Hoan",
+    "fullName": "Xã Hội Hoan, Tỉnh Lạng Sơn",
+    "slug": "hoi-hoan",
+    "type": "commune"
+  },
+  {
+    "code": "03104",
+    "name": "Thiện Thuật",
+    "fullName": "Xã Thiện Thuật, Tỉnh Lạng Sơn",
+    "slug": "thien-thuat",
+    "type": "commune"
+  },
+  {
+    "code": "03113",
+    "name": "Lợi Bác",
+    "fullName": "Xã Lợi Bác, Tỉnh Lạng Sơn",
+    "slug": "loi-bac",
+    "type": "commune"
+  },
+  {
+    "code": "03116",
+    "name": "Quan Sơn",
+    "fullName": "Xã Quan Sơn, Tỉnh Lạng Sơn",
+    "slug": "quan-son",
+    "type": "commune"
+  },
+  {
+    "code": "03127",
+    "name": "Cao Lộc",
+    "fullName": "Xã Cao Lộc, Tỉnh Lạng Sơn",
+    "slug": "cao-loc",
+    "type": "commune"
+  },
+  {
+    "code": "03130",
+    "name": "Thụy Hùng",
+    "fullName": "Xã Thụy Hùng, Tỉnh Lạng Sơn",
+    "slug": "thuy-hung",
+    "type": "commune"
+  },
+  {
+    "code": "03131",
+    "name": "Hồng Phong",
+    "fullName": "Xã Hồng Phong, Tỉnh Lạng Sơn",
+    "slug": "hong-phong",
+    "type": "commune"
+  },
+  {
+    "code": "03137",
+    "name": "Thiện Hòa",
+    "fullName": "Xã Thiện Hòa, Tỉnh Lạng Sơn",
+    "slug": "thien-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "03149",
+    "name": "Xuân Dương",
+    "fullName": "Xã Xuân Dương, Tỉnh Lạng Sơn",
+    "slug": "xuan-duong",
+    "type": "commune"
+  },
+  {
+    "code": "03160",
+    "name": "Công Sơn",
+    "fullName": "Xã Công Sơn, Tỉnh Lạng Sơn",
+    "slug": "cong-son",
+    "type": "commune"
+  },
+  {
+    "code": "03161",
+    "name": "Tân Tiến",
+    "fullName": "Xã Tân Tiến, Tỉnh Lạng Sơn",
+    "slug": "tan-tien",
+    "type": "commune"
+  },
+  {
+    "code": "03187",
+    "name": "Hoa Thám",
+    "fullName": "Xã Hoa Thám, Tỉnh Lạng Sơn",
+    "slug": "hoa-tham",
+    "type": "commune"
+  },
+  {
+    "code": "03204",
+    "name": "Châu Sơn",
+    "fullName": "Xã Châu Sơn, Tỉnh Lạng Sơn",
+    "slug": "chau-son",
+    "type": "commune"
+  },
+  {
+    "code": "03209",
+    "name": "Quốc Việt",
+    "fullName": "Xã Quốc Việt, Tỉnh Lạng Sơn",
+    "slug": "quoc-viet",
+    "type": "commune"
+  },
+  {
+    "code": "03216",
+    "name": "Thiện Long",
+    "fullName": "Xã Thiện Long, Tỉnh Lạng Sơn",
+    "slug": "thien-long",
+    "type": "commune"
+  },
+  {
+    "code": "03225",
+    "name": "Kháng Chiến",
+    "fullName": "Xã Kháng Chiến, Tỉnh Lạng Sơn",
+    "slug": "khang-chien",
+    "type": "commune"
+  },
+  {
+    "code": "03289",
+    "name": "Đoàn Kết",
+    "fullName": "Xã Đoàn Kết, Tỉnh Lạng Sơn",
+    "slug": "doan-ket",
+    "type": "commune"
+  },
+  {
+    "code": "03300",
+    "name": "Quý Hòa",
+    "fullName": "Xã Quý Hòa, Tỉnh Lạng Sơn",
+    "slug": "quy-hoa",
+    "type": "commune"
+  }
+]

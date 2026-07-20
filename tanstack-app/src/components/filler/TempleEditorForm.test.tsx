@@ -1,8 +1,8 @@
 import { MantineProvider } from '@mantine/core'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Temple } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { saveTempleDraft } from '#/use-cases/saveTempleDraft'
@@ -11,6 +11,27 @@ import { TempleEditorForm } from './TempleEditorForm'
 
 vi.mock('#/use-cases/saveTempleDraft', () => ({
   saveTempleDraft: vi.fn(),
+}))
+
+vi.mock('#/data/vietnam-locations', () => ({
+  cities: [
+    {
+      code: '01',
+      name: 'Hà Nội',
+      fullName: 'Thành phố Hà Nội',
+      slug: 'ha-noi',
+      type: 'city',
+    },
+  ],
+  getWards: vi.fn(async () => [
+    {
+      code: '00013',
+      name: 'Hà Đông',
+      fullName: 'Phường Hà Đông, Thành phố Hà Nội',
+      slug: 'ha-dong',
+      type: 'ward',
+    },
+  ]),
 }))
 
 const saveTempleDraftMock = vi.mocked(saveTempleDraft)
@@ -37,6 +58,10 @@ beforeAll(() => {
       dispatchEvent: () => false,
     }),
   })
+})
+
+afterEach(() => {
+  cleanup()
 })
 
 beforeEach(() => {
@@ -149,6 +174,66 @@ describe('TempleEditorForm', () => {
       explicitPhones: ['0912345678'],
     })
     expect(onCreated).toHaveBeenCalledWith('created-temple')
+  })
+
+  it('blocks save when address line is set without city and ward', async () => {
+    const user = userEvent.setup()
+    renderForm()
+
+    const lineInputs = screen.getAllByRole('textbox', {
+      name: m.filler_field_address_line(),
+    })
+    await user.type(lineInputs[0]!, '15 Ngõ 4')
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+
+    expect(saveTempleDraftMock).not.toHaveBeenCalled()
+    expect(screen.getByText(m.filler_address_city_required())).toBeTruthy()
+  })
+
+  it('saves structured diaChiMoi from hydrated address', async () => {
+    const user = userEvent.setup()
+    saveTempleDraftMock.mockResolvedValue({
+      temple: temple({ id: 'created-temple' }),
+      mode: 'created',
+    })
+    renderForm({
+      initial: {
+        seedPhone: '0901234567',
+        diaChiMoi: {
+          cityCode: '01',
+          cityName: 'Hà Nội',
+          wardCode: '00013',
+          wardName: 'Hà Đông',
+          line: '15 Ngõ 4',
+        },
+      },
+    })
+
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+
+    expect(saveTempleDraftMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        patch: expect.objectContaining({
+          diaChiMoi: {
+            cityCode: '01',
+            cityName: 'Hà Nội',
+            wardCode: '00013',
+            wardName: 'Hà Đông',
+            line: '15 Ngõ 4',
+          },
+        }),
+      }),
+    )
+  })
+
+  it('hydrates legacy string address into line field', () => {
+    renderForm({
+      initial: {
+        seedPhone: '0901234567',
+        diaChiCu: '123 Đường Láng' as unknown as Temple['diaChiCu'],
+      },
+    })
+    expect(screen.getByDisplayValue('123 Đường Láng')).toBeTruthy()
   })
 
   it('hides Save and disables fields when status is view', () => {

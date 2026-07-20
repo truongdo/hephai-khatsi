@@ -1,0 +1,548 @@
+[
+  {
+    "code": "00177",
+    "name": "Đồng Hới",
+    "fullName": "Phường Đồng Hới, Tỉnh Quảng Trị",
+    "slug": "dong-hoi",
+    "type": "ward"
+  },
+  {
+    "code": "00378",
+    "name": "Nam Đông Hà.",
+    "fullName": "Phường Nam Đông Hà., Tỉnh Quảng Trị",
+    "slug": "nam-dong-ha",
+    "type": "ward"
+  },
+  {
+    "code": "00552",
+    "name": "Đông Hà",
+    "fullName": "Phường Đông Hà, Tỉnh Quảng Trị",
+    "slug": "dong-ha",
+    "type": "ward"
+  },
+  {
+    "code": "00592",
+    "name": "Lệ Thủy",
+    "fullName": "Xã Lệ Thủy, Tỉnh Quảng Trị",
+    "slug": "le-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "00769",
+    "name": "Hoàn Lão",
+    "fullName": "Xã Hoàn Lão, Tỉnh Quảng Trị",
+    "slug": "hoan-lao",
+    "type": "commune"
+  },
+  {
+    "code": "00943",
+    "name": "Phong Nha",
+    "fullName": "Xã Phong Nha, Tỉnh Quảng Trị",
+    "slug": "phong-nha",
+    "type": "commune"
+  },
+  {
+    "code": "00982",
+    "name": "Đồng Thuận",
+    "fullName": "Phường Đồng Thuận, Tỉnh Quảng Trị",
+    "slug": "dong-thuan",
+    "type": "ward"
+  },
+  {
+    "code": "01073",
+    "name": "Bắc Trạch",
+    "fullName": "Xã Bắc Trạch, Tỉnh Quảng Trị",
+    "slug": "bac-trach",
+    "type": "commune"
+  },
+  {
+    "code": "01086",
+    "name": "Nam Gianh",
+    "fullName": "Xã Nam Gianh, Tỉnh Quảng Trị",
+    "slug": "nam-gianh",
+    "type": "commune"
+  },
+  {
+    "code": "01105",
+    "name": "Quảng Ninh",
+    "fullName": "Xã Quảng Ninh, Tỉnh Quảng Trị",
+    "slug": "quang-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01145",
+    "name": "Trường Ninh",
+    "fullName": "Xã Trường Ninh, Tỉnh Quảng Trị",
+    "slug": "truong-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01222",
+    "name": "Đông Trạch",
+    "fullName": "Xã Đông Trạch, Tỉnh Quảng Trị",
+    "slug": "dong-trach",
+    "type": "commune"
+  },
+  {
+    "code": "01284",
+    "name": "Bố Trạch",
+    "fullName": "Xã Bố Trạch, Tỉnh Quảng Trị",
+    "slug": "bo-trach",
+    "type": "commune"
+  },
+  {
+    "code": "01321",
+    "name": "Bắc Gianh",
+    "fullName": "Phường Bắc Gianh, Tỉnh Quảng Trị",
+    "slug": "bac-gianh",
+    "type": "ward"
+  },
+  {
+    "code": "01334",
+    "name": "Nam Trạch",
+    "fullName": "Xã Nam Trạch, Tỉnh Quảng Trị",
+    "slug": "nam-trach",
+    "type": "commune"
+  },
+  {
+    "code": "01346",
+    "name": "Đồng Sơn",
+    "fullName": "Phường Đồng Sơn, Tỉnh Quảng Trị",
+    "slug": "dong-son",
+    "type": "ward"
+  },
+  {
+    "code": "01386",
+    "name": "Gio Linh",
+    "fullName": "Xã Gio Linh, Tỉnh Quảng Trị",
+    "slug": "gio-linh",
+    "type": "commune"
+  },
+  {
+    "code": "01411",
+    "name": "Quảng Trạch",
+    "fullName": "Xã Quảng Trạch, Tỉnh Quảng Trị",
+    "slug": "quang-trach",
+    "type": "commune"
+  },
+  {
+    "code": "01456",
+    "name": "Phú Trạch",
+    "fullName": "Xã Phú Trạch, Tỉnh Quảng Trị",
+    "slug": "phu-trach",
+    "type": "commune"
+  },
+  {
+    "code": "01507",
+    "name": "Cam Lộ",
+    "fullName": "Xã Cam Lộ, Tỉnh Quảng Trị",
+    "slug": "cam-lo",
+    "type": "commune"
+  },
+  {
+    "code": "01510",
+    "name": "Ninh Châu",
+    "fullName": "Xã Ninh Châu, Tỉnh Quảng Trị",
+    "slug": "ninh-chau",
+    "type": "commune"
+  },
+  {
+    "code": "01527",
+    "name": "Hòa Trạch",
+    "fullName": "Xã Hòa Trạch, Tỉnh Quảng Trị",
+    "slug": "hoa-trach",
+    "type": "commune"
+  },
+  {
+    "code": "01539",
+    "name": "Quảng Trị",
+    "fullName": "Phường Quảng Trị, Tỉnh Quảng Trị",
+    "slug": "quang-tri",
+    "type": "ward"
+  },
+  {
+    "code": "01543",
+    "name": "Hiếu Giang",
+    "fullName": "Xã Hiếu Giang, Tỉnh Quảng Trị",
+    "slug": "hieu-giang",
+    "type": "commune"
+  },
+  {
+    "code": "01563",
+    "name": "Cửa Tùng",
+    "fullName": "Xã Cửa Tùng, Tỉnh Quảng Trị",
+    "slug": "cua-tung",
+    "type": "commune"
+  },
+  {
+    "code": "01603",
+    "name": "Ba Đồn",
+    "fullName": "Phường Ba Đồn, Tỉnh Quảng Trị",
+    "slug": "ba-don",
+    "type": "ward"
+  },
+  {
+    "code": "01694",
+    "name": "Nam Ba Đồn",
+    "fullName": "Xã Nam Ba Đồn, Tỉnh Quảng Trị",
+    "slug": "nam-ba-don",
+    "type": "commune"
+  },
+  {
+    "code": "01695",
+    "name": "Khe Sanh",
+    "fullName": "Xã Khe Sanh, Tỉnh Quảng Trị",
+    "slug": "khe-sanh",
+    "type": "commune"
+  },
+  {
+    "code": "01705",
+    "name": "Vĩnh Linh",
+    "fullName": "Xã Vĩnh Linh, Tỉnh Quảng Trị",
+    "slug": "vinh-linh",
+    "type": "commune"
+  },
+  {
+    "code": "01731",
+    "name": "Triệu Bình",
+    "fullName": "Xã Triệu Bình, Tỉnh Quảng Trị",
+    "slug": "trieu-binh",
+    "type": "commune"
+  },
+  {
+    "code": "01733",
+    "name": "Cửa Việt",
+    "fullName": "Xã Cửa Việt, Tỉnh Quảng Trị",
+    "slug": "cua-viet",
+    "type": "commune"
+  },
+  {
+    "code": "01766",
+    "name": "Vĩnh Định",
+    "fullName": "Xã Vĩnh Định, Tỉnh Quảng Trị",
+    "slug": "vinh-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "01774",
+    "name": "Cam Hồng",
+    "fullName": "Xã Cam Hồng, Tỉnh Quảng Trị",
+    "slug": "cam-hong",
+    "type": "commune"
+  },
+  {
+    "code": "01778",
+    "name": "Nam Cửa Việt",
+    "fullName": "Xã Nam Cửa Việt, Tỉnh Quảng Trị",
+    "slug": "nam-cua-viet",
+    "type": "commune"
+  },
+  {
+    "code": "01852",
+    "name": "Nam Hải Lăng",
+    "fullName": "Xã Nam Hải Lăng, Tỉnh Quảng Trị",
+    "slug": "nam-hai-lang",
+    "type": "commune"
+  },
+  {
+    "code": "01890",
+    "name": "Diên Sanh",
+    "fullName": "Xã Diên Sanh, Tỉnh Quảng Trị",
+    "slug": "dien-sanh",
+    "type": "commune"
+  },
+  {
+    "code": "01924",
+    "name": "Tân Mỹ",
+    "fullName": "Xã Tân Mỹ, Tỉnh Quảng Trị",
+    "slug": "tan-my",
+    "type": "commune"
+  },
+  {
+    "code": "01934",
+    "name": "Đồng Lê",
+    "fullName": "Xã Đồng Lê, Tỉnh Quảng Trị",
+    "slug": "dong-le",
+    "type": "commune"
+  },
+  {
+    "code": "02020",
+    "name": "Triệu Phong",
+    "fullName": "Xã Triệu Phong, Tỉnh Quảng Trị",
+    "slug": "trieu-phong",
+    "type": "commune"
+  },
+  {
+    "code": "02028",
+    "name": "Lao Bảo",
+    "fullName": "Xã Lao Bảo, Tỉnh Quảng Trị",
+    "slug": "lao-bao",
+    "type": "commune"
+  },
+  {
+    "code": "02030",
+    "name": "Lệ Ninh",
+    "fullName": "Xã Lệ Ninh, Tỉnh Quảng Trị",
+    "slug": "le-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "02109",
+    "name": "Tân Gianh",
+    "fullName": "Xã Tân Gianh, Tỉnh Quảng Trị",
+    "slug": "tan-gianh",
+    "type": "commune"
+  },
+  {
+    "code": "02136",
+    "name": "Triệu Cơ",
+    "fullName": "Xã Triệu Cơ, Tỉnh Quảng Trị",
+    "slug": "trieu-co",
+    "type": "commune"
+  },
+  {
+    "code": "02167",
+    "name": "Minh Hóa",
+    "fullName": "Xã Minh Hóa, Tỉnh Quảng Trị",
+    "slug": "minh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02172",
+    "name": "Tuyên Hóa",
+    "fullName": "Xã Tuyên Hóa, Tỉnh Quảng Trị",
+    "slug": "tuyen-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02187",
+    "name": "Trường Phú",
+    "fullName": "Xã Trường Phú, Tỉnh Quảng Trị",
+    "slug": "truong-phu",
+    "type": "commune"
+  },
+  {
+    "code": "02191",
+    "name": "Sen Ngư",
+    "fullName": "Xã Sen Ngư, Tỉnh Quảng Trị",
+    "slug": "sen-ngu",
+    "type": "commune"
+  },
+  {
+    "code": "02212",
+    "name": "Cồn Tiên",
+    "fullName": "Xã Cồn Tiên, Tỉnh Quảng Trị",
+    "slug": "con-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02218",
+    "name": "Vĩnh Thủy",
+    "fullName": "Xã Vĩnh Thủy, Tỉnh Quảng Trị",
+    "slug": "vinh-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "02319",
+    "name": "Ái Tử",
+    "fullName": "Xã Ái Tử, Tỉnh Quảng Trị",
+    "slug": "ai-tu",
+    "type": "commune"
+  },
+  {
+    "code": "02321",
+    "name": "Kim Phú",
+    "fullName": "Xã Kim Phú, Tỉnh Quảng Trị",
+    "slug": "kim-phu",
+    "type": "commune"
+  },
+  {
+    "code": "02324",
+    "name": "Vĩnh Hoàng",
+    "fullName": "Xã Vĩnh Hoàng, Tỉnh Quảng Trị",
+    "slug": "vinh-hoang",
+    "type": "commune"
+  },
+  {
+    "code": "02342",
+    "name": "Tuyên Phú",
+    "fullName": "Xã Tuyên Phú, Tỉnh Quảng Trị",
+    "slug": "tuyen-phu",
+    "type": "commune"
+  },
+  {
+    "code": "02454",
+    "name": "Mỹ Thủy",
+    "fullName": "Xã Mỹ Thủy, Tỉnh Quảng Trị",
+    "slug": "my-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "02487",
+    "name": "Hải Lăng",
+    "fullName": "Xã Hải Lăng, Tỉnh Quảng Trị",
+    "slug": "hai-lang",
+    "type": "commune"
+  },
+  {
+    "code": "02502",
+    "name": "Trung Thuần",
+    "fullName": "Xã Trung Thuần, Tỉnh Quảng Trị",
+    "slug": "trung-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "02530",
+    "name": "Bến Hải",
+    "fullName": "Xã Bến Hải, Tỉnh Quảng Trị",
+    "slug": "ben-hai",
+    "type": "commune"
+  },
+  {
+    "code": "02559",
+    "name": "Tuyên Bình",
+    "fullName": "Xã Tuyên Bình, Tỉnh Quảng Trị",
+    "slug": "tuyen-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02617",
+    "name": "Đakrông",
+    "fullName": "Xã Đakrông, Tỉnh Quảng Trị",
+    "slug": "dakrong",
+    "type": "commune"
+  },
+  {
+    "code": "02628",
+    "name": "Tân Lập",
+    "fullName": "Xã Tân Lập, Tỉnh Quảng Trị",
+    "slug": "tan-lap",
+    "type": "commune"
+  },
+  {
+    "code": "02632",
+    "name": "Lìa",
+    "fullName": "Xã Lìa, Tỉnh Quảng Trị",
+    "slug": "lia",
+    "type": "commune"
+  },
+  {
+    "code": "02688",
+    "name": "Hướng Hiệp",
+    "fullName": "Xã Hướng Hiệp, Tỉnh Quảng Trị",
+    "slug": "huong-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "02776",
+    "name": "Hướng Phùng",
+    "fullName": "Xã Hướng Phùng, Tỉnh Quảng Trị",
+    "slug": "huong-phung",
+    "type": "commune"
+  },
+  {
+    "code": "02836",
+    "name": "A Dơi",
+    "fullName": "Xã A Dơi, Tỉnh Quảng Trị",
+    "slug": "a-doi",
+    "type": "commune"
+  },
+  {
+    "code": "02872",
+    "name": "Tà Rụt",
+    "fullName": "Xã Tà Rụt, Tỉnh Quảng Trị",
+    "slug": "ta-rut",
+    "type": "commune"
+  },
+  {
+    "code": "02935",
+    "name": "Kim Ngân",
+    "fullName": "Xã Kim Ngân, Tỉnh Quảng Trị",
+    "slug": "kim-ngan",
+    "type": "commune"
+  },
+  {
+    "code": "02951",
+    "name": "Dân Hóa",
+    "fullName": "Xã Dân Hóa, Tỉnh Quảng Trị",
+    "slug": "dan-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02961",
+    "name": "Bến Quan",
+    "fullName": "Xã Bến Quan, Tỉnh Quảng Trị",
+    "slug": "ben-quan",
+    "type": "commune"
+  },
+  {
+    "code": "03027",
+    "name": "Trường Sơn",
+    "fullName": "Xã Trường Sơn, Tỉnh Quảng Trị",
+    "slug": "truong-son",
+    "type": "commune"
+  },
+  {
+    "code": "03035",
+    "name": "Tuyên Lâm",
+    "fullName": "Xã Tuyên Lâm, Tỉnh Quảng Trị",
+    "slug": "tuyen-lam",
+    "type": "commune"
+  },
+  {
+    "code": "03056",
+    "name": "La Lay",
+    "fullName": "Xã La Lay, Tỉnh Quảng Trị",
+    "slug": "la-lay",
+    "type": "commune"
+  },
+  {
+    "code": "03138",
+    "name": "Tuyên Sơn",
+    "fullName": "Xã Tuyên Sơn, Tỉnh Quảng Trị",
+    "slug": "tuyen-son",
+    "type": "commune"
+  },
+  {
+    "code": "03184",
+    "name": "Kim Điền",
+    "fullName": "Xã Kim Điền, Tỉnh Quảng Trị",
+    "slug": "kim-dien",
+    "type": "commune"
+  },
+  {
+    "code": "03236",
+    "name": "Tân Thành",
+    "fullName": "Xã Tân Thành, Tỉnh Quảng Trị",
+    "slug": "tan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "03252",
+    "name": "Ba Lòng",
+    "fullName": "Xã Ba Lòng, Tỉnh Quảng Trị",
+    "slug": "ba-long",
+    "type": "commune"
+  },
+  {
+    "code": "03292",
+    "name": "Thượng Trạch",
+    "fullName": "Xã Thượng Trạch, Tỉnh Quảng Trị",
+    "slug": "thuong-trach",
+    "type": "commune"
+  },
+  {
+    "code": "03293",
+    "name": "Hướng Lập",
+    "fullName": "Xã Hướng Lập, Tỉnh Quảng Trị",
+    "slug": "huong-lap",
+    "type": "commune"
+  },
+  {
+    "code": "03319",
+    "name": "Cồn Cỏ",
+    "fullName": "Đặc khu Cồn Cỏ, Tỉnh Quảng Trị",
+    "slug": "con-co",
+    "type": "commune"
+  }
+]

@@ -1,0 +1,716 @@
+[
+  {
+    "code": "00018",
+    "name": "Buôn Ma Thuột",
+    "fullName": "Phường Buôn Ma Thuột, Tỉnh Đắk Lắk",
+    "slug": "buon-ma-thuot",
+    "type": "ward"
+  },
+  {
+    "code": "00059",
+    "name": "Tuy Hòa",
+    "fullName": "Phường Tuy Hòa, Tỉnh Đắk Lắk",
+    "slug": "tuy-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00157",
+    "name": "Ea Kar",
+    "fullName": "Xã Ea Kar, Tỉnh Đắk Lắk",
+    "slug": "ea-kar",
+    "type": "commune"
+  },
+  {
+    "code": "00244",
+    "name": "Tân Lập",
+    "fullName": "Phường Tân Lập, Tỉnh Đắk Lắk",
+    "slug": "tan-lap",
+    "type": "ward"
+  },
+  {
+    "code": "00296",
+    "name": "Krông Pắc",
+    "fullName": "Xã Krông Pắc, Tỉnh Đắk Lắk",
+    "slug": "krong-pac",
+    "type": "commune"
+  },
+  {
+    "code": "00337",
+    "name": "Tân An",
+    "fullName": "Phường Tân An, Tỉnh Đắk Lắk",
+    "slug": "tan-an",
+    "type": "ward"
+  },
+  {
+    "code": "00357",
+    "name": "Buôn Hồ",
+    "fullName": "Phường Buôn Hồ, Tỉnh Đắk Lắk",
+    "slug": "buon-ho",
+    "type": "ward"
+  },
+  {
+    "code": "00366",
+    "name": "Phú Yên",
+    "fullName": "Phường Phú Yên, Tỉnh Đắk Lắk",
+    "slug": "phu-yen",
+    "type": "ward"
+  },
+  {
+    "code": "00381",
+    "name": "Quảng Phú",
+    "fullName": "Xã Quảng Phú, Tỉnh Đắk Lắk",
+    "slug": "quang-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00435",
+    "name": "Ea Kao",
+    "fullName": "Phường Ea Kao, Tỉnh Đắk Lắk",
+    "slug": "ea-kao",
+    "type": "ward"
+  },
+  {
+    "code": "00471",
+    "name": "Ea Drăng",
+    "fullName": "Xã Ea Drăng, Tỉnh Đắk Lắk",
+    "slug": "ea-drang",
+    "type": "commune"
+  },
+  {
+    "code": "00479",
+    "name": "Ea Ktur",
+    "fullName": "Xã Ea Ktur, Tỉnh Đắk Lắk",
+    "slug": "ea-ktur",
+    "type": "commune"
+  },
+  {
+    "code": "00480",
+    "name": "Phú Hòa 1",
+    "fullName": "Xã Phú Hòa 1, Tỉnh Đắk Lắk",
+    "slug": "phu-hoa-1",
+    "type": "commune"
+  },
+  {
+    "code": "00491",
+    "name": "Hòa Hiệp",
+    "fullName": "Phường Hòa Hiệp, Tỉnh Đắk Lắk",
+    "slug": "hoa-hiep",
+    "type": "ward"
+  },
+  {
+    "code": "00512",
+    "name": "Thành Nhất",
+    "fullName": "Phường Thành Nhất, Tỉnh Đắk Lắk",
+    "slug": "thanh-nhat",
+    "type": "ward"
+  },
+  {
+    "code": "00582",
+    "name": "Tây Hòa",
+    "fullName": "Xã Tây Hòa, Tỉnh Đắk Lắk",
+    "slug": "tay-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00612",
+    "name": "Hòa Phú",
+    "fullName": "Xã Hòa Phú, Tỉnh Đắk Lắk",
+    "slug": "hoa-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00618",
+    "name": "Ea Phê",
+    "fullName": "Xã Ea Phê, Tỉnh Đắk Lắk",
+    "slug": "ea-phe",
+    "type": "commune"
+  },
+  {
+    "code": "00623",
+    "name": "Krông Ana",
+    "fullName": "Xã Krông Ana, Tỉnh Đắk Lắk",
+    "slug": "krong-ana",
+    "type": "commune"
+  },
+  {
+    "code": "00638",
+    "name": "Đông Hòa",
+    "fullName": "Phường Đông Hòa, Tỉnh Đắk Lắk",
+    "slug": "dong-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00673",
+    "name": "Dliê Ya",
+    "fullName": "Xã Dliê Ya, Tỉnh Đắk Lắk",
+    "slug": "dlie-ya",
+    "type": "commune"
+  },
+  {
+    "code": "00742",
+    "name": "Bình Kiến",
+    "fullName": "Phường Bình Kiến, Tỉnh Đắk Lắk",
+    "slug": "binh-kien",
+    "type": "ward"
+  },
+  {
+    "code": "00760",
+    "name": "Ea Knuếc",
+    "fullName": "Xã Ea Knuếc, Tỉnh Đắk Lắk",
+    "slug": "ea-knuec",
+    "type": "commune"
+  },
+  {
+    "code": "00762",
+    "name": "Ea Nuôl",
+    "fullName": "Xã Ea Nuôl, Tỉnh Đắk Lắk",
+    "slug": "ea-nuol",
+    "type": "commune"
+  },
+  {
+    "code": "00763",
+    "name": "Krông Năng",
+    "fullName": "Xã Krông Năng, Tỉnh Đắk Lắk",
+    "slug": "krong-nang",
+    "type": "commune"
+  },
+  {
+    "code": "00822",
+    "name": "Ea Na",
+    "fullName": "Xã Ea Na, Tỉnh Đắk Lắk",
+    "slug": "ea-na",
+    "type": "commune"
+  },
+  {
+    "code": "00867",
+    "name": "Sơn Hòa",
+    "fullName": "Xã Sơn Hòa, Tỉnh Đắk Lắk",
+    "slug": "son-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00889",
+    "name": "Ô Loan",
+    "fullName": "Xã Ô Loan, Tỉnh Đắk Lắk",
+    "slug": "o-loan",
+    "type": "commune"
+  },
+  {
+    "code": "00901",
+    "name": "Ea Kly",
+    "fullName": "Xã Ea Kly, Tỉnh Đắk Lắk",
+    "slug": "ea-kly",
+    "type": "commune"
+  },
+  {
+    "code": "00905",
+    "name": "Tuy An Đông",
+    "fullName": "Xã Tuy An Đông, Tỉnh Đắk Lắk",
+    "slug": "tuy-an-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00923",
+    "name": "Dray Bhăng",
+    "fullName": "Xã Dray Bhăng, Tỉnh Đắk Lắk",
+    "slug": "dray-bhang",
+    "type": "commune"
+  },
+  {
+    "code": "00959",
+    "name": "Sông Cầu",
+    "fullName": "Phường Sông Cầu, Tỉnh Đắk Lắk",
+    "slug": "song-cau",
+    "type": "ward"
+  },
+  {
+    "code": "00972",
+    "name": "Phú Hòa 2",
+    "fullName": "Xã Phú Hòa 2, Tỉnh Đắk Lắk",
+    "slug": "phu-hoa-2",
+    "type": "commune"
+  },
+  {
+    "code": "01062",
+    "name": "Ea Knốp",
+    "fullName": "Xã Ea Knốp, Tỉnh Đắk Lắk",
+    "slug": "ea-knop",
+    "type": "commune"
+  },
+  {
+    "code": "01067",
+    "name": "Cư Bao",
+    "fullName": "Phường Cư Bao, Tỉnh Đắk Lắk",
+    "slug": "cu-bao",
+    "type": "ward"
+  },
+  {
+    "code": "01188",
+    "name": "Ea Tul",
+    "fullName": "Xã Ea Tul, Tỉnh Đắk Lắk",
+    "slug": "ea-tul",
+    "type": "commune"
+  },
+  {
+    "code": "01190",
+    "name": "Phú Xuân",
+    "fullName": "Xã Phú Xuân, Tỉnh Đắk Lắk",
+    "slug": "phu-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "01221",
+    "name": "Ea Ning",
+    "fullName": "Xã Ea Ning, Tỉnh Đắk Lắk",
+    "slug": "ea-ning",
+    "type": "commune"
+  },
+  {
+    "code": "01281",
+    "name": "Ea M’Droh",
+    "fullName": "Xã Ea M’Droh, Tỉnh Đắk Lắk",
+    "slug": "ea-mdroh",
+    "type": "commune"
+  },
+  {
+    "code": "01349",
+    "name": "Cư M’gar",
+    "fullName": "Xã Cư M’gar, Tỉnh Đắk Lắk",
+    "slug": "cu-mgar",
+    "type": "commune"
+  },
+  {
+    "code": "01459",
+    "name": "Krông Búk",
+    "fullName": "Xã Krông Búk, Tỉnh Đắk Lắk",
+    "slug": "krong-buk",
+    "type": "commune"
+  },
+  {
+    "code": "01460",
+    "name": "Ea Hiao",
+    "fullName": "Xã Ea Hiao, Tỉnh Đắk Lắk",
+    "slug": "ea-hiao",
+    "type": "commune"
+  },
+  {
+    "code": "01465",
+    "name": "Ea Súp",
+    "fullName": "Xã Ea Súp, Tỉnh Đắk Lắk",
+    "slug": "ea-sup",
+    "type": "commune"
+  },
+  {
+    "code": "01475",
+    "name": "Hòa Thịnh",
+    "fullName": "Xã Hòa Thịnh, Tỉnh Đắk Lắk",
+    "slug": "hoa-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "01501",
+    "name": "Pơng Drang",
+    "fullName": "Xã Pơng Drang, Tỉnh Đắk Lắk",
+    "slug": "pong-drang",
+    "type": "commune"
+  },
+  {
+    "code": "01521",
+    "name": "Ea Khăl",
+    "fullName": "Xã Ea Khăl, Tỉnh Đắk Lắk",
+    "slug": "ea-khal",
+    "type": "commune"
+  },
+  {
+    "code": "01533",
+    "name": "Tuy An Nam",
+    "fullName": "Xã Tuy An Nam, Tỉnh Đắk Lắk",
+    "slug": "tuy-an-nam",
+    "type": "commune"
+  },
+  {
+    "code": "01538",
+    "name": "Ea Wer",
+    "fullName": "Xã Ea Wer, Tỉnh Đắk Lắk",
+    "slug": "ea-wer",
+    "type": "commune"
+  },
+  {
+    "code": "01604",
+    "name": "Cuôr Đăng",
+    "fullName": "Xã Cuôr Đăng, Tỉnh Đắk Lắk",
+    "slug": "cuor-dang",
+    "type": "commune"
+  },
+  {
+    "code": "01606",
+    "name": "Ea Rốk",
+    "fullName": "Xã Ea Rốk, Tỉnh Đắk Lắk",
+    "slug": "ea-rok",
+    "type": "commune"
+  },
+  {
+    "code": "01608",
+    "name": "Tân Tiến",
+    "fullName": "Xã Tân Tiến, Tỉnh Đắk Lắk",
+    "slug": "tan-tien",
+    "type": "commune"
+  },
+  {
+    "code": "01621",
+    "name": "Ea Wy",
+    "fullName": "Xã Ea Wy, Tỉnh Đắk Lắk",
+    "slug": "ea-wy",
+    "type": "commune"
+  },
+  {
+    "code": "01673",
+    "name": "Sơn Thành",
+    "fullName": "Xã Sơn Thành, Tỉnh Đắk Lắk",
+    "slug": "son-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01697",
+    "name": "Xuân Lộc",
+    "fullName": "Xã Xuân Lộc, Tỉnh Đắk Lắk",
+    "slug": "xuan-loc",
+    "type": "commune"
+  },
+  {
+    "code": "01703",
+    "name": "Cư Pui",
+    "fullName": "Xã Cư Pui, Tỉnh Đắk Lắk",
+    "slug": "cu-pui",
+    "type": "commune"
+  },
+  {
+    "code": "01755",
+    "name": "Đồng Xuân",
+    "fullName": "Xã Đồng Xuân, Tỉnh Đắk Lắk",
+    "slug": "dong-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "01764",
+    "name": "Liên Sơn Lắk",
+    "fullName": "Xã Liên Sơn Lắk, Tỉnh Đắk Lắk",
+    "slug": "lien-son-lak",
+    "type": "commune"
+  },
+  {
+    "code": "01790",
+    "name": "Hòa Mỹ",
+    "fullName": "Xã Hòa Mỹ, Tỉnh Đắk Lắk",
+    "slug": "hoa-my",
+    "type": "commune"
+  },
+  {
+    "code": "01810",
+    "name": "Tuy An Bắc",
+    "fullName": "Xã Tuy An Bắc, Tỉnh Đắk Lắk",
+    "slug": "tuy-an-bac",
+    "type": "commune"
+  },
+  {
+    "code": "01859",
+    "name": "Tam Giang",
+    "fullName": "Xã Tam Giang, Tỉnh Đắk Lắk",
+    "slug": "tam-giang",
+    "type": "commune"
+  },
+  {
+    "code": "01865",
+    "name": "Hòa Sơn",
+    "fullName": "Xã Hòa Sơn, Tỉnh Đắk Lắk",
+    "slug": "hoa-son",
+    "type": "commune"
+  },
+  {
+    "code": "01982",
+    "name": "Xuân Cảnh",
+    "fullName": "Xã Xuân Cảnh, Tỉnh Đắk Lắk",
+    "slug": "xuan-canh",
+    "type": "commune"
+  },
+  {
+    "code": "01984",
+    "name": "Ea Drông",
+    "fullName": "Xã Ea Drông, Tỉnh Đắk Lắk",
+    "slug": "ea-drong",
+    "type": "commune"
+  },
+  {
+    "code": "01991",
+    "name": "Ea Ô",
+    "fullName": "Xã Ea Ô, Tỉnh Đắk Lắk",
+    "slug": "ea-o",
+    "type": "commune"
+  },
+  {
+    "code": "01994",
+    "name": "Sông Hinh",
+    "fullName": "Xã Sông Hinh, Tỉnh Đắk Lắk",
+    "slug": "song-hinh",
+    "type": "commune"
+  },
+  {
+    "code": "02052",
+    "name": "Krông Bông",
+    "fullName": "Xã Krông Bông, Tỉnh Đắk Lắk",
+    "slug": "krong-bong",
+    "type": "commune"
+  },
+  {
+    "code": "02065",
+    "name": "Hòa Xuân",
+    "fullName": "Xã Hòa Xuân, Tỉnh Đắk Lắk",
+    "slug": "hoa-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "02073",
+    "name": "Đắk Liêng",
+    "fullName": "Xã Đắk Liêng, Tỉnh Đắk Lắk",
+    "slug": "dak-lieng",
+    "type": "commune"
+  },
+  {
+    "code": "02077",
+    "name": "M’Drắk",
+    "fullName": "Xã M’Drắk, Tỉnh Đắk Lắk",
+    "slug": "mdrak",
+    "type": "commune"
+  },
+  {
+    "code": "02161",
+    "name": "Xuân Đài",
+    "fullName": "Phường Xuân Đài, Tỉnh Đắk Lắk",
+    "slug": "xuan-dai",
+    "type": "ward"
+  },
+  {
+    "code": "02181",
+    "name": "Dang Kang",
+    "fullName": "Xã Dang Kang, Tỉnh Đắk Lắk",
+    "slug": "dang-kang",
+    "type": "commune"
+  },
+  {
+    "code": "02251",
+    "name": "Ea Kiết",
+    "fullName": "Xã Ea Kiết, Tỉnh Đắk Lắk",
+    "slug": "ea-kiet",
+    "type": "commune"
+  },
+  {
+    "code": "02383",
+    "name": "Vụ Bổn",
+    "fullName": "Xã Vụ Bổn, Tỉnh Đắk Lắk",
+    "slug": "vu-bon",
+    "type": "commune"
+  },
+  {
+    "code": "02412",
+    "name": "Cư Pơng",
+    "fullName": "Xã Cư Pơng, Tỉnh Đắk Lắk",
+    "slug": "cu-pong",
+    "type": "commune"
+  },
+  {
+    "code": "02462",
+    "name": "Yang Mao",
+    "fullName": "Xã Yang Mao, Tỉnh Đắk Lắk",
+    "slug": "yang-mao",
+    "type": "commune"
+  },
+  {
+    "code": "02482",
+    "name": "Cư Yang",
+    "fullName": "Xã Cư Yang, Tỉnh Đắk Lắk",
+    "slug": "cu-yang",
+    "type": "commune"
+  },
+  {
+    "code": "02510",
+    "name": "Ea H’leo",
+    "fullName": "Xã Ea H’leo, Tỉnh Đắk Lắk",
+    "slug": "ea-hleo",
+    "type": "commune"
+  },
+  {
+    "code": "02514",
+    "name": "Xuân Phước",
+    "fullName": "Xã Xuân Phước, Tỉnh Đắk Lắk",
+    "slug": "xuan-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "02537",
+    "name": "Xuân Lãnh",
+    "fullName": "Xã Xuân Lãnh, Tỉnh Đắk Lắk",
+    "slug": "xuan-lanh",
+    "type": "commune"
+  },
+  {
+    "code": "02542",
+    "name": "Đức Bình",
+    "fullName": "Xã Đức Bình, Tỉnh Đắk Lắk",
+    "slug": "duc-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02554",
+    "name": "Ea Riêng",
+    "fullName": "Xã Ea Riêng, Tỉnh Đắk Lắk",
+    "slug": "ea-rieng",
+    "type": "commune"
+  },
+  {
+    "code": "02586",
+    "name": "Ea Păl",
+    "fullName": "Xã Ea Păl, Tỉnh Đắk Lắk",
+    "slug": "ea-pal",
+    "type": "commune"
+  },
+  {
+    "code": "02613",
+    "name": "Đắk Phơi",
+    "fullName": "Xã Đắk Phơi, Tỉnh Đắk Lắk",
+    "slug": "dak-phoi",
+    "type": "commune"
+  },
+  {
+    "code": "02673",
+    "name": "Cư Prao",
+    "fullName": "Xã Cư Prao, Tỉnh Đắk Lắk",
+    "slug": "cu-prao",
+    "type": "commune"
+  },
+  {
+    "code": "02680",
+    "name": "Cư M’ta",
+    "fullName": "Xã Cư M’ta, Tỉnh Đắk Lắk",
+    "slug": "cu-mta",
+    "type": "commune"
+  },
+  {
+    "code": "02714",
+    "name": "Tuy An Tây",
+    "fullName": "Xã Tuy An Tây, Tỉnh Đắk Lắk",
+    "slug": "tuy-an-tay",
+    "type": "commune"
+  },
+  {
+    "code": "02715",
+    "name": "Krông Á",
+    "fullName": "Xã Krông Á, Tỉnh Đắk Lắk",
+    "slug": "krong-a",
+    "type": "commune"
+  },
+  {
+    "code": "02737",
+    "name": "Dur Kmăl",
+    "fullName": "Xã Dur Kmăl, Tỉnh Đắk Lắk",
+    "slug": "dur-kmal",
+    "type": "commune"
+  },
+  {
+    "code": "02771",
+    "name": "Ea Ly",
+    "fullName": "Xã Ea Ly, Tỉnh Đắk Lắk",
+    "slug": "ea-ly",
+    "type": "commune"
+  },
+  {
+    "code": "02809",
+    "name": "Suối Trai",
+    "fullName": "Xã Suối Trai, Tỉnh Đắk Lắk",
+    "slug": "suoi-trai",
+    "type": "commune"
+  },
+  {
+    "code": "02837",
+    "name": "Tây Sơn",
+    "fullName": "Xã Tây Sơn, Tỉnh Đắk Lắk",
+    "slug": "tay-son",
+    "type": "commune"
+  },
+  {
+    "code": "02861",
+    "name": "Xuân Thọ",
+    "fullName": "Xã Xuân Thọ, Tỉnh Đắk Lắk",
+    "slug": "xuan-tho",
+    "type": "commune"
+  },
+  {
+    "code": "02898",
+    "name": "Krông Nô",
+    "fullName": "Xã Krông Nô, Tỉnh Đắk Lắk",
+    "slug": "krong-no",
+    "type": "commune"
+  },
+  {
+    "code": "02939",
+    "name": "Ea Bung",
+    "fullName": "Xã Ea Bung, Tỉnh Đắk Lắk",
+    "slug": "ea-bung",
+    "type": "commune"
+  },
+  {
+    "code": "02995",
+    "name": "Phú Mỡ",
+    "fullName": "Xã Phú Mỡ, Tỉnh Đắk Lắk",
+    "slug": "phu-mo",
+    "type": "commune"
+  },
+  {
+    "code": "03043",
+    "name": "Ea Bá",
+    "fullName": "Xã Ea Bá, Tỉnh Đắk Lắk",
+    "slug": "ea-ba",
+    "type": "commune"
+  },
+  {
+    "code": "03133",
+    "name": "Ia Rvê",
+    "fullName": "Xã Ia Rvê, Tỉnh Đắk Lắk",
+    "slug": "ia-rve",
+    "type": "commune"
+  },
+  {
+    "code": "03144",
+    "name": "Vân Hòa",
+    "fullName": "Xã Vân Hòa, Tỉnh Đắk Lắk",
+    "slug": "van-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "03151",
+    "name": "Ea Trang",
+    "fullName": "Xã Ea Trang, Tỉnh Đắk Lắk",
+    "slug": "ea-trang",
+    "type": "commune"
+  },
+  {
+    "code": "03152",
+    "name": "Buôn Đôn",
+    "fullName": "Xã Buôn Đôn, Tỉnh Đắk Lắk",
+    "slug": "buon-don",
+    "type": "commune"
+  },
+  {
+    "code": "03164",
+    "name": "Ia Lốp",
+    "fullName": "Xã Ia Lốp, Tỉnh Đắk Lắk",
+    "slug": "ia-lop",
+    "type": "commune"
+  },
+  {
+    "code": "03168",
+    "name": "Nam Ka",
+    "fullName": "Xã Nam Ka, Tỉnh Đắk Lắk",
+    "slug": "nam-ka",
+    "type": "commune"
+  }
+]

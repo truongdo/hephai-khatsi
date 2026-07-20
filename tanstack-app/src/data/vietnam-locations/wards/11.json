@@ -1,0 +1,912 @@
+[
+  {
+    "code": "00039",
+    "name": "Trường Vinh",
+    "fullName": "Phường Trường Vinh, Tỉnh Nghệ An",
+    "slug": "truong-vinh",
+    "type": "ward"
+  },
+  {
+    "code": "00065",
+    "name": "Thành Vinh",
+    "fullName": "Phường Thành Vinh, Tỉnh Nghệ An",
+    "slug": "thanh-vinh",
+    "type": "ward"
+  },
+  {
+    "code": "00234",
+    "name": "Vinh Phú",
+    "fullName": "Phường Vinh Phú, Tỉnh Nghệ An",
+    "slug": "vinh-phu",
+    "type": "ward"
+  },
+  {
+    "code": "00240",
+    "name": "Quỳnh Lưu",
+    "fullName": "Xã Quỳnh Lưu, Tỉnh Nghệ An",
+    "slug": "quynh-luu",
+    "type": "commune"
+  },
+  {
+    "code": "00253",
+    "name": "Quỳnh Phú",
+    "fullName": "Xã Quỳnh Phú, Tỉnh Nghệ An",
+    "slug": "quynh-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00304",
+    "name": "Vinh Lộc",
+    "fullName": "Phường Vinh Lộc, Tỉnh Nghệ An",
+    "slug": "vinh-loc",
+    "type": "ward"
+  },
+  {
+    "code": "00328",
+    "name": "Cửa Lò",
+    "fullName": "Phường Cửa Lò, Tỉnh Nghệ An",
+    "slug": "cua-lo",
+    "type": "ward"
+  },
+  {
+    "code": "00345",
+    "name": "Diễn Châu",
+    "fullName": "Xã Diễn Châu, Tỉnh Nghệ An",
+    "slug": "dien-chau",
+    "type": "commune"
+  },
+  {
+    "code": "00350",
+    "name": "Đại Đồng",
+    "fullName": "Xã Đại Đồng, Tỉnh Nghệ An",
+    "slug": "dai-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00364",
+    "name": "Đô Lương",
+    "fullName": "Xã Đô Lương, Tỉnh Nghệ An",
+    "slug": "do-luong",
+    "type": "commune"
+  },
+  {
+    "code": "00392",
+    "name": "Quỳnh Anh",
+    "fullName": "Xã Quỳnh Anh, Tỉnh Nghệ An",
+    "slug": "quynh-anh",
+    "type": "commune"
+  },
+  {
+    "code": "00394",
+    "name": "Vinh Hưng",
+    "fullName": "Phường Vinh Hưng, Tỉnh Nghệ An",
+    "slug": "vinh-hung",
+    "type": "ward"
+  },
+  {
+    "code": "00424",
+    "name": "Quỳnh Mai",
+    "fullName": "Phường Quỳnh Mai, Tỉnh Nghệ An",
+    "slug": "quynh-mai",
+    "type": "ward"
+  },
+  {
+    "code": "00454",
+    "name": "Hùng Châu",
+    "fullName": "Xã Hùng Châu, Tỉnh Nghệ An",
+    "slug": "hung-chau",
+    "type": "commune"
+  },
+  {
+    "code": "00457",
+    "name": "Kim Liên",
+    "fullName": "Xã Kim Liên, Tỉnh Nghệ An",
+    "slug": "kim-lien",
+    "type": "commune"
+  },
+  {
+    "code": "00499",
+    "name": "Hưng Nguyên",
+    "fullName": "Xã Hưng Nguyên, Tỉnh Nghệ An",
+    "slug": "hung-nguyen",
+    "type": "commune"
+  },
+  {
+    "code": "00634",
+    "name": "Yên Thành",
+    "fullName": "Xã Yên Thành, Tỉnh Nghệ An",
+    "slug": "yen-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00658",
+    "name": "Hợp Minh",
+    "fullName": "Xã Hợp Minh, Tỉnh Nghệ An",
+    "slug": "hop-minh",
+    "type": "commune"
+  },
+  {
+    "code": "00687",
+    "name": "Đông Thành",
+    "fullName": "Xã Đông Thành, Tỉnh Nghệ An",
+    "slug": "dong-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00691",
+    "name": "Nghi Lộc",
+    "fullName": "Xã Nghi Lộc, Tỉnh Nghệ An",
+    "slug": "nghi-loc",
+    "type": "commune"
+  },
+  {
+    "code": "00724",
+    "name": "Vạn An",
+    "fullName": "Xã Vạn An, Tỉnh Nghệ An",
+    "slug": "van-an",
+    "type": "commune"
+  },
+  {
+    "code": "00739",
+    "name": "Hoàng Mai",
+    "fullName": "Phường Hoàng Mai, Tỉnh Nghệ An",
+    "slug": "hoang-mai",
+    "type": "ward"
+  },
+  {
+    "code": "00743",
+    "name": "Minh Châu",
+    "fullName": "Xã Minh Châu, Tỉnh Nghệ An",
+    "slug": "minh-chau",
+    "type": "commune"
+  },
+  {
+    "code": "00753",
+    "name": "Vân Tụ",
+    "fullName": "Xã Vân Tụ, Tỉnh Nghệ An",
+    "slug": "van-tu",
+    "type": "commune"
+  },
+  {
+    "code": "00774",
+    "name": "An Châu",
+    "fullName": "Xã An Châu, Tỉnh Nghệ An",
+    "slug": "an-chau",
+    "type": "commune"
+  },
+  {
+    "code": "00783",
+    "name": "Hải Châu",
+    "fullName": "Xã Hải Châu, Tỉnh Nghệ An",
+    "slug": "hai-chau",
+    "type": "commune"
+  },
+  {
+    "code": "00785",
+    "name": "Quỳnh Văn",
+    "fullName": "Xã Quỳnh Văn, Tỉnh Nghệ An",
+    "slug": "quynh-van",
+    "type": "commune"
+  },
+  {
+    "code": "00802",
+    "name": "Tam Hợp",
+    "fullName": "Xã Tam Hợp, Tỉnh Nghệ An",
+    "slug": "tam-hop",
+    "type": "commune"
+  },
+  {
+    "code": "00864",
+    "name": "Đức Châu",
+    "fullName": "Xã Đức Châu, Tỉnh Nghệ An",
+    "slug": "duc-chau",
+    "type": "commune"
+  },
+  {
+    "code": "00866",
+    "name": "Thiên Nhẫn",
+    "fullName": "Xã Thiên Nhẫn, Tỉnh Nghệ An",
+    "slug": "thien-nhan",
+    "type": "commune"
+  },
+  {
+    "code": "00878",
+    "name": "Xuân Lâm",
+    "fullName": "Xã Xuân Lâm, Tỉnh Nghệ An",
+    "slug": "xuan-lam",
+    "type": "commune"
+  },
+  {
+    "code": "00887",
+    "name": "Thuần Trung",
+    "fullName": "Xã Thuần Trung, Tỉnh Nghệ An",
+    "slug": "thuan-trung",
+    "type": "commune"
+  },
+  {
+    "code": "00939",
+    "name": "Bạch Hà",
+    "fullName": "Xã Bạch Hà, Tỉnh Nghệ An",
+    "slug": "bach-ha",
+    "type": "commune"
+  },
+  {
+    "code": "00948",
+    "name": "Văn Hiến",
+    "fullName": "Xã Văn Hiến, Tỉnh Nghệ An",
+    "slug": "van-hien",
+    "type": "commune"
+  },
+  {
+    "code": "01038",
+    "name": "Quảng Châu",
+    "fullName": "Xã Quảng Châu, Tỉnh Nghệ An",
+    "slug": "quang-chau",
+    "type": "commune"
+  },
+  {
+    "code": "01060",
+    "name": "Bình Minh",
+    "fullName": "Xã Bình Minh, Tỉnh Nghệ An",
+    "slug": "binh-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01066",
+    "name": "Quỳ Hợp",
+    "fullName": "Xã Quỳ Hợp, Tỉnh Nghệ An",
+    "slug": "quy-hop",
+    "type": "commune"
+  },
+  {
+    "code": "01075",
+    "name": "Quỳnh Sơn",
+    "fullName": "Xã Quỳnh Sơn, Tỉnh Nghệ An",
+    "slug": "quynh-son",
+    "type": "commune"
+  },
+  {
+    "code": "01083",
+    "name": "Hưng Nguyên Nam",
+    "fullName": "Xã Hưng Nguyên Nam, Tỉnh Nghệ An",
+    "slug": "hung-nguyen-nam",
+    "type": "commune"
+  },
+  {
+    "code": "01138",
+    "name": "Giai Lạc",
+    "fullName": "Xã Giai Lạc, Tỉnh Nghệ An",
+    "slug": "giai-lac",
+    "type": "commune"
+  },
+  {
+    "code": "01151",
+    "name": "Quỳnh Tam",
+    "fullName": "Xã Quỳnh Tam, Tỉnh Nghệ An",
+    "slug": "quynh-tam",
+    "type": "commune"
+  },
+  {
+    "code": "01236",
+    "name": "Bích Hào",
+    "fullName": "Xã Bích Hào, Tỉnh Nghệ An",
+    "slug": "bich-hao",
+    "type": "commune"
+  },
+  {
+    "code": "01241",
+    "name": "Tân Mai",
+    "fullName": "Phường Tân Mai, Tỉnh Nghệ An",
+    "slug": "tan-mai",
+    "type": "ward"
+  },
+  {
+    "code": "01297",
+    "name": "Tân Châu",
+    "fullName": "Xã Tân Châu, Tỉnh Nghệ An",
+    "slug": "tan-chau",
+    "type": "commune"
+  },
+  {
+    "code": "01307",
+    "name": "Tân Kỳ",
+    "fullName": "Xã Tân Kỳ, Tỉnh Nghệ An",
+    "slug": "tan-ky",
+    "type": "commune"
+  },
+  {
+    "code": "01361",
+    "name": "Hoa Quân",
+    "fullName": "Xã Hoa Quân, Tỉnh Nghệ An",
+    "slug": "hoa-quan",
+    "type": "commune"
+  },
+  {
+    "code": "01428",
+    "name": "Lam Thành",
+    "fullName": "Xã Lam Thành, Tỉnh Nghệ An",
+    "slug": "lam-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01431",
+    "name": "Đông Lộc",
+    "fullName": "Xã Đông Lộc, Tỉnh Nghệ An",
+    "slug": "dong-loc",
+    "type": "commune"
+  },
+  {
+    "code": "01433",
+    "name": "Trung Lộc",
+    "fullName": "Xã Trung Lộc, Tỉnh Nghệ An",
+    "slug": "trung-loc",
+    "type": "commune"
+  },
+  {
+    "code": "01517",
+    "name": "Quan Thành",
+    "fullName": "Xã Quan Thành, Tỉnh Nghệ An",
+    "slug": "quan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01552",
+    "name": "Anh Sơn",
+    "fullName": "Xã Anh Sơn, Tỉnh Nghệ An",
+    "slug": "anh-son",
+    "type": "commune"
+  },
+  {
+    "code": "01585",
+    "name": "Bạch Ngọc",
+    "fullName": "Xã Bạch Ngọc, Tỉnh Nghệ An",
+    "slug": "bach-ngoc",
+    "type": "commune"
+  },
+  {
+    "code": "01597",
+    "name": "Tân Phú",
+    "fullName": "Xã Tân Phú, Tỉnh Nghệ An",
+    "slug": "tan-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01618",
+    "name": "Đông Hiếu",
+    "fullName": "Xã Đông Hiếu, Tỉnh Nghệ An",
+    "slug": "dong-hieu",
+    "type": "commune"
+  },
+  {
+    "code": "01641",
+    "name": "Văn Kiều",
+    "fullName": "Xã Văn Kiều, Tỉnh Nghệ An",
+    "slug": "van-kieu",
+    "type": "commune"
+  },
+  {
+    "code": "01647",
+    "name": "Phúc Lộc",
+    "fullName": "Xã Phúc Lộc, Tỉnh Nghệ An",
+    "slug": "phuc-loc",
+    "type": "commune"
+  },
+  {
+    "code": "01665",
+    "name": "Kim Bảng",
+    "fullName": "Xã Kim Bảng, Tỉnh Nghệ An",
+    "slug": "kim-bang",
+    "type": "commune"
+  },
+  {
+    "code": "01688",
+    "name": "Yên Xuân",
+    "fullName": "Xã Yên Xuân, Tỉnh Nghệ An",
+    "slug": "yen-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "01754",
+    "name": "Thái Hòa",
+    "fullName": "Phường Thái Hòa, Tỉnh Nghệ An",
+    "slug": "thai-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "01791",
+    "name": "Lương Sơn",
+    "fullName": "Xã Lương Sơn, Tỉnh Nghệ An",
+    "slug": "luong-son",
+    "type": "commune"
+  },
+  {
+    "code": "01796",
+    "name": "Tam Đồng",
+    "fullName": "Xã Tam Đồng, Tỉnh Nghệ An",
+    "slug": "tam-dong",
+    "type": "commune"
+  },
+  {
+    "code": "01803",
+    "name": "Yên Trung",
+    "fullName": "Xã Yên Trung, Tỉnh Nghệ An",
+    "slug": "yen-trung",
+    "type": "commune"
+  },
+  {
+    "code": "01819",
+    "name": "Con Cuông",
+    "fullName": "Xã Con Cuông, Tỉnh Nghệ An",
+    "slug": "con-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "01827",
+    "name": "Vân Du",
+    "fullName": "Xã Vân Du, Tỉnh Nghệ An",
+    "slug": "van-du",
+    "type": "commune"
+  },
+  {
+    "code": "01841",
+    "name": "Nghĩa Khánh",
+    "fullName": "Xã Nghĩa Khánh, Tỉnh Nghệ An",
+    "slug": "nghia-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "01860",
+    "name": "Nghĩa Hưng",
+    "fullName": "Xã Nghĩa Hưng, Tỉnh Nghệ An",
+    "slug": "nghia-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01893",
+    "name": "Nghĩa Lộc",
+    "fullName": "Xã Nghĩa Lộc, Tỉnh Nghệ An",
+    "slug": "nghia-loc",
+    "type": "commune"
+  },
+  {
+    "code": "01912",
+    "name": "Vĩnh Tường",
+    "fullName": "Xã Vĩnh Tường, Tỉnh Nghệ An",
+    "slug": "vinh-tuong",
+    "type": "commune"
+  },
+  {
+    "code": "01920",
+    "name": "Tây Hiếu",
+    "fullName": "Phường Tây Hiếu, Tỉnh Nghệ An",
+    "slug": "tay-hieu",
+    "type": "ward"
+  },
+  {
+    "code": "01941",
+    "name": "Nam Đàn",
+    "fullName": "Xã Nam Đàn, Tỉnh Nghệ An",
+    "slug": "nam-dan",
+    "type": "commune"
+  },
+  {
+    "code": "01945",
+    "name": "Đại Huệ",
+    "fullName": "Xã Đại Huệ, Tỉnh Nghệ An",
+    "slug": "dai-hue",
+    "type": "commune"
+  },
+  {
+    "code": "02001",
+    "name": "Nghĩa Lâm",
+    "fullName": "Xã Nghĩa Lâm, Tỉnh Nghệ An",
+    "slug": "nghia-lam",
+    "type": "commune"
+  },
+  {
+    "code": "02057",
+    "name": "Quỳ Châu",
+    "fullName": "Xã Quỳ Châu, Tỉnh Nghệ An",
+    "slug": "quy-chau",
+    "type": "commune"
+  },
+  {
+    "code": "02064",
+    "name": "Cát Ngạn",
+    "fullName": "Xã Cát Ngạn, Tỉnh Nghệ An",
+    "slug": "cat-ngan",
+    "type": "commune"
+  },
+  {
+    "code": "02075",
+    "name": "Quế Phong",
+    "fullName": "Xã Quế Phong, Tỉnh Nghệ An",
+    "slug": "que-phong",
+    "type": "commune"
+  },
+  {
+    "code": "02082",
+    "name": "Tân An",
+    "fullName": "Xã Tân An, Tỉnh Nghệ An",
+    "slug": "tan-an",
+    "type": "commune"
+  },
+  {
+    "code": "02097",
+    "name": "Nhân Hòa",
+    "fullName": "Xã Nhân Hòa, Tỉnh Nghệ An",
+    "slug": "nhan-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02113",
+    "name": "Quang Đồng",
+    "fullName": "Xã Quang Đồng, Tỉnh Nghệ An",
+    "slug": "quang-dong",
+    "type": "commune"
+  },
+  {
+    "code": "02117",
+    "name": "Nghĩa Hành",
+    "fullName": "Xã Nghĩa Hành, Tỉnh Nghệ An",
+    "slug": "nghia-hanh",
+    "type": "commune"
+  },
+  {
+    "code": "02139",
+    "name": "Hải Lộc",
+    "fullName": "Xã Hải Lộc, Tỉnh Nghệ An",
+    "slug": "hai-loc",
+    "type": "commune"
+  },
+  {
+    "code": "02151",
+    "name": "Thần Lĩnh",
+    "fullName": "Xã Thần Lĩnh, Tỉnh Nghệ An",
+    "slug": "than-linh",
+    "type": "commune"
+  },
+  {
+    "code": "02176",
+    "name": "Nghĩa Thọ",
+    "fullName": "Xã Nghĩa Thọ, Tỉnh Nghệ An",
+    "slug": "nghia-tho",
+    "type": "commune"
+  },
+  {
+    "code": "02182",
+    "name": "Minh Hợp",
+    "fullName": "Xã Minh Hợp, Tỉnh Nghệ An",
+    "slug": "minh-hop",
+    "type": "commune"
+  },
+  {
+    "code": "02248",
+    "name": "Nghĩa Đồng",
+    "fullName": "Xã Nghĩa Đồng, Tỉnh Nghệ An",
+    "slug": "nghia-dong",
+    "type": "commune"
+  },
+  {
+    "code": "02278",
+    "name": "Nghĩa Đàn",
+    "fullName": "Xã Nghĩa Đàn, Tỉnh Nghệ An",
+    "slug": "nghia-dan",
+    "type": "commune"
+  },
+  {
+    "code": "02279",
+    "name": "Tiên Đồng",
+    "fullName": "Xã Tiên Đồng, Tỉnh Nghệ An",
+    "slug": "tien-dong",
+    "type": "commune"
+  },
+  {
+    "code": "02340",
+    "name": "Môn Sơn",
+    "fullName": "Xã Môn Sơn, Tỉnh Nghệ An",
+    "slug": "mon-son",
+    "type": "commune"
+  },
+  {
+    "code": "02363",
+    "name": "Tương Dương",
+    "fullName": "Xã Tương Dương, Tỉnh Nghệ An",
+    "slug": "tuong-duong",
+    "type": "commune"
+  },
+  {
+    "code": "02388",
+    "name": "Châu Tiến",
+    "fullName": "Xã Châu Tiến, Tỉnh Nghệ An",
+    "slug": "chau-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02398",
+    "name": "Mường Quàng",
+    "fullName": "Xã Mường Quàng, Tỉnh Nghệ An",
+    "slug": "muong-quang",
+    "type": "commune"
+  },
+  {
+    "code": "02404",
+    "name": "Nghĩa Mai",
+    "fullName": "Xã Nghĩa Mai, Tỉnh Nghệ An",
+    "slug": "nghia-mai",
+    "type": "commune"
+  },
+  {
+    "code": "02512",
+    "name": "Anh Sơn Đông",
+    "fullName": "Xã Anh Sơn Đông, Tỉnh Nghệ An",
+    "slug": "anh-son-dong",
+    "type": "commune"
+  },
+  {
+    "code": "02575",
+    "name": "Quỳnh Thắng",
+    "fullName": "Xã Quỳnh Thắng, Tỉnh Nghệ An",
+    "slug": "quynh-thang",
+    "type": "commune"
+  },
+  {
+    "code": "02622",
+    "name": "Tiền Phong",
+    "fullName": "Xã Tiền Phong, Tỉnh Nghệ An",
+    "slug": "tien-phong",
+    "type": "commune"
+  },
+  {
+    "code": "02626",
+    "name": "Tri Lễ",
+    "fullName": "Xã Tri Lễ, Tỉnh Nghệ An",
+    "slug": "tri-le",
+    "type": "commune"
+  },
+  {
+    "code": "02641",
+    "name": "Mường Ham",
+    "fullName": "Xã Mường Ham, Tỉnh Nghệ An",
+    "slug": "muong-ham",
+    "type": "commune"
+  },
+  {
+    "code": "02651",
+    "name": "Giai Xuân",
+    "fullName": "Xã Giai Xuân, Tỉnh Nghệ An",
+    "slug": "giai-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "02675",
+    "name": "Hạnh Lâm",
+    "fullName": "Xã Hạnh Lâm, Tỉnh Nghệ An",
+    "slug": "hanh-lam",
+    "type": "commune"
+  },
+  {
+    "code": "02701",
+    "name": "Mậu Thạch",
+    "fullName": "Xã Mậu Thạch, Tỉnh Nghệ An",
+    "slug": "mau-thach",
+    "type": "commune"
+  },
+  {
+    "code": "02710",
+    "name": "Tam Quang",
+    "fullName": "Xã Tam Quang, Tỉnh Nghệ An",
+    "slug": "tam-quang",
+    "type": "commune"
+  },
+  {
+    "code": "02730",
+    "name": "Hùng Chân",
+    "fullName": "Xã Hùng Chân, Tỉnh Nghệ An",
+    "slug": "hung-chan",
+    "type": "commune"
+  },
+  {
+    "code": "02736",
+    "name": "Hữu Kiệm",
+    "fullName": "Xã Hữu Kiệm, Tỉnh Nghệ An",
+    "slug": "huu-kiem",
+    "type": "commune"
+  },
+  {
+    "code": "02756",
+    "name": "Sơn Lâm",
+    "fullName": "Xã Sơn Lâm, Tỉnh Nghệ An",
+    "slug": "son-lam",
+    "type": "commune"
+  },
+  {
+    "code": "02764",
+    "name": "Châu Khê",
+    "fullName": "Xã Châu Khê, Tỉnh Nghệ An",
+    "slug": "chau-khe",
+    "type": "commune"
+  },
+  {
+    "code": "02779",
+    "name": "Thành Bình Thọ",
+    "fullName": "Xã Thành Bình Thọ, Tỉnh Nghệ An",
+    "slug": "thanh-binh-tho",
+    "type": "commune"
+  },
+  {
+    "code": "02785",
+    "name": "Châu Hồng",
+    "fullName": "Xã Châu Hồng, Tỉnh Nghệ An",
+    "slug": "chau-hong",
+    "type": "commune"
+  },
+  {
+    "code": "02818",
+    "name": "Mường Chọng",
+    "fullName": "Xã Mường Chọng, Tỉnh Nghệ An",
+    "slug": "muong-chong",
+    "type": "commune"
+  },
+  {
+    "code": "02839",
+    "name": "Châu Bình",
+    "fullName": "Xã Châu Bình, Tỉnh Nghệ An",
+    "slug": "chau-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02888",
+    "name": "Mường Xén",
+    "fullName": "Xã Mường Xén, Tỉnh Nghệ An",
+    "slug": "muong-xen",
+    "type": "commune"
+  },
+  {
+    "code": "02933",
+    "name": "Chiêu Lưu",
+    "fullName": "Xã Chiêu Lưu, Tỉnh Nghệ An",
+    "slug": "chieu-luu",
+    "type": "commune"
+  },
+  {
+    "code": "02950",
+    "name": "Na Ngoi",
+    "fullName": "Xã Na Ngoi, Tỉnh Nghệ An",
+    "slug": "na-ngoi",
+    "type": "commune"
+  },
+  {
+    "code": "02952",
+    "name": "Yên Na",
+    "fullName": "Xã Yên Na, Tỉnh Nghệ An",
+    "slug": "yen-na",
+    "type": "commune"
+  },
+  {
+    "code": "03015",
+    "name": "Nậm Cắn",
+    "fullName": "Xã Nậm Cắn, Tỉnh Nghệ An",
+    "slug": "nam-can",
+    "type": "commune"
+  },
+  {
+    "code": "03028",
+    "name": "Thông Thụ",
+    "fullName": "Xã Thông Thụ, Tỉnh Nghệ An",
+    "slug": "thong-thu",
+    "type": "commune"
+  },
+  {
+    "code": "03030",
+    "name": "Nga My",
+    "fullName": "Xã Nga My, Tỉnh Nghệ An",
+    "slug": "nga-my",
+    "type": "commune"
+  },
+  {
+    "code": "03033",
+    "name": "Yên Hòa",
+    "fullName": "Xã Yên Hòa, Tỉnh Nghệ An",
+    "slug": "yen-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "03075",
+    "name": "Tam Thái",
+    "fullName": "Xã Tam Thái, Tỉnh Nghệ An",
+    "slug": "tam-thai",
+    "type": "commune"
+  },
+  {
+    "code": "03092",
+    "name": "Cam Phục",
+    "fullName": "Xã Cam Phục, Tỉnh Nghệ An",
+    "slug": "cam-phuc",
+    "type": "commune"
+  },
+  {
+    "code": "03107",
+    "name": "Châu Lộc",
+    "fullName": "Xã Châu Lộc, Tỉnh Nghệ An",
+    "slug": "chau-loc",
+    "type": "commune"
+  },
+  {
+    "code": "03119",
+    "name": "Nhôn Mai",
+    "fullName": "Xã Nhôn Mai, Tỉnh Nghệ An",
+    "slug": "nhon-mai",
+    "type": "commune"
+  },
+  {
+    "code": "03171",
+    "name": "Mường Típ",
+    "fullName": "Xã Mường Típ, Tỉnh Nghệ An",
+    "slug": "muong-tip",
+    "type": "commune"
+  },
+  {
+    "code": "03212",
+    "name": "Mỹ Lý",
+    "fullName": "Xã Mỹ Lý, Tỉnh Nghệ An",
+    "slug": "my-ly",
+    "type": "commune"
+  },
+  {
+    "code": "03228",
+    "name": "Mường Lống",
+    "fullName": "Xã Mường Lống, Tỉnh Nghệ An",
+    "slug": "muong-long",
+    "type": "commune"
+  },
+  {
+    "code": "03235",
+    "name": "Bắc Lý",
+    "fullName": "Xã Bắc Lý, Tỉnh Nghệ An",
+    "slug": "bac-ly",
+    "type": "commune"
+  },
+  {
+    "code": "03243",
+    "name": "Lượng Minh",
+    "fullName": "Xã Lượng Minh, Tỉnh Nghệ An",
+    "slug": "luong-minh",
+    "type": "commune"
+  },
+  {
+    "code": "03250",
+    "name": "Huồi Tụ",
+    "fullName": "Xã Huồi Tụ, Tỉnh Nghệ An",
+    "slug": "huoi-tu",
+    "type": "commune"
+  },
+  {
+    "code": "03255",
+    "name": "Keng Đu",
+    "fullName": "Xã Keng Đu, Tỉnh Nghệ An",
+    "slug": "keng-du",
+    "type": "commune"
+  },
+  {
+    "code": "03265",
+    "name": "Bình Chuẩn",
+    "fullName": "Xã Bình Chuẩn, Tỉnh Nghệ An",
+    "slug": "binh-chuan",
+    "type": "commune"
+  },
+  {
+    "code": "03278",
+    "name": "Na Loi",
+    "fullName": "Xã Na Loi, Tỉnh Nghệ An",
+    "slug": "na-loi",
+    "type": "commune"
+  },
+  {
+    "code": "03302",
+    "name": "Hữu Khuông",
+    "fullName": "Xã Hữu Khuông, Tỉnh Nghệ An",
+    "slug": "huu-khuong",
+    "type": "commune"
+  }
+]

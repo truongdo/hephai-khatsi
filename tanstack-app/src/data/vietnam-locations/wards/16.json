@@ -1,0 +1,716 @@
+[
+  {
+    "code": "00042",
+    "name": "Cao Lãnh",
+    "fullName": "Phường Cao Lãnh, Tỉnh Đồng Tháp",
+    "slug": "cao-lanh",
+    "type": "ward"
+  },
+  {
+    "code": "00107",
+    "name": "Sa Đéc",
+    "fullName": "Phường Sa Đéc, Tỉnh Đồng Tháp",
+    "slug": "sa-dec",
+    "type": "ward"
+  },
+  {
+    "code": "00191",
+    "name": "Lai Vung",
+    "fullName": "Xã Lai Vung, Tỉnh Đồng Tháp",
+    "slug": "lai-vung",
+    "type": "commune"
+  },
+  {
+    "code": "00219",
+    "name": "Tân Long",
+    "fullName": "Xã Tân Long, Tỉnh Đồng Tháp",
+    "slug": "tan-long",
+    "type": "commune"
+  },
+  {
+    "code": "00224",
+    "name": "Tân Phước 3",
+    "fullName": "Xã Tân Phước 3, Tỉnh Đồng Tháp",
+    "slug": "tan-phuoc-3",
+    "type": "commune"
+  },
+  {
+    "code": "00237",
+    "name": "Lấp Vò",
+    "fullName": "Xã Lấp Vò, Tỉnh Đồng Tháp",
+    "slug": "lap-vo",
+    "type": "commune"
+  },
+  {
+    "code": "00243",
+    "name": "Đạo Thạnh",
+    "fullName": "Phường Đạo Thạnh, Tỉnh Đồng Tháp",
+    "slug": "dao-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "00262",
+    "name": "Phong Hòa",
+    "fullName": "Xã Phong Hòa, Tỉnh Đồng Tháp",
+    "slug": "phong-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00280",
+    "name": "Trung An",
+    "fullName": "Phường Trung An, Tỉnh Đồng Tháp",
+    "slug": "trung-an",
+    "type": "ward"
+  },
+  {
+    "code": "00295",
+    "name": "Hòa Long",
+    "fullName": "Xã Hòa Long, Tỉnh Đồng Tháp",
+    "slug": "hoa-long",
+    "type": "commune"
+  },
+  {
+    "code": "00299",
+    "name": "Phú Hựu",
+    "fullName": "Xã Phú Hựu, Tỉnh Đồng Tháp",
+    "slug": "phu-huu",
+    "type": "commune"
+  },
+  {
+    "code": "00313",
+    "name": "Tân Hương",
+    "fullName": "Xã Tân Hương, Tỉnh Đồng Tháp",
+    "slug": "tan-huong",
+    "type": "commune"
+  },
+  {
+    "code": "00315",
+    "name": "Mỹ Tho",
+    "fullName": "Phường Mỹ Tho, Tỉnh Đồng Tháp",
+    "slug": "my-tho",
+    "type": "ward"
+  },
+  {
+    "code": "00356",
+    "name": "Tân Phú Trung",
+    "fullName": "Xã Tân Phú Trung, Tỉnh Đồng Tháp",
+    "slug": "tan-phu-trung",
+    "type": "commune"
+  },
+  {
+    "code": "00380",
+    "name": "Long Phú Thuận",
+    "fullName": "Xã Long Phú Thuận, Tỉnh Đồng Tháp",
+    "slug": "long-phu-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "00398",
+    "name": "Thường Phước",
+    "fullName": "Xã Thường Phước, Tỉnh Đồng Tháp",
+    "slug": "thuong-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "00400",
+    "name": "Cái Bè",
+    "fullName": "Xã Cái Bè, Tỉnh Đồng Tháp",
+    "slug": "cai-be",
+    "type": "commune"
+  },
+  {
+    "code": "00401",
+    "name": "Tân Nhuận Đông",
+    "fullName": "Xã Tân Nhuận Đông, Tỉnh Đồng Tháp",
+    "slug": "tan-nhuan-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00436",
+    "name": "Châu Thành",
+    "fullName": "Xã Châu Thành, Tỉnh Đồng Tháp",
+    "slug": "chau-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00458",
+    "name": "Mỹ An Hưng",
+    "fullName": "Xã Mỹ An Hưng, Tỉnh Đồng Tháp",
+    "slug": "my-an-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00469",
+    "name": "Mỹ Hiệp",
+    "fullName": "Xã Mỹ Hiệp, Tỉnh Đồng Tháp",
+    "slug": "my-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "00485",
+    "name": "Hồng Ngự",
+    "fullName": "Phường Hồng Ngự, Tỉnh Đồng Tháp",
+    "slug": "hong-ngu",
+    "type": "ward"
+  },
+  {
+    "code": "00504",
+    "name": "Hội Cư",
+    "fullName": "Xã Hội Cư, Tỉnh Đồng Tháp",
+    "slug": "hoi-cu",
+    "type": "commune"
+  },
+  {
+    "code": "00517",
+    "name": "An Hữu",
+    "fullName": "Xã An Hữu, Tỉnh Đồng Tháp",
+    "slug": "an-huu",
+    "type": "commune"
+  },
+  {
+    "code": "00536",
+    "name": "Tân Đông",
+    "fullName": "Xã Tân Đông, Tỉnh Đồng Tháp",
+    "slug": "tan-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00545",
+    "name": "Mỹ Thọ",
+    "fullName": "Xã Mỹ Thọ, Tỉnh Đồng Tháp",
+    "slug": "my-tho",
+    "type": "commune"
+  },
+  {
+    "code": "00548",
+    "name": "Bình Phú",
+    "fullName": "Xã Bình Phú, Tỉnh Đồng Tháp",
+    "slug": "binh-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00558",
+    "name": "Mỹ Phong",
+    "fullName": "Phường Mỹ Phong, Tỉnh Đồng Tháp",
+    "slug": "my-phong",
+    "type": "ward"
+  },
+  {
+    "code": "00565",
+    "name": "Mỹ Ngãi",
+    "fullName": "Phường Mỹ Ngãi, Tỉnh Đồng Tháp",
+    "slug": "my-ngai",
+    "type": "ward"
+  },
+  {
+    "code": "00574",
+    "name": "An Long",
+    "fullName": "Xã An Long, Tỉnh Đồng Tháp",
+    "slug": "an-long",
+    "type": "commune"
+  },
+  {
+    "code": "00625",
+    "name": "Long Định",
+    "fullName": "Xã Long Định, Tỉnh Đồng Tháp",
+    "slug": "long-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "00643",
+    "name": "Thanh Bình",
+    "fullName": "Xã Thanh Bình, Tỉnh Đồng Tháp",
+    "slug": "thanh-binh",
+    "type": "commune"
+  },
+  {
+    "code": "00645",
+    "name": "Long Hưng",
+    "fullName": "Xã Long Hưng, Tỉnh Đồng Tháp",
+    "slug": "long-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00662",
+    "name": "Tân Khánh Trung",
+    "fullName": "Xã Tân Khánh Trung, Tỉnh Đồng Tháp",
+    "slug": "tan-khanh-trung",
+    "type": "commune"
+  },
+  {
+    "code": "00666",
+    "name": "Mỹ Trà",
+    "fullName": "Phường Mỹ Trà, Tỉnh Đồng Tháp",
+    "slug": "my-tra",
+    "type": "ward"
+  },
+  {
+    "code": "00676",
+    "name": "Sơn Qui",
+    "fullName": "Phường Sơn Qui, Tỉnh Đồng Tháp",
+    "slug": "son-qui",
+    "type": "ward"
+  },
+  {
+    "code": "00681",
+    "name": "Thanh Hưng",
+    "fullName": "Xã Thanh Hưng, Tỉnh Đồng Tháp",
+    "slug": "thanh-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00688",
+    "name": "Tân Dương",
+    "fullName": "Xã Tân Dương, Tỉnh Đồng Tháp",
+    "slug": "tan-duong",
+    "type": "commune"
+  },
+  {
+    "code": "00694",
+    "name": "Gia Thuận",
+    "fullName": "Xã Gia Thuận, Tỉnh Đồng Tháp",
+    "slug": "gia-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "00736",
+    "name": "Vĩnh Bình",
+    "fullName": "Xã Vĩnh Bình, Tỉnh Đồng Tháp",
+    "slug": "vinh-binh",
+    "type": "commune"
+  },
+  {
+    "code": "00741",
+    "name": "Tháp Mười",
+    "fullName": "Xã Tháp Mười, Tỉnh Đồng Tháp",
+    "slug": "thap-muoi",
+    "type": "commune"
+  },
+  {
+    "code": "00751",
+    "name": "Long Tiên",
+    "fullName": "Xã Long Tiên, Tỉnh Đồng Tháp",
+    "slug": "long-tien",
+    "type": "commune"
+  },
+  {
+    "code": "00850",
+    "name": "An Thạnh Thủy",
+    "fullName": "Xã An Thạnh Thủy, Tỉnh Đồng Tháp",
+    "slug": "an-thanh-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "00870",
+    "name": "Mỹ Phước Tây",
+    "fullName": "Phường Mỹ Phước Tây, Tỉnh Đồng Tháp",
+    "slug": "my-phuoc-tay",
+    "type": "ward"
+  },
+  {
+    "code": "00877",
+    "name": "Ngũ Hiệp",
+    "fullName": "Xã Ngũ Hiệp, Tỉnh Đồng Tháp",
+    "slug": "ngu-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "00883",
+    "name": "Đồng Sơn",
+    "fullName": "Xã Đồng Sơn, Tỉnh Đồng Tháp",
+    "slug": "dong-son",
+    "type": "commune"
+  },
+  {
+    "code": "00907",
+    "name": "Hậu Mỹ",
+    "fullName": "Xã Hậu Mỹ, Tỉnh Đồng Tháp",
+    "slug": "hau-my",
+    "type": "commune"
+  },
+  {
+    "code": "00911",
+    "name": "Tân Thuận Bình",
+    "fullName": "Xã Tân Thuận Bình, Tỉnh Đồng Tháp",
+    "slug": "tan-thuan-binh",
+    "type": "commune"
+  },
+  {
+    "code": "00915",
+    "name": "Tân Hồng",
+    "fullName": "Xã Tân Hồng, Tỉnh Đồng Tháp",
+    "slug": "tan-hong",
+    "type": "commune"
+  },
+  {
+    "code": "00931",
+    "name": "Bình Hàng Trung",
+    "fullName": "Xã Bình Hàng Trung, Tỉnh Đồng Tháp",
+    "slug": "binh-hang-trung",
+    "type": "commune"
+  },
+  {
+    "code": "00984",
+    "name": "Thới Sơn",
+    "fullName": "Phường Thới Sơn, Tỉnh Đồng Tháp",
+    "slug": "thoi-son",
+    "type": "ward"
+  },
+  {
+    "code": "00993",
+    "name": "Thường Lạc",
+    "fullName": "Phường Thường Lạc, Tỉnh Đồng Tháp",
+    "slug": "thuong-lac",
+    "type": "ward"
+  },
+  {
+    "code": "01024",
+    "name": "Lương Hòa Lạc",
+    "fullName": "Xã Lương Hòa Lạc, Tỉnh Đồng Tháp",
+    "slug": "luong-hoa-lac",
+    "type": "commune"
+  },
+  {
+    "code": "01065",
+    "name": "Mỹ Tịnh An",
+    "fullName": "Xã Mỹ Tịnh An, Tỉnh Đồng Tháp",
+    "slug": "my-tinh-an",
+    "type": "commune"
+  },
+  {
+    "code": "01069",
+    "name": "Mỹ Đức Tây",
+    "fullName": "Xã Mỹ Đức Tây, Tỉnh Đồng Tháp",
+    "slug": "my-duc-tay",
+    "type": "commune"
+  },
+  {
+    "code": "01102",
+    "name": "Mỹ Quí",
+    "fullName": "Xã Mỹ Quí, Tỉnh Đồng Tháp",
+    "slug": "my-qui",
+    "type": "commune"
+  },
+  {
+    "code": "01113",
+    "name": "Bình Ninh",
+    "fullName": "Xã Bình Ninh, Tỉnh Đồng Tháp",
+    "slug": "binh-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01114",
+    "name": "Gò Công",
+    "fullName": "Phường Gò Công, Tỉnh Đồng Tháp",
+    "slug": "go-cong",
+    "type": "ward"
+  },
+  {
+    "code": "01132",
+    "name": "Long Khánh",
+    "fullName": "Xã Long Khánh, Tỉnh Đồng Tháp",
+    "slug": "long-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "01139",
+    "name": "Mỹ Thành",
+    "fullName": "Xã Mỹ Thành, Tỉnh Đồng Tháp",
+    "slug": "my-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01140",
+    "name": "Hiệp Đức",
+    "fullName": "Xã Hiệp Đức, Tỉnh Đồng Tháp",
+    "slug": "hiep-duc",
+    "type": "commune"
+  },
+  {
+    "code": "01197",
+    "name": "Bình Trưng",
+    "fullName": "Xã Bình Trưng, Tỉnh Đồng Tháp",
+    "slug": "binh-trung",
+    "type": "commune"
+  },
+  {
+    "code": "01227",
+    "name": "Tân Hòa",
+    "fullName": "Xã Tân Hòa, Tỉnh Đồng Tháp",
+    "slug": "tan-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01231",
+    "name": "Cai Lậy",
+    "fullName": "Phường Cai Lậy, Tỉnh Đồng Tháp",
+    "slug": "cai-lay",
+    "type": "ward"
+  },
+  {
+    "code": "01246",
+    "name": "Chợ Gạo",
+    "fullName": "Xã Chợ Gạo, Tỉnh Đồng Tháp",
+    "slug": "cho-gao",
+    "type": "commune"
+  },
+  {
+    "code": "01248",
+    "name": "Mỹ Lợi",
+    "fullName": "Xã Mỹ Lợi, Tỉnh Đồng Tháp",
+    "slug": "my-loi",
+    "type": "commune"
+  },
+  {
+    "code": "01274",
+    "name": "An Bình",
+    "fullName": "Phường An Bình, Tỉnh Đồng Tháp",
+    "slug": "an-binh",
+    "type": "ward"
+  },
+  {
+    "code": "01294",
+    "name": "Thanh Mỹ",
+    "fullName": "Xã Thanh Mỹ, Tỉnh Đồng Tháp",
+    "slug": "thanh-my",
+    "type": "commune"
+  },
+  {
+    "code": "01336",
+    "name": "Bình Xuân",
+    "fullName": "Phường Bình Xuân, Tỉnh Đồng Tháp",
+    "slug": "binh-xuan",
+    "type": "ward"
+  },
+  {
+    "code": "01358",
+    "name": "Bình Thành",
+    "fullName": "Xã Bình Thành, Tỉnh Đồng Tháp",
+    "slug": "binh-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01365",
+    "name": "Tân Thới",
+    "fullName": "Xã Tân Thới, Tỉnh Đồng Tháp",
+    "slug": "tan-thoi",
+    "type": "commune"
+  },
+  {
+    "code": "01404",
+    "name": "Vĩnh Kim",
+    "fullName": "Xã Vĩnh Kim, Tỉnh Đồng Tháp",
+    "slug": "vinh-kim",
+    "type": "commune"
+  },
+  {
+    "code": "01413",
+    "name": "Hưng Thạnh",
+    "fullName": "Xã Hưng Thạnh, Tỉnh Đồng Tháp",
+    "slug": "hung-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01414",
+    "name": "Tân Phú",
+    "fullName": "Xã Tân Phú, Tỉnh Đồng Tháp",
+    "slug": "tan-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01434",
+    "name": "Phong Mỹ",
+    "fullName": "Xã Phong Mỹ, Tỉnh Đồng Tháp",
+    "slug": "phong-my",
+    "type": "commune"
+  },
+  {
+    "code": "01461",
+    "name": "Long Bình",
+    "fullName": "Xã Long Bình, Tỉnh Đồng Tháp",
+    "slug": "long-binh",
+    "type": "commune"
+  },
+  {
+    "code": "01474",
+    "name": "Tân Thành",
+    "fullName": "Xã Tân Thành, Tỉnh Đồng Tháp",
+    "slug": "tan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01490",
+    "name": "Phú Thọ",
+    "fullName": "Xã Phú Thọ, Tỉnh Đồng Tháp",
+    "slug": "phu-tho",
+    "type": "commune"
+  },
+  {
+    "code": "01508",
+    "name": "Gò Công Đông",
+    "fullName": "Xã Gò Công Đông, Tỉnh Đồng Tháp",
+    "slug": "go-cong-dong",
+    "type": "commune"
+  },
+  {
+    "code": "01537",
+    "name": "Long Thuận",
+    "fullName": "Phường Long Thuận, Tỉnh Đồng Tháp",
+    "slug": "long-thuan",
+    "type": "ward"
+  },
+  {
+    "code": "01566",
+    "name": "Kim Sơn",
+    "fullName": "Xã Kim Sơn, Tỉnh Đồng Tháp",
+    "slug": "kim-son",
+    "type": "commune"
+  },
+  {
+    "code": "01605",
+    "name": "Đốc Binh Kiều",
+    "fullName": "Xã Đốc Binh Kiều, Tỉnh Đồng Tháp",
+    "slug": "doc-binh-kieu",
+    "type": "commune"
+  },
+  {
+    "code": "01629",
+    "name": "Ba Sao",
+    "fullName": "Xã Ba Sao, Tỉnh Đồng Tháp",
+    "slug": "ba-sao",
+    "type": "commune"
+  },
+  {
+    "code": "01631",
+    "name": "Thạnh Phú",
+    "fullName": "Xã Thạnh Phú, Tỉnh Đồng Tháp",
+    "slug": "thanh-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01686",
+    "name": "Mỹ Thiện",
+    "fullName": "Xã Mỹ Thiện, Tỉnh Đồng Tháp",
+    "slug": "my-thien",
+    "type": "commune"
+  },
+  {
+    "code": "01700",
+    "name": "Nhị Quý",
+    "fullName": "Phường Nhị Quý, Tỉnh Đồng Tháp",
+    "slug": "nhi-quy",
+    "type": "ward"
+  },
+  {
+    "code": "01829",
+    "name": "Tân Thạnh",
+    "fullName": "Xã Tân Thạnh, Tỉnh Đồng Tháp",
+    "slug": "tan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01889",
+    "name": "Phú Thành",
+    "fullName": "Xã Phú Thành, Tỉnh Đồng Tháp",
+    "slug": "phu-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01892",
+    "name": "Tân Hộ Cơ",
+    "fullName": "Xã Tân Hộ Cơ, Tỉnh Đồng Tháp",
+    "slug": "tan-ho-co",
+    "type": "commune"
+  },
+  {
+    "code": "01966",
+    "name": "Vĩnh Hựu",
+    "fullName": "Xã Vĩnh Hựu, Tỉnh Đồng Tháp",
+    "slug": "vinh-huu",
+    "type": "commune"
+  },
+  {
+    "code": "01995",
+    "name": "An Phước",
+    "fullName": "Xã An Phước, Tỉnh Đồng Tháp",
+    "slug": "an-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "02011",
+    "name": "Tân Phú Đông",
+    "fullName": "Xã Tân Phú Đông, Tỉnh Đồng Tháp",
+    "slug": "tan-phu-dong",
+    "type": "commune"
+  },
+  {
+    "code": "02087",
+    "name": "Tràm Chim",
+    "fullName": "Xã Tràm Chim, Tỉnh Đồng Tháp",
+    "slug": "tram-chim",
+    "type": "commune"
+  },
+  {
+    "code": "02129",
+    "name": "Tân Điền",
+    "fullName": "Xã Tân Điền, Tỉnh Đồng Tháp",
+    "slug": "tan-dien",
+    "type": "commune"
+  },
+  {
+    "code": "02154",
+    "name": "Phương Thịnh",
+    "fullName": "Xã Phương Thịnh, Tỉnh Đồng Tháp",
+    "slug": "phuong-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "02194",
+    "name": "Phú Cường",
+    "fullName": "Xã Phú Cường, Tỉnh Đồng Tháp",
+    "slug": "phu-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "02200",
+    "name": "Tam Nông",
+    "fullName": "Xã Tam Nông, Tỉnh Đồng Tháp",
+    "slug": "tam-nong",
+    "type": "commune"
+  },
+  {
+    "code": "02213",
+    "name": "Thanh Hòa",
+    "fullName": "Phường Thanh Hòa, Tỉnh Đồng Tháp",
+    "slug": "thanh-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "02323",
+    "name": "An Hòa",
+    "fullName": "Xã An Hòa, Tỉnh Đồng Tháp",
+    "slug": "an-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02380",
+    "name": "Trường Xuân",
+    "fullName": "Xã Trường Xuân, Tỉnh Đồng Tháp",
+    "slug": "truong-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "02718",
+    "name": "Tân Phước 1",
+    "fullName": "Xã Tân Phước 1, Tỉnh Đồng Tháp",
+    "slug": "tan-phuoc-1",
+    "type": "commune"
+  },
+  {
+    "code": "02852",
+    "name": "Tân Phước 2",
+    "fullName": "Xã Tân Phước 2, Tỉnh Đồng Tháp",
+    "slug": "tan-phuoc-2",
+    "type": "commune"
+  }
+]

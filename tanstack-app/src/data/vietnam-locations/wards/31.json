@@ -1,0 +1,527 @@
+[
+  {
+    "code": "00513",
+    "name": "Mai Sơn",
+    "fullName": "Xã Mai Sơn, Tỉnh Sơn La",
+    "slug": "mai-son",
+    "type": "commune"
+  },
+  {
+    "code": "00543",
+    "name": "Tô Hiệu",
+    "fullName": "Phường Tô Hiệu, Tỉnh Sơn La",
+    "slug": "to-hieu",
+    "type": "ward"
+  },
+  {
+    "code": "00646",
+    "name": "Phù Yên",
+    "fullName": "Xã Phù Yên, Tỉnh Sơn La",
+    "slug": "phu-yen",
+    "type": "commune"
+  },
+  {
+    "code": "00657",
+    "name": "Thuận Châu",
+    "fullName": "Xã Thuận Châu, Tỉnh Sơn La",
+    "slug": "thuan-chau",
+    "type": "commune"
+  },
+  {
+    "code": "01298",
+    "name": "Yên Châu",
+    "fullName": "Xã Yên Châu, Tỉnh Sơn La",
+    "slug": "yen-chau",
+    "type": "commune"
+  },
+  {
+    "code": "01327",
+    "name": "Mường La",
+    "fullName": "Xã Mường La, Tỉnh Sơn La",
+    "slug": "muong-la",
+    "type": "commune"
+  },
+  {
+    "code": "01477",
+    "name": "Quỳnh Nhai",
+    "fullName": "Xã Quỳnh Nhai, Tỉnh Sơn La",
+    "slug": "quynh-nhai",
+    "type": "commune"
+  },
+  {
+    "code": "01679",
+    "name": "Chiềng Mung",
+    "fullName": "Xã Chiềng Mung, Tỉnh Sơn La",
+    "slug": "chieng-mung",
+    "type": "commune"
+  },
+  {
+    "code": "01738",
+    "name": "Chiềng Sinh",
+    "fullName": "Phường Chiềng Sinh, Tỉnh Sơn La",
+    "slug": "chieng-sinh",
+    "type": "ward"
+  },
+  {
+    "code": "01809",
+    "name": "Sông Mã",
+    "fullName": "Xã Sông Mã, Tỉnh Sơn La",
+    "slug": "song-ma",
+    "type": "commune"
+  },
+  {
+    "code": "01877",
+    "name": "Mường Bú",
+    "fullName": "Xã Mường Bú, Tỉnh Sơn La",
+    "slug": "muong-bu",
+    "type": "commune"
+  },
+  {
+    "code": "01895",
+    "name": "Vân Hồ",
+    "fullName": "Xã Vân Hồ, Tỉnh Sơn La",
+    "slug": "van-ho",
+    "type": "commune"
+  },
+  {
+    "code": "01922",
+    "name": "Phiêng Pằn",
+    "fullName": "Xã Phiêng Pằn, Tỉnh Sơn La",
+    "slug": "phieng-pan",
+    "type": "commune"
+  },
+  {
+    "code": "01927",
+    "name": "Mường Hung",
+    "fullName": "Xã Mường Hung, Tỉnh Sơn La",
+    "slug": "muong-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01932",
+    "name": "Mường Khiêng",
+    "fullName": "Xã Mường Khiêng, Tỉnh Sơn La",
+    "slug": "muong-khieng",
+    "type": "commune"
+  },
+  {
+    "code": "01975",
+    "name": "Sốp Cộp",
+    "fullName": "Xã Sốp Cộp, Tỉnh Sơn La",
+    "slug": "sop-cop",
+    "type": "commune"
+  },
+  {
+    "code": "01997",
+    "name": "Chiềng Mai",
+    "fullName": "Xã Chiềng Mai, Tỉnh Sơn La",
+    "slug": "chieng-mai",
+    "type": "commune"
+  },
+  {
+    "code": "02049",
+    "name": "Chiềng Khoong",
+    "fullName": "Xã Chiềng Khoong, Tỉnh Sơn La",
+    "slug": "chieng-khoong",
+    "type": "commune"
+  },
+  {
+    "code": "02090",
+    "name": "Chiềng Cơi",
+    "fullName": "Phường Chiềng Cơi, Tỉnh Sơn La",
+    "slug": "chieng-coi",
+    "type": "ward"
+  },
+  {
+    "code": "02107",
+    "name": "Thảo Nguyên",
+    "fullName": "Phường Thảo Nguyên, Tỉnh Sơn La",
+    "slug": "thao-nguyen",
+    "type": "ward"
+  },
+  {
+    "code": "02142",
+    "name": "Gia Phù",
+    "fullName": "Xã Gia Phù, Tỉnh Sơn La",
+    "slug": "gia-phu",
+    "type": "commune"
+  },
+  {
+    "code": "02144",
+    "name": "Bắc Yên",
+    "fullName": "Xã Bắc Yên, Tỉnh Sơn La",
+    "slug": "bac-yen",
+    "type": "commune"
+  },
+  {
+    "code": "02196",
+    "name": "Mộc Châu",
+    "fullName": "Phường Mộc Châu, Tỉnh Sơn La",
+    "slug": "moc-chau",
+    "type": "ward"
+  },
+  {
+    "code": "02203",
+    "name": "Chiềng Lao",
+    "fullName": "Xã Chiềng Lao, Tỉnh Sơn La",
+    "slug": "chieng-lao",
+    "type": "commune"
+  },
+  {
+    "code": "02237",
+    "name": "Chiềng La",
+    "fullName": "Xã Chiềng La, Tỉnh Sơn La",
+    "slug": "chieng-la",
+    "type": "commune"
+  },
+  {
+    "code": "02244",
+    "name": "Chiềng An",
+    "fullName": "Phường Chiềng An, Tỉnh Sơn La",
+    "slug": "chieng-an",
+    "type": "ward"
+  },
+  {
+    "code": "02288",
+    "name": "Mường Cơi",
+    "fullName": "Xã Mường Cơi, Tỉnh Sơn La",
+    "slug": "muong-coi",
+    "type": "commune"
+  },
+  {
+    "code": "02346",
+    "name": "Chiềng Hặc",
+    "fullName": "Xã Chiềng Hặc, Tỉnh Sơn La",
+    "slug": "chieng-hac",
+    "type": "commune"
+  },
+  {
+    "code": "02350",
+    "name": "Chiềng Khương",
+    "fullName": "Xã Chiềng Khương, Tỉnh Sơn La",
+    "slug": "chieng-khuong",
+    "type": "commune"
+  },
+  {
+    "code": "02368",
+    "name": "Tân Yên",
+    "fullName": "Xã Tân Yên, Tỉnh Sơn La",
+    "slug": "tan-yen",
+    "type": "commune"
+  },
+  {
+    "code": "02384",
+    "name": "Nậm Lầu",
+    "fullName": "Xã Nậm Lầu, Tỉnh Sơn La",
+    "slug": "nam-lau",
+    "type": "commune"
+  },
+  {
+    "code": "02397",
+    "name": "Đoàn Kết",
+    "fullName": "Xã Đoàn Kết, Tỉnh Sơn La",
+    "slug": "doan-ket",
+    "type": "commune"
+  },
+  {
+    "code": "02415",
+    "name": "Chiềng Hoa",
+    "fullName": "Xã Chiềng Hoa, Tỉnh Sơn La",
+    "slug": "chieng-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02446",
+    "name": "Púng Bánh",
+    "fullName": "Xã Púng Bánh, Tỉnh Sơn La",
+    "slug": "pung-banh",
+    "type": "commune"
+  },
+  {
+    "code": "02456",
+    "name": "Chiềng Sơ",
+    "fullName": "Xã Chiềng Sơ, Tỉnh Sơn La",
+    "slug": "chieng-so",
+    "type": "commune"
+  },
+  {
+    "code": "02458",
+    "name": "Bình Thuận",
+    "fullName": "Xã Bình Thuận, Tỉnh Sơn La",
+    "slug": "binh-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "02483",
+    "name": "Nậm Ty",
+    "fullName": "Xã Nậm Ty, Tỉnh Sơn La",
+    "slug": "nam-ty",
+    "type": "commune"
+  },
+  {
+    "code": "02494",
+    "name": "Bó Sinh",
+    "fullName": "Xã Bó Sinh, Tỉnh Sơn La",
+    "slug": "bo-sinh",
+    "type": "commune"
+  },
+  {
+    "code": "02519",
+    "name": "Mường Giôn",
+    "fullName": "Xã Mường Giôn, Tỉnh Sơn La",
+    "slug": "muong-gion",
+    "type": "commune"
+  },
+  {
+    "code": "02539",
+    "name": "Vân Sơn",
+    "fullName": "Phường Vân Sơn, Tỉnh Sơn La",
+    "slug": "van-son",
+    "type": "ward"
+  },
+  {
+    "code": "02543",
+    "name": "Song Khủa",
+    "fullName": "Xã Song Khủa, Tỉnh Sơn La",
+    "slug": "song-khua",
+    "type": "commune"
+  },
+  {
+    "code": "02556",
+    "name": "Mường Lầm",
+    "fullName": "Xã Mường Lầm, Tỉnh Sơn La",
+    "slug": "muong-lam",
+    "type": "commune"
+  },
+  {
+    "code": "02558",
+    "name": "Muổi Nọi",
+    "fullName": "Xã Muổi Nọi, Tỉnh Sơn La",
+    "slug": "muoi-noi",
+    "type": "commune"
+  },
+  {
+    "code": "02562",
+    "name": "Tạ Khoa",
+    "fullName": "Xã Tạ Khoa, Tỉnh Sơn La",
+    "slug": "ta-khoa",
+    "type": "commune"
+  },
+  {
+    "code": "02588",
+    "name": "Mộc Sơn",
+    "fullName": "Phường Mộc Sơn, Tỉnh Sơn La",
+    "slug": "moc-son",
+    "type": "ward"
+  },
+  {
+    "code": "02604",
+    "name": "Mường É",
+    "fullName": "Xã Mường É, Tỉnh Sơn La",
+    "slug": "muong-e",
+    "type": "commune"
+  },
+  {
+    "code": "02614",
+    "name": "Tô Múa",
+    "fullName": "Xã Tô Múa, Tỉnh Sơn La",
+    "slug": "to-mua",
+    "type": "commune"
+  },
+  {
+    "code": "02620",
+    "name": "Co Mạ",
+    "fullName": "Xã Co Mạ, Tỉnh Sơn La",
+    "slug": "co-ma",
+    "type": "commune"
+  },
+  {
+    "code": "02623",
+    "name": "Phiêng Cằm",
+    "fullName": "Xã Phiêng Cằm, Tỉnh Sơn La",
+    "slug": "phieng-cam",
+    "type": "commune"
+  },
+  {
+    "code": "02648",
+    "name": "Chiềng Sung",
+    "fullName": "Xã Chiềng Sung, Tỉnh Sơn La",
+    "slug": "chieng-sung",
+    "type": "commune"
+  },
+  {
+    "code": "02652",
+    "name": "Chiềng Sơn",
+    "fullName": "Xã Chiềng Sơn, Tỉnh Sơn La",
+    "slug": "chieng-son",
+    "type": "commune"
+  },
+  {
+    "code": "02655",
+    "name": "Tường Hạ",
+    "fullName": "Xã Tường Hạ, Tỉnh Sơn La",
+    "slug": "tuong-ha",
+    "type": "commune"
+  },
+  {
+    "code": "02657",
+    "name": "Mường Chiên",
+    "fullName": "Xã Mường Chiên, Tỉnh Sơn La",
+    "slug": "muong-chien",
+    "type": "commune"
+  },
+  {
+    "code": "02676",
+    "name": "Tà Hộc",
+    "fullName": "Xã Tà Hộc, Tỉnh Sơn La",
+    "slug": "ta-hoc",
+    "type": "commune"
+  },
+  {
+    "code": "02698",
+    "name": "Pắc Ngà",
+    "fullName": "Xã Pắc Ngà, Tỉnh Sơn La",
+    "slug": "pac-nga",
+    "type": "commune"
+  },
+  {
+    "code": "02719",
+    "name": "Mường Bang",
+    "fullName": "Xã Mường Bang, Tỉnh Sơn La",
+    "slug": "muong-bang",
+    "type": "commune"
+  },
+  {
+    "code": "02734",
+    "name": "Yên Sơn",
+    "fullName": "Xã Yên Sơn, Tỉnh Sơn La",
+    "slug": "yen-son",
+    "type": "commune"
+  },
+  {
+    "code": "02750",
+    "name": "Phiêng Khoài",
+    "fullName": "Xã Phiêng Khoài, Tỉnh Sơn La",
+    "slug": "phieng-khoai",
+    "type": "commune"
+  },
+  {
+    "code": "02755",
+    "name": "Huổi Một",
+    "fullName": "Xã Huổi Một, Tỉnh Sơn La",
+    "slug": "huoi-mot",
+    "type": "commune"
+  },
+  {
+    "code": "02778",
+    "name": "Ngọc Chiến",
+    "fullName": "Xã Ngọc Chiến, Tỉnh Sơn La",
+    "slug": "ngoc-chien",
+    "type": "commune"
+  },
+  {
+    "code": "02819",
+    "name": "Mường Chanh",
+    "fullName": "Xã Mường Chanh, Tỉnh Sơn La",
+    "slug": "muong-chanh",
+    "type": "commune"
+  },
+  {
+    "code": "02823",
+    "name": "Tà Xùa",
+    "fullName": "Xã Tà Xùa, Tỉnh Sơn La",
+    "slug": "ta-xua",
+    "type": "commune"
+  },
+  {
+    "code": "02827",
+    "name": "Lóng Phiêng",
+    "fullName": "Xã Lóng Phiêng, Tỉnh Sơn La",
+    "slug": "long-phieng",
+    "type": "commune"
+  },
+  {
+    "code": "02849",
+    "name": "Mường Lạn",
+    "fullName": "Xã Mường Lạn, Tỉnh Sơn La",
+    "slug": "muong-lan",
+    "type": "commune"
+  },
+  {
+    "code": "02866",
+    "name": "Mường Bám",
+    "fullName": "Xã Mường Bám, Tỉnh Sơn La",
+    "slug": "muong-bam",
+    "type": "commune"
+  },
+  {
+    "code": "02908",
+    "name": "Xuân Nha",
+    "fullName": "Xã Xuân Nha, Tỉnh Sơn La",
+    "slug": "xuan-nha",
+    "type": "commune"
+  },
+  {
+    "code": "02929",
+    "name": "Kim Bon",
+    "fullName": "Xã Kim Bon, Tỉnh Sơn La",
+    "slug": "kim-bon",
+    "type": "commune"
+  },
+  {
+    "code": "02943",
+    "name": "Lóng Sập",
+    "fullName": "Xã Lóng Sập, Tỉnh Sơn La",
+    "slug": "long-sap",
+    "type": "commune"
+  },
+  {
+    "code": "02948",
+    "name": "Mường Sại",
+    "fullName": "Xã Mường Sại, Tỉnh Sơn La",
+    "slug": "muong-sai",
+    "type": "commune"
+  },
+  {
+    "code": "03029",
+    "name": "Long Hẹ",
+    "fullName": "Xã Long Hẹ, Tỉnh Sơn La",
+    "slug": "long-he",
+    "type": "commune"
+  },
+  {
+    "code": "03080",
+    "name": "Xím Vàng",
+    "fullName": "Xã Xím Vàng, Tỉnh Sơn La",
+    "slug": "xim-vang",
+    "type": "commune"
+  },
+  {
+    "code": "03135",
+    "name": "Tân Phong",
+    "fullName": "Xã Tân Phong, Tỉnh Sơn La",
+    "slug": "tan-phong",
+    "type": "commune"
+  },
+  {
+    "code": "03139",
+    "name": "Chiềng Sại",
+    "fullName": "Xã Chiềng Sại, Tỉnh Sơn La",
+    "slug": "chieng-sai",
+    "type": "commune"
+  },
+  {
+    "code": "03178",
+    "name": "Suối Tọ",
+    "fullName": "Xã Suối Tọ, Tỉnh Sơn La",
+    "slug": "suoi-to",
+    "type": "commune"
+  },
+  {
+    "code": "03279",
+    "name": "Mường Lèo",
+    "fullName": "Xã Mường Lèo, Tỉnh Sơn La",
+    "slug": "muong-leo",
+    "type": "commune"
+  }
+]

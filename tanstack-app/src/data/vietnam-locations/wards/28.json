@@ -1,0 +1,947 @@
+[
+  {
+    "code": "00052",
+    "name": "Quy Nhơn",
+    "fullName": "Phường Quy Nhơn, Tỉnh Gia Lai",
+    "slug": "quy-nhon",
+    "type": "ward"
+  },
+  {
+    "code": "00196",
+    "name": "Pleiku",
+    "fullName": "Phường Pleiku, Tỉnh Gia Lai",
+    "slug": "pleiku",
+    "type": "ward"
+  },
+  {
+    "code": "00210",
+    "name": "Tuy Phước",
+    "fullName": "Xã Tuy Phước, Tỉnh Gia Lai",
+    "slug": "tuy-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "00245",
+    "name": "Quy Nhơn Nam",
+    "fullName": "Phường Quy Nhơn Nam, Tỉnh Gia Lai",
+    "slug": "quy-nhon-nam",
+    "type": "ward"
+  },
+  {
+    "code": "00294",
+    "name": "Chư Sê",
+    "fullName": "Xã Chư Sê, Tỉnh Gia Lai",
+    "slug": "chu-se",
+    "type": "commune"
+  },
+  {
+    "code": "00343",
+    "name": "Diên Hồng",
+    "fullName": "Phường Diên Hồng, Tỉnh Gia Lai",
+    "slug": "dien-hong",
+    "type": "ward"
+  },
+  {
+    "code": "00419",
+    "name": "Tuy Phước Đông",
+    "fullName": "Xã Tuy Phước Đông, Tỉnh Gia Lai",
+    "slug": "tuy-phuoc-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00535",
+    "name": "Phù Cát",
+    "fullName": "Xã Phù Cát, Tỉnh Gia Lai",
+    "slug": "phu-cat",
+    "type": "commune"
+  },
+  {
+    "code": "00566",
+    "name": "An Khê",
+    "fullName": "Phường An Khê, Tỉnh Gia Lai",
+    "slug": "an-khe",
+    "type": "ward"
+  },
+  {
+    "code": "00588",
+    "name": "Tuy Phước Bắc",
+    "fullName": "Xã Tuy Phước Bắc, Tỉnh Gia Lai",
+    "slug": "tuy-phuoc-bac",
+    "type": "commune"
+  },
+  {
+    "code": "00594",
+    "name": "An Nhơn",
+    "fullName": "Phường An Nhơn, Tỉnh Gia Lai",
+    "slug": "an-nhon",
+    "type": "ward"
+  },
+  {
+    "code": "00595",
+    "name": "Phú Thiện",
+    "fullName": "Xã Phú Thiện, Tỉnh Gia Lai",
+    "slug": "phu-thien",
+    "type": "commune"
+  },
+  {
+    "code": "00609",
+    "name": "Tây Sơn",
+    "fullName": "Xã Tây Sơn, Tỉnh Gia Lai",
+    "slug": "tay-son",
+    "type": "commune"
+  },
+  {
+    "code": "00615",
+    "name": "Thống Nhất",
+    "fullName": "Phường Thống Nhất, Tỉnh Gia Lai",
+    "slug": "thong-nhat",
+    "type": "ward"
+  },
+  {
+    "code": "00653",
+    "name": "Quy Nhơn Đông",
+    "fullName": "Phường Quy Nhơn Đông, Tỉnh Gia Lai",
+    "slug": "quy-nhon-dong",
+    "type": "ward"
+  },
+  {
+    "code": "00679",
+    "name": "Hội Phú",
+    "fullName": "Phường Hội Phú, Tỉnh Gia Lai",
+    "slug": "hoi-phu",
+    "type": "ward"
+  },
+  {
+    "code": "00696",
+    "name": "Quy Nhơn Bắc",
+    "fullName": "Phường Quy Nhơn Bắc, Tỉnh Gia Lai",
+    "slug": "quy-nhon-bac",
+    "type": "ward"
+  },
+  {
+    "code": "00701",
+    "name": "Đề Gi",
+    "fullName": "Xã Đề Gi, Tỉnh Gia Lai",
+    "slug": "de-gi",
+    "type": "commune"
+  },
+  {
+    "code": "00733",
+    "name": "Hoài Nhơn Đông",
+    "fullName": "Phường Hoài Nhơn Đông, Tỉnh Gia Lai",
+    "slug": "hoai-nhon-dong",
+    "type": "ward"
+  },
+  {
+    "code": "00734",
+    "name": "Hoài Nhơn Bắc",
+    "fullName": "Phường Hoài Nhơn Bắc, Tỉnh Gia Lai",
+    "slug": "hoai-nhon-bac",
+    "type": "ward"
+  },
+  {
+    "code": "00775",
+    "name": "Phù Mỹ Đông",
+    "fullName": "Xã Phù Mỹ Đông, Tỉnh Gia Lai",
+    "slug": "phu-my-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00782",
+    "name": "Hoài Nhơn",
+    "fullName": "Phường Hoài Nhơn, Tỉnh Gia Lai",
+    "slug": "hoai-nhon",
+    "type": "ward"
+  },
+  {
+    "code": "00794",
+    "name": "Bình Định",
+    "fullName": "Phường Bình Định, Tỉnh Gia Lai",
+    "slug": "binh-dinh",
+    "type": "ward"
+  },
+  {
+    "code": "00837",
+    "name": "Bồng Sơn",
+    "fullName": "Phường Bồng Sơn, Tỉnh Gia Lai",
+    "slug": "bong-son",
+    "type": "ward"
+  },
+  {
+    "code": "00859",
+    "name": "Biển Hồ",
+    "fullName": "Xã Biển Hồ, Tỉnh Gia Lai",
+    "slug": "bien-ho",
+    "type": "commune"
+  },
+  {
+    "code": "00873",
+    "name": "An Phú",
+    "fullName": "Phường An Phú, Tỉnh Gia Lai",
+    "slug": "an-phu",
+    "type": "ward"
+  },
+  {
+    "code": "00985",
+    "name": "An Nhơn Bắc",
+    "fullName": "Phường An Nhơn Bắc, Tỉnh Gia Lai",
+    "slug": "an-nhon-bac",
+    "type": "ward"
+  },
+  {
+    "code": "01008",
+    "name": "An Lương",
+    "fullName": "Xã An Lương, Tỉnh Gia Lai",
+    "slug": "an-luong",
+    "type": "commune"
+  },
+  {
+    "code": "01047",
+    "name": "Phú Túc",
+    "fullName": "Xã Phú Túc, Tỉnh Gia Lai",
+    "slug": "phu-tuc",
+    "type": "commune"
+  },
+  {
+    "code": "01051",
+    "name": "Ia Hrung",
+    "fullName": "Xã Ia Hrung, Tỉnh Gia Lai",
+    "slug": "ia-hrung",
+    "type": "commune"
+  },
+  {
+    "code": "01052",
+    "name": "Ia Hrú",
+    "fullName": "Xã Ia Hrú, Tỉnh Gia Lai",
+    "slug": "ia-hru",
+    "type": "commune"
+  },
+  {
+    "code": "01059",
+    "name": "Đak Đoa",
+    "fullName": "Xã Đak Đoa, Tỉnh Gia Lai",
+    "slug": "dak-doa",
+    "type": "commune"
+  },
+  {
+    "code": "01122",
+    "name": "Tuy Phước Tây",
+    "fullName": "Xã Tuy Phước Tây, Tỉnh Gia Lai",
+    "slug": "tuy-phuoc-tay",
+    "type": "commune"
+  },
+  {
+    "code": "01183",
+    "name": "Hoài Ân",
+    "fullName": "Xã Hoài Ân, Tỉnh Gia Lai",
+    "slug": "hoai-an",
+    "type": "commune"
+  },
+  {
+    "code": "01230",
+    "name": "Bình An",
+    "fullName": "Xã Bình An, Tỉnh Gia Lai",
+    "slug": "binh-an",
+    "type": "commune"
+  },
+  {
+    "code": "01242",
+    "name": "Chư Prông",
+    "fullName": "Xã Chư Prông, Tỉnh Gia Lai",
+    "slug": "chu-prong",
+    "type": "commune"
+  },
+  {
+    "code": "01257",
+    "name": "Cát Tiến",
+    "fullName": "Xã Cát Tiến, Tỉnh Gia Lai",
+    "slug": "cat-tien",
+    "type": "commune"
+  },
+  {
+    "code": "01269",
+    "name": "Chư Pưh",
+    "fullName": "Xã Chư Pưh, Tỉnh Gia Lai",
+    "slug": "chu-puh",
+    "type": "commune"
+  },
+  {
+    "code": "01329",
+    "name": "Hoài Nhơn Nam",
+    "fullName": "Phường Hoài Nhơn Nam, Tỉnh Gia Lai",
+    "slug": "hoai-nhon-nam",
+    "type": "ward"
+  },
+  {
+    "code": "01394",
+    "name": "An Nhơn Nam",
+    "fullName": "Phường An Nhơn Nam, Tỉnh Gia Lai",
+    "slug": "an-nhon-nam",
+    "type": "ward"
+  },
+  {
+    "code": "01410",
+    "name": "Bờ Ngoong",
+    "fullName": "Xã Bờ Ngoong, Tỉnh Gia Lai",
+    "slug": "bo-ngoong",
+    "type": "commune"
+  },
+  {
+    "code": "01441",
+    "name": "Ia Băng",
+    "fullName": "Xã Ia Băng, Tỉnh Gia Lai",
+    "slug": "ia-bang",
+    "type": "commune"
+  },
+  {
+    "code": "01444",
+    "name": "Ia Pa",
+    "fullName": "Xã Ia Pa, Tỉnh Gia Lai",
+    "slug": "ia-pa",
+    "type": "commune"
+  },
+  {
+    "code": "01455",
+    "name": "An Bình",
+    "fullName": "Phường An Bình, Tỉnh Gia Lai",
+    "slug": "an-binh",
+    "type": "ward"
+  },
+  {
+    "code": "01483",
+    "name": "Xuân An",
+    "fullName": "Xã Xuân An, Tỉnh Gia Lai",
+    "slug": "xuan-an",
+    "type": "commune"
+  },
+  {
+    "code": "01495",
+    "name": "Mang Yang",
+    "fullName": "Xã Mang Yang, Tỉnh Gia Lai",
+    "slug": "mang-yang",
+    "type": "commune"
+  },
+  {
+    "code": "01595",
+    "name": "Ia Krái",
+    "fullName": "Xã Ia Krái, Tỉnh Gia Lai",
+    "slug": "ia-krai",
+    "type": "commune"
+  },
+  {
+    "code": "01609",
+    "name": "Phù Mỹ Bắc",
+    "fullName": "Xã Phù Mỹ Bắc, Tỉnh Gia Lai",
+    "slug": "phu-my-bac",
+    "type": "commune"
+  },
+  {
+    "code": "01627",
+    "name": "Phù Mỹ",
+    "fullName": "Xã Phù Mỹ, Tỉnh Gia Lai",
+    "slug": "phu-my",
+    "type": "commune"
+  },
+  {
+    "code": "01716",
+    "name": "Bình Dương",
+    "fullName": "Xã Bình Dương, Tỉnh Gia Lai",
+    "slug": "binh-duong",
+    "type": "commune"
+  },
+  {
+    "code": "01728",
+    "name": "Phù Mỹ Nam",
+    "fullName": "Xã Phù Mỹ Nam, Tỉnh Gia Lai",
+    "slug": "phu-my-nam",
+    "type": "commune"
+  },
+  {
+    "code": "01763",
+    "name": "Ayun Pa",
+    "fullName": "Phường Ayun Pa, Tỉnh Gia Lai",
+    "slug": "ayun-pa",
+    "type": "ward"
+  },
+  {
+    "code": "01793",
+    "name": "An Nhơn Đông",
+    "fullName": "Phường An Nhơn Đông, Tỉnh Gia Lai",
+    "slug": "an-nhon-dong",
+    "type": "ward"
+  },
+  {
+    "code": "01813",
+    "name": "Hòa Hội",
+    "fullName": "Xã Hòa Hội, Tỉnh Gia Lai",
+    "slug": "hoa-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "01842",
+    "name": "Ngô Mây",
+    "fullName": "Xã Ngô Mây, Tỉnh Gia Lai",
+    "slug": "ngo-may",
+    "type": "commune"
+  },
+  {
+    "code": "01850",
+    "name": "Hoài Nhơn Tây",
+    "fullName": "Phường Hoài Nhơn Tây, Tỉnh Gia Lai",
+    "slug": "hoai-nhon-tay",
+    "type": "ward"
+  },
+  {
+    "code": "01878",
+    "name": "Kbang",
+    "fullName": "Xã Kbang, Tỉnh Gia Lai",
+    "slug": "kbang",
+    "type": "commune"
+  },
+  {
+    "code": "01902",
+    "name": "Ia Ko",
+    "fullName": "Xã Ia Ko, Tỉnh Gia Lai",
+    "slug": "ia-ko",
+    "type": "commune"
+  },
+  {
+    "code": "01909",
+    "name": "Quy Nhơn Tây",
+    "fullName": "Phường Quy Nhơn Tây, Tỉnh Gia Lai",
+    "slug": "quy-nhon-tay",
+    "type": "ward"
+  },
+  {
+    "code": "01910",
+    "name": "Tam Quan",
+    "fullName": "Phường Tam Quan, Tỉnh Gia Lai",
+    "slug": "tam-quan",
+    "type": "ward"
+  },
+  {
+    "code": "01926",
+    "name": "Ia Grai",
+    "fullName": "Xã Ia Grai, Tỉnh Gia Lai",
+    "slug": "ia-grai",
+    "type": "commune"
+  },
+  {
+    "code": "01963",
+    "name": "Ia Le",
+    "fullName": "Xã Ia Le, Tỉnh Gia Lai",
+    "slug": "ia-le",
+    "type": "commune"
+  },
+  {
+    "code": "02013",
+    "name": "Đức Cơ",
+    "fullName": "Xã Đức Cơ, Tỉnh Gia Lai",
+    "slug": "duc-co",
+    "type": "commune"
+  },
+  {
+    "code": "02035",
+    "name": "Ia Phí",
+    "fullName": "Xã Ia Phí, Tỉnh Gia Lai",
+    "slug": "ia-phi",
+    "type": "commune"
+  },
+  {
+    "code": "02036",
+    "name": "Bình Phú",
+    "fullName": "Xã Bình Phú, Tỉnh Gia Lai",
+    "slug": "binh-phu",
+    "type": "commune"
+  },
+  {
+    "code": "02056",
+    "name": "Ia Lâu",
+    "fullName": "Xã Ia Lâu, Tỉnh Gia Lai",
+    "slug": "ia-lau",
+    "type": "commune"
+  },
+  {
+    "code": "02068",
+    "name": "Ia Krêl",
+    "fullName": "Xã Ia Krêl, Tỉnh Gia Lai",
+    "slug": "ia-krel",
+    "type": "commune"
+  },
+  {
+    "code": "02092",
+    "name": "KDang",
+    "fullName": "Xã KDang, Tỉnh Gia Lai",
+    "slug": "kdang",
+    "type": "commune"
+  },
+  {
+    "code": "02100",
+    "name": "Ia Rsai",
+    "fullName": "Xã Ia Rsai, Tỉnh Gia Lai",
+    "slug": "ia-rsai",
+    "type": "commune"
+  },
+  {
+    "code": "02104",
+    "name": "Kon Gang",
+    "fullName": "Xã Kon Gang, Tỉnh Gia Lai",
+    "slug": "kon-gang",
+    "type": "commune"
+  },
+  {
+    "code": "02108",
+    "name": "Bình Hiệp",
+    "fullName": "Xã Bình Hiệp, Tỉnh Gia Lai",
+    "slug": "binh-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "02110",
+    "name": "Ân Hảo",
+    "fullName": "Xã Ân Hảo, Tỉnh Gia Lai",
+    "slug": "an-hao",
+    "type": "commune"
+  },
+  {
+    "code": "02122",
+    "name": "Bàu Cạn",
+    "fullName": "Xã Bàu Cạn, Tỉnh Gia Lai",
+    "slug": "bau-can",
+    "type": "commune"
+  },
+  {
+    "code": "02125",
+    "name": "Uar",
+    "fullName": "Xã Uar, Tỉnh Gia Lai",
+    "slug": "uar",
+    "type": "commune"
+  },
+  {
+    "code": "02153",
+    "name": "Bình Khê",
+    "fullName": "Xã Bình Khê, Tỉnh Gia Lai",
+    "slug": "binh-khe",
+    "type": "commune"
+  },
+  {
+    "code": "02156",
+    "name": "Chư A Thai",
+    "fullName": "Xã Chư A Thai, Tỉnh Gia Lai",
+    "slug": "chu-a-thai",
+    "type": "commune"
+  },
+  {
+    "code": "02159",
+    "name": "Vạn Đức",
+    "fullName": "Xã Vạn Đức, Tỉnh Gia Lai",
+    "slug": "van-duc",
+    "type": "commune"
+  },
+  {
+    "code": "02177",
+    "name": "Ia Hiao",
+    "fullName": "Xã Ia Hiao, Tỉnh Gia Lai",
+    "slug": "ia-hiao",
+    "type": "commune"
+  },
+  {
+    "code": "02209",
+    "name": "Kông Chro",
+    "fullName": "Xã Kông Chro, Tỉnh Gia Lai",
+    "slug": "kong-chro",
+    "type": "commune"
+  },
+  {
+    "code": "02242",
+    "name": "Ia Pia",
+    "fullName": "Xã Ia Pia, Tỉnh Gia Lai",
+    "slug": "ia-pia",
+    "type": "commune"
+  },
+  {
+    "code": "02246",
+    "name": "Ia Tul",
+    "fullName": "Xã Ia Tul, Tỉnh Gia Lai",
+    "slug": "ia-tul",
+    "type": "commune"
+  },
+  {
+    "code": "02250",
+    "name": "An Nhơn Tây",
+    "fullName": "Xã An Nhơn Tây, Tỉnh Gia Lai",
+    "slug": "an-nhon-tay",
+    "type": "commune"
+  },
+  {
+    "code": "02272",
+    "name": "Cửu An",
+    "fullName": "Xã Cửu An, Tỉnh Gia Lai",
+    "slug": "cuu-an",
+    "type": "commune"
+  },
+  {
+    "code": "02297",
+    "name": "Chư Păh",
+    "fullName": "Xã Chư Păh, Tỉnh Gia Lai",
+    "slug": "chu-pah",
+    "type": "commune"
+  },
+  {
+    "code": "02339",
+    "name": "Ia Boòng",
+    "fullName": "Xã Ia Boòng, Tỉnh Gia Lai",
+    "slug": "ia-boong",
+    "type": "commune"
+  },
+  {
+    "code": "02357",
+    "name": "Ân Tường",
+    "fullName": "Xã Ân Tường, Tỉnh Gia Lai",
+    "slug": "an-tuong",
+    "type": "commune"
+  },
+  {
+    "code": "02358",
+    "name": "Đak Pơ",
+    "fullName": "Xã Đak Pơ, Tỉnh Gia Lai",
+    "slug": "dak-po",
+    "type": "commune"
+  },
+  {
+    "code": "02362",
+    "name": "Phù Mỹ Tây",
+    "fullName": "Xã Phù Mỹ Tây, Tỉnh Gia Lai",
+    "slug": "phu-my-tay",
+    "type": "commune"
+  },
+  {
+    "code": "02405",
+    "name": "Ia Dơk",
+    "fullName": "Xã Ia Dơk, Tỉnh Gia Lai",
+    "slug": "ia-dok",
+    "type": "commune"
+  },
+  {
+    "code": "02414",
+    "name": "Lơ Pang",
+    "fullName": "Xã Lơ Pang, Tỉnh Gia Lai",
+    "slug": "lo-pang",
+    "type": "commune"
+  },
+  {
+    "code": "02432",
+    "name": "Kông Bơ La",
+    "fullName": "Xã Kông Bơ La, Tỉnh Gia Lai",
+    "slug": "kong-bo-la",
+    "type": "commune"
+  },
+  {
+    "code": "02433",
+    "name": "Ia Tôr",
+    "fullName": "Xã Ia Tôr, Tỉnh Gia Lai",
+    "slug": "ia-tor",
+    "type": "commune"
+  },
+  {
+    "code": "02436",
+    "name": "Albá",
+    "fullName": "Xã Albá, Tỉnh Gia Lai",
+    "slug": "alba",
+    "type": "commune"
+  },
+  {
+    "code": "02455",
+    "name": "Ia Khươl",
+    "fullName": "Xã Ia Khươl, Tỉnh Gia Lai",
+    "slug": "ia-khuol",
+    "type": "commune"
+  },
+  {
+    "code": "02473",
+    "name": "Canh Vinh",
+    "fullName": "Xã Canh Vinh, Tỉnh Gia Lai",
+    "slug": "canh-vinh",
+    "type": "commune"
+  },
+  {
+    "code": "02485",
+    "name": "Ia Dreh",
+    "fullName": "Xã Ia Dreh, Tỉnh Gia Lai",
+    "slug": "ia-dreh",
+    "type": "commune"
+  },
+  {
+    "code": "02536",
+    "name": "Gào",
+    "fullName": "Xã Gào, Tỉnh Gia Lai",
+    "slug": "gao",
+    "type": "commune"
+  },
+  {
+    "code": "02599",
+    "name": "Đak Sơmei",
+    "fullName": "Xã Đak Sơmei, Tỉnh Gia Lai",
+    "slug": "dak-somei",
+    "type": "commune"
+  },
+  {
+    "code": "02630",
+    "name": "Pờ Tó",
+    "fullName": "Xã Pờ Tó, Tỉnh Gia Lai",
+    "slug": "po-to",
+    "type": "commune"
+  },
+  {
+    "code": "02634",
+    "name": "Hra",
+    "fullName": "Xã Hra, Tỉnh Gia Lai",
+    "slug": "hra",
+    "type": "commune"
+  },
+  {
+    "code": "02638",
+    "name": "Hội Sơn",
+    "fullName": "Xã Hội Sơn, Tỉnh Gia Lai",
+    "slug": "hoi-son",
+    "type": "commune"
+  },
+  {
+    "code": "02647",
+    "name": "An Hòa",
+    "fullName": "Xã An Hòa, Tỉnh Gia Lai",
+    "slug": "an-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02660",
+    "name": "Kim Sơn",
+    "fullName": "Xã Kim Sơn, Tỉnh Gia Lai",
+    "slug": "kim-son",
+    "type": "commune"
+  },
+  {
+    "code": "02669",
+    "name": "Vân Canh",
+    "fullName": "Xã Vân Canh, Tỉnh Gia Lai",
+    "slug": "van-canh",
+    "type": "commune"
+  },
+  {
+    "code": "02670",
+    "name": "Ia Ly",
+    "fullName": "Xã Ia Ly, Tỉnh Gia Lai",
+    "slug": "ia-ly",
+    "type": "commune"
+  },
+  {
+    "code": "02727",
+    "name": "Ayun",
+    "fullName": "Xã Ayun, Tỉnh Gia Lai",
+    "slug": "ayun",
+    "type": "commune"
+  },
+  {
+    "code": "02816",
+    "name": "Ia O",
+    "fullName": "Xã Ia O, Tỉnh Gia Lai",
+    "slug": "ia-o",
+    "type": "commune"
+  },
+  {
+    "code": "02829",
+    "name": "Sơn Lang",
+    "fullName": "Xã Sơn Lang, Tỉnh Gia Lai",
+    "slug": "son-lang",
+    "type": "commune"
+  },
+  {
+    "code": "02848",
+    "name": "Tơ Tung",
+    "fullName": "Xã Tơ Tung, Tỉnh Gia Lai",
+    "slug": "to-tung",
+    "type": "commune"
+  },
+  {
+    "code": "02853",
+    "name": "Vĩnh Thịnh",
+    "fullName": "Xã Vĩnh Thịnh, Tỉnh Gia Lai",
+    "slug": "vinh-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "02869",
+    "name": "An Lão",
+    "fullName": "Xã An Lão, Tỉnh Gia Lai",
+    "slug": "an-lao",
+    "type": "commune"
+  },
+  {
+    "code": "02904",
+    "name": "Ia Rbol",
+    "fullName": "Xã Ia Rbol, Tỉnh Gia Lai",
+    "slug": "ia-rbol",
+    "type": "commune"
+  },
+  {
+    "code": "02914",
+    "name": "Vĩnh Thạnh",
+    "fullName": "Xã Vĩnh Thạnh, Tỉnh Gia Lai",
+    "slug": "vinh-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02922",
+    "name": "Kon Chiêng",
+    "fullName": "Xã Kon Chiêng, Tỉnh Gia Lai",
+    "slug": "kon-chieng",
+    "type": "commune"
+  },
+  {
+    "code": "02957",
+    "name": "Chư Krey",
+    "fullName": "Xã Chư Krey, Tỉnh Gia Lai",
+    "slug": "chu-krey",
+    "type": "commune"
+  },
+  {
+    "code": "02984",
+    "name": "Ia Dom",
+    "fullName": "Xã Ia Dom, Tỉnh Gia Lai",
+    "slug": "ia-dom",
+    "type": "commune"
+  },
+  {
+    "code": "02990",
+    "name": "Vĩnh Quang",
+    "fullName": "Xã Vĩnh Quang, Tỉnh Gia Lai",
+    "slug": "vinh-quang",
+    "type": "commune"
+  },
+  {
+    "code": "02992",
+    "name": "Ia Chia",
+    "fullName": "Xã Ia Chia, Tỉnh Gia Lai",
+    "slug": "ia-chia",
+    "type": "commune"
+  },
+  {
+    "code": "03007",
+    "name": "Ya Ma",
+    "fullName": "Xã Ya Ma, Tỉnh Gia Lai",
+    "slug": "ya-ma",
+    "type": "commune"
+  },
+  {
+    "code": "03011",
+    "name": "Ya Hội",
+    "fullName": "Xã Ya Hội, Tỉnh Gia Lai",
+    "slug": "ya-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "03018",
+    "name": "Ia Nan",
+    "fullName": "Xã Ia Nan, Tỉnh Gia Lai",
+    "slug": "ia-nan",
+    "type": "commune"
+  },
+  {
+    "code": "03037",
+    "name": "Ia Sao",
+    "fullName": "Xã Ia Sao, Tỉnh Gia Lai",
+    "slug": "ia-sao",
+    "type": "commune"
+  },
+  {
+    "code": "03051",
+    "name": "SRó",
+    "fullName": "Xã SRó, Tỉnh Gia Lai",
+    "slug": "sro",
+    "type": "commune"
+  },
+  {
+    "code": "03073",
+    "name": "Chơ Long",
+    "fullName": "Xã Chơ Long, Tỉnh Gia Lai",
+    "slug": "cho-long",
+    "type": "commune"
+  },
+  {
+    "code": "03157",
+    "name": "An Vinh",
+    "fullName": "Xã An Vinh, Tỉnh Gia Lai",
+    "slug": "an-vinh",
+    "type": "commune"
+  },
+  {
+    "code": "03180",
+    "name": "Đak Rong",
+    "fullName": "Xã Đak Rong, Tỉnh Gia Lai",
+    "slug": "dak-rong",
+    "type": "commune"
+  },
+  {
+    "code": "03194",
+    "name": "Krong",
+    "fullName": "Xã Krong, Tỉnh Gia Lai",
+    "slug": "krong",
+    "type": "commune"
+  },
+  {
+    "code": "03195",
+    "name": "Vĩnh Sơn",
+    "fullName": "Xã Vĩnh Sơn, Tỉnh Gia Lai",
+    "slug": "vinh-son",
+    "type": "commune"
+  },
+  {
+    "code": "03207",
+    "name": "Ia Pnôn",
+    "fullName": "Xã Ia Pnôn, Tỉnh Gia Lai",
+    "slug": "ia-pnon",
+    "type": "commune"
+  },
+  {
+    "code": "03262",
+    "name": "Đăk Song",
+    "fullName": "Xã Đăk Song, Tỉnh Gia Lai",
+    "slug": "dak-song",
+    "type": "commune"
+  },
+  {
+    "code": "03283",
+    "name": "Ia Púch",
+    "fullName": "Xã Ia Púch, Tỉnh Gia Lai",
+    "slug": "ia-puch",
+    "type": "commune"
+  },
+  {
+    "code": "03295",
+    "name": "Ia Mơ",
+    "fullName": "Xã Ia Mơ, Tỉnh Gia Lai",
+    "slug": "ia-mo",
+    "type": "commune"
+  },
+  {
+    "code": "03309",
+    "name": "Canh Liên",
+    "fullName": "Xã Canh Liên, Tỉnh Gia Lai",
+    "slug": "canh-lien",
+    "type": "commune"
+  },
+  {
+    "code": "03310",
+    "name": "Nhơn Châu",
+    "fullName": "Xã Nhơn Châu, Tỉnh Gia Lai",
+    "slug": "nhon-chau",
+    "type": "commune"
+  },
+  {
+    "code": "03314",
+    "name": "An Toàn",
+    "fullName": "Xã An Toàn, Tỉnh Gia Lai",
+    "slug": "an-toan",
+    "type": "commune"
+  }
+]

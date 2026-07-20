@@ -1,0 +1,674 @@
+[
+  {
+    "code": "00152",
+    "name": "Bình Sơn",
+    "fullName": "Xã Bình Sơn, Tỉnh Quảng Ngãi",
+    "slug": "binh-son",
+    "type": "commune"
+  },
+  {
+    "code": "00209",
+    "name": "Kon Tum",
+    "fullName": "Phường Kon Tum, Tỉnh Quảng Ngãi",
+    "slug": "kon-tum",
+    "type": "ward"
+  },
+  {
+    "code": "00241",
+    "name": "Nghĩa Lộ",
+    "fullName": "Phường Nghĩa Lộ, Tỉnh Quảng Ngãi",
+    "slug": "nghia-lo",
+    "type": "ward"
+  },
+  {
+    "code": "00265",
+    "name": "An Phú",
+    "fullName": "Xã An Phú, Tỉnh Quảng Ngãi",
+    "slug": "an-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00382",
+    "name": "Cẩm Thành",
+    "fullName": "Phường Cẩm Thành, Tỉnh Quảng Ngãi",
+    "slug": "cam-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "00387",
+    "name": "Vạn Tường",
+    "fullName": "Xã Vạn Tường, Tỉnh Quảng Ngãi",
+    "slug": "van-tuong",
+    "type": "commune"
+  },
+  {
+    "code": "00407",
+    "name": "Tư Nghĩa",
+    "fullName": "Xã Tư Nghĩa, Tỉnh Quảng Ngãi",
+    "slug": "tu-nghia",
+    "type": "commune"
+  },
+  {
+    "code": "00445",
+    "name": "Đông Sơn",
+    "fullName": "Xã Đông Sơn, Tỉnh Quảng Ngãi",
+    "slug": "dong-son",
+    "type": "commune"
+  },
+  {
+    "code": "00450",
+    "name": "Tịnh Khê",
+    "fullName": "Xã Tịnh Khê, Tỉnh Quảng Ngãi",
+    "slug": "tinh-khe",
+    "type": "commune"
+  },
+  {
+    "code": "00598",
+    "name": "Trương Quang Trọng",
+    "fullName": "Phường Trương Quang Trọng, Tỉnh Quảng Ngãi",
+    "slug": "truong-quang-trong",
+    "type": "ward"
+  },
+  {
+    "code": "00702",
+    "name": "Trà Câu",
+    "fullName": "Phường Trà Câu, Tỉnh Quảng Ngãi",
+    "slug": "tra-cau",
+    "type": "ward"
+  },
+  {
+    "code": "00807",
+    "name": "Sơn Tịnh",
+    "fullName": "Xã Sơn Tịnh, Tỉnh Quảng Ngãi",
+    "slug": "son-tinh",
+    "type": "commune"
+  },
+  {
+    "code": "00842",
+    "name": "Đức Phổ",
+    "fullName": "Phường Đức Phổ, Tỉnh Quảng Ngãi",
+    "slug": "duc-pho",
+    "type": "ward"
+  },
+  {
+    "code": "00916",
+    "name": "Long Phụng",
+    "fullName": "Xã Long Phụng, Tỉnh Quảng Ngãi",
+    "slug": "long-phung",
+    "type": "commune"
+  },
+  {
+    "code": "00938",
+    "name": "Nghĩa Giang",
+    "fullName": "Xã Nghĩa Giang, Tỉnh Quảng Ngãi",
+    "slug": "nghia-giang",
+    "type": "commune"
+  },
+  {
+    "code": "00974",
+    "name": "Vệ Giang",
+    "fullName": "Xã Vệ Giang, Tỉnh Quảng Ngãi",
+    "slug": "ve-giang",
+    "type": "commune"
+  },
+  {
+    "code": "00978",
+    "name": "Mỏ Cày",
+    "fullName": "Xã Mỏ Cày, Tỉnh Quảng Ngãi",
+    "slug": "mo-cay",
+    "type": "commune"
+  },
+  {
+    "code": "01115",
+    "name": "Lân Phong",
+    "fullName": "Xã Lân Phong, Tỉnh Quảng Ngãi",
+    "slug": "lan-phong",
+    "type": "commune"
+  },
+  {
+    "code": "01116",
+    "name": "Đăk Hà",
+    "fullName": "Xã Đăk Hà, Tỉnh Quảng Ngãi",
+    "slug": "dak-ha",
+    "type": "commune"
+  },
+  {
+    "code": "01117",
+    "name": "Đình Cương",
+    "fullName": "Xã Đình Cương, Tỉnh Quảng Ngãi",
+    "slug": "dinh-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "01129",
+    "name": "Mộ Đức",
+    "fullName": "Xã Mộ Đức, Tỉnh Quảng Ngãi",
+    "slug": "mo-duc",
+    "type": "commune"
+  },
+  {
+    "code": "01164",
+    "name": "Bờ Y",
+    "fullName": "Xã Bờ Y, Tỉnh Quảng Ngãi",
+    "slug": "bo-y",
+    "type": "commune"
+  },
+  {
+    "code": "01173",
+    "name": "Đăk Tô",
+    "fullName": "Xã Đăk Tô, Tỉnh Quảng Ngãi",
+    "slug": "dak-to",
+    "type": "commune"
+  },
+  {
+    "code": "01345",
+    "name": "Sa Huỳnh",
+    "fullName": "Phường Sa Huỳnh, Tỉnh Quảng Ngãi",
+    "slug": "sa-huynh",
+    "type": "ward"
+  },
+  {
+    "code": "01401",
+    "name": "Nghĩa Hành",
+    "fullName": "Xã Nghĩa Hành, Tỉnh Quảng Ngãi",
+    "slug": "nghia-hanh",
+    "type": "commune"
+  },
+  {
+    "code": "01534",
+    "name": "Đăk Cấm",
+    "fullName": "Phường Đăk Cấm, Tỉnh Quảng Ngãi",
+    "slug": "dak-cam",
+    "type": "ward"
+  },
+  {
+    "code": "01590",
+    "name": "Khánh Cường",
+    "fullName": "Xã Khánh Cường, Tỉnh Quảng Ngãi",
+    "slug": "khanh-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "01680",
+    "name": "Thọ Phong",
+    "fullName": "Xã Thọ Phong, Tỉnh Quảng Ngãi",
+    "slug": "tho-phong",
+    "type": "commune"
+  },
+  {
+    "code": "01844",
+    "name": "Lý Sơn",
+    "fullName": "Đặc khu Lý Sơn, Tỉnh Quảng Ngãi",
+    "slug": "ly-son",
+    "type": "commune"
+  },
+  {
+    "code": "01884",
+    "name": "Đăk Rơ Wa",
+    "fullName": "Xã Đăk Rơ Wa, Tỉnh Quảng Ngãi",
+    "slug": "dak-ro-wa",
+    "type": "commune"
+  },
+  {
+    "code": "01915",
+    "name": "Sơn Hạ",
+    "fullName": "Xã Sơn Hạ, Tỉnh Quảng Ngãi",
+    "slug": "son-ha",
+    "type": "commune"
+  },
+  {
+    "code": "01993",
+    "name": "Phước Giang",
+    "fullName": "Xã Phước Giang, Tỉnh Quảng Ngãi",
+    "slug": "phuoc-giang",
+    "type": "commune"
+  },
+  {
+    "code": "02032",
+    "name": "Ngọk Bay",
+    "fullName": "Xã Ngọk Bay, Tỉnh Quảng Ngãi",
+    "slug": "ngok-bay",
+    "type": "commune"
+  },
+  {
+    "code": "02133",
+    "name": "Trường Giang",
+    "fullName": "Xã Trường Giang, Tỉnh Quảng Ngãi",
+    "slug": "truong-giang",
+    "type": "commune"
+  },
+  {
+    "code": "02145",
+    "name": "Đăk BLa",
+    "fullName": "Phường Đăk BLa, Tỉnh Quảng Ngãi",
+    "slug": "dak-bla",
+    "type": "ward"
+  },
+  {
+    "code": "02166",
+    "name": "Ba Gia",
+    "fullName": "Xã Ba Gia, Tỉnh Quảng Ngãi",
+    "slug": "ba-gia",
+    "type": "commune"
+  },
+  {
+    "code": "02192",
+    "name": "Ia Chim",
+    "fullName": "Xã Ia Chim, Tỉnh Quảng Ngãi",
+    "slug": "ia-chim",
+    "type": "commune"
+  },
+  {
+    "code": "02217",
+    "name": "Trà Giang",
+    "fullName": "Xã Trà Giang, Tỉnh Quảng Ngãi",
+    "slug": "tra-giang",
+    "type": "commune"
+  },
+  {
+    "code": "02243",
+    "name": "Sơn Hà",
+    "fullName": "Xã Sơn Hà, Tỉnh Quảng Ngãi",
+    "slug": "son-ha",
+    "type": "commune"
+  },
+  {
+    "code": "02265",
+    "name": "Sa Thầy",
+    "fullName": "Xã Sa Thầy, Tỉnh Quảng Ngãi",
+    "slug": "sa-thay",
+    "type": "commune"
+  },
+  {
+    "code": "02277",
+    "name": "Bình Minh",
+    "fullName": "Xã Bình Minh, Tỉnh Quảng Ngãi",
+    "slug": "binh-minh",
+    "type": "commune"
+  },
+  {
+    "code": "02284",
+    "name": "Đăk Mar",
+    "fullName": "Xã Đăk Mar, Tỉnh Quảng Ngãi",
+    "slug": "dak-mar",
+    "type": "commune"
+  },
+  {
+    "code": "02335",
+    "name": "Trà Bồng",
+    "fullName": "Xã Trà Bồng, Tỉnh Quảng Ngãi",
+    "slug": "tra-bong",
+    "type": "commune"
+  },
+  {
+    "code": "02369",
+    "name": "Kon Braih",
+    "fullName": "Xã Kon Braih, Tỉnh Quảng Ngãi",
+    "slug": "kon-braih",
+    "type": "commune"
+  },
+  {
+    "code": "02391",
+    "name": "Nguyễn Nghiêm",
+    "fullName": "Xã Nguyễn Nghiêm, Tỉnh Quảng Ngãi",
+    "slug": "nguyen-nghiem",
+    "type": "commune"
+  },
+  {
+    "code": "02434",
+    "name": "Đăk Pék",
+    "fullName": "Xã Đăk Pék, Tỉnh Quảng Ngãi",
+    "slug": "dak-pek",
+    "type": "commune"
+  },
+  {
+    "code": "02439",
+    "name": "Thiện Tín",
+    "fullName": "Xã Thiện Tín, Tỉnh Quảng Ngãi",
+    "slug": "thien-tin",
+    "type": "commune"
+  },
+  {
+    "code": "02457",
+    "name": "Sơn Linh",
+    "fullName": "Xã Sơn Linh, Tỉnh Quảng Ngãi",
+    "slug": "son-linh",
+    "type": "commune"
+  },
+  {
+    "code": "02477",
+    "name": "Sa Bình",
+    "fullName": "Xã Sa Bình, Tỉnh Quảng Ngãi",
+    "slug": "sa-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02490",
+    "name": "Bình Chương",
+    "fullName": "Xã Bình Chương, Tỉnh Quảng Ngãi",
+    "slug": "binh-chuong",
+    "type": "commune"
+  },
+  {
+    "code": "02551",
+    "name": "Dục Nông",
+    "fullName": "Xã Dục Nông, Tỉnh Quảng Ngãi",
+    "slug": "duc-nong",
+    "type": "commune"
+  },
+  {
+    "code": "02677",
+    "name": "Đăk Môn",
+    "fullName": "Xã Đăk Môn, Tỉnh Quảng Ngãi",
+    "slug": "dak-mon",
+    "type": "commune"
+  },
+  {
+    "code": "02692",
+    "name": "Kon Đào",
+    "fullName": "Xã Kon Đào, Tỉnh Quảng Ngãi",
+    "slug": "kon-dao",
+    "type": "commune"
+  },
+  {
+    "code": "02729",
+    "name": "Sa Loong",
+    "fullName": "Xã Sa Loong, Tỉnh Quảng Ngãi",
+    "slug": "sa-loong",
+    "type": "commune"
+  },
+  {
+    "code": "02731",
+    "name": "Sơn Thủy",
+    "fullName": "Xã Sơn Thủy, Tỉnh Quảng Ngãi",
+    "slug": "son-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "02762",
+    "name": "Ba Tơ",
+    "fullName": "Xã Ba Tơ, Tỉnh Quảng Ngãi",
+    "slug": "ba-to",
+    "type": "commune"
+  },
+  {
+    "code": "02772",
+    "name": "Đăk Ui",
+    "fullName": "Xã Đăk Ui, Tỉnh Quảng Ngãi",
+    "slug": "dak-ui",
+    "type": "commune"
+  },
+  {
+    "code": "02773",
+    "name": "Sơn Kỳ",
+    "fullName": "Xã Sơn Kỳ, Tỉnh Quảng Ngãi",
+    "slug": "son-ky",
+    "type": "commune"
+  },
+  {
+    "code": "02782",
+    "name": "Ngọk Réo",
+    "fullName": "Xã Ngọk Réo, Tỉnh Quảng Ngãi",
+    "slug": "ngok-reo",
+    "type": "commune"
+  },
+  {
+    "code": "02795",
+    "name": "Tây Trà",
+    "fullName": "Xã Tây Trà, Tỉnh Quảng Ngãi",
+    "slug": "tay-tra",
+    "type": "commune"
+  },
+  {
+    "code": "02810",
+    "name": "Ba Vì",
+    "fullName": "Xã Ba Vì, Tỉnh Quảng Ngãi",
+    "slug": "ba-vi",
+    "type": "commune"
+  },
+  {
+    "code": "02824",
+    "name": "Đông Trà Bồng",
+    "fullName": "Xã Đông Trà Bồng, Tỉnh Quảng Ngãi",
+    "slug": "dong-tra-bong",
+    "type": "commune"
+  },
+  {
+    "code": "02825",
+    "name": "Đăk Pxi",
+    "fullName": "Xã Đăk Pxi, Tỉnh Quảng Ngãi",
+    "slug": "dak-pxi",
+    "type": "commune"
+  },
+  {
+    "code": "02867",
+    "name": "Ya Ly",
+    "fullName": "Xã Ya Ly, Tỉnh Quảng Ngãi",
+    "slug": "ya-ly",
+    "type": "commune"
+  },
+  {
+    "code": "02911",
+    "name": "Minh Long",
+    "fullName": "Xã Minh Long, Tỉnh Quảng Ngãi",
+    "slug": "minh-long",
+    "type": "commune"
+  },
+  {
+    "code": "02927",
+    "name": "Sơn Mai",
+    "fullName": "Xã Sơn Mai, Tỉnh Quảng Ngãi",
+    "slug": "son-mai",
+    "type": "commune"
+  },
+  {
+    "code": "02930",
+    "name": "Sơn Tây",
+    "fullName": "Xã Sơn Tây, Tỉnh Quảng Ngãi",
+    "slug": "son-tay",
+    "type": "commune"
+  },
+  {
+    "code": "02949",
+    "name": "Ba Tô",
+    "fullName": "Xã Ba Tô, Tỉnh Quảng Ngãi",
+    "slug": "ba-to",
+    "type": "commune"
+  },
+  {
+    "code": "02962",
+    "name": "Măng Đen",
+    "fullName": "Xã Măng Đen, Tỉnh Quảng Ngãi",
+    "slug": "mang-den",
+    "type": "commune"
+  },
+  {
+    "code": "02972",
+    "name": "Kon Plông",
+    "fullName": "Xã Kon Plông, Tỉnh Quảng Ngãi",
+    "slug": "kon-plong",
+    "type": "commune"
+  },
+  {
+    "code": "02988",
+    "name": "Măng Bút",
+    "fullName": "Xã Măng Bút, Tỉnh Quảng Ngãi",
+    "slug": "mang-but",
+    "type": "commune"
+  },
+  {
+    "code": "03001",
+    "name": "Đăk Tờ Kan",
+    "fullName": "Xã Đăk Tờ Kan, Tỉnh Quảng Ngãi",
+    "slug": "dak-to-kan",
+    "type": "commune"
+  },
+  {
+    "code": "03016",
+    "name": "Măng Ri",
+    "fullName": "Xã Măng Ri, Tỉnh Quảng Ngãi",
+    "slug": "mang-ri",
+    "type": "commune"
+  },
+  {
+    "code": "03031",
+    "name": "Ngọk Tụ",
+    "fullName": "Xã Ngọk Tụ, Tỉnh Quảng Ngãi",
+    "slug": "ngok-tu",
+    "type": "commune"
+  },
+  {
+    "code": "03052",
+    "name": "Đăk Rve",
+    "fullName": "Xã Đăk Rve, Tỉnh Quảng Ngãi",
+    "slug": "dak-rve",
+    "type": "commune"
+  },
+  {
+    "code": "03058",
+    "name": "Tây Trà Bồng",
+    "fullName": "Xã Tây Trà Bồng, Tỉnh Quảng Ngãi",
+    "slug": "tay-tra-bong",
+    "type": "commune"
+  },
+  {
+    "code": "03078",
+    "name": "Ba Động",
+    "fullName": "Xã Ba Động, Tỉnh Quảng Ngãi",
+    "slug": "ba-dong",
+    "type": "commune"
+  },
+  {
+    "code": "03090",
+    "name": "Thanh Bồng",
+    "fullName": "Xã Thanh Bồng, Tỉnh Quảng Ngãi",
+    "slug": "thanh-bong",
+    "type": "commune"
+  },
+  {
+    "code": "03091",
+    "name": "Sơn Tây Thượng",
+    "fullName": "Xã Sơn Tây Thượng, Tỉnh Quảng Ngãi",
+    "slug": "son-tay-thuong",
+    "type": "commune"
+  },
+  {
+    "code": "03106",
+    "name": "Ba Dinh",
+    "fullName": "Xã Ba Dinh, Tỉnh Quảng Ngãi",
+    "slug": "ba-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "03111",
+    "name": "Ia Tơi",
+    "fullName": "Xã Ia Tơi, Tỉnh Quảng Ngãi",
+    "slug": "ia-toi",
+    "type": "commune"
+  },
+  {
+    "code": "03142",
+    "name": "Tu Mơ Rông",
+    "fullName": "Xã Tu Mơ Rông, Tỉnh Quảng Ngãi",
+    "slug": "tu-mo-rong",
+    "type": "commune"
+  },
+  {
+    "code": "03143",
+    "name": "Đăk Sao",
+    "fullName": "Xã Đăk Sao, Tỉnh Quảng Ngãi",
+    "slug": "dak-sao",
+    "type": "commune"
+  },
+  {
+    "code": "03158",
+    "name": "Xốp",
+    "fullName": "Xã Xốp, Tỉnh Quảng Ngãi",
+    "slug": "xop",
+    "type": "commune"
+  },
+  {
+    "code": "03166",
+    "name": "Ngọc Linh",
+    "fullName": "Xã Ngọc Linh, Tỉnh Quảng Ngãi",
+    "slug": "ngoc-linh",
+    "type": "commune"
+  },
+  {
+    "code": "03167",
+    "name": "Ba Vinh",
+    "fullName": "Xã Ba Vinh, Tỉnh Quảng Ngãi",
+    "slug": "ba-vinh",
+    "type": "commune"
+  },
+  {
+    "code": "03173",
+    "name": "Rờ Kơi",
+    "fullName": "Xã Rờ Kơi, Tỉnh Quảng Ngãi",
+    "slug": "ro-koi",
+    "type": "commune"
+  },
+  {
+    "code": "03175",
+    "name": "Mô Rai",
+    "fullName": "Xã Mô Rai, Tỉnh Quảng Ngãi",
+    "slug": "mo-rai",
+    "type": "commune"
+  },
+  {
+    "code": "03202",
+    "name": "Đăk Kôi",
+    "fullName": "Xã Đăk Kôi, Tỉnh Quảng Ngãi",
+    "slug": "dak-koi",
+    "type": "commune"
+  },
+  {
+    "code": "03224",
+    "name": "Sơn Tây Hạ",
+    "fullName": "Xã Sơn Tây Hạ, Tỉnh Quảng Ngãi",
+    "slug": "son-tay-ha",
+    "type": "commune"
+  },
+  {
+    "code": "03230",
+    "name": "Đăk Plô",
+    "fullName": "Xã Đăk Plô, Tỉnh Quảng Ngãi",
+    "slug": "dak-plo",
+    "type": "commune"
+  },
+  {
+    "code": "03240",
+    "name": "Ba Xa",
+    "fullName": "Xã Ba Xa, Tỉnh Quảng Ngãi",
+    "slug": "ba-xa",
+    "type": "commune"
+  },
+  {
+    "code": "03248",
+    "name": "Đăk Long",
+    "fullName": "Xã Đăk Long, Tỉnh Quảng Ngãi",
+    "slug": "dak-long",
+    "type": "commune"
+  },
+  {
+    "code": "03256",
+    "name": "Ia Đal",
+    "fullName": "Xã Ia Đal, Tỉnh Quảng Ngãi",
+    "slug": "ia-dal",
+    "type": "commune"
+  },
+  {
+    "code": "03273",
+    "name": "Đặng Thùy Trâm",
+    "fullName": "Xã Đặng Thùy Trâm, Tỉnh Quảng Ngãi",
+    "slug": "dang-thuy-tram",
+    "type": "commune"
+  },
+  {
+    "code": "03277",
+    "name": "Cà Đam",
+    "fullName": "Xã Cà Đam, Tỉnh Quảng Ngãi",
+    "slug": "ca-dam",
+    "type": "commune"
+  }
+]

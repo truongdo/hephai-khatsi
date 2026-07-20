@@ -1,0 +1,870 @@
+[
+  {
+    "code": "00112",
+    "name": "Xuân Hương - Đà Lạt",
+    "fullName": "Phường Xuân Hương - Đà Lạt, Tỉnh Lâm Đồng",
+    "slug": "xuan-huong-da-lat",
+    "type": "ward"
+  },
+  {
+    "code": "00162",
+    "name": "Phan Rí Cửa",
+    "fullName": "Xã Phan Rí Cửa, Tỉnh Lâm Đồng",
+    "slug": "phan-ri-cua",
+    "type": "commune"
+  },
+  {
+    "code": "00170",
+    "name": "Phan Thiết",
+    "fullName": "Phường Phan Thiết, Tỉnh Lâm Đồng",
+    "slug": "phan-thiet",
+    "type": "ward"
+  },
+  {
+    "code": "00171",
+    "name": "Đức Trọng",
+    "fullName": "Xã Đức Trọng, Tỉnh Lâm Đồng",
+    "slug": "duc-trong",
+    "type": "commune"
+  },
+  {
+    "code": "00266",
+    "name": "Lâm Viên - Đà Lạt",
+    "fullName": "Phường Lâm Viên - Đà Lạt, Tỉnh Lâm Đồng",
+    "slug": "lam-vien-da-lat",
+    "type": "ward"
+  },
+  {
+    "code": "00276",
+    "name": "Liên Hương",
+    "fullName": "Xã Liên Hương, Tỉnh Lâm Đồng",
+    "slug": "lien-huong",
+    "type": "commune"
+  },
+  {
+    "code": "00335",
+    "name": "Di Linh",
+    "fullName": "Xã Di Linh, Tỉnh Lâm Đồng",
+    "slug": "di-linh",
+    "type": "commune"
+  },
+  {
+    "code": "00388",
+    "name": "La Gi",
+    "fullName": "Phường La Gi, Tỉnh Lâm Đồng",
+    "slug": "la-gi",
+    "type": "ward"
+  },
+  {
+    "code": "00452",
+    "name": "1 Bảo Lộc",
+    "fullName": "Phường 1 Bảo Lộc, Tỉnh Lâm Đồng",
+    "slug": "1-bao-loc",
+    "type": "ward"
+  },
+  {
+    "code": "00470",
+    "name": "Hàm Thắng",
+    "fullName": "Phường Hàm Thắng, Tỉnh Lâm Đồng",
+    "slug": "ham-thang",
+    "type": "ward"
+  },
+  {
+    "code": "00473",
+    "name": "3 Bảo Lộc",
+    "fullName": "Phường 3 Bảo Lộc, Tỉnh Lâm Đồng",
+    "slug": "3-bao-loc",
+    "type": "ward"
+  },
+  {
+    "code": "00483",
+    "name": "Phú Thuỷ",
+    "fullName": "Phường Phú Thuỷ, Tỉnh Lâm Đồng",
+    "slug": "phu-thuy",
+    "type": "ward"
+  },
+  {
+    "code": "00533",
+    "name": "B' Lao",
+    "fullName": "Phường B' Lao, Tỉnh Lâm Đồng",
+    "slug": "b-lao",
+    "type": "ward"
+  },
+  {
+    "code": "00540",
+    "name": "Bắc Bình",
+    "fullName": "Xã Bắc Bình, Tỉnh Lâm Đồng",
+    "slug": "bac-binh",
+    "type": "commune"
+  },
+  {
+    "code": "00542",
+    "name": "Hiệp Thạnh",
+    "fullName": "Xã Hiệp Thạnh, Tỉnh Lâm Đồng",
+    "slug": "hiep-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00546",
+    "name": "Đức Linh",
+    "fullName": "Xã Đức Linh, Tỉnh Lâm Đồng",
+    "slug": "duc-linh",
+    "type": "commune"
+  },
+  {
+    "code": "00560",
+    "name": "Hàm Thuận",
+    "fullName": "Xã Hàm Thuận, Tỉnh Lâm Đồng",
+    "slug": "ham-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "00572",
+    "name": "Mũi Né",
+    "fullName": "Phường Mũi Né, Tỉnh Lâm Đồng",
+    "slug": "mui-ne",
+    "type": "ward"
+  },
+  {
+    "code": "00586",
+    "name": "Cư Jút",
+    "fullName": "Xã Cư Jút, Tỉnh Lâm Đồng",
+    "slug": "cu-jut",
+    "type": "commune"
+  },
+  {
+    "code": "00587",
+    "name": "2 Bảo Lộc",
+    "fullName": "Phường 2 Bảo Lộc, Tỉnh Lâm Đồng",
+    "slug": "2-bao-loc",
+    "type": "ward"
+  },
+  {
+    "code": "00590",
+    "name": "Phước Hội",
+    "fullName": "Phường Phước Hội, Tỉnh Lâm Đồng",
+    "slug": "phuoc-hoi",
+    "type": "ward"
+  },
+  {
+    "code": "00610",
+    "name": "Cam Ly - Đà Lạt",
+    "fullName": "Phường Cam Ly - Đà Lạt, Tỉnh Lâm Đồng",
+    "slug": "cam-ly-da-lat",
+    "type": "ward"
+  },
+  {
+    "code": "00616",
+    "name": "Đinh Văn - Lâm Hà",
+    "fullName": "Xã Đinh Văn - Lâm Hà, Tỉnh Lâm Đồng",
+    "slug": "dinh-van-lam-ha",
+    "type": "commune"
+  },
+  {
+    "code": "00620",
+    "name": "Đức Lập",
+    "fullName": "Xã Đức Lập, Tỉnh Lâm Đồng",
+    "slug": "duc-lap",
+    "type": "commune"
+  },
+  {
+    "code": "00633",
+    "name": "Bình Thuận",
+    "fullName": "Phường Bình Thuận, Tỉnh Lâm Đồng",
+    "slug": "binh-thuan",
+    "type": "ward"
+  },
+  {
+    "code": "00642",
+    "name": "Hoài Đức",
+    "fullName": "Xã Hoài Đức, Tỉnh Lâm Đồng",
+    "slug": "hoai-duc",
+    "type": "commune"
+  },
+  {
+    "code": "00668",
+    "name": "Tánh Linh",
+    "fullName": "Xã Tánh Linh, Tỉnh Lâm Đồng",
+    "slug": "tanh-linh",
+    "type": "commune"
+  },
+  {
+    "code": "00715",
+    "name": "Đơn Dương",
+    "fullName": "Xã Đơn Dương, Tỉnh Lâm Đồng",
+    "slug": "don-duong",
+    "type": "commune"
+  },
+  {
+    "code": "00745",
+    "name": "Bảo Lâm 1",
+    "fullName": "Xã Bảo Lâm 1, Tỉnh Lâm Đồng",
+    "slug": "bao-lam-1",
+    "type": "commune"
+  },
+  {
+    "code": "00910",
+    "name": "Langbiang - Đà Lạt",
+    "fullName": "Phường Langbiang - Đà Lạt, Tỉnh Lâm Đồng",
+    "slug": "langbiang-da-lat",
+    "type": "ward"
+  },
+  {
+    "code": "00955",
+    "name": "Tân Hà - Lâm Hà",
+    "fullName": "Xã Tân Hà - Lâm Hà, Tỉnh Lâm Đồng",
+    "slug": "tan-ha-lam-ha",
+    "type": "commune"
+  },
+  {
+    "code": "00958",
+    "name": "Kiến Đức",
+    "fullName": "Xã Kiến Đức, Tỉnh Lâm Đồng",
+    "slug": "kien-duc",
+    "type": "commune"
+  },
+  {
+    "code": "01019",
+    "name": "Bắc Gia Nghĩa",
+    "fullName": "Phường Bắc Gia Nghĩa, Tỉnh Lâm Đồng",
+    "slug": "bac-gia-nghia",
+    "type": "ward"
+  },
+  {
+    "code": "01033",
+    "name": "Nam Thành",
+    "fullName": "Xã Nam Thành, Tỉnh Lâm Đồng",
+    "slug": "nam-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01110",
+    "name": "Xuân Trường - Đà Lạt",
+    "fullName": "Phường Xuân Trường - Đà Lạt, Tỉnh Lâm Đồng",
+    "slug": "xuan-truong-da-lat",
+    "type": "ward"
+  },
+  {
+    "code": "01142",
+    "name": "Nam Dong",
+    "fullName": "Xã Nam Dong, Tỉnh Lâm Đồng",
+    "slug": "nam-dong",
+    "type": "commune"
+  },
+  {
+    "code": "01174",
+    "name": "Hàm Tân",
+    "fullName": "Xã Hàm Tân, Tỉnh Lâm Đồng",
+    "slug": "ham-tan",
+    "type": "commune"
+  },
+  {
+    "code": "01200",
+    "name": "Quảng Tín",
+    "fullName": "Xã Quảng Tín, Tỉnh Lâm Đồng",
+    "slug": "quang-tin",
+    "type": "commune"
+  },
+  {
+    "code": "01260",
+    "name": "D'Ran",
+    "fullName": "Xã D'Ran, Tỉnh Lâm Đồng",
+    "slug": "dran",
+    "type": "commune"
+  },
+  {
+    "code": "01289",
+    "name": "Đức An",
+    "fullName": "Xã Đức An, Tỉnh Lâm Đồng",
+    "slug": "duc-an",
+    "type": "commune"
+  },
+  {
+    "code": "01295",
+    "name": "Bảo Lâm 2",
+    "fullName": "Xã Bảo Lâm 2, Tỉnh Lâm Đồng",
+    "slug": "bao-lam-2",
+    "type": "commune"
+  },
+  {
+    "code": "01311",
+    "name": "Bảo Lâm 3",
+    "fullName": "Xã Bảo Lâm 3, Tỉnh Lâm Đồng",
+    "slug": "bao-lam-3",
+    "type": "commune"
+  },
+  {
+    "code": "01322",
+    "name": "Hàm Thuận Nam",
+    "fullName": "Xã Hàm Thuận Nam, Tỉnh Lâm Đồng",
+    "slug": "ham-thuan-nam",
+    "type": "commune"
+  },
+  {
+    "code": "01326",
+    "name": "Nam Ban - Lâm Hà",
+    "fullName": "Xã Nam Ban - Lâm Hà, Tỉnh Lâm Đồng",
+    "slug": "nam-ban-lam-ha",
+    "type": "commune"
+  },
+  {
+    "code": "01354",
+    "name": "Phú Quý",
+    "fullName": "Đặc khu Phú Quý, Tỉnh Lâm Đồng",
+    "slug": "phu-quy",
+    "type": "commune"
+  },
+  {
+    "code": "01375",
+    "name": "Hòa Ninh",
+    "fullName": "Xã Hòa Ninh, Tỉnh Lâm Đồng",
+    "slug": "hoa-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01383",
+    "name": "Tuy Đức",
+    "fullName": "Xã Tuy Đức, Tỉnh Lâm Đồng",
+    "slug": "tuy-duc",
+    "type": "commune"
+  },
+  {
+    "code": "01398",
+    "name": "Đắk Mil",
+    "fullName": "Xã Đắk Mil, Tỉnh Lâm Đồng",
+    "slug": "dak-mil",
+    "type": "commune"
+  },
+  {
+    "code": "01409",
+    "name": "Hàm Kiệm",
+    "fullName": "Xã Hàm Kiệm, Tỉnh Lâm Đồng",
+    "slug": "ham-kiem",
+    "type": "commune"
+  },
+  {
+    "code": "01421",
+    "name": "Tân Thành",
+    "fullName": "Xã Tân Thành, Tỉnh Lâm Đồng",
+    "slug": "tan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01426",
+    "name": "Hàm Liêm",
+    "fullName": "Xã Hàm Liêm, Tỉnh Lâm Đồng",
+    "slug": "ham-liem",
+    "type": "commune"
+  },
+  {
+    "code": "01432",
+    "name": "Quảng Tân",
+    "fullName": "Xã Quảng Tân, Tỉnh Lâm Đồng",
+    "slug": "quang-tan",
+    "type": "commune"
+  },
+  {
+    "code": "01453",
+    "name": "Đồng Kho",
+    "fullName": "Xã Đồng Kho, Tỉnh Lâm Đồng",
+    "slug": "dong-kho",
+    "type": "commune"
+  },
+  {
+    "code": "01468",
+    "name": "Đạ Tẻh",
+    "fullName": "Xã Đạ Tẻh, Tỉnh Lâm Đồng",
+    "slug": "da-teh",
+    "type": "commune"
+  },
+  {
+    "code": "01528",
+    "name": "Hồng Sơn",
+    "fullName": "Xã Hồng Sơn, Tỉnh Lâm Đồng",
+    "slug": "hong-son",
+    "type": "commune"
+  },
+  {
+    "code": "01529",
+    "name": "Hàm Thuận Bắc",
+    "fullName": "Xã Hàm Thuận Bắc, Tỉnh Lâm Đồng",
+    "slug": "ham-thuan-bac",
+    "type": "commune"
+  },
+  {
+    "code": "01548",
+    "name": "Trà Tân",
+    "fullName": "Xã Trà Tân, Tỉnh Lâm Đồng",
+    "slug": "tra-tan",
+    "type": "commune"
+  },
+  {
+    "code": "01550",
+    "name": "Bảo Thuận",
+    "fullName": "Xã Bảo Thuận, Tỉnh Lâm Đồng",
+    "slug": "bao-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "01588",
+    "name": "Tân Hội",
+    "fullName": "Xã Tân Hội, Tỉnh Lâm Đồng",
+    "slug": "tan-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "01602",
+    "name": "Tuyên Quang",
+    "fullName": "Xã Tuyên Quang, Tỉnh Lâm Đồng",
+    "slug": "tuyen-quang",
+    "type": "commune"
+  },
+  {
+    "code": "01638",
+    "name": "Tiến Thành",
+    "fullName": "Phường Tiến Thành, Tỉnh Lâm Đồng",
+    "slug": "tien-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "01656",
+    "name": "Đắk Sắk",
+    "fullName": "Xã Đắk Sắk, Tỉnh Lâm Đồng",
+    "slug": "dak-sak",
+    "type": "commune"
+  },
+  {
+    "code": "01664",
+    "name": "Ka Đô",
+    "fullName": "Xã Ka Đô, Tỉnh Lâm Đồng",
+    "slug": "ka-do",
+    "type": "commune"
+  },
+  {
+    "code": "01668",
+    "name": "Nhân Cơ",
+    "fullName": "Xã Nhân Cơ, Tỉnh Lâm Đồng",
+    "slug": "nhan-co",
+    "type": "commune"
+  },
+  {
+    "code": "01761",
+    "name": "Trường Xuân",
+    "fullName": "Xã Trường Xuân, Tỉnh Lâm Đồng",
+    "slug": "truong-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "01780",
+    "name": "Sơn Mỹ",
+    "fullName": "Xã Sơn Mỹ, Tỉnh Lâm Đồng",
+    "slug": "son-my",
+    "type": "commune"
+  },
+  {
+    "code": "01846",
+    "name": "Tân Hải",
+    "fullName": "Xã Tân Hải, Tỉnh Lâm Đồng",
+    "slug": "tan-hai",
+    "type": "commune"
+  },
+  {
+    "code": "01886",
+    "name": "Phú Sơn - Lâm Hà",
+    "fullName": "Xã Phú Sơn - Lâm Hà, Tỉnh Lâm Đồng",
+    "slug": "phu-son-lam-ha",
+    "type": "commune"
+  },
+  {
+    "code": "01891",
+    "name": "Hồng Thái",
+    "fullName": "Xã Hồng Thái, Tỉnh Lâm Đồng",
+    "slug": "hong-thai",
+    "type": "commune"
+  },
+  {
+    "code": "01907",
+    "name": "Quảng Lập",
+    "fullName": "Xã Quảng Lập, Tỉnh Lâm Đồng",
+    "slug": "quang-lap",
+    "type": "commune"
+  },
+  {
+    "code": "01953",
+    "name": "Đắk Wil",
+    "fullName": "Xã Đắk Wil, Tỉnh Lâm Đồng",
+    "slug": "dak-wil",
+    "type": "commune"
+  },
+  {
+    "code": "01968",
+    "name": "Đông Gia Nghĩa",
+    "fullName": "Phường Đông Gia Nghĩa, Tỉnh Lâm Đồng",
+    "slug": "dong-gia-nghia",
+    "type": "ward"
+  },
+  {
+    "code": "01988",
+    "name": "Lương Sơn",
+    "fullName": "Xã Lương Sơn, Tỉnh Lâm Đồng",
+    "slug": "luong-son",
+    "type": "commune"
+  },
+  {
+    "code": "02009",
+    "name": "Nam Gia Nghĩa",
+    "fullName": "Phường Nam Gia Nghĩa, Tỉnh Lâm Đồng",
+    "slug": "nam-gia-nghia",
+    "type": "ward"
+  },
+  {
+    "code": "02041",
+    "name": "Phúc Thọ - Lâm Hà",
+    "fullName": "Xã Phúc Thọ - Lâm Hà, Tỉnh Lâm Đồng",
+    "slug": "phuc-tho-lam-ha",
+    "type": "commune"
+  },
+  {
+    "code": "02055",
+    "name": "Đạ Huoai",
+    "fullName": "Xã Đạ Huoai, Tỉnh Lâm Đồng",
+    "slug": "da-huoai",
+    "type": "commune"
+  },
+  {
+    "code": "02062",
+    "name": "Tà Hine",
+    "fullName": "Xã Tà Hine, Tỉnh Lâm Đồng",
+    "slug": "ta-hine",
+    "type": "commune"
+  },
+  {
+    "code": "02089",
+    "name": "Tà Đùng",
+    "fullName": "Xã Tà Đùng, Tỉnh Lâm Đồng",
+    "slug": "ta-dung",
+    "type": "commune"
+  },
+  {
+    "code": "02095",
+    "name": "Krông Nô",
+    "fullName": "Xã Krông Nô, Tỉnh Lâm Đồng",
+    "slug": "krong-no",
+    "type": "commune"
+  },
+  {
+    "code": "02098",
+    "name": "Thuận An",
+    "fullName": "Xã Thuận An, Tỉnh Lâm Đồng",
+    "slug": "thuan-an",
+    "type": "commune"
+  },
+  {
+    "code": "02119",
+    "name": "Tân Minh",
+    "fullName": "Xã Tân Minh, Tỉnh Lâm Đồng",
+    "slug": "tan-minh",
+    "type": "commune"
+  },
+  {
+    "code": "02134",
+    "name": "Quảng Sơn",
+    "fullName": "Xã Quảng Sơn, Tỉnh Lâm Đồng",
+    "slug": "quang-son",
+    "type": "commune"
+  },
+  {
+    "code": "02165",
+    "name": "Nam Đà",
+    "fullName": "Xã Nam Đà, Tỉnh Lâm Đồng",
+    "slug": "nam-da",
+    "type": "commune"
+  },
+  {
+    "code": "02169",
+    "name": "Gia Hiệp",
+    "fullName": "Xã Gia Hiệp, Tỉnh Lâm Đồng",
+    "slug": "gia-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "02183",
+    "name": "Sông Lũy",
+    "fullName": "Xã Sông Lũy, Tỉnh Lâm Đồng",
+    "slug": "song-luy",
+    "type": "commune"
+  },
+  {
+    "code": "02220",
+    "name": "Nghị Đức",
+    "fullName": "Xã Nghị Đức, Tỉnh Lâm Đồng",
+    "slug": "nghi-duc",
+    "type": "commune"
+  },
+  {
+    "code": "02229",
+    "name": "Đinh Trang Thượng",
+    "fullName": "Xã Đinh Trang Thượng, Tỉnh Lâm Đồng",
+    "slug": "dinh-trang-thuong",
+    "type": "commune"
+  },
+  {
+    "code": "02263",
+    "name": "Hòa Bắc",
+    "fullName": "Xã Hòa Bắc, Tỉnh Lâm Đồng",
+    "slug": "hoa-bac",
+    "type": "commune"
+  },
+  {
+    "code": "02275",
+    "name": "Cát Tiên",
+    "fullName": "Xã Cát Tiên, Tỉnh Lâm Đồng",
+    "slug": "cat-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02281",
+    "name": "Nâm Nung",
+    "fullName": "Xã Nâm Nung, Tỉnh Lâm Đồng",
+    "slug": "nam-nung",
+    "type": "commune"
+  },
+  {
+    "code": "02282",
+    "name": "Tân Lập",
+    "fullName": "Xã Tân Lập, Tỉnh Lâm Đồng",
+    "slug": "tan-lap",
+    "type": "commune"
+  },
+  {
+    "code": "02299",
+    "name": "Hải Ninh",
+    "fullName": "Xã Hải Ninh, Tỉnh Lâm Đồng",
+    "slug": "hai-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "02310",
+    "name": "Thuận Hạnh",
+    "fullName": "Xã Thuận Hạnh, Tỉnh Lâm Đồng",
+    "slug": "thuan-hanh",
+    "type": "commune"
+  },
+  {
+    "code": "02333",
+    "name": "Bắc Ruộng",
+    "fullName": "Xã Bắc Ruộng, Tỉnh Lâm Đồng",
+    "slug": "bac-ruong",
+    "type": "commune"
+  },
+  {
+    "code": "02406",
+    "name": "Quảng Khê",
+    "fullName": "Xã Quảng Khê, Tỉnh Lâm Đồng",
+    "slug": "quang-khe",
+    "type": "commune"
+  },
+  {
+    "code": "02423",
+    "name": "Quảng Phú",
+    "fullName": "Xã Quảng Phú, Tỉnh Lâm Đồng",
+    "slug": "quang-phu",
+    "type": "commune"
+  },
+  {
+    "code": "02445",
+    "name": "Đam Rông 1",
+    "fullName": "Xã Đam Rông 1, Tỉnh Lâm Đồng",
+    "slug": "dam-rong-1",
+    "type": "commune"
+  },
+  {
+    "code": "02452",
+    "name": "Đam Rông 4",
+    "fullName": "Xã Đam Rông 4, Tỉnh Lâm Đồng",
+    "slug": "dam-rong-4",
+    "type": "commune"
+  },
+  {
+    "code": "02484",
+    "name": "Suối Kiết",
+    "fullName": "Xã Suối Kiết, Tỉnh Lâm Đồng",
+    "slug": "suoi-kiet",
+    "type": "commune"
+  },
+  {
+    "code": "02504",
+    "name": "Ninh Gia",
+    "fullName": "Xã Ninh Gia, Tỉnh Lâm Đồng",
+    "slug": "ninh-gia",
+    "type": "commune"
+  },
+  {
+    "code": "02506",
+    "name": "Hàm Thạnh",
+    "fullName": "Xã Hàm Thạnh, Tỉnh Lâm Đồng",
+    "slug": "ham-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02507",
+    "name": "Đam Rông 2",
+    "fullName": "Xã Đam Rông 2, Tỉnh Lâm Đồng",
+    "slug": "dam-rong-2",
+    "type": "commune"
+  },
+  {
+    "code": "02544",
+    "name": "Đam Rông 3",
+    "fullName": "Xã Đam Rông 3, Tỉnh Lâm Đồng",
+    "slug": "dam-rong-3",
+    "type": "commune"
+  },
+  {
+    "code": "02563",
+    "name": "Vĩnh Hảo",
+    "fullName": "Xã Vĩnh Hảo, Tỉnh Lâm Đồng",
+    "slug": "vinh-hao",
+    "type": "commune"
+  },
+  {
+    "code": "02587",
+    "name": "Cát Tiên 2",
+    "fullName": "Xã Cát Tiên 2, Tỉnh Lâm Đồng",
+    "slug": "cat-tien-2",
+    "type": "commune"
+  },
+  {
+    "code": "02596",
+    "name": "Đạ Huoai 2",
+    "fullName": "Xã Đạ Huoai 2, Tỉnh Lâm Đồng",
+    "slug": "da-huoai-2",
+    "type": "commune"
+  },
+  {
+    "code": "02597",
+    "name": "Lạc Dương",
+    "fullName": "Xã Lạc Dương, Tỉnh Lâm Đồng",
+    "slug": "lac-duong",
+    "type": "commune"
+  },
+  {
+    "code": "02619",
+    "name": "Đạ Tẻh 2",
+    "fullName": "Xã Đạ Tẻh 2, Tỉnh Lâm Đồng",
+    "slug": "da-teh-2",
+    "type": "commune"
+  },
+  {
+    "code": "02705",
+    "name": "Tà Năng",
+    "fullName": "Xã Tà Năng, Tỉnh Lâm Đồng",
+    "slug": "ta-nang",
+    "type": "commune"
+  },
+  {
+    "code": "02726",
+    "name": "Đắk song",
+    "fullName": "Xã Đắk song, Tỉnh Lâm Đồng",
+    "slug": "dak-song",
+    "type": "commune"
+  },
+  {
+    "code": "02793",
+    "name": "Đạ Tẻh 3",
+    "fullName": "Xã Đạ Tẻh 3, Tỉnh Lâm Đồng",
+    "slug": "da-teh-3",
+    "type": "commune"
+  },
+  {
+    "code": "02797",
+    "name": "Bảo Lâm 5",
+    "fullName": "Xã Bảo Lâm 5, Tỉnh Lâm Đồng",
+    "slug": "bao-lam-5",
+    "type": "commune"
+  },
+  {
+    "code": "02799",
+    "name": "Hòa Thắng",
+    "fullName": "Xã Hòa Thắng, Tỉnh Lâm Đồng",
+    "slug": "hoa-thang",
+    "type": "commune"
+  },
+  {
+    "code": "02826",
+    "name": "Quảng Trực",
+    "fullName": "Xã Quảng Trực, Tỉnh Lâm Đồng",
+    "slug": "quang-truc",
+    "type": "commune"
+  },
+  {
+    "code": "02843",
+    "name": "Nam Hà - Lâm Hà",
+    "fullName": "Xã Nam Hà - Lâm Hà, Tỉnh Lâm Đồng",
+    "slug": "nam-ha-lam-ha",
+    "type": "commune"
+  },
+  {
+    "code": "02878",
+    "name": "Cát Tiên 3",
+    "fullName": "Xã Cát Tiên 3, Tỉnh Lâm Đồng",
+    "slug": "cat-tien-3",
+    "type": "commune"
+  },
+  {
+    "code": "02912",
+    "name": "Bảo Lâm 4",
+    "fullName": "Xã Bảo Lâm 4, Tỉnh Lâm Đồng",
+    "slug": "bao-lam-4",
+    "type": "commune"
+  },
+  {
+    "code": "02953",
+    "name": "Tuy Phong",
+    "fullName": "Xã Tuy Phong, Tỉnh Lâm Đồng",
+    "slug": "tuy-phong",
+    "type": "commune"
+  },
+  {
+    "code": "02963",
+    "name": "La Dạ",
+    "fullName": "Xã La Dạ, Tỉnh Lâm Đồng",
+    "slug": "la-da",
+    "type": "commune"
+  },
+  {
+    "code": "03021",
+    "name": "Quảng Hòa",
+    "fullName": "Xã Quảng Hòa, Tỉnh Lâm Đồng",
+    "slug": "quang-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "03089",
+    "name": "Phan Sơn",
+    "fullName": "Xã Phan Sơn, Tỉnh Lâm Đồng",
+    "slug": "phan-son",
+    "type": "commune"
+  },
+  {
+    "code": "03103",
+    "name": "Sơn Điền",
+    "fullName": "Xã Sơn Điền, Tỉnh Lâm Đồng",
+    "slug": "son-dien",
+    "type": "commune"
+  },
+  {
+    "code": "03153",
+    "name": "Đạ Huoai 3",
+    "fullName": "Xã Đạ Huoai 3, Tỉnh Lâm Đồng",
+    "slug": "da-huoai-3",
+    "type": "commune"
+  },
+  {
+    "code": "03254",
+    "name": "Đông Giang",
+    "fullName": "Xã Đông Giang, Tỉnh Lâm Đồng",
+    "slug": "dong-giang",
+    "type": "commune"
+  }
+]

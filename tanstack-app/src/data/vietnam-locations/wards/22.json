@@ -1,0 +1,667 @@
+[
+  {
+    "code": "00008",
+    "name": "Trấn Biên",
+    "fullName": "Phường Trấn Biên, Tỉnh Đồng Nai",
+    "slug": "tran-bien",
+    "type": "ward"
+  },
+  {
+    "code": "00019",
+    "name": "Long Bình",
+    "fullName": "Phường Long Bình, Tỉnh Đồng Nai",
+    "slug": "long-binh",
+    "type": "ward"
+  },
+  {
+    "code": "00041",
+    "name": "Tam Hiệp",
+    "fullName": "Phường Tam Hiệp, Tỉnh Đồng Nai",
+    "slug": "tam-hiep",
+    "type": "ward"
+  },
+  {
+    "code": "00093",
+    "name": "Bình Phước",
+    "fullName": "Phường Bình Phước, Tỉnh Đồng Nai",
+    "slug": "binh-phuoc",
+    "type": "ward"
+  },
+  {
+    "code": "00105",
+    "name": "Trảng Dài",
+    "fullName": "Phường Trảng Dài, Tỉnh Đồng Nai",
+    "slug": "trang-dai",
+    "type": "ward"
+  },
+  {
+    "code": "00108",
+    "name": "Xuân Lộc",
+    "fullName": "Xã Xuân Lộc, Tỉnh Đồng Nai",
+    "slug": "xuan-loc",
+    "type": "commune"
+  },
+  {
+    "code": "00117",
+    "name": "Tân Triều",
+    "fullName": "Phường Tân Triều, Tỉnh Đồng Nai",
+    "slug": "tan-trieu",
+    "type": "ward"
+  },
+  {
+    "code": "00140",
+    "name": "Long Thành",
+    "fullName": "Xã Long Thành, Tỉnh Đồng Nai",
+    "slug": "long-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00141",
+    "name": "Trảng Bom",
+    "fullName": "Xã Trảng Bom, Tỉnh Đồng Nai",
+    "slug": "trang-bom",
+    "type": "commune"
+  },
+  {
+    "code": "00168",
+    "name": "Định Quán",
+    "fullName": "Xã Định Quán, Tỉnh Đồng Nai",
+    "slug": "dinh-quan",
+    "type": "commune"
+  },
+  {
+    "code": "00182",
+    "name": "Bình Minh",
+    "fullName": "Xã Bình Minh, Tỉnh Đồng Nai",
+    "slug": "binh-minh",
+    "type": "commune"
+  },
+  {
+    "code": "00197",
+    "name": "Gia Kiệm",
+    "fullName": "Xã Gia Kiệm, Tỉnh Đồng Nai",
+    "slug": "gia-kiem",
+    "type": "commune"
+  },
+  {
+    "code": "00198",
+    "name": "Hố Nai",
+    "fullName": "Phường Hố Nai, Tỉnh Đồng Nai",
+    "slug": "ho-nai",
+    "type": "ward"
+  },
+  {
+    "code": "00203",
+    "name": "Nhơn Trạch",
+    "fullName": "Xã Nhơn Trạch, Tỉnh Đồng Nai",
+    "slug": "nhon-trach",
+    "type": "commune"
+  },
+  {
+    "code": "00204",
+    "name": "Xuân Hòa",
+    "fullName": "Xã Xuân Hòa, Tỉnh Đồng Nai",
+    "slug": "xuan-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00213",
+    "name": "Long Khánh",
+    "fullName": "Phường Long Khánh, Tỉnh Đồng Nai",
+    "slug": "long-khanh",
+    "type": "ward"
+  },
+  {
+    "code": "00218",
+    "name": "Tân Phú",
+    "fullName": "Xã Tân Phú, Tỉnh Đồng Nai",
+    "slug": "tan-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00229",
+    "name": "Biên Hòa",
+    "fullName": "Phường Biên Hòa, Tỉnh Đồng Nai",
+    "slug": "bien-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00235",
+    "name": "Long Hưng",
+    "fullName": "Phường Long Hưng, Tỉnh Đồng Nai",
+    "slug": "long-hung",
+    "type": "ward"
+  },
+  {
+    "code": "00256",
+    "name": "Dầu Giây",
+    "fullName": "Xã Dầu Giây, Tỉnh Đồng Nai",
+    "slug": "dau-giay",
+    "type": "commune"
+  },
+  {
+    "code": "00260",
+    "name": "Thống Nhất",
+    "fullName": "Xã Thống Nhất, Tỉnh Đồng Nai",
+    "slug": "thong-nhat",
+    "type": "commune"
+  },
+  {
+    "code": "00334",
+    "name": "Phước Tân",
+    "fullName": "Phường Phước Tân, Tỉnh Đồng Nai",
+    "slug": "phuoc-tan",
+    "type": "ward"
+  },
+  {
+    "code": "00361",
+    "name": "Phú Lâm",
+    "fullName": "Xã Phú Lâm, Tỉnh Đồng Nai",
+    "slug": "phu-lam",
+    "type": "commune"
+  },
+  {
+    "code": "00399",
+    "name": "An Phước",
+    "fullName": "Xã An Phước, Tỉnh Đồng Nai",
+    "slug": "an-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "00427",
+    "name": "Hưng Thịnh",
+    "fullName": "Xã Hưng Thịnh, Tỉnh Đồng Nai",
+    "slug": "hung-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "00451",
+    "name": "Phước Thái",
+    "fullName": "Xã Phước Thái, Tỉnh Đồng Nai",
+    "slug": "phuoc-thai",
+    "type": "commune"
+  },
+  {
+    "code": "00455",
+    "name": "Bàu Hàm",
+    "fullName": "Xã Bàu Hàm, Tỉnh Đồng Nai",
+    "slug": "bau-ham",
+    "type": "commune"
+  },
+  {
+    "code": "00459",
+    "name": "Đại Phước",
+    "fullName": "Xã Đại Phước, Tỉnh Đồng Nai",
+    "slug": "dai-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "00547",
+    "name": "Phước An",
+    "fullName": "Xã Phước An, Tỉnh Đồng Nai",
+    "slug": "phuoc-an",
+    "type": "commune"
+  },
+  {
+    "code": "00549",
+    "name": "Trị An",
+    "fullName": "Xã Trị An, Tỉnh Đồng Nai",
+    "slug": "tri-an",
+    "type": "commune"
+  },
+  {
+    "code": "00626",
+    "name": "Tam Phước",
+    "fullName": "Phường Tam Phước, Tỉnh Đồng Nai",
+    "slug": "tam-phuoc",
+    "type": "ward"
+  },
+  {
+    "code": "00640",
+    "name": "Xuân Đông",
+    "fullName": "Xã Xuân Đông, Tỉnh Đồng Nai",
+    "slug": "xuan-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00698",
+    "name": "Cẩm Mỹ",
+    "fullName": "Xã Cẩm Mỹ, Tỉnh Đồng Nai",
+    "slug": "cam-my",
+    "type": "commune"
+  },
+  {
+    "code": "00700",
+    "name": "Đồng Phú",
+    "fullName": "Xã Đồng Phú, Tỉnh Đồng Nai",
+    "slug": "dong-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00720",
+    "name": "Xuân Bắc",
+    "fullName": "Xã Xuân Bắc, Tỉnh Đồng Nai",
+    "slug": "xuan-bac",
+    "type": "commune"
+  },
+  {
+    "code": "00726",
+    "name": "Phước Bình",
+    "fullName": "Phường Phước Bình, Tỉnh Đồng Nai",
+    "slug": "phuoc-binh",
+    "type": "ward"
+  },
+  {
+    "code": "00806",
+    "name": "Long Phước",
+    "fullName": "Xã Long Phước, Tỉnh Đồng Nai",
+    "slug": "long-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "00836",
+    "name": "Chơn Thành",
+    "fullName": "Phường Chơn Thành, Tỉnh Đồng Nai",
+    "slug": "chon-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "00854",
+    "name": "Bình Long",
+    "fullName": "Phường Bình Long, Tỉnh Đồng Nai",
+    "slug": "binh-long",
+    "type": "ward"
+  },
+  {
+    "code": "00942",
+    "name": "Tân An",
+    "fullName": "Xã Tân An, Tỉnh Đồng Nai",
+    "slug": "tan-an",
+    "type": "commune"
+  },
+  {
+    "code": "00980",
+    "name": "Tân Tiến",
+    "fullName": "Xã Tân Tiến, Tỉnh Đồng Nai",
+    "slug": "tan-tien",
+    "type": "commune"
+  },
+  {
+    "code": "01063",
+    "name": "Bảo Vinh",
+    "fullName": "Phường Bảo Vinh, Tỉnh Đồng Nai",
+    "slug": "bao-vinh",
+    "type": "ward"
+  },
+  {
+    "code": "01071",
+    "name": "Xuân Định",
+    "fullName": "Xã Xuân Định, Tỉnh Đồng Nai",
+    "slug": "xuan-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "01078",
+    "name": "Phú Hòa",
+    "fullName": "Xã Phú Hòa, Tỉnh Đồng Nai",
+    "slug": "phu-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01101",
+    "name": "Phú Riềng",
+    "fullName": "Xã Phú Riềng, Tỉnh Đồng Nai",
+    "slug": "phu-rieng",
+    "type": "commune"
+  },
+  {
+    "code": "01107",
+    "name": "Bình Lộc",
+    "fullName": "Phường Bình Lộc, Tỉnh Đồng Nai",
+    "slug": "binh-loc",
+    "type": "ward"
+  },
+  {
+    "code": "01112",
+    "name": "Tân Khai",
+    "fullName": "Xã Tân Khai, Tỉnh Đồng Nai",
+    "slug": "tan-khai",
+    "type": "commune"
+  },
+  {
+    "code": "01130",
+    "name": "Đồng Xoài",
+    "fullName": "Phường Đồng Xoài, Tỉnh Đồng Nai",
+    "slug": "dong-xoai",
+    "type": "ward"
+  },
+  {
+    "code": "01148",
+    "name": "Đồng Tâm",
+    "fullName": "Xã Đồng Tâm, Tỉnh Đồng Nai",
+    "slug": "dong-tam",
+    "type": "commune"
+  },
+  {
+    "code": "01153",
+    "name": "An Lộc",
+    "fullName": "Phường An Lộc, Tỉnh Đồng Nai",
+    "slug": "an-loc",
+    "type": "ward"
+  },
+  {
+    "code": "01154",
+    "name": "Tân Hưng",
+    "fullName": "Xã Tân Hưng, Tỉnh Đồng Nai",
+    "slug": "tan-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01182",
+    "name": "Thiện Hưng",
+    "fullName": "Xã Thiện Hưng, Tỉnh Đồng Nai",
+    "slug": "thien-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01224",
+    "name": "Tà Lài",
+    "fullName": "Xã Tà Lài, Tỉnh Đồng Nai",
+    "slug": "ta-lai",
+    "type": "commune"
+  },
+  {
+    "code": "01228",
+    "name": "Minh Hưng",
+    "fullName": "Phường Minh Hưng, Tỉnh Đồng Nai",
+    "slug": "minh-hung",
+    "type": "ward"
+  },
+  {
+    "code": "01240",
+    "name": "Phú Nghĩa",
+    "fullName": "Xã Phú Nghĩa, Tỉnh Đồng Nai",
+    "slug": "phu-nghia",
+    "type": "commune"
+  },
+  {
+    "code": "01273",
+    "name": "Thanh Sơn",
+    "fullName": "Xã Thanh Sơn, Tỉnh Đồng Nai",
+    "slug": "thanh-son",
+    "type": "commune"
+  },
+  {
+    "code": "01278",
+    "name": "La Ngà",
+    "fullName": "Xã La Ngà, Tỉnh Đồng Nai",
+    "slug": "la-nga",
+    "type": "commune"
+  },
+  {
+    "code": "01290",
+    "name": "Phước Long",
+    "fullName": "Phường Phước Long, Tỉnh Đồng Nai",
+    "slug": "phuoc-long",
+    "type": "ward"
+  },
+  {
+    "code": "01312",
+    "name": "Nghĩa Trung",
+    "fullName": "Xã Nghĩa Trung, Tỉnh Đồng Nai",
+    "slug": "nghia-trung",
+    "type": "commune"
+  },
+  {
+    "code": "01356",
+    "name": "Lộc Ninh",
+    "fullName": "Xã Lộc Ninh, Tỉnh Đồng Nai",
+    "slug": "loc-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01363",
+    "name": "Bù Đăng",
+    "fullName": "Xã Bù Đăng, Tỉnh Đồng Nai",
+    "slug": "bu-dang",
+    "type": "commune"
+  },
+  {
+    "code": "01385",
+    "name": "Đa Kia",
+    "fullName": "Xã Đa Kia, Tỉnh Đồng Nai",
+    "slug": "da-kia",
+    "type": "commune"
+  },
+  {
+    "code": "01417",
+    "name": "Sông Ray",
+    "fullName": "Xã Sông Ray, Tỉnh Đồng Nai",
+    "slug": "song-ray",
+    "type": "commune"
+  },
+  {
+    "code": "01418",
+    "name": "Phú Vinh",
+    "fullName": "Xã Phú Vinh, Tỉnh Đồng Nai",
+    "slug": "phu-vinh",
+    "type": "commune"
+  },
+  {
+    "code": "01446",
+    "name": "Phước Sơn",
+    "fullName": "Xã Phước Sơn, Tỉnh Đồng Nai",
+    "slug": "phuoc-son",
+    "type": "commune"
+  },
+  {
+    "code": "01489",
+    "name": "Tân Quan",
+    "fullName": "Xã Tân Quan, Tỉnh Đồng Nai",
+    "slug": "tan-quan",
+    "type": "commune"
+  },
+  {
+    "code": "01549",
+    "name": "Xuân Phú",
+    "fullName": "Xã Xuân Phú, Tỉnh Đồng Nai",
+    "slug": "xuan-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01617",
+    "name": "Bình Tân",
+    "fullName": "Xã Bình Tân, Tỉnh Đồng Nai",
+    "slug": "binh-tan",
+    "type": "commune"
+  },
+  {
+    "code": "01696",
+    "name": "Long Hà",
+    "fullName": "Xã Long Hà, Tỉnh Đồng Nai",
+    "slug": "long-ha",
+    "type": "commune"
+  },
+  {
+    "code": "01740",
+    "name": "Bom Bo",
+    "fullName": "Xã Bom Bo, Tỉnh Đồng Nai",
+    "slug": "bom-bo",
+    "type": "commune"
+  },
+  {
+    "code": "01779",
+    "name": "Lộc Hưng",
+    "fullName": "Xã Lộc Hưng, Tỉnh Đồng Nai",
+    "slug": "loc-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01784",
+    "name": "Xuân Đường",
+    "fullName": "Xã Xuân Đường, Tỉnh Đồng Nai",
+    "slug": "xuan-duong",
+    "type": "commune"
+  },
+  {
+    "code": "01801",
+    "name": "Lộc Quang",
+    "fullName": "Xã Lộc Quang, Tỉnh Đồng Nai",
+    "slug": "loc-quang",
+    "type": "commune"
+  },
+  {
+    "code": "01857",
+    "name": "Bình An",
+    "fullName": "Xã Bình An, Tỉnh Đồng Nai",
+    "slug": "binh-an",
+    "type": "commune"
+  },
+  {
+    "code": "01903",
+    "name": "Hàng Gòn",
+    "fullName": "Phường Hàng Gòn, Tỉnh Đồng Nai",
+    "slug": "hang-gon",
+    "type": "ward"
+  },
+  {
+    "code": "01971",
+    "name": "An Viễn",
+    "fullName": "Xã An Viễn, Tỉnh Đồng Nai",
+    "slug": "an-vien",
+    "type": "commune"
+  },
+  {
+    "code": "02006",
+    "name": "Lộc Tấn",
+    "fullName": "Xã Lộc Tấn, Tỉnh Đồng Nai",
+    "slug": "loc-tan",
+    "type": "commune"
+  },
+  {
+    "code": "02007",
+    "name": "Đak Nhau",
+    "fullName": "Xã Đak Nhau, Tỉnh Đồng Nai",
+    "slug": "dak-nhau",
+    "type": "commune"
+  },
+  {
+    "code": "02008",
+    "name": "Thuận Lợi",
+    "fullName": "Xã Thuận Lợi, Tỉnh Đồng Nai",
+    "slug": "thuan-loi",
+    "type": "commune"
+  },
+  {
+    "code": "02083",
+    "name": "Tân Lợi",
+    "fullName": "Xã Tân Lợi, Tỉnh Đồng Nai",
+    "slug": "tan-loi",
+    "type": "commune"
+  },
+  {
+    "code": "02121",
+    "name": "Nha Bích",
+    "fullName": "Xã Nha Bích, Tỉnh Đồng Nai",
+    "slug": "nha-bich",
+    "type": "commune"
+  },
+  {
+    "code": "02135",
+    "name": "Xuân Thành",
+    "fullName": "Xã Xuân Thành, Tỉnh Đồng Nai",
+    "slug": "xuan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02171",
+    "name": "Thọ Sơn",
+    "fullName": "Xã Thọ Sơn, Tỉnh Đồng Nai",
+    "slug": "tho-son",
+    "type": "commune"
+  },
+  {
+    "code": "02190",
+    "name": "Xuân Quế",
+    "fullName": "Xã Xuân Quế, Tỉnh Đồng Nai",
+    "slug": "xuan-que",
+    "type": "commune"
+  },
+  {
+    "code": "02303",
+    "name": "Đăk Ơ",
+    "fullName": "Xã Đăk Ơ, Tỉnh Đồng Nai",
+    "slug": "dak-o",
+    "type": "commune"
+  },
+  {
+    "code": "02334",
+    "name": "Xuân Lập",
+    "fullName": "Phường Xuân Lập, Tỉnh Đồng Nai",
+    "slug": "xuan-lap",
+    "type": "ward"
+  },
+  {
+    "code": "02464",
+    "name": "Minh Đức",
+    "fullName": "Xã Minh Đức, Tỉnh Đồng Nai",
+    "slug": "minh-duc",
+    "type": "commune"
+  },
+  {
+    "code": "02535",
+    "name": "Phú Lý",
+    "fullName": "Xã Phú Lý, Tỉnh Đồng Nai",
+    "slug": "phu-ly",
+    "type": "commune"
+  },
+  {
+    "code": "02538",
+    "name": "Nam Cát Tiên",
+    "fullName": "Xã Nam Cát Tiên, Tỉnh Đồng Nai",
+    "slug": "nam-cat-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02571",
+    "name": "Lộc Thành",
+    "fullName": "Xã Lộc Thành, Tỉnh Đồng Nai",
+    "slug": "loc-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02681",
+    "name": "Phú Trung",
+    "fullName": "Xã Phú Trung, Tỉnh Đồng Nai",
+    "slug": "phu-trung",
+    "type": "commune"
+  },
+  {
+    "code": "02748",
+    "name": "Hưng Phước",
+    "fullName": "Xã Hưng Phước, Tỉnh Đồng Nai",
+    "slug": "hung-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "02894",
+    "name": "Lộc Thạnh",
+    "fullName": "Xã Lộc Thạnh, Tỉnh Đồng Nai",
+    "slug": "loc-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "03046",
+    "name": "Bù Gia Mập",
+    "fullName": "Xã Bù Gia Mập, Tỉnh Đồng Nai",
+    "slug": "bu-gia-map",
+    "type": "commune"
+  },
+  {
+    "code": "03049",
+    "name": "Đak Lua",
+    "fullName": "Xã Đak Lua, Tỉnh Đồng Nai",
+    "slug": "dak-lua",
+    "type": "commune"
+  }
+]

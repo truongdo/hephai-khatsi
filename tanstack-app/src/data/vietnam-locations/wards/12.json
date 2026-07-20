@@ -1,0 +1,660 @@
+[
+  {
+    "code": "00006",
+    "name": "Thanh Khê",
+    "fullName": "Phường Thanh Khê, Thành phố Đà Nẵng",
+    "slug": "thanh-khe",
+    "type": "ward"
+  },
+  {
+    "code": "00048",
+    "name": "Hải Châu",
+    "fullName": "Phường Hải Châu, Thành phố Đà Nẵng",
+    "slug": "hai-chau",
+    "type": "ward"
+  },
+  {
+    "code": "00076",
+    "name": "Hòa Cường",
+    "fullName": "Phường Hòa Cường, Thành phố Đà Nẵng",
+    "slug": "hoa-cuong",
+    "type": "ward"
+  },
+  {
+    "code": "00085",
+    "name": "Ngũ Hành Sơn",
+    "fullName": "Phường Ngũ Hành Sơn, Thành phố Đà Nẵng",
+    "slug": "ngu-hanh-son",
+    "type": "ward"
+  },
+  {
+    "code": "00090",
+    "name": "Hòa Khánh",
+    "fullName": "Phường Hòa Khánh, Thành phố Đà Nẵng",
+    "slug": "hoa-khanh",
+    "type": "ward"
+  },
+  {
+    "code": "00135",
+    "name": "An Khê",
+    "fullName": "Phường An Khê, Thành phố Đà Nẵng",
+    "slug": "an-khe",
+    "type": "ward"
+  },
+  {
+    "code": "00161",
+    "name": "Sơn Trà",
+    "fullName": "Phường Sơn Trà, Thành phố Đà Nẵng",
+    "slug": "son-tra",
+    "type": "ward"
+  },
+  {
+    "code": "00167",
+    "name": "Hòa Xuân",
+    "fullName": "Phường Hòa Xuân, Thành phố Đà Nẵng",
+    "slug": "hoa-xuan",
+    "type": "ward"
+  },
+  {
+    "code": "00184",
+    "name": "An Hải",
+    "fullName": "Phường An Hải, Thành phố Đà Nẵng",
+    "slug": "an-hai",
+    "type": "ward"
+  },
+  {
+    "code": "00199",
+    "name": "Cẩm Lệ",
+    "fullName": "Phường Cẩm Lệ, Thành phố Đà Nẵng",
+    "slug": "cam-le",
+    "type": "ward"
+  },
+  {
+    "code": "00250",
+    "name": "Điện Bàn Đông",
+    "fullName": "Phường Điện Bàn Đông, Thành phố Đà Nẵng",
+    "slug": "dien-ban-dong",
+    "type": "ward"
+  },
+  {
+    "code": "00278",
+    "name": "Liên Chiểu",
+    "fullName": "Phường Liên Chiểu, Thành phố Đà Nẵng",
+    "slug": "lien-chieu",
+    "type": "ward"
+  },
+  {
+    "code": "00290",
+    "name": "Núi Thành",
+    "fullName": "Xã Núi Thành, Thành phố Đà Nẵng",
+    "slug": "nui-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00375",
+    "name": "Đại Lộc",
+    "fullName": "Xã Đại Lộc, Thành phố Đà Nẵng",
+    "slug": "dai-loc",
+    "type": "commune"
+  },
+  {
+    "code": "00475",
+    "name": "Thăng Bình",
+    "fullName": "Xã Thăng Bình, Thành phố Đà Nẵng",
+    "slug": "thang-binh",
+    "type": "commune"
+  },
+  {
+    "code": "00495",
+    "name": "Nam Phước",
+    "fullName": "Xã Nam Phước, Thành phố Đà Nẵng",
+    "slug": "nam-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "00520",
+    "name": "Thăng An",
+    "fullName": "Xã Thăng An, Thành phố Đà Nẵng",
+    "slug": "thang-an",
+    "type": "commune"
+  },
+  {
+    "code": "00607",
+    "name": "Hải Vân",
+    "fullName": "Phường Hải Vân, Thành phố Đà Nẵng",
+    "slug": "hai-van",
+    "type": "ward"
+  },
+  {
+    "code": "00740",
+    "name": "Điện Bàn Tây",
+    "fullName": "Xã Điện Bàn Tây, Thành phố Đà Nẵng",
+    "slug": "dien-ban-tay",
+    "type": "commune"
+  },
+  {
+    "code": "00749",
+    "name": "Tam Kỳ",
+    "fullName": "Phường Tam Kỳ, Thành phố Đà Nẵng",
+    "slug": "tam-ky",
+    "type": "ward"
+  },
+  {
+    "code": "00790",
+    "name": "Tam Xuân",
+    "fullName": "Xã Tam Xuân, Thành phố Đà Nẵng",
+    "slug": "tam-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "00809",
+    "name": "Hội An Tây",
+    "fullName": "Phường Hội An Tây, Thành phố Đà Nẵng",
+    "slug": "hoi-an-tay",
+    "type": "ward"
+  },
+  {
+    "code": "00813",
+    "name": "Thăng Điền",
+    "fullName": "Xã Thăng Điền, Thành phố Đà Nẵng",
+    "slug": "thang-dien",
+    "type": "commune"
+  },
+  {
+    "code": "00846",
+    "name": "Điện Bàn",
+    "fullName": "Phường Điện Bàn, Thành phố Đà Nẵng",
+    "slug": "dien-ban",
+    "type": "ward"
+  },
+  {
+    "code": "00964",
+    "name": "Hòa Tiến",
+    "fullName": "Xã Hòa Tiến, Thành phố Đà Nẵng",
+    "slug": "hoa-tien",
+    "type": "commune"
+  },
+  {
+    "code": "00994",
+    "name": "Hà Nha",
+    "fullName": "Xã Hà Nha, Thành phố Đà Nẵng",
+    "slug": "ha-nha",
+    "type": "commune"
+  },
+  {
+    "code": "01050",
+    "name": "Hội An",
+    "fullName": "Phường Hội An, Thành phố Đà Nẵng",
+    "slug": "hoi-an",
+    "type": "ward"
+  },
+  {
+    "code": "01055",
+    "name": "Xuân Phú",
+    "fullName": "Xã Xuân Phú, Thành phố Đà Nẵng",
+    "slug": "xuan-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01068",
+    "name": "Thu Bồn",
+    "fullName": "Xã Thu Bồn, Thành phố Đà Nẵng",
+    "slug": "thu-bon",
+    "type": "commune"
+  },
+  {
+    "code": "01076",
+    "name": "Bàn Thạch",
+    "fullName": "Phường Bàn Thạch, Thành phố Đà Nẵng",
+    "slug": "ban-thach",
+    "type": "ward"
+  },
+  {
+    "code": "01155",
+    "name": "Tây Hồ",
+    "fullName": "Xã Tây Hồ, Thành phố Đà Nẵng",
+    "slug": "tay-ho",
+    "type": "commune"
+  },
+  {
+    "code": "01220",
+    "name": "An Thắng",
+    "fullName": "Phường An Thắng, Thành phố Đà Nẵng",
+    "slug": "an-thang",
+    "type": "ward"
+  },
+  {
+    "code": "01229",
+    "name": "Quế Sơn",
+    "fullName": "Xã Quế Sơn, Thành phố Đà Nẵng",
+    "slug": "que-son",
+    "type": "commune"
+  },
+  {
+    "code": "01258",
+    "name": "Hương Trà",
+    "fullName": "Phường Hương Trà, Thành phố Đà Nẵng",
+    "slug": "huong-tra",
+    "type": "ward"
+  },
+  {
+    "code": "01279",
+    "name": "Quế Sơn Trung",
+    "fullName": "Xã Quế Sơn Trung, Thành phố Đà Nẵng",
+    "slug": "que-son-trung",
+    "type": "commune"
+  },
+  {
+    "code": "01355",
+    "name": "Duy Xuyên",
+    "fullName": "Xã Duy Xuyên, Thành phố Đà Nẵng",
+    "slug": "duy-xuyen",
+    "type": "commune"
+  },
+  {
+    "code": "01362",
+    "name": "Chiên Đàn",
+    "fullName": "Xã Chiên Đàn, Thành phố Đà Nẵng",
+    "slug": "chien-dan",
+    "type": "commune"
+  },
+  {
+    "code": "01364",
+    "name": "Duy Nghĩa",
+    "fullName": "Xã Duy Nghĩa, Thành phố Đà Nẵng",
+    "slug": "duy-nghia",
+    "type": "commune"
+  },
+  {
+    "code": "01436",
+    "name": "Hội An Đông",
+    "fullName": "Phường Hội An Đông, Thành phố Đà Nẵng",
+    "slug": "hoi-an-dong",
+    "type": "ward"
+  },
+  {
+    "code": "01443",
+    "name": "Tam Anh",
+    "fullName": "Xã Tam Anh, Thành phố Đà Nẵng",
+    "slug": "tam-anh",
+    "type": "commune"
+  },
+  {
+    "code": "01462",
+    "name": "Điện Bàn Bắc",
+    "fullName": "Phường Điện Bàn Bắc, Thành phố Đà Nẵng",
+    "slug": "dien-ban-bac",
+    "type": "ward"
+  },
+  {
+    "code": "01518",
+    "name": "Gò Nổi",
+    "fullName": "Xã Gò Nổi, Thành phố Đà Nẵng",
+    "slug": "go-noi",
+    "type": "commune"
+  },
+  {
+    "code": "01562",
+    "name": "Quảng Phú",
+    "fullName": "Phường Quảng Phú, Thành phố Đà Nẵng",
+    "slug": "quang-phu",
+    "type": "ward"
+  },
+  {
+    "code": "01653",
+    "name": "Tiên Phước",
+    "fullName": "Xã Tiên Phước, Thành phố Đà Nẵng",
+    "slug": "tien-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "01693",
+    "name": "Vu Gia",
+    "fullName": "Xã Vu Gia, Thành phố Đà Nẵng",
+    "slug": "vu-gia",
+    "type": "commune"
+  },
+  {
+    "code": "01699",
+    "name": "Phú Thuận",
+    "fullName": "Xã Phú Thuận, Thành phố Đà Nẵng",
+    "slug": "phu-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "01750",
+    "name": "Phú Ninh",
+    "fullName": "Xã Phú Ninh, Thành phố Đà Nẵng",
+    "slug": "phu-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01769",
+    "name": "Hòa Vang",
+    "fullName": "Xã Hòa Vang, Thành phố Đà Nẵng",
+    "slug": "hoa-vang",
+    "type": "commune"
+  },
+  {
+    "code": "01807",
+    "name": "Việt An",
+    "fullName": "Xã Việt An, Thành phố Đà Nẵng",
+    "slug": "viet-an",
+    "type": "commune"
+  },
+  {
+    "code": "01879",
+    "name": "Bà Nà",
+    "fullName": "Xã Bà Nà, Thành phố Đà Nẵng",
+    "slug": "ba-na",
+    "type": "commune"
+  },
+  {
+    "code": "01913",
+    "name": "Thăng Trường",
+    "fullName": "Xã Thăng Trường, Thành phố Đà Nẵng",
+    "slug": "thang-truong",
+    "type": "commune"
+  },
+  {
+    "code": "01914",
+    "name": "Thạnh Bình",
+    "fullName": "Xã Thạnh Bình, Thành phố Đà Nẵng",
+    "slug": "thanh-binh",
+    "type": "commune"
+  },
+  {
+    "code": "01916",
+    "name": "Đồng Dương",
+    "fullName": "Xã Đồng Dương, Thành phố Đà Nẵng",
+    "slug": "dong-duong",
+    "type": "commune"
+  },
+  {
+    "code": "02106",
+    "name": "Thượng Đức",
+    "fullName": "Xã Thượng Đức, Thành phố Đà Nẵng",
+    "slug": "thuong-duc",
+    "type": "commune"
+  },
+  {
+    "code": "02201",
+    "name": "Nông Sơn",
+    "fullName": "Xã Nông Sơn, Thành phố Đà Nẵng",
+    "slug": "nong-son",
+    "type": "commune"
+  },
+  {
+    "code": "02267",
+    "name": "Trà My",
+    "fullName": "Xã Trà My, Thành phố Đà Nẵng",
+    "slug": "tra-my",
+    "type": "commune"
+  },
+  {
+    "code": "02386",
+    "name": "Tam Mỹ",
+    "fullName": "Xã Tam Mỹ, Thành phố Đà Nẵng",
+    "slug": "tam-my",
+    "type": "commune"
+  },
+  {
+    "code": "02418",
+    "name": "Sơn Cẩm Hà",
+    "fullName": "Xã Sơn Cẩm Hà, Thành phố Đà Nẵng",
+    "slug": "son-cam-ha",
+    "type": "commune"
+  },
+  {
+    "code": "02444",
+    "name": "Thăng Phú",
+    "fullName": "Xã Thăng Phú, Thành phố Đà Nẵng",
+    "slug": "thang-phu",
+    "type": "commune"
+  },
+  {
+    "code": "02595",
+    "name": "Hiệp Đức",
+    "fullName": "Xã Hiệp Đức, Thành phố Đà Nẵng",
+    "slug": "hiep-duc",
+    "type": "commune"
+  },
+  {
+    "code": "02605",
+    "name": "Lãnh Ngọc",
+    "fullName": "Xã Lãnh Ngọc, Thành phố Đà Nẵng",
+    "slug": "lanh-ngoc",
+    "type": "commune"
+  },
+  {
+    "code": "02649",
+    "name": "Quế Phước",
+    "fullName": "Xã Quế Phước, Thành phố Đà Nẵng",
+    "slug": "que-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "02882",
+    "name": "Trà Đốc",
+    "fullName": "Xã Trà Đốc, Thành phố Đà Nẵng",
+    "slug": "tra-doc",
+    "type": "commune"
+  },
+  {
+    "code": "02896",
+    "name": "Tam Hải",
+    "fullName": "Xã Tam Hải, Thành phố Đà Nẵng",
+    "slug": "tam-hai",
+    "type": "commune"
+  },
+  {
+    "code": "02937",
+    "name": "Khâm Đức",
+    "fullName": "Xã Khâm Đức, Thành phố Đà Nẵng",
+    "slug": "kham-duc",
+    "type": "commune"
+  },
+  {
+    "code": "02977",
+    "name": "Đức Phú",
+    "fullName": "Xã Đức Phú, Thành phố Đà Nẵng",
+    "slug": "duc-phu",
+    "type": "commune"
+  },
+  {
+    "code": "02991",
+    "name": "Thạnh Mỹ",
+    "fullName": "Xã Thạnh Mỹ, Thành phố Đà Nẵng",
+    "slug": "thanh-my",
+    "type": "commune"
+  },
+  {
+    "code": "03006",
+    "name": "Đông Giang",
+    "fullName": "Xã Đông Giang, Thành phố Đà Nẵng",
+    "slug": "dong-giang",
+    "type": "commune"
+  },
+  {
+    "code": "03012",
+    "name": "Sông Kôn",
+    "fullName": "Xã Sông Kôn, Thành phố Đà Nẵng",
+    "slug": "song-kon",
+    "type": "commune"
+  },
+  {
+    "code": "03020",
+    "name": "Tây Giang",
+    "fullName": "Xã Tây Giang, Thành phố Đà Nẵng",
+    "slug": "tay-giang",
+    "type": "commune"
+  },
+  {
+    "code": "03032",
+    "name": "Phước Năng",
+    "fullName": "Xã Phước Năng, Thành phố Đà Nẵng",
+    "slug": "phuoc-nang",
+    "type": "commune"
+  },
+  {
+    "code": "03039",
+    "name": "Trà Tập",
+    "fullName": "Xã Trà Tập, Thành phố Đà Nẵng",
+    "slug": "tra-tap",
+    "type": "commune"
+  },
+  {
+    "code": "03045",
+    "name": "Bến Giằng",
+    "fullName": "Xã Bến Giằng, Thành phố Đà Nẵng",
+    "slug": "ben-giang",
+    "type": "commune"
+  },
+  {
+    "code": "03064",
+    "name": "Hùng Sơn",
+    "fullName": "Xã Hùng Sơn, Thành phố Đà Nẵng",
+    "slug": "hung-son",
+    "type": "commune"
+  },
+  {
+    "code": "03094",
+    "name": "Trà Mai",
+    "fullName": "Xã Trà Mai, Thành phố Đà Nẵng",
+    "slug": "tra-mai",
+    "type": "commune"
+  },
+  {
+    "code": "03118",
+    "name": "Trà Linh",
+    "fullName": "Xã Trà Linh, Thành phố Đà Nẵng",
+    "slug": "tra-linh",
+    "type": "commune"
+  },
+  {
+    "code": "03120",
+    "name": "Trà Liên",
+    "fullName": "Xã Trà Liên, Thành phố Đà Nẵng",
+    "slug": "tra-lien",
+    "type": "commune"
+  },
+  {
+    "code": "03123",
+    "name": "Sông Vàng",
+    "fullName": "Xã Sông Vàng, Thành phố Đà Nẵng",
+    "slug": "song-vang",
+    "type": "commune"
+  },
+  {
+    "code": "03126",
+    "name": "Phước Trà",
+    "fullName": "Xã Phước Trà, Thành phố Đà Nẵng",
+    "slug": "phuoc-tra",
+    "type": "commune"
+  },
+  {
+    "code": "03150",
+    "name": "Trà Leng",
+    "fullName": "Xã Trà Leng, Thành phố Đà Nẵng",
+    "slug": "tra-leng",
+    "type": "commune"
+  },
+  {
+    "code": "03179",
+    "name": "Trà Tân",
+    "fullName": "Xã Trà Tân, Thành phố Đà Nẵng",
+    "slug": "tra-tan",
+    "type": "commune"
+  },
+  {
+    "code": "03205",
+    "name": "Trà Giáp",
+    "fullName": "Xã Trà Giáp, Thành phố Đà Nẵng",
+    "slug": "tra-giap",
+    "type": "commune"
+  },
+  {
+    "code": "03239",
+    "name": "Avương",
+    "fullName": "Xã Avương, Thành phố Đà Nẵng",
+    "slug": "avuong",
+    "type": "commune"
+  },
+  {
+    "code": "03242",
+    "name": "Trà Vân",
+    "fullName": "Xã Trà Vân, Thành phố Đà Nẵng",
+    "slug": "tra-van",
+    "type": "commune"
+  },
+  {
+    "code": "03260",
+    "name": "Nam Giang",
+    "fullName": "Xã Nam Giang, Thành phố Đà Nẵng",
+    "slug": "nam-giang",
+    "type": "commune"
+  },
+  {
+    "code": "03264",
+    "name": "Phước Thành",
+    "fullName": "Xã Phước Thành, Thành phố Đà Nẵng",
+    "slug": "phuoc-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "03267",
+    "name": "Bến Hiên",
+    "fullName": "Xã Bến Hiên, Thành phố Đà Nẵng",
+    "slug": "ben-hien",
+    "type": "commune"
+  },
+  {
+    "code": "03270",
+    "name": "Phước Hiệp",
+    "fullName": "Xã Phước Hiệp, Thành phố Đà Nẵng",
+    "slug": "phuoc-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "03274",
+    "name": "Phước Chánh",
+    "fullName": "Xã Phước Chánh, Thành phố Đà Nẵng",
+    "slug": "phuoc-chanh",
+    "type": "commune"
+  },
+  {
+    "code": "03299",
+    "name": "Đắc Pring",
+    "fullName": "Xã Đắc Pring, Thành phố Đà Nẵng",
+    "slug": "dac-pring",
+    "type": "commune"
+  },
+  {
+    "code": "03303",
+    "name": "La Dêê",
+    "fullName": "Xã La Dêê, Thành phố Đà Nẵng",
+    "slug": "la-dee",
+    "type": "commune"
+  },
+  {
+    "code": "03306",
+    "name": "Tân Hiệp",
+    "fullName": "Xã Tân Hiệp, Thành phố Đà Nẵng",
+    "slug": "tan-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "03308",
+    "name": "La Êê",
+    "fullName": "Xã La Êê, Thành phố Đà Nẵng",
+    "slug": "la-ee",
+    "type": "commune"
+  },
+  {
+    "code": "03320",
+    "name": "Hoàng Sa",
+    "fullName": "Đặc khu Hoàng Sa, Thành phố Đà Nẵng",
+    "slug": "hoang-sa",
+    "type": "commune"
+  }
+]

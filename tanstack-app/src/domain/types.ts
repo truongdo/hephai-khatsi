@@ -1,3 +1,5 @@
+import type { AddressValue } from './address'
+
 export type OrgUnitKind = 'giao_doan' | 'ni_gioi'
 export type SanghaType = 'tang' | 'ni'
 export type FormType = 'temple' | 'member_tang' | 'member_ni'
@@ -56,7 +58,7 @@ export type Member = {
   danToc?: string
   dienThoai?: string
   email?: string
-  diaChiThuongTru?: string
+  diaChiThuongTru?: AddressValue | string
   ngayXuatGia?: string
   noiXuatGia?: string
   hienTuHoc?: string
@@ -134,8 +136,8 @@ export type Temple = {
   nguoiKhaiSon?: string
   namThanhLap?: string
   tinChuHienCung?: string
-  diaChiCu?: string
-  diaChiMoi?: string
+  diaChiCu?: AddressValue | string
+  diaChiMoi?: AddressValue | string
   truTriHienNay?: { phapDanh?: string; dienThoai?: string; email?: string }
   truTriTienNhiem?: Array<{
     phapDanh?: string

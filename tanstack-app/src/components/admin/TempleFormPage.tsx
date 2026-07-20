@@ -11,6 +11,10 @@ import {
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
+import {
+  formatAddressDisplay,
+  isStructuredAddress,
+} from '#/domain/address'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
@@ -34,6 +38,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
   const [danhHieu, setDanhHieu] = useState('')
   const [truTriPhone, setTruTriPhone] = useState('')
   const [diaChiMoi, setDiaChiMoi] = useState('')
+  const [diaChiMoiStructured, setDiaChiMoiStructured] = useState(false)
 
   const orgUnits = useQuery({
     ...orgUnitsQuery(),
@@ -50,7 +55,8 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
     setOrgUnitId(temple.data.orgUnitId)
     setDanhHieu(temple.data.danhHieu ?? '')
     setTruTriPhone(temple.data.truTriHienNay?.dienThoai ?? '')
-    setDiaChiMoi(temple.data.diaChiMoi ?? '')
+    setDiaChiMoi(formatAddressDisplay(temple.data.diaChiMoi))
+    setDiaChiMoiStructured(isStructuredAddress(temple.data.diaChiMoi))
   }, [temple.data])
 
   const orgUnitSelectData = useMemo(
@@ -73,7 +79,10 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
         templeId: mode === 'edit' ? templeId : undefined,
         patch: {
           danhHieu: danhHieu || undefined,
-          diaChiMoi: diaChiMoi || undefined,
+          // Preserve structured AddressValue from filler — do not overwrite with a string.
+          ...(diaChiMoiStructured
+            ? {}
+            : { diaChiMoi: diaChiMoi || undefined }),
           truTriHienNay: { dienThoai: truTriPhone || undefined },
         },
       })
@@ -187,9 +196,14 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
           />
           <TextInput
             label={m.admin_temples_form_dia_chi_moi()}
+            description={
+              diaChiMoiStructured
+                ? m.admin_temples_form_dia_chi_structured_readonly()
+                : undefined
+            }
             value={diaChiMoi}
             onChange={(event) => setDiaChiMoi(event.currentTarget.value)}
-            readOnly={isReadOnly}
+            readOnly={isReadOnly || diaChiMoiStructured}
           />
 
           {mutationError && (

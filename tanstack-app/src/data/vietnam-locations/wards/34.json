@@ -1,0 +1,870 @@
+[
+  {
+    "code": "00255",
+    "name": "Minh Xuân",
+    "fullName": "Phường Minh Xuân, Tỉnh Tuyên Quang",
+    "slug": "minh-xuan",
+    "type": "ward"
+  },
+  {
+    "code": "00784",
+    "name": "An Tường",
+    "fullName": "Phường An Tường, Tỉnh Tuyên Quang",
+    "slug": "an-tuong",
+    "type": "ward"
+  },
+  {
+    "code": "00826",
+    "name": "Sơn Dương",
+    "fullName": "Xã Sơn Dương, Tỉnh Tuyên Quang",
+    "slug": "son-duong",
+    "type": "commune"
+  },
+  {
+    "code": "01254",
+    "name": "Bắc Quang",
+    "fullName": "Xã Bắc Quang, Tỉnh Tuyên Quang",
+    "slug": "bac-quang",
+    "type": "commune"
+  },
+  {
+    "code": "01293",
+    "name": "Hà Giang 2",
+    "fullName": "Phường Hà Giang 2, Tỉnh Tuyên Quang",
+    "slug": "ha-giang-2",
+    "type": "ward"
+  },
+  {
+    "code": "01399",
+    "name": "Yên Sơn",
+    "fullName": "Xã Yên Sơn, Tỉnh Tuyên Quang",
+    "slug": "yen-son",
+    "type": "commune"
+  },
+  {
+    "code": "01408",
+    "name": "Mỹ Lâm",
+    "fullName": "Phường Mỹ Lâm, Tỉnh Tuyên Quang",
+    "slug": "my-lam",
+    "type": "ward"
+  },
+  {
+    "code": "01493",
+    "name": "Chiêm Hoá",
+    "fullName": "Xã Chiêm Hoá, Tỉnh Tuyên Quang",
+    "slug": "chiem-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01553",
+    "name": "Hàm Yên",
+    "fullName": "Xã Hàm Yên, Tỉnh Tuyên Quang",
+    "slug": "ham-yen",
+    "type": "commune"
+  },
+  {
+    "code": "01645",
+    "name": "Sơn Thuỷ",
+    "fullName": "Xã Sơn Thuỷ, Tỉnh Tuyên Quang",
+    "slug": "son-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "01719",
+    "name": "Phú Lương",
+    "fullName": "Xã Phú Lương, Tỉnh Tuyên Quang",
+    "slug": "phu-luong",
+    "type": "commune"
+  },
+  {
+    "code": "01785",
+    "name": "Yên Minh",
+    "fullName": "Xã Yên Minh, Tỉnh Tuyên Quang",
+    "slug": "yen-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01820",
+    "name": "Đồng Văn",
+    "fullName": "Xã Đồng Văn, Tỉnh Tuyên Quang",
+    "slug": "dong-van",
+    "type": "commune"
+  },
+  {
+    "code": "01955",
+    "name": "Bình Ca",
+    "fullName": "Xã Bình Ca, Tỉnh Tuyên Quang",
+    "slug": "binh-ca",
+    "type": "commune"
+  },
+  {
+    "code": "01989",
+    "name": "Vị Xuyên",
+    "fullName": "Xã Vị Xuyên, Tỉnh Tuyên Quang",
+    "slug": "vi-xuyen",
+    "type": "commune"
+  },
+  {
+    "code": "02085",
+    "name": "Khâu Vai",
+    "fullName": "Xã Khâu Vai, Tỉnh Tuyên Quang",
+    "slug": "khau-vai",
+    "type": "commune"
+  },
+  {
+    "code": "02146",
+    "name": "Nhữ Khê",
+    "fullName": "Xã Nhữ Khê, Tỉnh Tuyên Quang",
+    "slug": "nhu-khe",
+    "type": "commune"
+  },
+  {
+    "code": "02150",
+    "name": "Linh Hồ",
+    "fullName": "Xã Linh Hồ, Tỉnh Tuyên Quang",
+    "slug": "linh-ho",
+    "type": "commune"
+  },
+  {
+    "code": "02157",
+    "name": "Hà Giang 1",
+    "fullName": "Phường Hà Giang 1, Tỉnh Tuyên Quang",
+    "slug": "ha-giang-1",
+    "type": "ward"
+  },
+  {
+    "code": "02255",
+    "name": "Minh Quang",
+    "fullName": "Xã Minh Quang, Tỉnh Tuyên Quang",
+    "slug": "minh-quang",
+    "type": "commune"
+  },
+  {
+    "code": "02264",
+    "name": "Sơn Vĩ",
+    "fullName": "Xã Sơn Vĩ, Tỉnh Tuyên Quang",
+    "slug": "son-vi",
+    "type": "commune"
+  },
+  {
+    "code": "02276",
+    "name": "Mèo Vạc",
+    "fullName": "Xã Mèo Vạc, Tỉnh Tuyên Quang",
+    "slug": "meo-vac",
+    "type": "commune"
+  },
+  {
+    "code": "02286",
+    "name": "Xín Mần",
+    "fullName": "Xã Xín Mần, Tỉnh Tuyên Quang",
+    "slug": "xin-man",
+    "type": "commune"
+  },
+  {
+    "code": "02300",
+    "name": "Hồng Sơn",
+    "fullName": "Xã Hồng Sơn, Tỉnh Tuyên Quang",
+    "slug": "hong-son",
+    "type": "commune"
+  },
+  {
+    "code": "02325",
+    "name": "Xuân Vân",
+    "fullName": "Xã Xuân Vân, Tỉnh Tuyên Quang",
+    "slug": "xuan-van",
+    "type": "commune"
+  },
+  {
+    "code": "02326",
+    "name": "Mậu Duệ",
+    "fullName": "Xã Mậu Duệ, Tỉnh Tuyên Quang",
+    "slug": "mau-due",
+    "type": "commune"
+  },
+  {
+    "code": "02338",
+    "name": "Tân Thanh",
+    "fullName": "Xã Tân Thanh, Tỉnh Tuyên Quang",
+    "slug": "tan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02354",
+    "name": "Bình Thuận",
+    "fullName": "Phường Bình Thuận, Tỉnh Tuyên Quang",
+    "slug": "binh-thuan",
+    "type": "ward"
+  },
+  {
+    "code": "02366",
+    "name": "Quản Bạ",
+    "fullName": "Xã Quản Bạ, Tỉnh Tuyên Quang",
+    "slug": "quan-ba",
+    "type": "commune"
+  },
+  {
+    "code": "02371",
+    "name": "Đồng Yên",
+    "fullName": "Xã Đồng Yên, Tỉnh Tuyên Quang",
+    "slug": "dong-yen",
+    "type": "commune"
+  },
+  {
+    "code": "02372",
+    "name": "Thái Hoà",
+    "fullName": "Xã Thái Hoà, Tỉnh Tuyên Quang",
+    "slug": "thai-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02385",
+    "name": "Đông Thọ",
+    "fullName": "Xã Đông Thọ, Tỉnh Tuyên Quang",
+    "slug": "dong-tho",
+    "type": "commune"
+  },
+  {
+    "code": "02394",
+    "name": "Bình Xa",
+    "fullName": "Xã Bình Xa, Tỉnh Tuyên Quang",
+    "slug": "binh-xa",
+    "type": "commune"
+  },
+  {
+    "code": "02417",
+    "name": "Trường Sinh",
+    "fullName": "Xã Trường Sinh, Tỉnh Tuyên Quang",
+    "slug": "truong-sinh",
+    "type": "commune"
+  },
+  {
+    "code": "02438",
+    "name": "Nà Hang",
+    "fullName": "Xã Nà Hang, Tỉnh Tuyên Quang",
+    "slug": "na-hang",
+    "type": "commune"
+  },
+  {
+    "code": "02449",
+    "name": "Hùng An",
+    "fullName": "Xã Hùng An, Tỉnh Tuyên Quang",
+    "slug": "hung-an",
+    "type": "commune"
+  },
+  {
+    "code": "02471",
+    "name": "Kim Bình",
+    "fullName": "Xã Kim Bình, Tỉnh Tuyên Quang",
+    "slug": "kim-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02474",
+    "name": "Sà Phìn",
+    "fullName": "Xã Sà Phìn, Tỉnh Tuyên Quang",
+    "slug": "sa-phin",
+    "type": "commune"
+  },
+  {
+    "code": "02491",
+    "name": "Bằng Hành",
+    "fullName": "Xã Bằng Hành, Tỉnh Tuyên Quang",
+    "slug": "bang-hanh",
+    "type": "commune"
+  },
+  {
+    "code": "02493",
+    "name": "Lũng Phìn",
+    "fullName": "Xã Lũng Phìn, Tỉnh Tuyên Quang",
+    "slug": "lung-phin",
+    "type": "commune"
+  },
+  {
+    "code": "02497",
+    "name": "Thắng Mố",
+    "fullName": "Xã Thắng Mố, Tỉnh Tuyên Quang",
+    "slug": "thang-mo",
+    "type": "commune"
+  },
+  {
+    "code": "02499",
+    "name": "Thái Sơn",
+    "fullName": "Xã Thái Sơn, Tỉnh Tuyên Quang",
+    "slug": "thai-son",
+    "type": "commune"
+  },
+  {
+    "code": "02517",
+    "name": "Phù Lưu",
+    "fullName": "Xã Phù Lưu, Tỉnh Tuyên Quang",
+    "slug": "phu-luu",
+    "type": "commune"
+  },
+  {
+    "code": "02532",
+    "name": "Yên Nguyên",
+    "fullName": "Xã Yên Nguyên, Tỉnh Tuyên Quang",
+    "slug": "yen-nguyen",
+    "type": "commune"
+  },
+  {
+    "code": "02545",
+    "name": "Du Già",
+    "fullName": "Xã Du Già, Tỉnh Tuyên Quang",
+    "slug": "du-gia",
+    "type": "commune"
+  },
+  {
+    "code": "02548",
+    "name": "Pà Vầy Sủ",
+    "fullName": "Xã Pà Vầy Sủ, Tỉnh Tuyên Quang",
+    "slug": "pa-vay-su",
+    "type": "commune"
+  },
+  {
+    "code": "02557",
+    "name": "Hoàng Su Phì",
+    "fullName": "Xã Hoàng Su Phì, Tỉnh Tuyên Quang",
+    "slug": "hoang-su-phi",
+    "type": "commune"
+  },
+  {
+    "code": "02560",
+    "name": "Phố Bảng",
+    "fullName": "Xã Phố Bảng, Tỉnh Tuyên Quang",
+    "slug": "pho-bang",
+    "type": "commune"
+  },
+  {
+    "code": "02568",
+    "name": "Nông Tiến",
+    "fullName": "Phường Nông Tiến, Tỉnh Tuyên Quang",
+    "slug": "nong-tien",
+    "type": "ward"
+  },
+  {
+    "code": "02576",
+    "name": "Bạch Xa",
+    "fullName": "Xã Bạch Xa, Tỉnh Tuyên Quang",
+    "slug": "bach-xa",
+    "type": "commune"
+  },
+  {
+    "code": "02581",
+    "name": "Tân Mỹ",
+    "fullName": "Xã Tân Mỹ, Tỉnh Tuyên Quang",
+    "slug": "tan-my",
+    "type": "commune"
+  },
+  {
+    "code": "02583",
+    "name": "Lũng Cú",
+    "fullName": "Xã Lũng Cú, Tỉnh Tuyên Quang",
+    "slug": "lung-cu",
+    "type": "commune"
+  },
+  {
+    "code": "02598",
+    "name": "Tân Trào",
+    "fullName": "Xã Tân Trào, Tỉnh Tuyên Quang",
+    "slug": "tan-trao",
+    "type": "commune"
+  },
+  {
+    "code": "02602",
+    "name": "Yên Phú",
+    "fullName": "Xã Yên Phú, Tỉnh Tuyên Quang",
+    "slug": "yen-phu",
+    "type": "commune"
+  },
+  {
+    "code": "02631",
+    "name": "Đường Thượng",
+    "fullName": "Xã Đường Thượng, Tỉnh Tuyên Quang",
+    "slug": "duong-thuong",
+    "type": "commune"
+  },
+  {
+    "code": "02642",
+    "name": "Tiên Yên",
+    "fullName": "Xã Tiên Yên, Tỉnh Tuyên Quang",
+    "slug": "tien-yen",
+    "type": "commune"
+  },
+  {
+    "code": "02672",
+    "name": "Thái Bình",
+    "fullName": "Xã Thái Bình, Tỉnh Tuyên Quang",
+    "slug": "thai-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02689",
+    "name": "Minh Thanh",
+    "fullName": "Xã Minh Thanh, Tỉnh Tuyên Quang",
+    "slug": "minh-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02700",
+    "name": "Hoà An",
+    "fullName": "Xã Hoà An, Tỉnh Tuyên Quang",
+    "slug": "hoa-an",
+    "type": "commune"
+  },
+  {
+    "code": "02707",
+    "name": "Bắc Mê",
+    "fullName": "Xã Bắc Mê, Tỉnh Tuyên Quang",
+    "slug": "bac-me",
+    "type": "commune"
+  },
+  {
+    "code": "02724",
+    "name": "Bạch Đích",
+    "fullName": "Xã Bạch Đích, Tỉnh Tuyên Quang",
+    "slug": "bach-dich",
+    "type": "commune"
+  },
+  {
+    "code": "02738",
+    "name": "Sủng Máng",
+    "fullName": "Xã Sủng Máng, Tỉnh Tuyên Quang",
+    "slug": "sung-mang",
+    "type": "commune"
+  },
+  {
+    "code": "02749",
+    "name": "Tân Quang",
+    "fullName": "Xã Tân Quang, Tỉnh Tuyên Quang",
+    "slug": "tan-quang",
+    "type": "commune"
+  },
+  {
+    "code": "02753",
+    "name": "Lâm Bình",
+    "fullName": "Xã Lâm Bình, Tỉnh Tuyên Quang",
+    "slug": "lam-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02758",
+    "name": "Trung Thịnh",
+    "fullName": "Xã Trung Thịnh, Tỉnh Tuyên Quang",
+    "slug": "trung-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "02760",
+    "name": "Phú Linh",
+    "fullName": "Xã Phú Linh, Tỉnh Tuyên Quang",
+    "slug": "phu-linh",
+    "type": "commune"
+  },
+  {
+    "code": "02763",
+    "name": "Niêm Sơn",
+    "fullName": "Xã Niêm Sơn, Tỉnh Tuyên Quang",
+    "slug": "niem-son",
+    "type": "commune"
+  },
+  {
+    "code": "02765",
+    "name": "Bằng Lang",
+    "fullName": "Xã Bằng Lang, Tỉnh Tuyên Quang",
+    "slug": "bang-lang",
+    "type": "commune"
+  },
+  {
+    "code": "02774",
+    "name": "Vĩnh Tuy",
+    "fullName": "Xã Vĩnh Tuy, Tỉnh Tuyên Quang",
+    "slug": "vinh-tuy",
+    "type": "commune"
+  },
+  {
+    "code": "02781",
+    "name": "Nấm Dẩn",
+    "fullName": "Xã Nấm Dẩn, Tỉnh Tuyên Quang",
+    "slug": "nam-dan",
+    "type": "commune"
+  },
+  {
+    "code": "02794",
+    "name": "Đường Hồng",
+    "fullName": "Xã Đường Hồng, Tỉnh Tuyên Quang",
+    "slug": "duong-hong",
+    "type": "commune"
+  },
+  {
+    "code": "02817",
+    "name": "Hồng Thái",
+    "fullName": "Xã Hồng Thái, Tỉnh Tuyên Quang",
+    "slug": "hong-thai",
+    "type": "commune"
+  },
+  {
+    "code": "02820",
+    "name": "Tùng Vài",
+    "fullName": "Xã Tùng Vài, Tỉnh Tuyên Quang",
+    "slug": "tung-vai",
+    "type": "commune"
+  },
+  {
+    "code": "02834",
+    "name": "Tân An",
+    "fullName": "Xã Tân An, Tỉnh Tuyên Quang",
+    "slug": "tan-an",
+    "type": "commune"
+  },
+  {
+    "code": "02841",
+    "name": "Lực Hành",
+    "fullName": "Xã Lực Hành, Tỉnh Tuyên Quang",
+    "slug": "luc-hanh",
+    "type": "commune"
+  },
+  {
+    "code": "02844",
+    "name": "Tân Long",
+    "fullName": "Xã Tân Long, Tỉnh Tuyên Quang",
+    "slug": "tan-long",
+    "type": "commune"
+  },
+  {
+    "code": "02845",
+    "name": "Lùng Tám",
+    "fullName": "Xã Lùng Tám, Tỉnh Tuyên Quang",
+    "slug": "lung-tam",
+    "type": "commune"
+  },
+  {
+    "code": "02847",
+    "name": "Trung Sơn",
+    "fullName": "Xã Trung Sơn, Tỉnh Tuyên Quang",
+    "slug": "trung-son",
+    "type": "commune"
+  },
+  {
+    "code": "02851",
+    "name": "Hùng Lợi",
+    "fullName": "Xã Hùng Lợi, Tỉnh Tuyên Quang",
+    "slug": "hung-loi",
+    "type": "commune"
+  },
+  {
+    "code": "02862",
+    "name": "Tân Trịnh",
+    "fullName": "Xã Tân Trịnh, Tỉnh Tuyên Quang",
+    "slug": "tan-trinh",
+    "type": "commune"
+  },
+  {
+    "code": "02873",
+    "name": "Quang Bình",
+    "fullName": "Xã Quang Bình, Tỉnh Tuyên Quang",
+    "slug": "quang-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02874",
+    "name": "Đồng Tâm",
+    "fullName": "Xã Đồng Tâm, Tỉnh Tuyên Quang",
+    "slug": "dong-tam",
+    "type": "commune"
+  },
+  {
+    "code": "02880",
+    "name": "Liên Hiệp",
+    "fullName": "Xã Liên Hiệp, Tỉnh Tuyên Quang",
+    "slug": "lien-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "02889",
+    "name": "Tân Tiến",
+    "fullName": "Xã Tân Tiến, Tỉnh Tuyên Quang",
+    "slug": "tan-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02892",
+    "name": "Hùng Đức",
+    "fullName": "Xã Hùng Đức, Tỉnh Tuyên Quang",
+    "slug": "hung-duc",
+    "type": "commune"
+  },
+  {
+    "code": "02900",
+    "name": "Yên Lập",
+    "fullName": "Xã Yên Lập, Tỉnh Tuyên Quang",
+    "slug": "yen-lap",
+    "type": "commune"
+  },
+  {
+    "code": "02903",
+    "name": "Bình An",
+    "fullName": "Xã Bình An, Tỉnh Tuyên Quang",
+    "slug": "binh-an",
+    "type": "commune"
+  },
+  {
+    "code": "02920",
+    "name": "Ngọc Long",
+    "fullName": "Xã Ngọc Long, Tỉnh Tuyên Quang",
+    "slug": "ngoc-long",
+    "type": "commune"
+  },
+  {
+    "code": "02926",
+    "name": "Nghĩa Thuận",
+    "fullName": "Xã Nghĩa Thuận, Tỉnh Tuyên Quang",
+    "slug": "nghia-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "02928",
+    "name": "Thượng Lâm",
+    "fullName": "Xã Thượng Lâm, Tỉnh Tuyên Quang",
+    "slug": "thuong-lam",
+    "type": "commune"
+  },
+  {
+    "code": "02932",
+    "name": "Cán Tỷ",
+    "fullName": "Xã Cán Tỷ, Tỉnh Tuyên Quang",
+    "slug": "can-ty",
+    "type": "commune"
+  },
+  {
+    "code": "02934",
+    "name": "Bản Máy",
+    "fullName": "Xã Bản Máy, Tỉnh Tuyên Quang",
+    "slug": "ban-may",
+    "type": "commune"
+  },
+  {
+    "code": "02936",
+    "name": "Yên Cường",
+    "fullName": "Xã Yên Cường, Tỉnh Tuyên Quang",
+    "slug": "yen-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "02940",
+    "name": "Bạch Ngọc",
+    "fullName": "Xã Bạch Ngọc, Tỉnh Tuyên Quang",
+    "slug": "bach-ngoc",
+    "type": "commune"
+  },
+  {
+    "code": "02966",
+    "name": "Kiên Đài",
+    "fullName": "Xã Kiên Đài, Tỉnh Tuyên Quang",
+    "slug": "kien-dai",
+    "type": "commune"
+  },
+  {
+    "code": "02978",
+    "name": "Xuân Giang",
+    "fullName": "Xã Xuân Giang, Tỉnh Tuyên Quang",
+    "slug": "xuan-giang",
+    "type": "commune"
+  },
+  {
+    "code": "03013",
+    "name": "Hồ Thầu",
+    "fullName": "Xã Hồ Thầu, Tỉnh Tuyên Quang",
+    "slug": "ho-thau",
+    "type": "commune"
+  },
+  {
+    "code": "03017",
+    "name": "Tri Phú",
+    "fullName": "Xã Tri Phú, Tỉnh Tuyên Quang",
+    "slug": "tri-phu",
+    "type": "commune"
+  },
+  {
+    "code": "03024",
+    "name": "Nậm Dịch",
+    "fullName": "Xã Nậm Dịch, Tỉnh Tuyên Quang",
+    "slug": "nam-dich",
+    "type": "commune"
+  },
+  {
+    "code": "03044",
+    "name": "Trung Hà",
+    "fullName": "Xã Trung Hà, Tỉnh Tuyên Quang",
+    "slug": "trung-ha",
+    "type": "commune"
+  },
+  {
+    "code": "03050",
+    "name": "Tùng Bá",
+    "fullName": "Xã Tùng Bá, Tỉnh Tuyên Quang",
+    "slug": "tung-ba",
+    "type": "commune"
+  },
+  {
+    "code": "03061",
+    "name": "Khuôn Lùng",
+    "fullName": "Xã Khuôn Lùng, Tỉnh Tuyên Quang",
+    "slug": "khuon-lung",
+    "type": "commune"
+  },
+  {
+    "code": "03066",
+    "name": "Thuận Hoà",
+    "fullName": "Xã Thuận Hoà, Tỉnh Tuyên Quang",
+    "slug": "thuan-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "03067",
+    "name": "Minh Ngọc",
+    "fullName": "Xã Minh Ngọc, Tỉnh Tuyên Quang",
+    "slug": "minh-ngoc",
+    "type": "commune"
+  },
+  {
+    "code": "03068",
+    "name": "Ngọc Đường",
+    "fullName": "Xã Ngọc Đường, Tỉnh Tuyên Quang",
+    "slug": "ngoc-duong",
+    "type": "commune"
+  },
+  {
+    "code": "03072",
+    "name": "Tát Ngà",
+    "fullName": "Xã Tát Ngà, Tỉnh Tuyên Quang",
+    "slug": "tat-nga",
+    "type": "commune"
+  },
+  {
+    "code": "03074",
+    "name": "Minh Sơn",
+    "fullName": "Xã Minh Sơn, Tỉnh Tuyên Quang",
+    "slug": "minh-son",
+    "type": "commune"
+  },
+  {
+    "code": "03079",
+    "name": "Thàng Tín",
+    "fullName": "Xã Thàng Tín, Tỉnh Tuyên Quang",
+    "slug": "thang-tin",
+    "type": "commune"
+  },
+  {
+    "code": "03087",
+    "name": "Minh Tân",
+    "fullName": "Xã Minh Tân, Tỉnh Tuyên Quang",
+    "slug": "minh-tan",
+    "type": "commune"
+  },
+  {
+    "code": "03101",
+    "name": "Yên Hoa",
+    "fullName": "Xã Yên Hoa, Tỉnh Tuyên Quang",
+    "slug": "yen-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "03112",
+    "name": "Thượng Nông",
+    "fullName": "Xã Thượng Nông, Tỉnh Tuyên Quang",
+    "slug": "thuong-nong",
+    "type": "commune"
+  },
+  {
+    "code": "03136",
+    "name": "Kiến Thiết",
+    "fullName": "Xã Kiến Thiết, Tỉnh Tuyên Quang",
+    "slug": "kien-thiet",
+    "type": "commune"
+  },
+  {
+    "code": "03169",
+    "name": "Việt Lâm",
+    "fullName": "Xã Việt Lâm, Tỉnh Tuyên Quang",
+    "slug": "viet-lam",
+    "type": "commune"
+  },
+  {
+    "code": "03174",
+    "name": "Thanh Thuỷ",
+    "fullName": "Xã Thanh Thuỷ, Tỉnh Tuyên Quang",
+    "slug": "thanh-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "03181",
+    "name": "Thông Nguyên",
+    "fullName": "Xã Thông Nguyên, Tỉnh Tuyên Quang",
+    "slug": "thong-nguyen",
+    "type": "commune"
+  },
+  {
+    "code": "03182",
+    "name": "Pờ Ly Ngài",
+    "fullName": "Xã Pờ Ly Ngài, Tỉnh Tuyên Quang",
+    "slug": "po-ly-ngai",
+    "type": "commune"
+  },
+  {
+    "code": "03183",
+    "name": "Giáp Trung",
+    "fullName": "Xã Giáp Trung, Tỉnh Tuyên Quang",
+    "slug": "giap-trung",
+    "type": "commune"
+  },
+  {
+    "code": "03185",
+    "name": "Thượng Sơn",
+    "fullName": "Xã Thượng Sơn, Tỉnh Tuyên Quang",
+    "slug": "thuong-son",
+    "type": "commune"
+  },
+  {
+    "code": "03203",
+    "name": "Quảng Nguyên",
+    "fullName": "Xã Quảng Nguyên, Tỉnh Tuyên Quang",
+    "slug": "quang-nguyen",
+    "type": "commune"
+  },
+  {
+    "code": "03218",
+    "name": "Yên Thành",
+    "fullName": "Xã Yên Thành, Tỉnh Tuyên Quang",
+    "slug": "yen-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "03219",
+    "name": "Côn Lôn",
+    "fullName": "Xã Côn Lôn, Tỉnh Tuyên Quang",
+    "slug": "con-lon",
+    "type": "commune"
+  },
+  {
+    "code": "03257",
+    "name": "Tiên Nguyên",
+    "fullName": "Xã Tiên Nguyên, Tỉnh Tuyên Quang",
+    "slug": "tien-nguyen",
+    "type": "commune"
+  },
+  {
+    "code": "03268",
+    "name": "Lao Chải",
+    "fullName": "Xã Lao Chải, Tỉnh Tuyên Quang",
+    "slug": "lao-chai",
+    "type": "commune"
+  },
+  {
+    "code": "03281",
+    "name": "Cao Bồ",
+    "fullName": "Xã Cao Bồ, Tỉnh Tuyên Quang",
+    "slug": "cao-bo",
+    "type": "commune"
+  }
+]

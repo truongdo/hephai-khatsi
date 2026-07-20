@@ -6,10 +6,18 @@ import {
   NumberInput,
   SimpleGrid,
   Stack,
+  Text,
   TextInput,
 } from '@mantine/core'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { VietnamAddressFields } from '#/components/address/VietnamAddressFields'
+import type { AddressDraft } from '#/domain/address'
+import {
+  addressDraftToValue,
+  hydrateAddress,
+  validateAddressDraft,
+} from '#/domain/address'
 import type { Temple } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { fillerKeys } from '#/query/fillerKeys'
@@ -44,8 +52,8 @@ type TempleDraft = {
   nguoiKhaiSon: string
   namThanhLap: string
   tinChuHienCung: string
-  diaChiCu: string
-  diaChiMoi: string
+  diaChiCu: AddressDraft
+  diaChiMoi: AddressDraft
   truTriHienNay: { phapDanh: string; dienThoai: string; email: string }
   truTriTienNhiem: Array<{ phapDanh: string; thoiGian: string; ghiChu: string }>
   banQuanTri: Array<{ ten: string; vaiTro: string }>
@@ -113,8 +121,8 @@ function emptyTempleDraft(initial: TempleEditorFormProps['initial']): TempleDraf
     nguoiKhaiSon: initial.nguoiKhaiSon ?? '',
     namThanhLap: initial.namThanhLap ?? '',
     tinChuHienCung: initial.tinChuHienCung ?? '',
-    diaChiCu: initial.diaChiCu ?? '',
-    diaChiMoi: initial.diaChiMoi ?? '',
+    diaChiCu: hydrateAddress(initial.diaChiCu),
+    diaChiMoi: hydrateAddress(initial.diaChiMoi),
     truTriHienNay: {
       phapDanh: initial.truTriHienNay?.phapDanh ?? '',
       dienThoai: seededPhone,
@@ -192,8 +200,8 @@ function buildPatch(draft: TempleDraft): TempleProfilePatch {
     nguoiKhaiSon: textOrUndefined(draft.nguoiKhaiSon),
     namThanhLap: textOrUndefined(draft.namThanhLap),
     tinChuHienCung: textOrUndefined(draft.tinChuHienCung),
-    diaChiCu: textOrUndefined(draft.diaChiCu),
-    diaChiMoi: textOrUndefined(draft.diaChiMoi),
+    diaChiCu: addressDraftToValue(draft.diaChiCu),
+    diaChiMoi: addressDraftToValue(draft.diaChiMoi),
     truTriHienNay: {
       phapDanh: textOrUndefined(draft.truTriHienNay.phapDanh),
       dienThoai: textOrUndefined(draft.truTriHienNay.dienThoai),
@@ -269,6 +277,24 @@ function optionData(options: Array<{ value: string; label: () => string }>) {
   }))
 }
 
+type AddressFieldErrors = { city?: string; ward?: string }
+
+function mapAddressErrors(
+  result: ReturnType<typeof validateAddressDraft>,
+): AddressFieldErrors | undefined {
+  if (result.valid) return undefined
+  return {
+    city:
+      result.errors.city === 'REQUIRED'
+        ? m.filler_address_city_required()
+        : undefined,
+    ward:
+      result.errors.ward === 'REQUIRED'
+        ? m.filler_address_ward_required()
+        : undefined,
+  }
+}
+
 export function TempleEditorForm({
   title,
   token,
@@ -283,6 +309,10 @@ export function TempleEditorForm({
   const [extraManagerPhone, setExtraManagerPhone] = useState('')
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
+  const [addressErrors, setAddressErrors] = useState<{
+    diaChiCu?: AddressFieldErrors
+    diaChiMoi?: AddressFieldErrors
+  }>({})
   const disabled = status === 'view'
 
   const saveMutation = useMutation({
@@ -380,11 +410,22 @@ export function TempleEditorForm({
       }
     })
 
+  const handleSave = () => {
+    const cu = validateAddressDraft(draft.diaChiCu)
+    const moi = validateAddressDraft(draft.diaChiMoi)
+    setAddressErrors({
+      diaChiCu: mapAddressErrors(cu),
+      diaChiMoi: mapAddressErrors(moi),
+    })
+    if (!cu.valid || !moi.valid) return
+    saveMutation.mutate()
+  }
+
   return (
     <FillerEditorShell
       title={title}
       status={status}
-      onSave={status === 'draft' ? () => saveMutation.mutate() : undefined}
+      onSave={status === 'draft' ? handleSave : undefined}
       savePending={saveMutation.isPending}
       saveError={saveError}
       saveSuccess={saveSuccess}
@@ -448,26 +489,28 @@ export function TempleEditorForm({
         </FormSection>
 
         <FormSection title={m.filler_section_temple_address()}>
-          <SimpleGrid cols={{ base: 1, sm: 2 }}>
-            <TextInput
-              label={m.filler_field_dia_chi_cu()}
-              placeholder={m.filler_ph_dia_chi_cu()}
-              value={draft.diaChiCu}
-              onChange={(event) =>
-                updateDraft('diaChiCu', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-            <TextInput
-              label={m.filler_field_dia_chi_moi()}
-              placeholder={m.filler_ph_dia_chi_moi()}
-              value={draft.diaChiMoi}
-              onChange={(event) =>
-                updateDraft('diaChiMoi', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-          </SimpleGrid>
+          <Stack gap="lg">
+            <Stack gap="xs">
+              <Text fw={600}>{m.filler_field_dia_chi_cu()}</Text>
+              <VietnamAddressFields
+                label={m.filler_field_dia_chi_cu()}
+                value={draft.diaChiCu}
+                onChange={(value) => updateDraft('diaChiCu', value)}
+                disabled={disabled}
+                errors={addressErrors.diaChiCu}
+              />
+            </Stack>
+            <Stack gap="xs">
+              <Text fw={600}>{m.filler_field_dia_chi_moi()}</Text>
+              <VietnamAddressFields
+                label={m.filler_field_dia_chi_moi()}
+                value={draft.diaChiMoi}
+                onChange={(value) => updateDraft('diaChiMoi', value)}
+                disabled={disabled}
+                errors={addressErrors.diaChiMoi}
+              />
+            </Stack>
+          </Stack>
         </FormSection>
 
         <FormSection title={m.filler_section_temple_tru_tri()}>

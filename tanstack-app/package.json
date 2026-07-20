@@ -18,7 +18,8 @@
     "cy:run": "cypress run",
     "test:e2e": "start-server-and-test dev http://localhost:3000 cy:run",
     "deploy": "pnpm run build && wrangler deploy",
-    "seed:org-units": "node --env-file=.env --import tsx scripts/seed-org-units.ts"
+    "seed:org-units": "node --env-file=.env --import tsx scripts/seed-org-units.ts",
+    "split:city-wards": "tsx scripts/split-city-wards.ts"
   },
   "dependencies": {
     "@fontsource/be-vietnam-pro": "^5.2.8",

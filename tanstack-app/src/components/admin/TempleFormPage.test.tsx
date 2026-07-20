@@ -1,9 +1,21 @@
 import { MantineProvider } from '@mantine/core'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
-import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { cleanup, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { AddressValue } from '#/domain/address'
+import { m } from '#/paraglide/messages'
+import { saveAdminTemple } from '#/use-cases/saveAdminTemple'
 import { theme } from '../../theme'
 import { TempleFormPage } from './TempleFormPage'
+
+const structuredAddress: AddressValue = {
+  cityCode: '01',
+  cityName: 'Hà Nội',
+  wardCode: '00013',
+  wardName: 'Hà Đông',
+  line: '15 Ngõ 4',
+}
 
 const lockedTemple = {
   id: 't1',
@@ -12,12 +24,20 @@ const lockedTemple = {
   managerPhones: ['0901234567'],
   status: 'locked' as const,
   inviteId: 'inv-1',
-  diaChiMoi: '123 Đường A',
+  diaChiMoi: '123 Đường A' as string | AddressValue,
   truTriHienNay: { dienThoai: '0901234567' },
   createdAt: '2026-07-19T10:00:00.000Z',
   updatedAt: '2026-07-19T10:00:00.000Z',
   lockedAt: '2026-07-19T11:00:00.000Z',
   lockedBy: 'admin-uid',
+}
+
+const draftTemple = {
+  ...lockedTemple,
+  status: 'draft' as const,
+  lockedAt: null,
+  lockedBy: null,
+  diaChiMoi: structuredAddress as string | AddressValue,
 }
 
 vi.mock('#/auth/useAdminClaim', () => ({
@@ -40,10 +60,12 @@ vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => vi.fn(),
 }))
 
+let templeFixture: typeof lockedTemple | typeof draftTemple = lockedTemple
+
 vi.mock('#/query/adminQueries', () => ({
   templeQuery: (id: string) => ({
     queryKey: ['admin', 'temple', id],
-    queryFn: async () => lockedTemple,
+    queryFn: async () => templeFixture,
     staleTime: 0,
   }),
   orgUnitsQuery: () => ({
@@ -73,6 +95,8 @@ vi.mock('#/use-cases/unlockTemple', () => ({
   unlockTemple: vi.fn(),
 }))
 
+const saveAdminTempleMock = vi.mocked(saveAdminTemple)
+
 beforeAll(() => {
   class ResizeObserverMock {
     observe() {}
@@ -97,6 +121,16 @@ beforeAll(() => {
   })
 })
 
+afterEach(() => {
+  cleanup()
+})
+
+beforeEach(() => {
+  templeFixture = lockedTemple
+  lockedTemple.diaChiMoi = '123 Đường A'
+  saveAdminTempleMock.mockReset()
+})
+
 function renderForm({ mode }: { mode: 'create' | 'edit' }) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
@@ -116,5 +150,44 @@ describe('TempleFormPage', () => {
     expect(
       await screen.findByRole('button', { name: /mở khóa|unlock/i }),
     ).toBeTruthy()
+  })
+
+  it('displays formatted structured address as read-only', async () => {
+    templeFixture = draftTemple
+    renderForm({ mode: 'edit' })
+    const input = await screen.findByDisplayValue('15 Ngõ 4, Hà Đông, Hà Nội')
+    expect(input).toHaveAttribute('readonly')
+    expect(
+      screen.getByText(m.admin_temples_form_dia_chi_structured_readonly()),
+    ).toBeTruthy()
+  })
+
+  it('omits structured diaChiMoi from admin save patch', async () => {
+    const user = userEvent.setup()
+    templeFixture = draftTemple
+    saveAdminTempleMock.mockResolvedValue({
+      temple: { ...draftTemple, id: 't1' },
+      mode: 'updated',
+    } as never)
+
+    renderForm({ mode: 'edit' })
+    await screen.findByDisplayValue('15 Ngõ 4, Hà Đông, Hà Nội')
+
+    await user.type(
+      screen.getByLabelText(m.admin_temples_form_danh_hieu()),
+      ' updated',
+    )
+    await user.click(screen.getByRole('button', { name: m.admin_temples_save() }))
+
+    expect(saveAdminTempleMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        patch: expect.not.objectContaining({
+          diaChiMoi: expect.anything(),
+        }),
+      }),
+    )
+    expect(saveAdminTempleMock.mock.calls[0]?.[0].patch).not.toHaveProperty(
+      'diaChiMoi',
+    )
   })
 })

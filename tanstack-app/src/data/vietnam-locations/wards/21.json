@@ -1,0 +1,317 @@
+[
+  {
+    "code": "00601",
+    "name": "Điện Biên Phủ",
+    "fullName": "Phường Điện Biên Phủ, Tỉnh Điện Biên",
+    "slug": "dien-bien-phu",
+    "type": "ward"
+  },
+  {
+    "code": "01564",
+    "name": "Thanh Nưa",
+    "fullName": "Xã Thanh Nưa, Tỉnh Điện Biên",
+    "slug": "thanh-nua",
+    "type": "commune"
+  },
+  {
+    "code": "01856",
+    "name": "Mường Thanh",
+    "fullName": "Phường Mường Thanh, Tỉnh Điện Biên",
+    "slug": "muong-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "01960",
+    "name": "Tuần Giáo",
+    "fullName": "Xã Tuần Giáo, Tỉnh Điện Biên",
+    "slug": "tuan-giao",
+    "type": "commune"
+  },
+  {
+    "code": "01962",
+    "name": "Mường Nhé",
+    "fullName": "Xã Mường Nhé, Tỉnh Điện Biên",
+    "slug": "muong-nhe",
+    "type": "commune"
+  },
+  {
+    "code": "02224",
+    "name": "Thanh An",
+    "fullName": "Xã Thanh An, Tỉnh Điện Biên",
+    "slug": "thanh-an",
+    "type": "commune"
+  },
+  {
+    "code": "02280",
+    "name": "Búng Lao",
+    "fullName": "Xã Búng Lao, Tỉnh Điện Biên",
+    "slug": "bung-lao",
+    "type": "commune"
+  },
+  {
+    "code": "02285",
+    "name": "Na Sang",
+    "fullName": "Xã Na Sang, Tỉnh Điện Biên",
+    "slug": "na-sang",
+    "type": "commune"
+  },
+  {
+    "code": "02312",
+    "name": "Sáng Nhè",
+    "fullName": "Xã Sáng Nhè, Tỉnh Điện Biên",
+    "slug": "sang-nhe",
+    "type": "commune"
+  },
+  {
+    "code": "02377",
+    "name": "Mường Lay",
+    "fullName": "Phường Mường Lay, Tỉnh Điện Biên",
+    "slug": "muong-lay",
+    "type": "ward"
+  },
+  {
+    "code": "02407",
+    "name": "Tủa Chùa",
+    "fullName": "Xã Tủa Chùa, Tỉnh Điện Biên",
+    "slug": "tua-chua",
+    "type": "commune"
+  },
+  {
+    "code": "02419",
+    "name": "Mường Ảng",
+    "fullName": "Xã Mường Ảng, Tỉnh Điện Biên",
+    "slug": "muong-ang",
+    "type": "commune"
+  },
+  {
+    "code": "02478",
+    "name": "Nà Hỳ",
+    "fullName": "Xã Nà Hỳ, Tỉnh Điện Biên",
+    "slug": "na-hy",
+    "type": "commune"
+  },
+  {
+    "code": "02528",
+    "name": "Mường Phăng",
+    "fullName": "Xã Mường Phăng, Tỉnh Điện Biên",
+    "slug": "muong-phang",
+    "type": "commune"
+  },
+  {
+    "code": "02534",
+    "name": "Mường Luân",
+    "fullName": "Xã Mường Luân, Tỉnh Điện Biên",
+    "slug": "muong-luan",
+    "type": "commune"
+  },
+  {
+    "code": "02547",
+    "name": "Sính Phình",
+    "fullName": "Xã Sính Phình, Tỉnh Điện Biên",
+    "slug": "sinh-phinh",
+    "type": "commune"
+  },
+  {
+    "code": "02553",
+    "name": "Xa Dung",
+    "fullName": "Xã Xa Dung, Tỉnh Điện Biên",
+    "slug": "xa-dung",
+    "type": "commune"
+  },
+  {
+    "code": "02555",
+    "name": "Thanh Yên",
+    "fullName": "Xã Thanh Yên, Tỉnh Điện Biên",
+    "slug": "thanh-yen",
+    "type": "commune"
+  },
+  {
+    "code": "02569",
+    "name": "Chiềng Sinh",
+    "fullName": "Xã Chiềng Sinh, Tỉnh Điện Biên",
+    "slug": "chieng-sinh",
+    "type": "commune"
+  },
+  {
+    "code": "02572",
+    "name": "Na Son",
+    "fullName": "Xã Na Son, Tỉnh Điện Biên",
+    "slug": "na-son",
+    "type": "commune"
+  },
+  {
+    "code": "02594",
+    "name": "Nà Tấu",
+    "fullName": "Xã Nà Tấu, Tỉnh Điện Biên",
+    "slug": "na-tau",
+    "type": "commune"
+  },
+  {
+    "code": "02603",
+    "name": "Quài Tở",
+    "fullName": "Xã Quài Tở, Tỉnh Điện Biên",
+    "slug": "quai-to",
+    "type": "commune"
+  },
+  {
+    "code": "02633",
+    "name": "Mường Mùn",
+    "fullName": "Xã Mường Mùn, Tỉnh Điện Biên",
+    "slug": "muong-mun",
+    "type": "commune"
+  },
+  {
+    "code": "02667",
+    "name": "Mường Chà",
+    "fullName": "Xã Mường Chà, Tỉnh Điện Biên",
+    "slug": "muong-cha",
+    "type": "commune"
+  },
+  {
+    "code": "02685",
+    "name": "Mường Lạn",
+    "fullName": "Xã Mường Lạn, Tỉnh Điện Biên",
+    "slug": "muong-lan",
+    "type": "commune"
+  },
+  {
+    "code": "02713",
+    "name": "Sín Chải",
+    "fullName": "Xã Sín Chải, Tỉnh Điện Biên",
+    "slug": "sin-chai",
+    "type": "commune"
+  },
+  {
+    "code": "02739",
+    "name": "Pú Nhung",
+    "fullName": "Xã Pú Nhung, Tỉnh Điện Biên",
+    "slug": "pu-nhung",
+    "type": "commune"
+  },
+  {
+    "code": "02787",
+    "name": "Núa Ngam",
+    "fullName": "Xã Núa Ngam, Tỉnh Điện Biên",
+    "slug": "nua-ngam",
+    "type": "commune"
+  },
+  {
+    "code": "02855",
+    "name": "Mường Toong",
+    "fullName": "Xã Mường Toong, Tỉnh Điện Biên",
+    "slug": "muong-toong",
+    "type": "commune"
+  },
+  {
+    "code": "02864",
+    "name": "Si Pa Phìn",
+    "fullName": "Xã Si Pa Phìn, Tỉnh Điện Biên",
+    "slug": "si-pa-phin",
+    "type": "commune"
+  },
+  {
+    "code": "02883",
+    "name": "Phình Giàng",
+    "fullName": "Xã Phình Giàng, Tỉnh Điện Biên",
+    "slug": "phinh-giang",
+    "type": "commune"
+  },
+  {
+    "code": "02887",
+    "name": "Mường Pồn",
+    "fullName": "Xã Mường Pồn, Tỉnh Điện Biên",
+    "slug": "muong-pon",
+    "type": "commune"
+  },
+  {
+    "code": "02909",
+    "name": "Nà Bủng",
+    "fullName": "Xã Nà Bủng, Tỉnh Điện Biên",
+    "slug": "na-bung",
+    "type": "commune"
+  },
+  {
+    "code": "02916",
+    "name": "Quảng Lâm",
+    "fullName": "Xã Quảng Lâm, Tỉnh Điện Biên",
+    "slug": "quang-lam",
+    "type": "commune"
+  },
+  {
+    "code": "02919",
+    "name": "Pu Nhi",
+    "fullName": "Xã Pu Nhi, Tỉnh Điện Biên",
+    "slug": "pu-nhi",
+    "type": "commune"
+  },
+  {
+    "code": "02942",
+    "name": "Mường Nhà",
+    "fullName": "Xã Mường Nhà, Tỉnh Điện Biên",
+    "slug": "muong-nha",
+    "type": "commune"
+  },
+  {
+    "code": "02960",
+    "name": "Mường Tùng",
+    "fullName": "Xã Mường Tùng, Tỉnh Điện Biên",
+    "slug": "muong-tung",
+    "type": "commune"
+  },
+  {
+    "code": "02997",
+    "name": "Nậm Kè",
+    "fullName": "Xã Nậm Kè, Tỉnh Điện Biên",
+    "slug": "nam-ke",
+    "type": "commune"
+  },
+  {
+    "code": "02999",
+    "name": "Tủa Thàng",
+    "fullName": "Xã Tủa Thàng, Tỉnh Điện Biên",
+    "slug": "tua-thang",
+    "type": "commune"
+  },
+  {
+    "code": "03053",
+    "name": "Sam Mứn",
+    "fullName": "Xã Sam Mứn, Tỉnh Điện Biên",
+    "slug": "sam-mun",
+    "type": "commune"
+  },
+  {
+    "code": "03055",
+    "name": "Pa Ham",
+    "fullName": "Xã Pa Ham, Tỉnh Điện Biên",
+    "slug": "pa-ham",
+    "type": "commune"
+  },
+  {
+    "code": "03086",
+    "name": "Nậm Nèn",
+    "fullName": "Xã Nậm Nèn, Tỉnh Điện Biên",
+    "slug": "nam-nen",
+    "type": "commune"
+  },
+  {
+    "code": "03105",
+    "name": "Tìa Dình",
+    "fullName": "Xã Tìa Dình, Tỉnh Điện Biên",
+    "slug": "tia-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "03191",
+    "name": "Sín Thầu",
+    "fullName": "Xã Sín Thầu, Tỉnh Điện Biên",
+    "slug": "sin-thau",
+    "type": "commune"
+  },
+  {
+    "code": "03247",
+    "name": "Chà Tở",
+    "fullName": "Xã Chà Tở, Tỉnh Điện Biên",
+    "slug": "cha-to",
+    "type": "commune"
+  }
+]

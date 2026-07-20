@@ -1,0 +1,457 @@
+[
+  {
+    "code": "00045",
+    "name": "Nha Trang",
+    "fullName": "Phường Nha Trang, Tỉnh Khánh Hòa",
+    "slug": "nha-trang",
+    "type": "ward"
+  },
+  {
+    "code": "00050",
+    "name": "Nam Nha Trang",
+    "fullName": "Phường Nam Nha Trang, Tỉnh Khánh Hòa",
+    "slug": "nam-nha-trang",
+    "type": "ward"
+  },
+  {
+    "code": "00055",
+    "name": "Bắc Nha Trang",
+    "fullName": "Phường Bắc Nha Trang, Tỉnh Khánh Hòa",
+    "slug": "bac-nha-trang",
+    "type": "ward"
+  },
+  {
+    "code": "00097",
+    "name": "Tây Nha Trang",
+    "fullName": "Phường Tây Nha Trang, Tỉnh Khánh Hòa",
+    "slug": "tay-nha-trang",
+    "type": "ward"
+  },
+  {
+    "code": "00163",
+    "name": "Cam Lâm",
+    "fullName": "Xã Cam Lâm, Tỉnh Khánh Hòa",
+    "slug": "cam-lam",
+    "type": "commune"
+  },
+  {
+    "code": "00251",
+    "name": "Phan Rang",
+    "fullName": "Phường Phan Rang, Tỉnh Khánh Hòa",
+    "slug": "phan-rang",
+    "type": "ward"
+  },
+  {
+    "code": "00285",
+    "name": "Ninh Phước",
+    "fullName": "Xã Ninh Phước, Tỉnh Khánh Hòa",
+    "slug": "ninh-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "00412",
+    "name": "Ninh Hòa",
+    "fullName": "Phường Ninh Hòa, Tỉnh Khánh Hòa",
+    "slug": "ninh-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00468",
+    "name": "Đông Hải",
+    "fullName": "Phường Đông Hải, Tỉnh Khánh Hòa",
+    "slug": "dong-hai",
+    "type": "ward"
+  },
+  {
+    "code": "00481",
+    "name": "Vạn Ninh",
+    "fullName": "Xã Vạn Ninh, Tỉnh Khánh Hòa",
+    "slug": "van-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "00591",
+    "name": "Phước Hậu",
+    "fullName": "Xã Phước Hậu, Tỉnh Khánh Hòa",
+    "slug": "phuoc-hau",
+    "type": "commune"
+  },
+  {
+    "code": "00693",
+    "name": "Bảo An",
+    "fullName": "Phường Bảo An, Tỉnh Khánh Hòa",
+    "slug": "bao-an",
+    "type": "ward"
+  },
+  {
+    "code": "00714",
+    "name": "Diên Khánh",
+    "fullName": "Xã Diên Khánh, Tỉnh Khánh Hòa",
+    "slug": "dien-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "00717",
+    "name": "Xuân Hải",
+    "fullName": "Xã Xuân Hải, Tỉnh Khánh Hòa",
+    "slug": "xuan-hai",
+    "type": "commune"
+  },
+  {
+    "code": "00764",
+    "name": "Bắc Cam Ranh",
+    "fullName": "Phường Bắc Cam Ranh, Tỉnh Khánh Hòa",
+    "slug": "bac-cam-ranh",
+    "type": "ward"
+  },
+  {
+    "code": "00773",
+    "name": "Đông Ninh Hòa",
+    "fullName": "Phường Đông Ninh Hòa, Tỉnh Khánh Hòa",
+    "slug": "dong-ninh-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00881",
+    "name": "Tân Định",
+    "fullName": "Xã Tân Định, Tỉnh Khánh Hòa",
+    "slug": "tan-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "00927",
+    "name": "Ninh Chử",
+    "fullName": "Phường Ninh Chử, Tỉnh Khánh Hòa",
+    "slug": "ninh-chu",
+    "type": "ward"
+  },
+  {
+    "code": "01004",
+    "name": "Diên Điền",
+    "fullName": "Xã Diên Điền, Tỉnh Khánh Hòa",
+    "slug": "dien-dien",
+    "type": "commune"
+  },
+  {
+    "code": "01070",
+    "name": "Vĩnh Hải",
+    "fullName": "Xã Vĩnh Hải, Tỉnh Khánh Hòa",
+    "slug": "vinh-hai",
+    "type": "commune"
+  },
+  {
+    "code": "01149",
+    "name": "Phước Hữu",
+    "fullName": "Xã Phước Hữu, Tỉnh Khánh Hòa",
+    "slug": "phuoc-huu",
+    "type": "commune"
+  },
+  {
+    "code": "01168",
+    "name": "Phước Dinh",
+    "fullName": "Xã Phước Dinh, Tỉnh Khánh Hòa",
+    "slug": "phuoc-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "01285",
+    "name": "Đô Vinh",
+    "fullName": "Phường Đô Vinh, Tỉnh Khánh Hòa",
+    "slug": "do-vinh",
+    "type": "ward"
+  },
+  {
+    "code": "01299",
+    "name": "Cam Linh",
+    "fullName": "Phường Cam Linh, Tỉnh Khánh Hòa",
+    "slug": "cam-linh",
+    "type": "ward"
+  },
+  {
+    "code": "01351",
+    "name": "Bắc Ninh Hòa",
+    "fullName": "Xã Bắc Ninh Hòa, Tỉnh Khánh Hòa",
+    "slug": "bac-ninh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01370",
+    "name": "Ninh Sơn",
+    "fullName": "Xã Ninh Sơn, Tỉnh Khánh Hòa",
+    "slug": "ninh-son",
+    "type": "commune"
+  },
+  {
+    "code": "01390",
+    "name": "Ba Ngòi",
+    "fullName": "Phường Ba Ngòi, Tỉnh Khánh Hòa",
+    "slug": "ba-ngoi",
+    "type": "ward"
+  },
+  {
+    "code": "01396",
+    "name": "Vạn Thắng",
+    "fullName": "Xã Vạn Thắng, Tỉnh Khánh Hòa",
+    "slug": "van-thang",
+    "type": "commune"
+  },
+  {
+    "code": "01423",
+    "name": "Nam Ninh Hòa",
+    "fullName": "Xã Nam Ninh Hòa, Tỉnh Khánh Hòa",
+    "slug": "nam-ninh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01429",
+    "name": "Cam Ranh",
+    "fullName": "Phường Cam Ranh, Tỉnh Khánh Hòa",
+    "slug": "cam-ranh",
+    "type": "ward"
+  },
+  {
+    "code": "01435",
+    "name": "Ninh Hải",
+    "fullName": "Xã Ninh Hải, Tỉnh Khánh Hòa",
+    "slug": "ninh-hai",
+    "type": "commune"
+  },
+  {
+    "code": "01536",
+    "name": "Tu Bông",
+    "fullName": "Xã Tu Bông, Tỉnh Khánh Hòa",
+    "slug": "tu-bong",
+    "type": "commune"
+  },
+  {
+    "code": "01723",
+    "name": "Thuận Nam",
+    "fullName": "Xã Thuận Nam, Tỉnh Khánh Hòa",
+    "slug": "thuan-nam",
+    "type": "commune"
+  },
+  {
+    "code": "01762",
+    "name": "Hòa Thắng",
+    "fullName": "Phường Hòa Thắng, Tỉnh Khánh Hòa",
+    "slug": "hoa-thang",
+    "type": "ward"
+  },
+  {
+    "code": "01777",
+    "name": "Hòa Trí",
+    "fullName": "Xã Hòa Trí, Tỉnh Khánh Hòa",
+    "slug": "hoa-tri",
+    "type": "commune"
+  },
+  {
+    "code": "01835",
+    "name": "Thuận Bắc",
+    "fullName": "Xã Thuận Bắc, Tỉnh Khánh Hòa",
+    "slug": "thuan-bac",
+    "type": "commune"
+  },
+  {
+    "code": "01843",
+    "name": "Đại Lãnh",
+    "fullName": "Xã Đại Lãnh, Tỉnh Khánh Hòa",
+    "slug": "dai-lanh",
+    "type": "commune"
+  },
+  {
+    "code": "01905",
+    "name": "Cà Ná",
+    "fullName": "Xã Cà Ná, Tỉnh Khánh Hòa",
+    "slug": "ca-na",
+    "type": "commune"
+  },
+  {
+    "code": "01964",
+    "name": "Lâm Sơn",
+    "fullName": "Xã Lâm Sơn, Tỉnh Khánh Hòa",
+    "slug": "lam-son",
+    "type": "commune"
+  },
+  {
+    "code": "01969",
+    "name": "Suối Dầu",
+    "fullName": "Xã Suối Dầu, Tỉnh Khánh Hòa",
+    "slug": "suoi-dau",
+    "type": "commune"
+  },
+  {
+    "code": "01970",
+    "name": "Suối Hiệp",
+    "fullName": "Xã Suối Hiệp, Tỉnh Khánh Hòa",
+    "slug": "suoi-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "02022",
+    "name": "Nam Cam Ranh",
+    "fullName": "Xã Nam Cam Ranh, Tỉnh Khánh Hòa",
+    "slug": "nam-cam-ranh",
+    "type": "commune"
+  },
+  {
+    "code": "02034",
+    "name": "Diên Lạc",
+    "fullName": "Xã Diên Lạc, Tỉnh Khánh Hòa",
+    "slug": "dien-lac",
+    "type": "commune"
+  },
+  {
+    "code": "02289",
+    "name": "Cam An",
+    "fullName": "Xã Cam An, Tỉnh Khánh Hòa",
+    "slug": "cam-an",
+    "type": "commune"
+  },
+  {
+    "code": "02337",
+    "name": "Vạn Hưng",
+    "fullName": "Xã Vạn Hưng, Tỉnh Khánh Hòa",
+    "slug": "van-hung",
+    "type": "commune"
+  },
+  {
+    "code": "02425",
+    "name": "Tây Ninh Hòa",
+    "fullName": "Xã Tây Ninh Hòa, Tỉnh Khánh Hòa",
+    "slug": "tay-ninh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02480",
+    "name": "Diên Thọ",
+    "fullName": "Xã Diên Thọ, Tỉnh Khánh Hòa",
+    "slug": "dien-tho",
+    "type": "commune"
+  },
+  {
+    "code": "02529",
+    "name": "Diên Lâm",
+    "fullName": "Xã Diên Lâm, Tỉnh Khánh Hòa",
+    "slug": "dien-lam",
+    "type": "commune"
+  },
+  {
+    "code": "02550",
+    "name": "Mỹ Sơn",
+    "fullName": "Xã Mỹ Sơn, Tỉnh Khánh Hòa",
+    "slug": "my-son",
+    "type": "commune"
+  },
+  {
+    "code": "02612",
+    "name": "Công Hải",
+    "fullName": "Xã Công Hải, Tỉnh Khánh Hòa",
+    "slug": "cong-hai",
+    "type": "commune"
+  },
+  {
+    "code": "02759",
+    "name": "Bác Ái",
+    "fullName": "Xã Bác Ái, Tỉnh Khánh Hòa",
+    "slug": "bac-ai",
+    "type": "commune"
+  },
+  {
+    "code": "02800",
+    "name": "Khánh Sơn",
+    "fullName": "Xã Khánh Sơn, Tỉnh Khánh Hòa",
+    "slug": "khanh-son",
+    "type": "commune"
+  },
+  {
+    "code": "02822",
+    "name": "Khánh Vĩnh",
+    "fullName": "Xã Khánh Vĩnh, Tỉnh Khánh Hòa",
+    "slug": "khanh-vinh",
+    "type": "commune"
+  },
+  {
+    "code": "02831",
+    "name": "Bác Ái Tây",
+    "fullName": "Xã Bác Ái Tây, Tỉnh Khánh Hòa",
+    "slug": "bac-ai-tay",
+    "type": "commune"
+  },
+  {
+    "code": "02890",
+    "name": "Đông Khánh Sơn",
+    "fullName": "Xã Đông Khánh Sơn, Tỉnh Khánh Hòa",
+    "slug": "dong-khanh-son",
+    "type": "commune"
+  },
+  {
+    "code": "02899",
+    "name": "Anh Dũng",
+    "fullName": "Xã Anh Dũng, Tỉnh Khánh Hòa",
+    "slug": "anh-dung",
+    "type": "commune"
+  },
+  {
+    "code": "02901",
+    "name": "Nam Khánh Vĩnh",
+    "fullName": "Xã Nam Khánh Vĩnh, Tỉnh Khánh Hòa",
+    "slug": "nam-khanh-vinh",
+    "type": "commune"
+  },
+  {
+    "code": "02971",
+    "name": "Bác Ái Đông",
+    "fullName": "Xã Bác Ái Đông, Tỉnh Khánh Hòa",
+    "slug": "bac-ai-dong",
+    "type": "commune"
+  },
+  {
+    "code": "02980",
+    "name": "Bắc Khánh Vĩnh",
+    "fullName": "Xã Bắc Khánh Vĩnh, Tỉnh Khánh Hòa",
+    "slug": "bac-khanh-vinh",
+    "type": "commune"
+  },
+  {
+    "code": "03002",
+    "name": "Phước Hà",
+    "fullName": "Xã Phước Hà, Tỉnh Khánh Hòa",
+    "slug": "phuoc-ha",
+    "type": "commune"
+  },
+  {
+    "code": "03069",
+    "name": "Tây Khánh Sơn",
+    "fullName": "Xã Tây Khánh Sơn, Tỉnh Khánh Hòa",
+    "slug": "tay-khanh-son",
+    "type": "commune"
+  },
+  {
+    "code": "03071",
+    "name": "Trung Khánh Vĩnh",
+    "fullName": "Xã Trung Khánh Vĩnh, Tỉnh Khánh Hòa",
+    "slug": "trung-khanh-vinh",
+    "type": "commune"
+  },
+  {
+    "code": "03098",
+    "name": "Tây Khánh Vĩnh",
+    "fullName": "Xã Tây Khánh Vĩnh, Tỉnh Khánh Hòa",
+    "slug": "tay-khanh-vinh",
+    "type": "commune"
+  },
+  {
+    "code": "03259",
+    "name": "Cam Hiệp",
+    "fullName": "Xã Cam Hiệp, Tỉnh Khánh Hòa",
+    "slug": "cam-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "03318",
+    "name": "Trường Sa",
+    "fullName": "Đặc khu Trường Sa, Tỉnh Khánh Hòa",
+    "slug": "truong-sa",
+    "type": "commune"
+  }
+]

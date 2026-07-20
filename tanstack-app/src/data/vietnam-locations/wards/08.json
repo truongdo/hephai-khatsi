@@ -1,0 +1,380 @@
+[
+  {
+    "code": "00254",
+    "name": "Mạo Khê",
+    "fullName": "Phường Mạo Khê, Tỉnh Quảng Ninh",
+    "slug": "mao-khe",
+    "type": "ward"
+  },
+  {
+    "code": "00317",
+    "name": "Cửa Ông",
+    "fullName": "Phường Cửa Ông, Tỉnh Quảng Ninh",
+    "slug": "cua-ong",
+    "type": "ward"
+  },
+  {
+    "code": "00370",
+    "name": "Cẩm Phả",
+    "fullName": "Phường Cẩm Phả, Tỉnh Quảng Ninh",
+    "slug": "cam-pha",
+    "type": "ward"
+  },
+  {
+    "code": "00397",
+    "name": "Uông Bí",
+    "fullName": "Phường Uông Bí, Tỉnh Quảng Ninh",
+    "slug": "uong-bi",
+    "type": "ward"
+  },
+  {
+    "code": "00487",
+    "name": "Vân Đồn",
+    "fullName": "Đặc khu Vân Đồn, Tỉnh Quảng Ninh",
+    "slug": "van-don",
+    "type": "commune"
+  },
+  {
+    "code": "00502",
+    "name": "Hạ Long",
+    "fullName": "Phường Hạ Long, Tỉnh Quảng Ninh",
+    "slug": "ha-long",
+    "type": "ward"
+  },
+  {
+    "code": "00507",
+    "name": "Quang Hanh",
+    "fullName": "Phường Quang Hanh, Tỉnh Quảng Ninh",
+    "slug": "quang-hanh",
+    "type": "ward"
+  },
+  {
+    "code": "00528",
+    "name": "Việt Hưng",
+    "fullName": "Phường Việt Hưng, Tỉnh Quảng Ninh",
+    "slug": "viet-hung",
+    "type": "ward"
+  },
+  {
+    "code": "00541",
+    "name": "Hồng Gai",
+    "fullName": "Phường Hồng Gai, Tỉnh Quảng Ninh",
+    "slug": "hong-gai",
+    "type": "ward"
+  },
+  {
+    "code": "00636",
+    "name": "Hà Lầm",
+    "fullName": "Phường Hà Lầm, Tỉnh Quảng Ninh",
+    "slug": "ha-lam",
+    "type": "ward"
+  },
+  {
+    "code": "00672",
+    "name": "Móng Cái 1",
+    "fullName": "Phường Móng Cái 1, Tỉnh Quảng Ninh",
+    "slug": "mong-cai-1",
+    "type": "ward"
+  },
+  {
+    "code": "00761",
+    "name": "Đông Triều",
+    "fullName": "Phường Đông Triều, Tỉnh Quảng Ninh",
+    "slug": "dong-trieu",
+    "type": "ward"
+  },
+  {
+    "code": "00823",
+    "name": "Bãi Cháy",
+    "fullName": "Phường Bãi Cháy, Tỉnh Quảng Ninh",
+    "slug": "bai-chay",
+    "type": "ward"
+  },
+  {
+    "code": "00858",
+    "name": "Quảng Hà",
+    "fullName": "Xã Quảng Hà, Tỉnh Quảng Ninh",
+    "slug": "quang-ha",
+    "type": "commune"
+  },
+  {
+    "code": "00957",
+    "name": "Yên Tử",
+    "fullName": "Phường Yên Tử, Tỉnh Quảng Ninh",
+    "slug": "yen-tu",
+    "type": "ward"
+  },
+  {
+    "code": "01072",
+    "name": "Vàng Danh",
+    "fullName": "Phường Vàng Danh, Tỉnh Quảng Ninh",
+    "slug": "vang-danh",
+    "type": "ward"
+  },
+  {
+    "code": "01267",
+    "name": "Hiệp Hòa",
+    "fullName": "Phường Hiệp Hòa, Tỉnh Quảng Ninh",
+    "slug": "hiep-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "01316",
+    "name": "Liên Hòa",
+    "fullName": "Phường Liên Hòa, Tỉnh Quảng Ninh",
+    "slug": "lien-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "01317",
+    "name": "Cao Xanh",
+    "fullName": "Phường Cao Xanh, Tỉnh Quảng Ninh",
+    "slug": "cao-xanh",
+    "type": "ward"
+  },
+  {
+    "code": "01371",
+    "name": "Hoàng Quế",
+    "fullName": "Phường Hoàng Quế, Tỉnh Quảng Ninh",
+    "slug": "hoang-que",
+    "type": "ward"
+  },
+  {
+    "code": "01416",
+    "name": "Quảng Yên",
+    "fullName": "Phường Quảng Yên, Tỉnh Quảng Ninh",
+    "slug": "quang-yen",
+    "type": "ward"
+  },
+  {
+    "code": "01547",
+    "name": "Hà Tu",
+    "fullName": "Phường Hà Tu, Tỉnh Quảng Ninh",
+    "slug": "ha-tu",
+    "type": "ward"
+  },
+  {
+    "code": "01579",
+    "name": "Móng Cái 2",
+    "fullName": "Phường Móng Cái 2, Tỉnh Quảng Ninh",
+    "slug": "mong-cai-2",
+    "type": "ward"
+  },
+  {
+    "code": "01625",
+    "name": "Hoành Bồ",
+    "fullName": "Phường Hoành Bồ, Tỉnh Quảng Ninh",
+    "slug": "hoanh-bo",
+    "type": "ward"
+  },
+  {
+    "code": "01714",
+    "name": "Phong Cốc",
+    "fullName": "Phường Phong Cốc, Tỉnh Quảng Ninh",
+    "slug": "phong-coc",
+    "type": "ward"
+  },
+  {
+    "code": "01823",
+    "name": "Đầm Hà",
+    "fullName": "Xã Đầm Hà, Tỉnh Quảng Ninh",
+    "slug": "dam-ha",
+    "type": "commune"
+  },
+  {
+    "code": "01899",
+    "name": "An Sinh",
+    "fullName": "Phường An Sinh, Tỉnh Quảng Ninh",
+    "slug": "an-sinh",
+    "type": "ward"
+  },
+  {
+    "code": "02102",
+    "name": "Móng Cái 3",
+    "fullName": "Phường Móng Cái 3, Tỉnh Quảng Ninh",
+    "slug": "mong-cai-3",
+    "type": "ward"
+  },
+  {
+    "code": "02127",
+    "name": "Tiên Yên",
+    "fullName": "Xã Tiên Yên, Tỉnh Quảng Ninh",
+    "slug": "tien-yen",
+    "type": "commune"
+  },
+  {
+    "code": "02143",
+    "name": "Bình Khê",
+    "fullName": "Phường Bình Khê, Tỉnh Quảng Ninh",
+    "slug": "binh-khe",
+    "type": "ward"
+  },
+  {
+    "code": "02158",
+    "name": "Đông Mai",
+    "fullName": "Phường Đông Mai, Tỉnh Quảng Ninh",
+    "slug": "dong-mai",
+    "type": "ward"
+  },
+  {
+    "code": "02180",
+    "name": "Hà An",
+    "fullName": "Phường Hà An, Tỉnh Quảng Ninh",
+    "slug": "ha-an",
+    "type": "ward"
+  },
+  {
+    "code": "02330",
+    "name": "Mông Dương",
+    "fullName": "Phường Mông Dương, Tỉnh Quảng Ninh",
+    "slug": "mong-duong",
+    "type": "ward"
+  },
+  {
+    "code": "02387",
+    "name": "Đông Ngũ",
+    "fullName": "Xã Đông Ngũ, Tỉnh Quảng Ninh",
+    "slug": "dong-ngu",
+    "type": "commune"
+  },
+  {
+    "code": "02389",
+    "name": "Quảng Tân",
+    "fullName": "Xã Quảng Tân, Tỉnh Quảng Ninh",
+    "slug": "quang-tan",
+    "type": "commune"
+  },
+  {
+    "code": "02431",
+    "name": "Ba Chẽ",
+    "fullName": "Xã Ba Chẽ, Tỉnh Quảng Ninh",
+    "slug": "ba-che",
+    "type": "commune"
+  },
+  {
+    "code": "02443",
+    "name": "Thống Nhất",
+    "fullName": "Xã Thống Nhất, Tỉnh Quảng Ninh",
+    "slug": "thong-nhat",
+    "type": "commune"
+  },
+  {
+    "code": "02450",
+    "name": "Đường Hoa",
+    "fullName": "Xã Đường Hoa, Tỉnh Quảng Ninh",
+    "slug": "duong-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02511",
+    "name": "Bình Liêu",
+    "fullName": "Xã Bình Liêu, Tỉnh Quảng Ninh",
+    "slug": "binh-lieu",
+    "type": "commune"
+  },
+  {
+    "code": "02601",
+    "name": "Tuần Châu",
+    "fullName": "Phường Tuần Châu, Tỉnh Quảng Ninh",
+    "slug": "tuan-chau",
+    "type": "ward"
+  },
+  {
+    "code": "02792",
+    "name": "Quảng Đức",
+    "fullName": "Xã Quảng Đức, Tỉnh Quảng Ninh",
+    "slug": "quang-duc",
+    "type": "commune"
+  },
+  {
+    "code": "02885",
+    "name": "Hải Ninh",
+    "fullName": "Xã Hải Ninh, Tỉnh Quảng Ninh",
+    "slug": "hai-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "02921",
+    "name": "Lục Hồn",
+    "fullName": "Xã Lục Hồn, Tỉnh Quảng Ninh",
+    "slug": "luc-hon",
+    "type": "commune"
+  },
+  {
+    "code": "02931",
+    "name": "Hải Lạng",
+    "fullName": "Xã Hải Lạng, Tỉnh Quảng Ninh",
+    "slug": "hai-lang",
+    "type": "commune"
+  },
+  {
+    "code": "02982",
+    "name": "Quảng La",
+    "fullName": "Xã Quảng La, Tỉnh Quảng Ninh",
+    "slug": "quang-la",
+    "type": "commune"
+  },
+  {
+    "code": "02994",
+    "name": "Hoành Mô",
+    "fullName": "Xã Hoành Mô, Tỉnh Quảng Ninh",
+    "slug": "hoanh-mo",
+    "type": "commune"
+  },
+  {
+    "code": "03114",
+    "name": "Cô Tô",
+    "fullName": "Đặc khu Cô Tô, Tỉnh Quảng Ninh",
+    "slug": "co-to",
+    "type": "commune"
+  },
+  {
+    "code": "03125",
+    "name": "Điền Xá",
+    "fullName": "Xã Điền Xá, Tỉnh Quảng Ninh",
+    "slug": "dien-xa",
+    "type": "commune"
+  },
+  {
+    "code": "03208",
+    "name": "Kỳ Thượng",
+    "fullName": "Xã Kỳ Thượng, Tỉnh Quảng Ninh",
+    "slug": "ky-thuong",
+    "type": "commune"
+  },
+  {
+    "code": "03220",
+    "name": "Hải Hòa",
+    "fullName": "Xã Hải Hòa, Tỉnh Quảng Ninh",
+    "slug": "hai-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "03231",
+    "name": "Lương Minh",
+    "fullName": "Xã Lương Minh, Tỉnh Quảng Ninh",
+    "slug": "luong-minh",
+    "type": "commune"
+  },
+  {
+    "code": "03241",
+    "name": "Vĩnh Thực",
+    "fullName": "Xã Vĩnh Thực, Tỉnh Quảng Ninh",
+    "slug": "vinh-thuc",
+    "type": "commune"
+  },
+  {
+    "code": "03269",
+    "name": "Hải Sơn",
+    "fullName": "Xã Hải Sơn, Tỉnh Quảng Ninh",
+    "slug": "hai-son",
+    "type": "commune"
+  },
+  {
+    "code": "03316",
+    "name": "Cái Chiên",
+    "fullName": "Xã Cái Chiên, Tỉnh Quảng Ninh",
+    "slug": "cai-chien",
+    "type": "commune"
+  }
+]

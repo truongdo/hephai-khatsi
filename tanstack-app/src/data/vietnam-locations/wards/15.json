@@ -1,0 +1,674 @@
+[
+  {
+    "code": "00100",
+    "name": "Long An",
+    "fullName": "Phường Long An, Tỉnh Tây Ninh",
+    "slug": "long-an",
+    "type": "ward"
+  },
+  {
+    "code": "00102",
+    "name": "Long Hoa",
+    "fullName": "Phường Long Hoa, Tỉnh Tây Ninh",
+    "slug": "long-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00151",
+    "name": "Tân Ninh",
+    "fullName": "Phường Tân Ninh, Tỉnh Tây Ninh",
+    "slug": "tan-ninh",
+    "type": "ward"
+  },
+  {
+    "code": "00206",
+    "name": "Cần Giuộc",
+    "fullName": "Xã Cần Giuộc, Tỉnh Tây Ninh",
+    "slug": "can-giuoc",
+    "type": "commune"
+  },
+  {
+    "code": "00318",
+    "name": "Gò Dầu",
+    "fullName": "Phường Gò Dầu, Tỉnh Tây Ninh",
+    "slug": "go-dau",
+    "type": "ward"
+  },
+  {
+    "code": "00377",
+    "name": "An Tịnh",
+    "fullName": "Phường An Tịnh, Tỉnh Tây Ninh",
+    "slug": "an-tinh",
+    "type": "ward"
+  },
+  {
+    "code": "00437",
+    "name": "Bến Lức",
+    "fullName": "Xã Bến Lức, Tỉnh Tây Ninh",
+    "slug": "ben-luc",
+    "type": "commune"
+  },
+  {
+    "code": "00439",
+    "name": "Mỹ Hạnh",
+    "fullName": "Xã Mỹ Hạnh, Tỉnh Tây Ninh",
+    "slug": "my-hanh",
+    "type": "commune"
+  },
+  {
+    "code": "00465",
+    "name": "Bình Minh",
+    "fullName": "Phường Bình Minh, Tỉnh Tây Ninh",
+    "slug": "binh-minh",
+    "type": "ward"
+  },
+  {
+    "code": "00493",
+    "name": "Trảng Bàng",
+    "fullName": "Phường Trảng Bàng, Tỉnh Tây Ninh",
+    "slug": "trang-bang",
+    "type": "ward"
+  },
+  {
+    "code": "00516",
+    "name": "Ninh Thạnh",
+    "fullName": "Phường Ninh Thạnh, Tỉnh Tây Ninh",
+    "slug": "ninh-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "00522",
+    "name": "Châu Thành",
+    "fullName": "Xã Châu Thành, Tỉnh Tây Ninh",
+    "slug": "chau-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00567",
+    "name": "Cần Đước",
+    "fullName": "Xã Cần Đước, Tỉnh Tây Ninh",
+    "slug": "can-duoc",
+    "type": "commune"
+  },
+  {
+    "code": "00577",
+    "name": "Đức Hòa",
+    "fullName": "Xã Đức Hòa, Tỉnh Tây Ninh",
+    "slug": "duc-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00599",
+    "name": "Mỹ Yên",
+    "fullName": "Xã Mỹ Yên, Tỉnh Tây Ninh",
+    "slug": "my-yen",
+    "type": "commune"
+  },
+  {
+    "code": "00600",
+    "name": "Bến Cầu",
+    "fullName": "Xã Bến Cầu, Tỉnh Tây Ninh",
+    "slug": "ben-cau",
+    "type": "commune"
+  },
+  {
+    "code": "00667",
+    "name": "Hậu Nghĩa",
+    "fullName": "Xã Hậu Nghĩa, Tỉnh Tây Ninh",
+    "slug": "hau-nghia",
+    "type": "commune"
+  },
+  {
+    "code": "00727",
+    "name": "Tân Tập",
+    "fullName": "Xã Tân Tập, Tỉnh Tây Ninh",
+    "slug": "tan-tap",
+    "type": "commune"
+  },
+  {
+    "code": "00737",
+    "name": "Thạnh Đức",
+    "fullName": "Xã Thạnh Đức, Tỉnh Tây Ninh",
+    "slug": "thanh-duc",
+    "type": "commune"
+  },
+  {
+    "code": "00738",
+    "name": "Thủ Thừa",
+    "fullName": "Xã Thủ Thừa, Tỉnh Tây Ninh",
+    "slug": "thu-thua",
+    "type": "commune"
+  },
+  {
+    "code": "00747",
+    "name": "Phước Thạnh",
+    "fullName": "Xã Phước Thạnh, Tỉnh Tây Ninh",
+    "slug": "phuoc-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00770",
+    "name": "Thanh Điền",
+    "fullName": "Phường Thanh Điền, Tỉnh Tây Ninh",
+    "slug": "thanh-dien",
+    "type": "ward"
+  },
+  {
+    "code": "00789",
+    "name": "Phước Lý",
+    "fullName": "Xã Phước Lý, Tỉnh Tây Ninh",
+    "slug": "phuoc-ly",
+    "type": "commune"
+  },
+  {
+    "code": "00861",
+    "name": "Hoà Thành",
+    "fullName": "Phường Hoà Thành, Tỉnh Tây Ninh",
+    "slug": "hoa-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "00895",
+    "name": "Mỹ Lộc",
+    "fullName": "Xã Mỹ Lộc, Tỉnh Tây Ninh",
+    "slug": "my-loc",
+    "type": "commune"
+  },
+  {
+    "code": "00898",
+    "name": "Truông Mít",
+    "fullName": "Xã Truông Mít, Tỉnh Tây Ninh",
+    "slug": "truong-mit",
+    "type": "commune"
+  },
+  {
+    "code": "00940",
+    "name": "Thuận Mỹ",
+    "fullName": "Xã Thuận Mỹ, Tỉnh Tây Ninh",
+    "slug": "thuan-my",
+    "type": "commune"
+  },
+  {
+    "code": "00966",
+    "name": "Rạch Kiến",
+    "fullName": "Xã Rạch Kiến, Tỉnh Tây Ninh",
+    "slug": "rach-kien",
+    "type": "commune"
+  },
+  {
+    "code": "01017",
+    "name": "An Ninh",
+    "fullName": "Xã An Ninh, Tỉnh Tây Ninh",
+    "slug": "an-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01041",
+    "name": "Gia Lộc",
+    "fullName": "Phường Gia Lộc, Tỉnh Tây Ninh",
+    "slug": "gia-loc",
+    "type": "ward"
+  },
+  {
+    "code": "01064",
+    "name": "Mỹ Lệ",
+    "fullName": "Xã Mỹ Lệ, Tỉnh Tây Ninh",
+    "slug": "my-le",
+    "type": "commune"
+  },
+  {
+    "code": "01079",
+    "name": "Tân Biên",
+    "fullName": "Xã Tân Biên, Tỉnh Tây Ninh",
+    "slug": "tan-bien",
+    "type": "commune"
+  },
+  {
+    "code": "01123",
+    "name": "Tầm Vu",
+    "fullName": "Xã Tầm Vu, Tỉnh Tây Ninh",
+    "slug": "tam-vu",
+    "type": "commune"
+  },
+  {
+    "code": "01133",
+    "name": "Dương Minh Châu",
+    "fullName": "Xã Dương Minh Châu, Tỉnh Tây Ninh",
+    "slug": "duong-minh-chau",
+    "type": "commune"
+  },
+  {
+    "code": "01143",
+    "name": "Hoà Khánh",
+    "fullName": "Xã Hoà Khánh, Tỉnh Tây Ninh",
+    "slug": "hoa-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "01180",
+    "name": "Bình Đức",
+    "fullName": "Xã Bình Đức, Tỉnh Tây Ninh",
+    "slug": "binh-duc",
+    "type": "commune"
+  },
+  {
+    "code": "01315",
+    "name": "Hiệp Hoà",
+    "fullName": "Xã Hiệp Hoà, Tỉnh Tây Ninh",
+    "slug": "hiep-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01331",
+    "name": "Long Cang",
+    "fullName": "Xã Long Cang, Tỉnh Tây Ninh",
+    "slug": "long-cang",
+    "type": "commune"
+  },
+  {
+    "code": "01340",
+    "name": "Hảo Đước",
+    "fullName": "Xã Hảo Đước, Tỉnh Tây Ninh",
+    "slug": "hao-duoc",
+    "type": "commune"
+  },
+  {
+    "code": "01353",
+    "name": "Tân An",
+    "fullName": "Phường Tân An, Tỉnh Tây Ninh",
+    "slug": "tan-an",
+    "type": "ward"
+  },
+  {
+    "code": "01389",
+    "name": "Đức Lập",
+    "fullName": "Xã Đức Lập, Tỉnh Tây Ninh",
+    "slug": "duc-lap",
+    "type": "commune"
+  },
+  {
+    "code": "01405",
+    "name": "Phước Chỉ",
+    "fullName": "Xã Phước Chỉ, Tỉnh Tây Ninh",
+    "slug": "phuoc-chi",
+    "type": "commune"
+  },
+  {
+    "code": "01464",
+    "name": "Thạnh Bình",
+    "fullName": "Xã Thạnh Bình, Tỉnh Tây Ninh",
+    "slug": "thanh-binh",
+    "type": "commune"
+  },
+  {
+    "code": "01502",
+    "name": "Nhựt Tảo",
+    "fullName": "Xã Nhựt Tảo, Tỉnh Tây Ninh",
+    "slug": "nhut-tao",
+    "type": "commune"
+  },
+  {
+    "code": "01515",
+    "name": "Tân Lân",
+    "fullName": "Xã Tân Lân, Tỉnh Tây Ninh",
+    "slug": "tan-lan",
+    "type": "commune"
+  },
+  {
+    "code": "01522",
+    "name": "Tân Phú",
+    "fullName": "Xã Tân Phú, Tỉnh Tây Ninh",
+    "slug": "tan-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01554",
+    "name": "An Lục Long",
+    "fullName": "Xã An Lục Long, Tỉnh Tây Ninh",
+    "slug": "an-luc-long",
+    "type": "commune"
+  },
+  {
+    "code": "01571",
+    "name": "Lộc Ninh",
+    "fullName": "Xã Lộc Ninh, Tỉnh Tây Ninh",
+    "slug": "loc-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01583",
+    "name": "Long Hựu",
+    "fullName": "Xã Long Hựu, Tỉnh Tây Ninh",
+    "slug": "long-huu",
+    "type": "commune"
+  },
+  {
+    "code": "01589",
+    "name": "Khánh Hậu",
+    "fullName": "Phường Khánh Hậu, Tỉnh Tây Ninh",
+    "slug": "khanh-hau",
+    "type": "ward"
+  },
+  {
+    "code": "01624",
+    "name": "Mỹ Quý",
+    "fullName": "Xã Mỹ Quý, Tỉnh Tây Ninh",
+    "slug": "my-quy",
+    "type": "commune"
+  },
+  {
+    "code": "01654",
+    "name": "Phước Vĩnh Tây",
+    "fullName": "Xã Phước Vĩnh Tây, Tỉnh Tây Ninh",
+    "slug": "phuoc-vinh-tay",
+    "type": "commune"
+  },
+  {
+    "code": "01682",
+    "name": "Tân Thành",
+    "fullName": "Xã Tân Thành, Tỉnh Tây Ninh",
+    "slug": "tan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01698",
+    "name": "Tân Đông",
+    "fullName": "Xã Tân Đông, Tỉnh Tây Ninh",
+    "slug": "tan-dong",
+    "type": "commune"
+  },
+  {
+    "code": "01732",
+    "name": "Đông Thành",
+    "fullName": "Xã Đông Thành, Tỉnh Tây Ninh",
+    "slug": "dong-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01739",
+    "name": "Nhơn Ninh",
+    "fullName": "Xã Nhơn Ninh, Tỉnh Tây Ninh",
+    "slug": "nhon-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01759",
+    "name": "Tân Trụ",
+    "fullName": "Xã Tân Trụ, Tỉnh Tây Ninh",
+    "slug": "tan-tru",
+    "type": "commune"
+  },
+  {
+    "code": "01786",
+    "name": "Hưng Thuận",
+    "fullName": "Xã Hưng Thuận, Tỉnh Tây Ninh",
+    "slug": "hung-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "01789",
+    "name": "Mỹ Thạnh",
+    "fullName": "Xã Mỹ Thạnh, Tỉnh Tây Ninh",
+    "slug": "my-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01826",
+    "name": "Tân Thạnh",
+    "fullName": "Xã Tân Thạnh, Tỉnh Tây Ninh",
+    "slug": "tan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01863",
+    "name": "Cầu Khởi",
+    "fullName": "Xã Cầu Khởi, Tỉnh Tây Ninh",
+    "slug": "cau-khoi",
+    "type": "commune"
+  },
+  {
+    "code": "01871",
+    "name": "Vàm Cỏ",
+    "fullName": "Xã Vàm Cỏ, Tỉnh Tây Ninh",
+    "slug": "vam-co",
+    "type": "commune"
+  },
+  {
+    "code": "01938",
+    "name": "Long Thuận",
+    "fullName": "Xã Long Thuận, Tỉnh Tây Ninh",
+    "slug": "long-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "01943",
+    "name": "Tân Hòa",
+    "fullName": "Xã Tân Hòa, Tỉnh Tây Ninh",
+    "slug": "tan-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01958",
+    "name": "Trà Vong",
+    "fullName": "Xã Trà Vong, Tỉnh Tây Ninh",
+    "slug": "tra-vong",
+    "type": "commune"
+  },
+  {
+    "code": "01976",
+    "name": "Tân Châu",
+    "fullName": "Xã Tân Châu, Tỉnh Tây Ninh",
+    "slug": "tan-chau",
+    "type": "commune"
+  },
+  {
+    "code": "01979",
+    "name": "Thạnh Lợi",
+    "fullName": "Xã Thạnh Lợi, Tỉnh Tây Ninh",
+    "slug": "thanh-loi",
+    "type": "commune"
+  },
+  {
+    "code": "02002",
+    "name": "Kiến Tường",
+    "fullName": "Phường Kiến Tường, Tỉnh Tây Ninh",
+    "slug": "kien-tuong",
+    "type": "ward"
+  },
+  {
+    "code": "02026",
+    "name": "Ninh Điền",
+    "fullName": "Xã Ninh Điền, Tỉnh Tây Ninh",
+    "slug": "ninh-dien",
+    "type": "commune"
+  },
+  {
+    "code": "02039",
+    "name": "Phước Vinh",
+    "fullName": "Xã Phước Vinh, Tỉnh Tây Ninh",
+    "slug": "phuoc-vinh",
+    "type": "commune"
+  },
+  {
+    "code": "02040",
+    "name": "Lương Hoà",
+    "fullName": "Xã Lương Hoà, Tỉnh Tây Ninh",
+    "slug": "luong-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02070",
+    "name": "Đức Huệ",
+    "fullName": "Xã Đức Huệ, Tỉnh Tây Ninh",
+    "slug": "duc-hue",
+    "type": "commune"
+  },
+  {
+    "code": "02079",
+    "name": "Vĩnh Công",
+    "fullName": "Xã Vĩnh Công, Tỉnh Tây Ninh",
+    "slug": "vinh-cong",
+    "type": "commune"
+  },
+  {
+    "code": "02131",
+    "name": "Thạnh Phước",
+    "fullName": "Xã Thạnh Phước, Tỉnh Tây Ninh",
+    "slug": "thanh-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "02147",
+    "name": "Tân Hội",
+    "fullName": "Xã Tân Hội, Tỉnh Tây Ninh",
+    "slug": "tan-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "02174",
+    "name": "Bình Hiệp",
+    "fullName": "Xã Bình Hiệp, Tỉnh Tây Ninh",
+    "slug": "binh-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "02188",
+    "name": "Vĩnh Hưng",
+    "fullName": "Xã Vĩnh Hưng, Tỉnh Tây Ninh",
+    "slug": "vinh-hung",
+    "type": "commune"
+  },
+  {
+    "code": "02225",
+    "name": "Mỹ An",
+    "fullName": "Xã Mỹ An, Tỉnh Tây Ninh",
+    "slug": "my-an",
+    "type": "commune"
+  },
+  {
+    "code": "02239",
+    "name": "Khánh Hưng",
+    "fullName": "Xã Khánh Hưng, Tỉnh Tây Ninh",
+    "slug": "khanh-hung",
+    "type": "commune"
+  },
+  {
+    "code": "02268",
+    "name": "Nhơn Hòa Lập",
+    "fullName": "Xã Nhơn Hòa Lập, Tỉnh Tây Ninh",
+    "slug": "nhon-hoa-lap",
+    "type": "commune"
+  },
+  {
+    "code": "02298",
+    "name": "Tân Tây",
+    "fullName": "Xã Tân Tây, Tỉnh Tây Ninh",
+    "slug": "tan-tay",
+    "type": "commune"
+  },
+  {
+    "code": "02304",
+    "name": "Hậu Thạnh",
+    "fullName": "Xã Hậu Thạnh, Tỉnh Tây Ninh",
+    "slug": "hau-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02305",
+    "name": "Hưng Điền",
+    "fullName": "Xã Hưng Điền, Tỉnh Tây Ninh",
+    "slug": "hung-dien",
+    "type": "commune"
+  },
+  {
+    "code": "02315",
+    "name": "Tuyên Bình",
+    "fullName": "Xã Tuyên Bình, Tỉnh Tây Ninh",
+    "slug": "tuyen-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02390",
+    "name": "Tân Hưng",
+    "fullName": "Xã Tân Hưng, Tỉnh Tây Ninh",
+    "slug": "tan-hung",
+    "type": "commune"
+  },
+  {
+    "code": "02410",
+    "name": "Long Chữ",
+    "fullName": "Xã Long Chữ, Tỉnh Tây Ninh",
+    "slug": "long-chu",
+    "type": "commune"
+  },
+  {
+    "code": "02470",
+    "name": "Mộc Hoá",
+    "fullName": "Xã Mộc Hoá, Tỉnh Tây Ninh",
+    "slug": "moc-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02475",
+    "name": "Tân Lập",
+    "fullName": "Xã Tân Lập, Tỉnh Tây Ninh",
+    "slug": "tan-lap",
+    "type": "commune"
+  },
+  {
+    "code": "02476",
+    "name": "Thạnh Hóa",
+    "fullName": "Xã Thạnh Hóa, Tỉnh Tây Ninh",
+    "slug": "thanh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02573",
+    "name": "Tuyên Thạnh",
+    "fullName": "Xã Tuyên Thạnh, Tỉnh Tây Ninh",
+    "slug": "tuyen-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02629",
+    "name": "Hoà Hội",
+    "fullName": "Xã Hoà Hội, Tỉnh Tây Ninh",
+    "slug": "hoa-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "02654",
+    "name": "Tân Long",
+    "fullName": "Xã Tân Long, Tỉnh Tây Ninh",
+    "slug": "tan-long",
+    "type": "commune"
+  },
+  {
+    "code": "02682",
+    "name": "Bình Hoà",
+    "fullName": "Xã Bình Hoà, Tỉnh Tây Ninh",
+    "slug": "binh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02709",
+    "name": "Vĩnh Châu",
+    "fullName": "Xã Vĩnh Châu, Tỉnh Tây Ninh",
+    "slug": "vinh-chau",
+    "type": "commune"
+  },
+  {
+    "code": "02735",
+    "name": "Vĩnh Thạnh",
+    "fullName": "Xã Vĩnh Thạnh, Tỉnh Tây Ninh",
+    "slug": "vinh-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02870",
+    "name": "Bình Thành",
+    "fullName": "Xã Bình Thành, Tỉnh Tây Ninh",
+    "slug": "binh-thanh",
+    "type": "commune"
+  }
+]

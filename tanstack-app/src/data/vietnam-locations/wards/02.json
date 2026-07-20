@@ -1,0 +1,730 @@
+[
+  {
+    "code": "00143",
+    "name": "Trần Lãm",
+    "fullName": "Phường Trần Lãm, Tỉnh Hưng Yên",
+    "slug": "tran-lam",
+    "type": "ward"
+  },
+  {
+    "code": "00207",
+    "name": "Như Quỳnh",
+    "fullName": "Xã Như Quỳnh, Tỉnh Hưng Yên",
+    "slug": "nhu-quynh",
+    "type": "commune"
+  },
+  {
+    "code": "00226",
+    "name": "Yên Mỹ",
+    "fullName": "Xã Yên Mỹ, Tỉnh Hưng Yên",
+    "slug": "yen-my",
+    "type": "commune"
+  },
+  {
+    "code": "00293",
+    "name": "Phố Hiến",
+    "fullName": "Phường Phố Hiến, Tỉnh Hưng Yên",
+    "slug": "pho-hien",
+    "type": "ward"
+  },
+  {
+    "code": "00305",
+    "name": "Thái Bình",
+    "fullName": "Phường Thái Bình, Tỉnh Hưng Yên",
+    "slug": "thai-binh",
+    "type": "ward"
+  },
+  {
+    "code": "00430",
+    "name": "Mỹ Hào",
+    "fullName": "Phường Mỹ Hào, Tỉnh Hưng Yên",
+    "slug": "my-hao",
+    "type": "ward"
+  },
+  {
+    "code": "00466",
+    "name": "Hưng Hà",
+    "fullName": "Xã Hưng Hà, Tỉnh Hưng Yên",
+    "slug": "hung-ha",
+    "type": "commune"
+  },
+  {
+    "code": "00526",
+    "name": "Thái Thụy",
+    "fullName": "Xã Thái Thụy, Tỉnh Hưng Yên",
+    "slug": "thai-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "00527",
+    "name": "Quỳnh Phụ",
+    "fullName": "Xã Quỳnh Phụ, Tỉnh Hưng Yên",
+    "slug": "quynh-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00603",
+    "name": "Đông Hưng",
+    "fullName": "Xã Đông Hưng, Tỉnh Hưng Yên",
+    "slug": "dong-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00614",
+    "name": "Khoái Châu",
+    "fullName": "Xã Khoái Châu, Tỉnh Hưng Yên",
+    "slug": "khoai-chau",
+    "type": "commune"
+  },
+  {
+    "code": "00619",
+    "name": "Long Hưng",
+    "fullName": "Xã Long Hưng, Tỉnh Hưng Yên",
+    "slug": "long-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00629",
+    "name": "Kiến Xương",
+    "fullName": "Xã Kiến Xương, Tỉnh Hưng Yên",
+    "slug": "kien-xuong",
+    "type": "commune"
+  },
+  {
+    "code": "00632",
+    "name": "Nguyễn Văn Linh",
+    "fullName": "Xã Nguyễn Văn Linh, Tỉnh Hưng Yên",
+    "slug": "nguyen-van-linh",
+    "type": "commune"
+  },
+  {
+    "code": "00660",
+    "name": "Hoàng Hoa Thám",
+    "fullName": "Xã Hoàng Hoa Thám, Tỉnh Hưng Yên",
+    "slug": "hoang-hoa-tham",
+    "type": "commune"
+  },
+  {
+    "code": "00674",
+    "name": "Nghĩa Trụ",
+    "fullName": "Xã Nghĩa Trụ, Tỉnh Hưng Yên",
+    "slug": "nghia-tru",
+    "type": "commune"
+  },
+  {
+    "code": "00699",
+    "name": "Trần Hưng Đạo",
+    "fullName": "Phường Trần Hưng Đạo, Tỉnh Hưng Yên",
+    "slug": "tran-hung-dao",
+    "type": "ward"
+  },
+  {
+    "code": "00735",
+    "name": "Triệu Việt Vương",
+    "fullName": "Xã Triệu Việt Vương, Tỉnh Hưng Yên",
+    "slug": "trieu-viet-vuong",
+    "type": "commune"
+  },
+  {
+    "code": "00752",
+    "name": "Trà Lý",
+    "fullName": "Phường Trà Lý, Tỉnh Hưng Yên",
+    "slug": "tra-ly",
+    "type": "ward"
+  },
+  {
+    "code": "00754",
+    "name": "Vũ Thư",
+    "fullName": "Xã Vũ Thư, Tỉnh Hưng Yên",
+    "slug": "vu-thu",
+    "type": "commune"
+  },
+  {
+    "code": "00772",
+    "name": "Việt Yên",
+    "fullName": "Xã Việt Yên, Tỉnh Hưng Yên",
+    "slug": "viet-yen",
+    "type": "commune"
+  },
+  {
+    "code": "00800",
+    "name": "Tiền Hải",
+    "fullName": "Xã Tiền Hải, Tỉnh Hưng Yên",
+    "slug": "tien-hai",
+    "type": "commune"
+  },
+  {
+    "code": "00804",
+    "name": "Phụ Dực",
+    "fullName": "Xã Phụ Dực, Tỉnh Hưng Yên",
+    "slug": "phu-duc",
+    "type": "commune"
+  },
+  {
+    "code": "00820",
+    "name": "Lạc Đạo",
+    "fullName": "Xã Lạc Đạo, Tỉnh Hưng Yên",
+    "slug": "lac-dao",
+    "type": "commune"
+  },
+  {
+    "code": "00838",
+    "name": "Vũ Phúc",
+    "fullName": "Phường Vũ Phúc, Tỉnh Hưng Yên",
+    "slug": "vu-phuc",
+    "type": "ward"
+  },
+  {
+    "code": "00876",
+    "name": "Bắc Tiên Hưng",
+    "fullName": "Xã Bắc Tiên Hưng, Tỉnh Hưng Yên",
+    "slug": "bac-tien-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00880",
+    "name": "Văn Giang",
+    "fullName": "Xã Văn Giang, Tỉnh Hưng Yên",
+    "slug": "van-giang",
+    "type": "commune"
+  },
+  {
+    "code": "00899",
+    "name": "Diên Hà",
+    "fullName": "Xã Diên Hà, Tỉnh Hưng Yên",
+    "slug": "dien-ha",
+    "type": "commune"
+  },
+  {
+    "code": "00936",
+    "name": "Lương Bằng",
+    "fullName": "Xã Lương Bằng, Tỉnh Hưng Yên",
+    "slug": "luong-bang",
+    "type": "commune"
+  },
+  {
+    "code": "00954",
+    "name": "Đường Hào",
+    "fullName": "Phường Đường Hào, Tỉnh Hưng Yên",
+    "slug": "duong-hao",
+    "type": "ward"
+  },
+  {
+    "code": "00991",
+    "name": "Đông Thụy Anh",
+    "fullName": "Xã Đông Thụy Anh, Tỉnh Hưng Yên",
+    "slug": "dong-thuy-anh",
+    "type": "commune"
+  },
+  {
+    "code": "01020",
+    "name": "Nam Cường",
+    "fullName": "Xã Nam Cường, Tỉnh Hưng Yên",
+    "slug": "nam-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "01035",
+    "name": "Vũ Tiên",
+    "fullName": "Xã Vũ Tiên, Tỉnh Hưng Yên",
+    "slug": "vu-tien",
+    "type": "commune"
+  },
+  {
+    "code": "01053",
+    "name": "Thượng Hồng",
+    "fullName": "Phường Thượng Hồng, Tỉnh Hưng Yên",
+    "slug": "thuong-hong",
+    "type": "ward"
+  },
+  {
+    "code": "01058",
+    "name": "Phạm Ngũ Lão",
+    "fullName": "Xã Phạm Ngũ Lão, Tỉnh Hưng Yên",
+    "slug": "pham-ngu-lao",
+    "type": "commune"
+  },
+  {
+    "code": "01061",
+    "name": "Đông Tiền Hải",
+    "fullName": "Xã Đông Tiền Hải, Tỉnh Hưng Yên",
+    "slug": "dong-tien-hai",
+    "type": "commune"
+  },
+  {
+    "code": "01085",
+    "name": "Vạn Xuân",
+    "fullName": "Xã Vạn Xuân, Tỉnh Hưng Yên",
+    "slug": "van-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "01103",
+    "name": "Châu Ninh",
+    "fullName": "Xã Châu Ninh, Tỉnh Hưng Yên",
+    "slug": "chau-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01150",
+    "name": "Quỳnh An",
+    "fullName": "Xã Quỳnh An, Tỉnh Hưng Yên",
+    "slug": "quynh-an",
+    "type": "commune"
+  },
+  {
+    "code": "01152",
+    "name": "Thư Vũ",
+    "fullName": "Xã Thư Vũ, Tỉnh Hưng Yên",
+    "slug": "thu-vu",
+    "type": "commune"
+  },
+  {
+    "code": "01169",
+    "name": "Chí Minh",
+    "fullName": "Xã Chí Minh, Tỉnh Hưng Yên",
+    "slug": "chi-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01176",
+    "name": "Việt Tiến",
+    "fullName": "Xã Việt Tiến, Tỉnh Hưng Yên",
+    "slug": "viet-tien",
+    "type": "commune"
+  },
+  {
+    "code": "01193",
+    "name": "Nghĩa Dân",
+    "fullName": "Xã Nghĩa Dân, Tỉnh Hưng Yên",
+    "slug": "nghia-dan",
+    "type": "commune"
+  },
+  {
+    "code": "01304",
+    "name": "Hoàn Long",
+    "fullName": "Xã Hoàn Long, Tỉnh Hưng Yên",
+    "slug": "hoan-long",
+    "type": "commune"
+  },
+  {
+    "code": "01319",
+    "name": "Tiên La",
+    "fullName": "Xã Tiên La, Tỉnh Hưng Yên",
+    "slug": "tien-la",
+    "type": "commune"
+  },
+  {
+    "code": "01325",
+    "name": "Đại Đồng",
+    "fullName": "Xã Đại Đồng, Tỉnh Hưng Yên",
+    "slug": "dai-dong",
+    "type": "commune"
+  },
+  {
+    "code": "01350",
+    "name": "Hiệp Cường",
+    "fullName": "Xã Hiệp Cường, Tỉnh Hưng Yên",
+    "slug": "hiep-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "01395",
+    "name": "Nguyễn Trãi",
+    "fullName": "Xã Nguyễn Trãi, Tỉnh Hưng Yên",
+    "slug": "nguyen-trai",
+    "type": "commune"
+  },
+  {
+    "code": "01397",
+    "name": "Hồng Quang",
+    "fullName": "Xã Hồng Quang, Tỉnh Hưng Yên",
+    "slug": "hong-quang",
+    "type": "commune"
+  },
+  {
+    "code": "01402",
+    "name": "Phụng Công",
+    "fullName": "Xã Phụng Công, Tỉnh Hưng Yên",
+    "slug": "phung-cong",
+    "type": "commune"
+  },
+  {
+    "code": "01425",
+    "name": "Thái Ninh",
+    "fullName": "Xã Thái Ninh, Tỉnh Hưng Yên",
+    "slug": "thai-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01437",
+    "name": "Ngự Thiên",
+    "fullName": "Xã Ngự Thiên, Tỉnh Hưng Yên",
+    "slug": "ngu-thien",
+    "type": "commune"
+  },
+  {
+    "code": "01467",
+    "name": "Nam Tiên Hưng",
+    "fullName": "Xã Nam Tiên Hưng, Tỉnh Hưng Yên",
+    "slug": "nam-tien-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01469",
+    "name": "Nam Tiền Hải",
+    "fullName": "Xã Nam Tiền Hải, Tỉnh Hưng Yên",
+    "slug": "nam-tien-hai",
+    "type": "commune"
+  },
+  {
+    "code": "01476",
+    "name": "Ân Thi",
+    "fullName": "Xã Ân Thi, Tỉnh Hưng Yên",
+    "slug": "an-thi",
+    "type": "commune"
+  },
+  {
+    "code": "01484",
+    "name": "Đồng Châu",
+    "fullName": "Xã Đồng Châu, Tỉnh Hưng Yên",
+    "slug": "dong-chau",
+    "type": "commune"
+  },
+  {
+    "code": "01485",
+    "name": "Sơn Nam",
+    "fullName": "Phường Sơn Nam, Tỉnh Hưng Yên",
+    "slug": "son-nam",
+    "type": "ward"
+  },
+  {
+    "code": "01505",
+    "name": "Mễ Sở",
+    "fullName": "Xã Mễ Sở, Tỉnh Hưng Yên",
+    "slug": "me-so",
+    "type": "commune"
+  },
+  {
+    "code": "01546",
+    "name": "Thần Khê",
+    "fullName": "Xã Thần Khê, Tỉnh Hưng Yên",
+    "slug": "than-khe",
+    "type": "commune"
+  },
+  {
+    "code": "01556",
+    "name": "Tân Thuận",
+    "fullName": "Xã Tân Thuận, Tỉnh Hưng Yên",
+    "slug": "tan-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "01557",
+    "name": "Quang Hưng",
+    "fullName": "Xã Quang Hưng, Tỉnh Hưng Yên",
+    "slug": "quang-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01560",
+    "name": "Đức Hợp",
+    "fullName": "Xã Đức Hợp, Tỉnh Hưng Yên",
+    "slug": "duc-hop",
+    "type": "commune"
+  },
+  {
+    "code": "01593",
+    "name": "Tiên Tiến",
+    "fullName": "Xã Tiên Tiến, Tỉnh Hưng Yên",
+    "slug": "tien-tien",
+    "type": "commune"
+  },
+  {
+    "code": "01661",
+    "name": "A Sào",
+    "fullName": "Xã A Sào, Tỉnh Hưng Yên",
+    "slug": "a-sao",
+    "type": "commune"
+  },
+  {
+    "code": "01712",
+    "name": "Tiên Lữ",
+    "fullName": "Xã Tiên Lữ, Tỉnh Hưng Yên",
+    "slug": "tien-lu",
+    "type": "commune"
+  },
+  {
+    "code": "01729",
+    "name": "Thư Trì",
+    "fullName": "Xã Thư Trì, Tỉnh Hưng Yên",
+    "slug": "thu-tri",
+    "type": "commune"
+  },
+  {
+    "code": "01734",
+    "name": "Đông Thái Ninh",
+    "fullName": "Xã Đông Thái Ninh, Tỉnh Hưng Yên",
+    "slug": "dong-thai-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01736",
+    "name": "Vũ Quý",
+    "fullName": "Xã Vũ Quý, Tỉnh Hưng Yên",
+    "slug": "vu-quy",
+    "type": "commune"
+  },
+  {
+    "code": "01737",
+    "name": "Tân Hưng",
+    "fullName": "Xã Tân Hưng, Tỉnh Hưng Yên",
+    "slug": "tan-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01811",
+    "name": "Tiên Hưng",
+    "fullName": "Xã Tiên Hưng, Tỉnh Hưng Yên",
+    "slug": "tien-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01812",
+    "name": "Tiên Hoa",
+    "fullName": "Xã Tiên Hoa, Tỉnh Hưng Yên",
+    "slug": "tien-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01830",
+    "name": "Hưng Phú",
+    "fullName": "Xã Hưng Phú, Tỉnh Hưng Yên",
+    "slug": "hung-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01833",
+    "name": "Xuân Trúc",
+    "fullName": "Xã Xuân Trúc, Tỉnh Hưng Yên",
+    "slug": "xuan-truc",
+    "type": "commune"
+  },
+  {
+    "code": "01858",
+    "name": "Lê Lợi",
+    "fullName": "Xã Lê Lợi, Tỉnh Hưng Yên",
+    "slug": "le-loi",
+    "type": "commune"
+  },
+  {
+    "code": "01875",
+    "name": "Nam Đông Hưng",
+    "fullName": "Xã Nam Đông Hưng, Tỉnh Hưng Yên",
+    "slug": "nam-dong-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01880",
+    "name": "Bắc Đông Quan",
+    "fullName": "Xã Bắc Đông Quan, Tỉnh Hưng Yên",
+    "slug": "bac-dong-quan",
+    "type": "commune"
+  },
+  {
+    "code": "01881",
+    "name": "Tây Tiền Hải",
+    "fullName": "Xã Tây Tiền Hải, Tỉnh Hưng Yên",
+    "slug": "tay-tien-hai",
+    "type": "commune"
+  },
+  {
+    "code": "01888",
+    "name": "Đông Quan",
+    "fullName": "Xã Đông Quan, Tỉnh Hưng Yên",
+    "slug": "dong-quan",
+    "type": "commune"
+  },
+  {
+    "code": "01894",
+    "name": "Đồng Bằng",
+    "fullName": "Xã Đồng Bằng, Tỉnh Hưng Yên",
+    "slug": "dong-bang",
+    "type": "commune"
+  },
+  {
+    "code": "01923",
+    "name": "Minh Thọ",
+    "fullName": "Xã Minh Thọ, Tỉnh Hưng Yên",
+    "slug": "minh-tho",
+    "type": "commune"
+  },
+  {
+    "code": "01930",
+    "name": "Hồng Minh",
+    "fullName": "Xã Hồng Minh, Tỉnh Hưng Yên",
+    "slug": "hong-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01939",
+    "name": "Bình Thanh",
+    "fullName": "Xã Bình Thanh, Tỉnh Hưng Yên",
+    "slug": "binh-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01942",
+    "name": "Ngọc Lâm",
+    "fullName": "Xã Ngọc Lâm, Tỉnh Hưng Yên",
+    "slug": "ngoc-lam",
+    "type": "commune"
+  },
+  {
+    "code": "02004",
+    "name": "Bắc Đông Hưng",
+    "fullName": "Xã Bắc Đông Hưng, Tỉnh Hưng Yên",
+    "slug": "bac-dong-hung",
+    "type": "commune"
+  },
+  {
+    "code": "02021",
+    "name": "Lê Quý Đôn",
+    "fullName": "Xã Lê Quý Đôn, Tỉnh Hưng Yên",
+    "slug": "le-quy-don",
+    "type": "commune"
+  },
+  {
+    "code": "02023",
+    "name": "Đông Tiên Hưng",
+    "fullName": "Xã Đông Tiên Hưng, Tỉnh Hưng Yên",
+    "slug": "dong-tien-hung",
+    "type": "commune"
+  },
+  {
+    "code": "02024",
+    "name": "Thụy Anh",
+    "fullName": "Xã Thụy Anh, Tỉnh Hưng Yên",
+    "slug": "thuy-anh",
+    "type": "commune"
+  },
+  {
+    "code": "02051",
+    "name": "Hồng Vũ",
+    "fullName": "Xã Hồng Vũ, Tỉnh Hưng Yên",
+    "slug": "hong-vu",
+    "type": "commune"
+  },
+  {
+    "code": "02054",
+    "name": "Tân Tiến",
+    "fullName": "Xã Tân Tiến, Tỉnh Hưng Yên",
+    "slug": "tan-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02080",
+    "name": "Đoàn Đào",
+    "fullName": "Xã Đoàn Đào, Tỉnh Hưng Yên",
+    "slug": "doan-dao",
+    "type": "commune"
+  },
+  {
+    "code": "02111",
+    "name": "Nguyễn Du",
+    "fullName": "Xã Nguyễn Du, Tỉnh Hưng Yên",
+    "slug": "nguyen-du",
+    "type": "commune"
+  },
+  {
+    "code": "02123",
+    "name": "Nam Thụy Anh",
+    "fullName": "Xã Nam Thụy Anh, Tỉnh Hưng Yên",
+    "slug": "nam-thuy-anh",
+    "type": "commune"
+  },
+  {
+    "code": "02128",
+    "name": "Bình Định",
+    "fullName": "Xã Bình Định, Tỉnh Hưng Yên",
+    "slug": "binh-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "02266",
+    "name": "Nam Thái Ninh",
+    "fullName": "Xã Nam Thái Ninh, Tỉnh Hưng Yên",
+    "slug": "nam-thai-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "02269",
+    "name": "Tống Trân",
+    "fullName": "Xã Tống Trân, Tỉnh Hưng Yên",
+    "slug": "tong-tran",
+    "type": "commune"
+  },
+  {
+    "code": "02308",
+    "name": "Bình Nguyên",
+    "fullName": "Xã Bình Nguyên, Tỉnh Hưng Yên",
+    "slug": "binh-nguyen",
+    "type": "commune"
+  },
+  {
+    "code": "02314",
+    "name": "Bắc Thụy Anh",
+    "fullName": "Xã Bắc Thụy Anh, Tỉnh Hưng Yên",
+    "slug": "bac-thuy-anh",
+    "type": "commune"
+  },
+  {
+    "code": "02316",
+    "name": "Trà Giang",
+    "fullName": "Xã Trà Giang, Tỉnh Hưng Yên",
+    "slug": "tra-giang",
+    "type": "commune"
+  },
+  {
+    "code": "02341",
+    "name": "Quang Lịch",
+    "fullName": "Xã Quang Lịch, Tỉnh Hưng Yên",
+    "slug": "quang-lich",
+    "type": "commune"
+  },
+  {
+    "code": "02348",
+    "name": "Hồng Châu",
+    "fullName": "Phường Hồng Châu, Tỉnh Hưng Yên",
+    "slug": "hong-chau",
+    "type": "ward"
+  },
+  {
+    "code": "02400",
+    "name": "Bắc Thái Ninh",
+    "fullName": "Xã Bắc Thái Ninh, Tỉnh Hưng Yên",
+    "slug": "bac-thai-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "02437",
+    "name": "Tây Thái Ninh",
+    "fullName": "Xã Tây Thái Ninh, Tỉnh Hưng Yên",
+    "slug": "tay-thai-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "02479",
+    "name": "Ái Quốc",
+    "fullName": "Xã Ái Quốc, Tỉnh Hưng Yên",
+    "slug": "ai-quoc",
+    "type": "commune"
+  },
+  {
+    "code": "02489",
+    "name": "Tây Thụy Anh",
+    "fullName": "Xã Tây Thụy Anh, Tỉnh Hưng Yên",
+    "slug": "tay-thuy-anh",
+    "type": "commune"
+  }
+]

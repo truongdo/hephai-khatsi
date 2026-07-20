@@ -13,6 +13,27 @@ vi.mock('#/use-cases/saveMemberDraft', () => ({
   saveMemberDraft: vi.fn(),
 }))
 
+vi.mock('#/data/vietnam-locations', () => ({
+  cities: [
+    {
+      code: '01',
+      name: 'Hà Nội',
+      fullName: 'Thành phố Hà Nội',
+      slug: 'ha-noi',
+      type: 'city',
+    },
+  ],
+  getWards: vi.fn(async () => [
+    {
+      code: '00013',
+      name: 'Hà Đông',
+      fullName: 'Phường Hà Đông, Thành phố Hà Nội',
+      slug: 'ha-dong',
+      type: 'ward',
+    },
+  ]),
+}))
+
 const saveMemberDraftMock = vi.mocked(saveMemberDraft)
 
 beforeAll(() => {
@@ -181,5 +202,28 @@ describe('MemberEditorForm', () => {
       screen.getAllByRole('button', { name: m.filler_remove_row() })[0]!,
     )
     expect(screen.getAllByLabelText(m.filler_field_noi_dung())).toHaveLength(2)
+  })
+
+  it('hydrates legacy diaChiThuongTru string into line field', () => {
+    renderForm({
+      initial: {
+        diaChiThuongTru: '123 Đường A' as unknown as Member['diaChiThuongTru'],
+      },
+    })
+    expect(screen.getByDisplayValue('123 Đường A')).toBeTruthy()
+  })
+
+  it('blocks save when permanent address line lacks city and ward', async () => {
+    const user = userEvent.setup()
+    renderForm()
+
+    await user.type(
+      screen.getByRole('textbox', { name: m.filler_field_address_line() }),
+      '15 Ngõ 4',
+    )
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+
+    expect(saveMemberDraftMock).not.toHaveBeenCalled()
+    expect(screen.getByText(m.filler_address_city_required())).toBeTruthy()
   })
 })

@@ -1,0 +1,450 @@
+[
+  {
+    "code": "00179",
+    "name": "Tân Thành",
+    "fullName": "Phường Tân Thành, Tỉnh Cà Mau",
+    "slug": "tan-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "00188",
+    "name": "An Xuyên",
+    "fullName": "Phường An Xuyên, Tỉnh Cà Mau",
+    "slug": "an-xuyen",
+    "type": "ward"
+  },
+  {
+    "code": "00319",
+    "name": "Lương Thế Trân",
+    "fullName": "Xã Lương Thế Trân, Tỉnh Cà Mau",
+    "slug": "luong-the-tran",
+    "type": "commune"
+  },
+  {
+    "code": "00405",
+    "name": "Trần Văn Thời",
+    "fullName": "Xã Trần Văn Thời, Tỉnh Cà Mau",
+    "slug": "tran-van-thoi",
+    "type": "commune"
+  },
+  {
+    "code": "00476",
+    "name": "Cái Nước",
+    "fullName": "Xã Cái Nước, Tỉnh Cà Mau",
+    "slug": "cai-nuoc",
+    "type": "commune"
+  },
+  {
+    "code": "00575",
+    "name": "Lý Văn Lâm",
+    "fullName": "Phường Lý Văn Lâm, Tỉnh Cà Mau",
+    "slug": "ly-van-lam",
+    "type": "ward"
+  },
+  {
+    "code": "00580",
+    "name": "Trí Phải",
+    "fullName": "Xã Trí Phải, Tỉnh Cà Mau",
+    "slug": "tri-phai",
+    "type": "commune"
+  },
+  {
+    "code": "00652",
+    "name": "Hòa Thành",
+    "fullName": "Phường Hòa Thành, Tỉnh Cà Mau",
+    "slug": "hoa-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "00680",
+    "name": "Sông Đốc",
+    "fullName": "Xã Sông Đốc, Tỉnh Cà Mau",
+    "slug": "song-doc",
+    "type": "commune"
+  },
+  {
+    "code": "00848",
+    "name": "Khánh Hưng",
+    "fullName": "Xã Khánh Hưng, Tỉnh Cà Mau",
+    "slug": "khanh-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00857",
+    "name": "Đá Bạc",
+    "fullName": "Xã Đá Bạc, Tỉnh Cà Mau",
+    "slug": "da-bac",
+    "type": "commune"
+  },
+  {
+    "code": "00920",
+    "name": "Khánh Bình",
+    "fullName": "Xã Khánh Bình, Tỉnh Cà Mau",
+    "slug": "khanh-binh",
+    "type": "commune"
+  },
+  {
+    "code": "00961",
+    "name": "Khánh Lâm",
+    "fullName": "Xã Khánh Lâm, Tỉnh Cà Mau",
+    "slug": "khanh-lam",
+    "type": "commune"
+  },
+  {
+    "code": "00973",
+    "name": "Hưng Mỹ",
+    "fullName": "Xã Hưng Mỹ, Tỉnh Cà Mau",
+    "slug": "hung-my",
+    "type": "commune"
+  },
+  {
+    "code": "00999",
+    "name": "Thới Bình",
+    "fullName": "Xã Thới Bình, Tỉnh Cà Mau",
+    "slug": "thoi-binh",
+    "type": "commune"
+  },
+  {
+    "code": "01000",
+    "name": "Đầm Dơi",
+    "fullName": "Xã Đầm Dơi, Tỉnh Cà Mau",
+    "slug": "dam-doi",
+    "type": "commune"
+  },
+  {
+    "code": "01042",
+    "name": "Nguyễn Phích",
+    "fullName": "Xã Nguyễn Phích, Tỉnh Cà Mau",
+    "slug": "nguyen-phich",
+    "type": "commune"
+  },
+  {
+    "code": "01044",
+    "name": "Nguyễn Việt Khái",
+    "fullName": "Xã Nguyễn Việt Khái, Tỉnh Cà Mau",
+    "slug": "nguyen-viet-khai",
+    "type": "commune"
+  },
+  {
+    "code": "01090",
+    "name": "Cái Đôi Vàm",
+    "fullName": "Xã Cái Đôi Vàm, Tỉnh Cà Mau",
+    "slug": "cai-doi-vam",
+    "type": "commune"
+  },
+  {
+    "code": "01141",
+    "name": "Biển Bạch",
+    "fullName": "Xã Biển Bạch, Tỉnh Cà Mau",
+    "slug": "bien-bach",
+    "type": "commune"
+  },
+  {
+    "code": "01159",
+    "name": "Tân Thuận",
+    "fullName": "Xã Tân Thuận, Tỉnh Cà Mau",
+    "slug": "tan-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "01160",
+    "name": "Tân Lộc",
+    "fullName": "Xã Tân Lộc, Tỉnh Cà Mau",
+    "slug": "tan-loc",
+    "type": "commune"
+  },
+  {
+    "code": "01167",
+    "name": "Phan Ngọc Hiển",
+    "fullName": "Xã Phan Ngọc Hiển, Tỉnh Cà Mau",
+    "slug": "phan-ngoc-hien",
+    "type": "commune"
+  },
+  {
+    "code": "01172",
+    "name": "Tân Hưng",
+    "fullName": "Xã Tân Hưng, Tỉnh Cà Mau",
+    "slug": "tan-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01234",
+    "name": "Tân Tiến",
+    "fullName": "Xã Tân Tiến, Tỉnh Cà Mau",
+    "slug": "tan-tien",
+    "type": "commune"
+  },
+  {
+    "code": "01268",
+    "name": "Phú Tân",
+    "fullName": "Xã Phú Tân, Tỉnh Cà Mau",
+    "slug": "phu-tan",
+    "type": "commune"
+  },
+  {
+    "code": "01280",
+    "name": "Đất Mũi",
+    "fullName": "Xã Đất Mũi, Tỉnh Cà Mau",
+    "slug": "dat-mui",
+    "type": "commune"
+  },
+  {
+    "code": "01288",
+    "name": "Tạ An Khương",
+    "fullName": "Xã Tạ An Khương, Tỉnh Cà Mau",
+    "slug": "ta-an-khuong",
+    "type": "commune"
+  },
+  {
+    "code": "01305",
+    "name": "U Minh",
+    "fullName": "Xã U Minh, Tỉnh Cà Mau",
+    "slug": "u-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01506",
+    "name": "Năm Căn",
+    "fullName": "Xã Năm Căn, Tỉnh Cà Mau",
+    "slug": "nam-can",
+    "type": "commune"
+  },
+  {
+    "code": "01523",
+    "name": "Trần Phán",
+    "fullName": "Xã Trần Phán, Tỉnh Cà Mau",
+    "slug": "tran-phan",
+    "type": "commune"
+  },
+  {
+    "code": "01555",
+    "name": "Long Điền",
+    "fullName": "Xã Long Điền, Tỉnh Cà Mau",
+    "slug": "long-dien",
+    "type": "commune"
+  },
+  {
+    "code": "01600",
+    "name": "Quách Phẩm",
+    "fullName": "Xã Quách Phẩm, Tỉnh Cà Mau",
+    "slug": "quach-pham",
+    "type": "commune"
+  },
+  {
+    "code": "01689",
+    "name": "Đất Mới",
+    "fullName": "Xã Đất Mới, Tỉnh Cà Mau",
+    "slug": "dat-moi",
+    "type": "commune"
+  },
+  {
+    "code": "01721",
+    "name": "Hồ Thị Kỷ",
+    "fullName": "Xã Hồ Thị Kỷ, Tỉnh Cà Mau",
+    "slug": "ho-thi-ky",
+    "type": "commune"
+  },
+  {
+    "code": "01730",
+    "name": "Khánh An",
+    "fullName": "Xã Khánh An, Tỉnh Cà Mau",
+    "slug": "khanh-an",
+    "type": "commune"
+  },
+  {
+    "code": "01783",
+    "name": "Thanh Tùng",
+    "fullName": "Xã Thanh Tùng, Tỉnh Cà Mau",
+    "slug": "thanh-tung",
+    "type": "commune"
+  },
+  {
+    "code": "01806",
+    "name": "Phú Mỹ",
+    "fullName": "Xã Phú Mỹ, Tỉnh Cà Mau",
+    "slug": "phu-my",
+    "type": "commune"
+  },
+  {
+    "code": "01832",
+    "name": "Hoà Bình",
+    "fullName": "Xã Hoà Bình, Tỉnh Cà Mau",
+    "slug": "hoa-binh",
+    "type": "commune"
+  },
+  {
+    "code": "01897",
+    "name": "Phước Long",
+    "fullName": "Xã Phước Long, Tỉnh Cà Mau",
+    "slug": "phuoc-long",
+    "type": "commune"
+  },
+  {
+    "code": "01944",
+    "name": "Bạc Liêu",
+    "fullName": "Phường Bạc Liêu, Tỉnh Cà Mau",
+    "slug": "bac-lieu",
+    "type": "ward"
+  },
+  {
+    "code": "01996",
+    "name": "Tân Ân",
+    "fullName": "Xã Tân Ân, Tỉnh Cà Mau",
+    "slug": "tan-an",
+    "type": "commune"
+  },
+  {
+    "code": "02043",
+    "name": "Tam Giang",
+    "fullName": "Xã Tam Giang, Tỉnh Cà Mau",
+    "slug": "tam-giang",
+    "type": "commune"
+  },
+  {
+    "code": "02058",
+    "name": "Vĩnh Trạch",
+    "fullName": "Phường Vĩnh Trạch, Tỉnh Cà Mau",
+    "slug": "vinh-trach",
+    "type": "ward"
+  },
+  {
+    "code": "02059",
+    "name": "Đông Hải",
+    "fullName": "Xã Đông Hải, Tỉnh Cà Mau",
+    "slug": "dong-hai",
+    "type": "commune"
+  },
+  {
+    "code": "02137",
+    "name": "Giá Rai",
+    "fullName": "Phường Giá Rai, Tỉnh Cà Mau",
+    "slug": "gia-rai",
+    "type": "ward"
+  },
+  {
+    "code": "02168",
+    "name": "Láng Tròn",
+    "fullName": "Phường Láng Tròn, Tỉnh Cà Mau",
+    "slug": "lang-tron",
+    "type": "ward"
+  },
+  {
+    "code": "02261",
+    "name": "Vĩnh Phước",
+    "fullName": "Xã Vĩnh Phước, Tỉnh Cà Mau",
+    "slug": "vinh-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "02307",
+    "name": "Vĩnh Thanh",
+    "fullName": "Xã Vĩnh Thanh, Tỉnh Cà Mau",
+    "slug": "vinh-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02396",
+    "name": "Vĩnh Hậu",
+    "fullName": "Xã Vĩnh Hậu, Tỉnh Cà Mau",
+    "slug": "vinh-hau",
+    "type": "commune"
+  },
+  {
+    "code": "02422",
+    "name": "Gành Hào",
+    "fullName": "Xã Gành Hào, Tỉnh Cà Mau",
+    "slug": "ganh-hao",
+    "type": "commune"
+  },
+  {
+    "code": "02448",
+    "name": "Vĩnh Lợi",
+    "fullName": "Xã Vĩnh Lợi, Tỉnh Cà Mau",
+    "slug": "vinh-loi",
+    "type": "commune"
+  },
+  {
+    "code": "02561",
+    "name": "Vĩnh Mỹ",
+    "fullName": "Xã Vĩnh Mỹ, Tỉnh Cà Mau",
+    "slug": "vinh-my",
+    "type": "commune"
+  },
+  {
+    "code": "02578",
+    "name": "An Trạch",
+    "fullName": "Xã An Trạch, Tỉnh Cà Mau",
+    "slug": "an-trach",
+    "type": "commune"
+  },
+  {
+    "code": "02611",
+    "name": "Hưng Hội",
+    "fullName": "Xã Hưng Hội, Tỉnh Cà Mau",
+    "slug": "hung-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "02625",
+    "name": "Ninh Thạnh Lợi",
+    "fullName": "Xã Ninh Thạnh Lợi, Tỉnh Cà Mau",
+    "slug": "ninh-thanh-loi",
+    "type": "commune"
+  },
+  {
+    "code": "02661",
+    "name": "Ninh Quới",
+    "fullName": "Xã Ninh Quới, Tỉnh Cà Mau",
+    "slug": "ninh-quoi",
+    "type": "commune"
+  },
+  {
+    "code": "02671",
+    "name": "Hồng Dân",
+    "fullName": "Xã Hồng Dân, Tỉnh Cà Mau",
+    "slug": "hong-dan",
+    "type": "commune"
+  },
+  {
+    "code": "02684",
+    "name": "Phong Hiệp",
+    "fullName": "Xã Phong Hiệp, Tỉnh Cà Mau",
+    "slug": "phong-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "02706",
+    "name": "Định Thành",
+    "fullName": "Xã Định Thành, Tỉnh Cà Mau",
+    "slug": "dinh-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02746",
+    "name": "Châu Thới",
+    "fullName": "Xã Châu Thới, Tỉnh Cà Mau",
+    "slug": "chau-thoi",
+    "type": "commune"
+  },
+  {
+    "code": "02775",
+    "name": "Vĩnh Lộc",
+    "fullName": "Xã Vĩnh Lộc, Tỉnh Cà Mau",
+    "slug": "vinh-loc",
+    "type": "commune"
+  },
+  {
+    "code": "02784",
+    "name": "Hiệp Thành",
+    "fullName": "Phường Hiệp Thành, Tỉnh Cà Mau",
+    "slug": "hiep-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "02828",
+    "name": "Phong Thạnh",
+    "fullName": "Xã Phong Thạnh, Tỉnh Cà Mau",
+    "slug": "phong-thanh",
+    "type": "commune"
+  }
+]

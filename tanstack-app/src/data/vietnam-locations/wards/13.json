@@ -1,0 +1,905 @@
+[
+  {
+    "code": "00011",
+    "name": "Nam Định",
+    "fullName": "Phường Nam Định, Tỉnh Ninh Bình",
+    "slug": "nam-dinh",
+    "type": "ward"
+  },
+  {
+    "code": "00036",
+    "name": "Hoa Lư",
+    "fullName": "Phường Hoa Lư, Tỉnh Ninh Bình",
+    "slug": "hoa-lu",
+    "type": "ward"
+  },
+  {
+    "code": "00261",
+    "name": "Xuân Trường",
+    "fullName": "Xã Xuân Trường, Tỉnh Ninh Bình",
+    "slug": "xuan-truong",
+    "type": "commune"
+  },
+  {
+    "code": "00287",
+    "name": "Trường Thi",
+    "fullName": "Phường Trường Thi, Tỉnh Ninh Bình",
+    "slug": "truong-thi",
+    "type": "ward"
+  },
+  {
+    "code": "00325",
+    "name": "Hải Hưng",
+    "fullName": "Xã Hải Hưng, Tỉnh Ninh Bình",
+    "slug": "hai-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00354",
+    "name": "Phủ Lý",
+    "fullName": "Phường Phủ Lý, Tỉnh Ninh Bình",
+    "slug": "phu-ly",
+    "type": "ward"
+  },
+  {
+    "code": "00492",
+    "name": "Xuân Hưng",
+    "fullName": "Xã Xuân Hưng, Tỉnh Ninh Bình",
+    "slug": "xuan-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00494",
+    "name": "Nam Hoa Lư",
+    "fullName": "Phường Nam Hoa Lư, Tỉnh Ninh Bình",
+    "slug": "nam-hoa-lu",
+    "type": "ward"
+  },
+  {
+    "code": "00497",
+    "name": "Ý Yên",
+    "fullName": "Xã Ý Yên, Tỉnh Ninh Bình",
+    "slug": "y-yen",
+    "type": "commune"
+  },
+  {
+    "code": "00544",
+    "name": "Hải Anh",
+    "fullName": "Xã Hải Anh, Tỉnh Ninh Bình",
+    "slug": "hai-anh",
+    "type": "commune"
+  },
+  {
+    "code": "00671",
+    "name": "Tây Hoa Lư",
+    "fullName": "Phường Tây Hoa Lư, Tỉnh Ninh Bình",
+    "slug": "tay-hoa-lu",
+    "type": "ward"
+  },
+  {
+    "code": "00675",
+    "name": "Giao Thuỷ",
+    "fullName": "Xã Giao Thuỷ, Tỉnh Ninh Bình",
+    "slug": "giao-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "00689",
+    "name": "Xuân Giang",
+    "fullName": "Xã Xuân Giang, Tỉnh Ninh Bình",
+    "slug": "xuan-giang",
+    "type": "commune"
+  },
+  {
+    "code": "00713",
+    "name": "Hải Hậu",
+    "fullName": "Xã Hải Hậu, Tỉnh Ninh Bình",
+    "slug": "hai-hau",
+    "type": "commune"
+  },
+  {
+    "code": "00729",
+    "name": "Hải Tiến",
+    "fullName": "Xã Hải Tiến, Tỉnh Ninh Bình",
+    "slug": "hai-tien",
+    "type": "commune"
+  },
+  {
+    "code": "00750",
+    "name": "Hải Xuân",
+    "fullName": "Xã Hải Xuân, Tỉnh Ninh Bình",
+    "slug": "hai-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "00791",
+    "name": "Yên Cường",
+    "fullName": "Xã Yên Cường, Tỉnh Ninh Bình",
+    "slug": "yen-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "00831",
+    "name": "Giao Hoà",
+    "fullName": "Xã Giao Hoà, Tỉnh Ninh Bình",
+    "slug": "giao-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00863",
+    "name": "Phù Vân",
+    "fullName": "Phường Phù Vân, Tỉnh Ninh Bình",
+    "slug": "phu-van",
+    "type": "ward"
+  },
+  {
+    "code": "00872",
+    "name": "Xuân Hồng",
+    "fullName": "Xã Xuân Hồng, Tỉnh Ninh Bình",
+    "slug": "xuan-hong",
+    "type": "commune"
+  },
+  {
+    "code": "00900",
+    "name": "Cổ Lễ",
+    "fullName": "Xã Cổ Lễ, Tỉnh Ninh Bình",
+    "slug": "co-le",
+    "type": "commune"
+  },
+  {
+    "code": "00904",
+    "name": "Yên Khánh",
+    "fullName": "Xã Yên Khánh, Tỉnh Ninh Bình",
+    "slug": "yen-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "00917",
+    "name": "Duy Tiên",
+    "fullName": "Phường Duy Tiên, Tỉnh Ninh Bình",
+    "slug": "duy-tien",
+    "type": "ward"
+  },
+  {
+    "code": "00921",
+    "name": "Nam Trực",
+    "fullName": "Xã Nam Trực, Tỉnh Ninh Bình",
+    "slug": "nam-truc",
+    "type": "commune"
+  },
+  {
+    "code": "00935",
+    "name": "Vũ Dương",
+    "fullName": "Xã Vũ Dương, Tỉnh Ninh Bình",
+    "slug": "vu-duong",
+    "type": "commune"
+  },
+  {
+    "code": "00953",
+    "name": "Cát Thành",
+    "fullName": "Xã Cát Thành, Tỉnh Ninh Bình",
+    "slug": "cat-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00960",
+    "name": "Bình An",
+    "fullName": "Xã Bình An, Tỉnh Ninh Bình",
+    "slug": "binh-an",
+    "type": "commune"
+  },
+  {
+    "code": "00969",
+    "name": "Ninh Giang",
+    "fullName": "Xã Ninh Giang, Tỉnh Ninh Bình",
+    "slug": "ninh-giang",
+    "type": "commune"
+  },
+  {
+    "code": "00975",
+    "name": "Nghĩa Hưng",
+    "fullName": "Xã Nghĩa Hưng, Tỉnh Ninh Bình",
+    "slug": "nghia-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00997",
+    "name": "Nam Minh",
+    "fullName": "Xã Nam Minh, Tỉnh Ninh Bình",
+    "slug": "nam-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01001",
+    "name": "Mỹ Lộc",
+    "fullName": "Phường Mỹ Lộc, Tỉnh Ninh Bình",
+    "slug": "my-loc",
+    "type": "ward"
+  },
+  {
+    "code": "01010",
+    "name": "Nam Lý",
+    "fullName": "Xã Nam Lý, Tỉnh Ninh Bình",
+    "slug": "nam-ly",
+    "type": "commune"
+  },
+  {
+    "code": "01023",
+    "name": "Nam Ninh",
+    "fullName": "Xã Nam Ninh, Tỉnh Ninh Bình",
+    "slug": "nam-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01026",
+    "name": "Phát Diệm",
+    "fullName": "Xã Phát Diệm, Tỉnh Ninh Bình",
+    "slug": "phat-diem",
+    "type": "commune"
+  },
+  {
+    "code": "01049",
+    "name": "Phong Doanh",
+    "fullName": "Xã Phong Doanh, Tỉnh Ninh Bình",
+    "slug": "phong-doanh",
+    "type": "commune"
+  },
+  {
+    "code": "01106",
+    "name": "Vị Khê",
+    "fullName": "Phường Vị Khê, Tỉnh Ninh Bình",
+    "slug": "vi-khe",
+    "type": "ward"
+  },
+  {
+    "code": "01111",
+    "name": "Vĩnh Trụ",
+    "fullName": "Xã Vĩnh Trụ, Tỉnh Ninh Bình",
+    "slug": "vinh-tru",
+    "type": "commune"
+  },
+  {
+    "code": "01128",
+    "name": "Yên Đồng",
+    "fullName": "Xã Yên Đồng, Tỉnh Ninh Bình",
+    "slug": "yen-dong",
+    "type": "commune"
+  },
+  {
+    "code": "01135",
+    "name": "Vạn Thắng",
+    "fullName": "Xã Vạn Thắng, Tỉnh Ninh Bình",
+    "slug": "van-thang",
+    "type": "commune"
+  },
+  {
+    "code": "01137",
+    "name": "Hồng Quang",
+    "fullName": "Phường Hồng Quang, Tỉnh Ninh Bình",
+    "slug": "hong-quang",
+    "type": "ward"
+  },
+  {
+    "code": "01162",
+    "name": "Yên Mô",
+    "fullName": "Xã Yên Mô, Tỉnh Ninh Bình",
+    "slug": "yen-mo",
+    "type": "commune"
+  },
+  {
+    "code": "01171",
+    "name": "Bình Lục",
+    "fullName": "Xã Bình Lục, Tỉnh Ninh Bình",
+    "slug": "binh-luc",
+    "type": "commune"
+  },
+  {
+    "code": "01186",
+    "name": "Tân Minh",
+    "fullName": "Xã Tân Minh, Tỉnh Ninh Bình",
+    "slug": "tan-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01205",
+    "name": "Đồng Văn",
+    "fullName": "Phường Đồng Văn, Tỉnh Ninh Bình",
+    "slug": "dong-van",
+    "type": "ward"
+  },
+  {
+    "code": "01208",
+    "name": "Đông Hoa Lư",
+    "fullName": "Phường Đông Hoa Lư, Tỉnh Ninh Bình",
+    "slug": "dong-hoa-lu",
+    "type": "ward"
+  },
+  {
+    "code": "01226",
+    "name": "Nam Xang",
+    "fullName": "Xã Nam Xang, Tỉnh Ninh Bình",
+    "slug": "nam-xang",
+    "type": "commune"
+  },
+  {
+    "code": "01249",
+    "name": "Giao Ninh",
+    "fullName": "Xã Giao Ninh, Tỉnh Ninh Bình",
+    "slug": "giao-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "01259",
+    "name": "Hải Thịnh",
+    "fullName": "Xã Hải Thịnh, Tỉnh Ninh Bình",
+    "slug": "hai-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "01271",
+    "name": "Châu Sơn",
+    "fullName": "Phường Châu Sơn, Tỉnh Ninh Bình",
+    "slug": "chau-son",
+    "type": "ward"
+  },
+  {
+    "code": "01272",
+    "name": "Hà Nam",
+    "fullName": "Phường Hà Nam, Tỉnh Ninh Bình",
+    "slug": "ha-nam",
+    "type": "ward"
+  },
+  {
+    "code": "01275",
+    "name": "Minh Thái",
+    "fullName": "Xã Minh Thái, Tỉnh Ninh Bình",
+    "slug": "minh-thai",
+    "type": "commune"
+  },
+  {
+    "code": "01282",
+    "name": "Bình Mỹ",
+    "fullName": "Xã Bình Mỹ, Tỉnh Ninh Bình",
+    "slug": "binh-my",
+    "type": "commune"
+  },
+  {
+    "code": "01286",
+    "name": "Nho Quan",
+    "fullName": "Xã Nho Quan, Tỉnh Ninh Bình",
+    "slug": "nho-quan",
+    "type": "commune"
+  },
+  {
+    "code": "01306",
+    "name": "Quỹ Nhất",
+    "fullName": "Xã Quỹ Nhất, Tỉnh Ninh Bình",
+    "slug": "quy-nhat",
+    "type": "commune"
+  },
+  {
+    "code": "01313",
+    "name": "Ninh Cường",
+    "fullName": "Xã Ninh Cường, Tỉnh Ninh Bình",
+    "slug": "ninh-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "01341",
+    "name": "Bình Sơn",
+    "fullName": "Xã Bình Sơn, Tỉnh Ninh Bình",
+    "slug": "binh-son",
+    "type": "commune"
+  },
+  {
+    "code": "01348",
+    "name": "Lê Hồ",
+    "fullName": "Phường Lê Hồ, Tỉnh Ninh Bình",
+    "slug": "le-ho",
+    "type": "ward"
+  },
+  {
+    "code": "01357",
+    "name": "Lý Nhân",
+    "fullName": "Xã Lý Nhân, Tỉnh Ninh Bình",
+    "slug": "ly-nhan",
+    "type": "commune"
+  },
+  {
+    "code": "01374",
+    "name": "Yên Từ",
+    "fullName": "Xã Yên Từ, Tỉnh Ninh Bình",
+    "slug": "yen-tu",
+    "type": "commune"
+  },
+  {
+    "code": "01380",
+    "name": "Nam Hồng",
+    "fullName": "Xã Nam Hồng, Tỉnh Ninh Bình",
+    "slug": "nam-hong",
+    "type": "commune"
+  },
+  {
+    "code": "01381",
+    "name": "Đông A",
+    "fullName": "Phường Đông A, Tỉnh Ninh Bình",
+    "slug": "dong-a",
+    "type": "ward"
+  },
+  {
+    "code": "01400",
+    "name": "Trung Sơn",
+    "fullName": "Phường Trung Sơn, Tỉnh Ninh Bình",
+    "slug": "trung-son",
+    "type": "ward"
+  },
+  {
+    "code": "01440",
+    "name": "Bình Minh",
+    "fullName": "Xã Bình Minh, Tỉnh Ninh Bình",
+    "slug": "binh-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01442",
+    "name": "Thiên Trường",
+    "fullName": "Phường Thiên Trường, Tỉnh Ninh Bình",
+    "slug": "thien-truong",
+    "type": "ward"
+  },
+  {
+    "code": "01448",
+    "name": "Bắc Lý",
+    "fullName": "Xã Bắc Lý, Tỉnh Ninh Bình",
+    "slug": "bac-ly",
+    "type": "commune"
+  },
+  {
+    "code": "01449",
+    "name": "Nghĩa Lâm",
+    "fullName": "Xã Nghĩa Lâm, Tỉnh Ninh Bình",
+    "slug": "nghia-lam",
+    "type": "commune"
+  },
+  {
+    "code": "01450",
+    "name": "Rạng Đông",
+    "fullName": "Xã Rạng Đông, Tỉnh Ninh Bình",
+    "slug": "rang-dong",
+    "type": "commune"
+  },
+  {
+    "code": "01452",
+    "name": "Đồng Thịnh",
+    "fullName": "Xã Đồng Thịnh, Tỉnh Ninh Bình",
+    "slug": "dong-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "01458",
+    "name": "Thành Nam",
+    "fullName": "Phường Thành Nam, Tỉnh Ninh Bình",
+    "slug": "thanh-nam",
+    "type": "ward"
+  },
+  {
+    "code": "01519",
+    "name": "Hiển Khánh",
+    "fullName": "Xã Hiển Khánh, Tỉnh Ninh Bình",
+    "slug": "hien-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "01520",
+    "name": "Minh Tân",
+    "fullName": "Xã Minh Tân, Tỉnh Ninh Bình",
+    "slug": "minh-tan",
+    "type": "commune"
+  },
+  {
+    "code": "01532",
+    "name": "Liên Minh",
+    "fullName": "Xã Liên Minh, Tỉnh Ninh Bình",
+    "slug": "lien-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01535",
+    "name": "Giao Phúc",
+    "fullName": "Xã Giao Phúc, Tỉnh Ninh Bình",
+    "slug": "giao-phuc",
+    "type": "commune"
+  },
+  {
+    "code": "01551",
+    "name": "Thanh Lâm",
+    "fullName": "Xã Thanh Lâm, Tỉnh Ninh Bình",
+    "slug": "thanh-lam",
+    "type": "commune"
+  },
+  {
+    "code": "01575",
+    "name": "Giao Minh",
+    "fullName": "Xã Giao Minh, Tỉnh Ninh Bình",
+    "slug": "giao-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01594",
+    "name": "Gia Viễn",
+    "fullName": "Xã Gia Viễn, Tỉnh Ninh Bình",
+    "slug": "gia-vien",
+    "type": "commune"
+  },
+  {
+    "code": "01613",
+    "name": "Lai Thành",
+    "fullName": "Xã Lai Thành, Tỉnh Ninh Bình",
+    "slug": "lai-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01616",
+    "name": "Nghĩa Sơn",
+    "fullName": "Xã Nghĩa Sơn, Tỉnh Ninh Bình",
+    "slug": "nghia-son",
+    "type": "commune"
+  },
+  {
+    "code": "01636",
+    "name": "Yên Thắng",
+    "fullName": "Phường Yên Thắng, Tỉnh Ninh Bình",
+    "slug": "yen-thang",
+    "type": "ward"
+  },
+  {
+    "code": "01639",
+    "name": "Nam Đồng",
+    "fullName": "Xã Nam Đồng, Tỉnh Ninh Bình",
+    "slug": "nam-dong",
+    "type": "commune"
+  },
+  {
+    "code": "01642",
+    "name": "Duy Tân",
+    "fullName": "Phường Duy Tân, Tỉnh Ninh Bình",
+    "slug": "duy-tan",
+    "type": "ward"
+  },
+  {
+    "code": "01649",
+    "name": "Hồng Phong",
+    "fullName": "Xã Hồng Phong, Tỉnh Ninh Bình",
+    "slug": "hong-phong",
+    "type": "commune"
+  },
+  {
+    "code": "01660",
+    "name": "Giao Hưng",
+    "fullName": "Xã Giao Hưng, Tỉnh Ninh Bình",
+    "slug": "giao-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01684",
+    "name": "Liêm Tuyền",
+    "fullName": "Phường Liêm Tuyền, Tỉnh Ninh Bình",
+    "slug": "liem-tuyen",
+    "type": "ward"
+  },
+  {
+    "code": "01687",
+    "name": "Liêm Hà",
+    "fullName": "Xã Liêm Hà, Tỉnh Ninh Bình",
+    "slug": "liem-ha",
+    "type": "commune"
+  },
+  {
+    "code": "01691",
+    "name": "Nguyễn Uý",
+    "fullName": "Phường Nguyễn Uý, Tỉnh Ninh Bình",
+    "slug": "nguyen-uy",
+    "type": "ward"
+  },
+  {
+    "code": "01742",
+    "name": "Tiên Sơn",
+    "fullName": "Phường Tiên Sơn, Tỉnh Ninh Bình",
+    "slug": "tien-son",
+    "type": "ward"
+  },
+  {
+    "code": "01752",
+    "name": "Hải An",
+    "fullName": "Xã Hải An, Tỉnh Ninh Bình",
+    "slug": "hai-an",
+    "type": "commune"
+  },
+  {
+    "code": "01758",
+    "name": "Quang Thiện",
+    "fullName": "Xã Quang Thiện, Tỉnh Ninh Bình",
+    "slug": "quang-thien",
+    "type": "commune"
+  },
+  {
+    "code": "01760",
+    "name": "Tam Điệp",
+    "fullName": "Phường Tam Điệp, Tỉnh Ninh Bình",
+    "slug": "tam-diep",
+    "type": "ward"
+  },
+  {
+    "code": "01770",
+    "name": "Giao Bình",
+    "fullName": "Xã Giao Bình, Tỉnh Ninh Bình",
+    "slug": "giao-binh",
+    "type": "commune"
+  },
+  {
+    "code": "01772",
+    "name": "Vụ Bản",
+    "fullName": "Xã Vụ Bản, Tỉnh Ninh Bình",
+    "slug": "vu-ban",
+    "type": "commune"
+  },
+  {
+    "code": "01792",
+    "name": "Khánh Trung",
+    "fullName": "Xã Khánh Trung, Tỉnh Ninh Bình",
+    "slug": "khanh-trung",
+    "type": "commune"
+  },
+  {
+    "code": "01800",
+    "name": "Tân Thanh",
+    "fullName": "Xã Tân Thanh, Tỉnh Ninh Bình",
+    "slug": "tan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01817",
+    "name": "Kim Thanh",
+    "fullName": "Phường Kim Thanh, Tỉnh Ninh Bình",
+    "slug": "kim-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "01825",
+    "name": "Gia Vân",
+    "fullName": "Xã Gia Vân, Tỉnh Ninh Bình",
+    "slug": "gia-van",
+    "type": "commune"
+  },
+  {
+    "code": "01831",
+    "name": "Hải Quang",
+    "fullName": "Xã Hải Quang, Tỉnh Ninh Bình",
+    "slug": "hai-quang",
+    "type": "commune"
+  },
+  {
+    "code": "01839",
+    "name": "Khánh Thiện",
+    "fullName": "Xã Khánh Thiện, Tỉnh Ninh Bình",
+    "slug": "khanh-thien",
+    "type": "commune"
+  },
+  {
+    "code": "01847",
+    "name": "Khánh Nhạc",
+    "fullName": "Xã Khánh Nhạc, Tỉnh Ninh Bình",
+    "slug": "khanh-nhac",
+    "type": "commune"
+  },
+  {
+    "code": "01933",
+    "name": "Nhân Hà",
+    "fullName": "Xã Nhân Hà, Tỉnh Ninh Bình",
+    "slug": "nhan-ha",
+    "type": "commune"
+  },
+  {
+    "code": "01946",
+    "name": "Định Hóa",
+    "fullName": "Xã Định Hóa, Tỉnh Ninh Bình",
+    "slug": "dinh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01954",
+    "name": "Bình Giang",
+    "fullName": "Xã Bình Giang, Tỉnh Ninh Bình",
+    "slug": "binh-giang",
+    "type": "commune"
+  },
+  {
+    "code": "01959",
+    "name": "Duy Hà",
+    "fullName": "Phường Duy Hà, Tỉnh Ninh Bình",
+    "slug": "duy-ha",
+    "type": "ward"
+  },
+  {
+    "code": "01978",
+    "name": "Đồng Thái",
+    "fullName": "Xã Đồng Thái, Tỉnh Ninh Bình",
+    "slug": "dong-thai",
+    "type": "commune"
+  },
+  {
+    "code": "01992",
+    "name": "Đại Hoàng",
+    "fullName": "Xã Đại Hoàng, Tỉnh Ninh Bình",
+    "slug": "dai-hoang",
+    "type": "commune"
+  },
+  {
+    "code": "02000",
+    "name": "Thanh Sơn",
+    "fullName": "Xã Thanh Sơn, Tỉnh Ninh Bình",
+    "slug": "thanh-son",
+    "type": "commune"
+  },
+  {
+    "code": "02010",
+    "name": "Khánh Hội",
+    "fullName": "Xã Khánh Hội, Tỉnh Ninh Bình",
+    "slug": "khanh-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "02012",
+    "name": "Thanh Liêm",
+    "fullName": "Xã Thanh Liêm, Tỉnh Ninh Bình",
+    "slug": "thanh-liem",
+    "type": "commune"
+  },
+  {
+    "code": "02046",
+    "name": "Kim Bảng",
+    "fullName": "Phường Kim Bảng, Tỉnh Ninh Bình",
+    "slug": "kim-bang",
+    "type": "ward"
+  },
+  {
+    "code": "02066",
+    "name": "Lý Thường Kiệt",
+    "fullName": "Phường Lý Thường Kiệt, Tỉnh Ninh Bình",
+    "slug": "ly-thuong-kiet",
+    "type": "ward"
+  },
+  {
+    "code": "02088",
+    "name": "Phú Sơn",
+    "fullName": "Xã Phú Sơn, Tỉnh Ninh Bình",
+    "slug": "phu-son",
+    "type": "commune"
+  },
+  {
+    "code": "02105",
+    "name": "Yên Mạc",
+    "fullName": "Xã Yên Mạc, Tỉnh Ninh Bình",
+    "slug": "yen-mac",
+    "type": "commune"
+  },
+  {
+    "code": "02141",
+    "name": "Trần Thương",
+    "fullName": "Xã Trần Thương, Tỉnh Ninh Bình",
+    "slug": "tran-thuong",
+    "type": "commune"
+  },
+  {
+    "code": "02152",
+    "name": "Thanh Bình",
+    "fullName": "Xã Thanh Bình, Tỉnh Ninh Bình",
+    "slug": "thanh-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02155",
+    "name": "Gia Hưng",
+    "fullName": "Xã Gia Hưng, Tỉnh Ninh Bình",
+    "slug": "gia-hung",
+    "type": "commune"
+  },
+  {
+    "code": "02189",
+    "name": "Yên Sơn",
+    "fullName": "Phường Yên Sơn, Tỉnh Ninh Bình",
+    "slug": "yen-son",
+    "type": "ward"
+  },
+  {
+    "code": "02222",
+    "name": "Quang Hưng",
+    "fullName": "Xã Quang Hưng, Tỉnh Ninh Bình",
+    "slug": "quang-hung",
+    "type": "commune"
+  },
+  {
+    "code": "02226",
+    "name": "Gia Trấn",
+    "fullName": "Xã Gia Trấn, Tỉnh Ninh Bình",
+    "slug": "gia-tran",
+    "type": "commune"
+  },
+  {
+    "code": "02249",
+    "name": "Gia Lâm",
+    "fullName": "Xã Gia Lâm, Tỉnh Ninh Bình",
+    "slug": "gia-lam",
+    "type": "commune"
+  },
+  {
+    "code": "02252",
+    "name": "Kim Sơn",
+    "fullName": "Xã Kim Sơn, Tỉnh Ninh Bình",
+    "slug": "kim-son",
+    "type": "commune"
+  },
+  {
+    "code": "02293",
+    "name": "Gia Tường",
+    "fullName": "Xã Gia Tường, Tỉnh Ninh Bình",
+    "slug": "gia-tuong",
+    "type": "commune"
+  },
+  {
+    "code": "02365",
+    "name": "Trực Ninh",
+    "fullName": "Xã Trực Ninh, Tỉnh Ninh Bình",
+    "slug": "truc-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "02382",
+    "name": "Tam Chúc",
+    "fullName": "Phường Tam Chúc, Tỉnh Ninh Bình",
+    "slug": "tam-chuc",
+    "type": "ward"
+  },
+  {
+    "code": "02392",
+    "name": "Quỳnh Lưu",
+    "fullName": "Xã Quỳnh Lưu, Tỉnh Ninh Bình",
+    "slug": "quynh-luu",
+    "type": "commune"
+  },
+  {
+    "code": "02447",
+    "name": "Chất Bình",
+    "fullName": "Xã Chất Bình, Tỉnh Ninh Bình",
+    "slug": "chat-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02678",
+    "name": "Phú Long",
+    "fullName": "Xã Phú Long, Tỉnh Ninh Bình",
+    "slug": "phu-long",
+    "type": "commune"
+  },
+  {
+    "code": "02708",
+    "name": "Gia Phong",
+    "fullName": "Xã Gia Phong, Tỉnh Ninh Bình",
+    "slug": "gia-phong",
+    "type": "commune"
+  },
+  {
+    "code": "02964",
+    "name": "Kim Đông",
+    "fullName": "Xã Kim Đông, Tỉnh Ninh Bình",
+    "slug": "kim-dong",
+    "type": "commune"
+  },
+  {
+    "code": "03019",
+    "name": "Cúc Phương",
+    "fullName": "Xã Cúc Phương, Tỉnh Ninh Bình",
+    "slug": "cuc-phuong",
+    "type": "commune"
+  }
+]

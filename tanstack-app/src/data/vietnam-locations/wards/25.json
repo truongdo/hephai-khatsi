@@ -1,0 +1,394 @@
+[
+  {
+    "code": "00851",
+    "name": "Thục Phán",
+    "fullName": "Phường Thục Phán, Tỉnh Cao Bằng",
+    "slug": "thuc-phan",
+    "type": "ward"
+  },
+  {
+    "code": "02241",
+    "name": "Hòa An",
+    "fullName": "Xã Hòa An, Tỉnh Cao Bằng",
+    "slug": "hoa-an",
+    "type": "commune"
+  },
+  {
+    "code": "02291",
+    "name": "Nùng Trí Cao",
+    "fullName": "Phường Nùng Trí Cao, Tỉnh Cao Bằng",
+    "slug": "nung-tri-cao",
+    "type": "ward"
+  },
+  {
+    "code": "02378",
+    "name": "Tân Giang",
+    "fullName": "Phường Tân Giang, Tỉnh Cao Bằng",
+    "slug": "tan-giang",
+    "type": "ward"
+  },
+  {
+    "code": "02403",
+    "name": "Trùng Khánh",
+    "fullName": "Xã Trùng Khánh, Tỉnh Cao Bằng",
+    "slug": "trung-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "02481",
+    "name": "Quảng Uyên",
+    "fullName": "Xã Quảng Uyên, Tỉnh Cao Bằng",
+    "slug": "quang-uyen",
+    "type": "commune"
+  },
+  {
+    "code": "02505",
+    "name": "Nam Tuấn",
+    "fullName": "Xã Nam Tuấn, Tỉnh Cao Bằng",
+    "slug": "nam-tuan",
+    "type": "commune"
+  },
+  {
+    "code": "02579",
+    "name": "Quảng Lâm",
+    "fullName": "Xã Quảng Lâm, Tỉnh Cao Bằng",
+    "slug": "quang-lam",
+    "type": "commune"
+  },
+  {
+    "code": "02589",
+    "name": "Hạnh Phúc",
+    "fullName": "Xã Hạnh Phúc, Tỉnh Cao Bằng",
+    "slug": "hanh-phuc",
+    "type": "commune"
+  },
+  {
+    "code": "02635",
+    "name": "Phục Hòa",
+    "fullName": "Xã Phục Hòa, Tỉnh Cao Bằng",
+    "slug": "phuc-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02645",
+    "name": "Bảo Lâm",
+    "fullName": "Xã Bảo Lâm, Tỉnh Cao Bằng",
+    "slug": "bao-lam",
+    "type": "commune"
+  },
+  {
+    "code": "02720",
+    "name": "Yên Thổ",
+    "fullName": "Xã Yên Thổ, Tỉnh Cao Bằng",
+    "slug": "yen-tho",
+    "type": "commune"
+  },
+  {
+    "code": "02725",
+    "name": "Trường Hà",
+    "fullName": "Xã Trường Hà, Tỉnh Cao Bằng",
+    "slug": "truong-ha",
+    "type": "commune"
+  },
+  {
+    "code": "02740",
+    "name": "Đoài Dương",
+    "fullName": "Xã Đoài Dương, Tỉnh Cao Bằng",
+    "slug": "doai-duong",
+    "type": "commune"
+  },
+  {
+    "code": "02757",
+    "name": "Đàm Thuỷ",
+    "fullName": "Xã Đàm Thuỷ, Tỉnh Cao Bằng",
+    "slug": "dam-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "02786",
+    "name": "Lý Bôn",
+    "fullName": "Xã Lý Bôn, Tỉnh Cao Bằng",
+    "slug": "ly-bon",
+    "type": "commune"
+  },
+  {
+    "code": "02842",
+    "name": "Hà Quảng",
+    "fullName": "Xã Hà Quảng, Tỉnh Cao Bằng",
+    "slug": "ha-quang",
+    "type": "commune"
+  },
+  {
+    "code": "02850",
+    "name": "Bảo Lạc",
+    "fullName": "Xã Bảo Lạc, Tỉnh Cao Bằng",
+    "slug": "bao-lac",
+    "type": "commune"
+  },
+  {
+    "code": "02857",
+    "name": "Trà Lĩnh",
+    "fullName": "Xã Trà Lĩnh, Tỉnh Cao Bằng",
+    "slug": "tra-linh",
+    "type": "commune"
+  },
+  {
+    "code": "02863",
+    "name": "Đình Phong",
+    "fullName": "Xã Đình Phong, Tỉnh Cao Bằng",
+    "slug": "dinh-phong",
+    "type": "commune"
+  },
+  {
+    "code": "02891",
+    "name": "Cần Yên",
+    "fullName": "Xã Cần Yên, Tỉnh Cao Bằng",
+    "slug": "can-yen",
+    "type": "commune"
+  },
+  {
+    "code": "02902",
+    "name": "Bế Văn Đàn",
+    "fullName": "Xã Bế Văn Đàn, Tỉnh Cao Bằng",
+    "slug": "be-van-dan",
+    "type": "commune"
+  },
+  {
+    "code": "02905",
+    "name": "Nam Quang",
+    "fullName": "Xã Nam Quang, Tỉnh Cao Bằng",
+    "slug": "nam-quang",
+    "type": "commune"
+  },
+  {
+    "code": "02907",
+    "name": "Cốc Pàng",
+    "fullName": "Xã Cốc Pàng, Tỉnh Cao Bằng",
+    "slug": "coc-pang",
+    "type": "commune"
+  },
+  {
+    "code": "02959",
+    "name": "Thông Nông",
+    "fullName": "Xã Thông Nông, Tỉnh Cao Bằng",
+    "slug": "thong-nong",
+    "type": "commune"
+  },
+  {
+    "code": "02965",
+    "name": "Hưng Đạo",
+    "fullName": "Xã Hưng Đạo, Tỉnh Cao Bằng",
+    "slug": "hung-dao",
+    "type": "commune"
+  },
+  {
+    "code": "02968",
+    "name": "Nguyễn Huệ",
+    "fullName": "Xã Nguyễn Huệ, Tỉnh Cao Bằng",
+    "slug": "nguyen-hue",
+    "type": "commune"
+  },
+  {
+    "code": "02976",
+    "name": "Nguyên Bình",
+    "fullName": "Xã Nguyên Bình, Tỉnh Cao Bằng",
+    "slug": "nguyen-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02989",
+    "name": "Đông Khê",
+    "fullName": "Xã Đông Khê, Tỉnh Cao Bằng",
+    "slug": "dong-khe",
+    "type": "commune"
+  },
+  {
+    "code": "03036",
+    "name": "Độc Lập",
+    "fullName": "Xã Độc Lập, Tỉnh Cao Bằng",
+    "slug": "doc-lap",
+    "type": "commune"
+  },
+  {
+    "code": "03038",
+    "name": "Cô Ba",
+    "fullName": "Xã Cô Ba, Tỉnh Cao Bằng",
+    "slug": "co-ba",
+    "type": "commune"
+  },
+  {
+    "code": "03054",
+    "name": "Minh Tâm",
+    "fullName": "Xã Minh Tâm, Tỉnh Cao Bằng",
+    "slug": "minh-tam",
+    "type": "commune"
+  },
+  {
+    "code": "03057",
+    "name": "Hạ Lang",
+    "fullName": "Xã Hạ Lang, Tỉnh Cao Bằng",
+    "slug": "ha-lang",
+    "type": "commune"
+  },
+  {
+    "code": "03081",
+    "name": "Thạch An",
+    "fullName": "Xã Thạch An, Tỉnh Cao Bằng",
+    "slug": "thach-an",
+    "type": "commune"
+  },
+  {
+    "code": "03097",
+    "name": "Huy Giáp",
+    "fullName": "Xã Huy Giáp, Tỉnh Cao Bằng",
+    "slug": "huy-giap",
+    "type": "commune"
+  },
+  {
+    "code": "03109",
+    "name": "Lũng Nặm",
+    "fullName": "Xã Lũng Nặm, Tỉnh Cao Bằng",
+    "slug": "lung-nam",
+    "type": "commune"
+  },
+  {
+    "code": "03128",
+    "name": "Vinh Quý",
+    "fullName": "Xã Vinh Quý, Tỉnh Cao Bằng",
+    "slug": "vinh-quy",
+    "type": "commune"
+  },
+  {
+    "code": "03129",
+    "name": "Quang Hán",
+    "fullName": "Xã Quang Hán, Tỉnh Cao Bằng",
+    "slug": "quang-han",
+    "type": "commune"
+  },
+  {
+    "code": "03132",
+    "name": "Tổng Cọt",
+    "fullName": "Xã Tổng Cọt, Tỉnh Cao Bằng",
+    "slug": "tong-cot",
+    "type": "commune"
+  },
+  {
+    "code": "03146",
+    "name": "Phan Thanh",
+    "fullName": "Xã Phan Thanh, Tỉnh Cao Bằng",
+    "slug": "phan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "03154",
+    "name": "Khánh Xuân",
+    "fullName": "Xã Khánh Xuân, Tỉnh Cao Bằng",
+    "slug": "khanh-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "03159",
+    "name": "Thanh Long",
+    "fullName": "Xã Thanh Long, Tỉnh Cao Bằng",
+    "slug": "thanh-long",
+    "type": "commune"
+  },
+  {
+    "code": "03192",
+    "name": "Kim Đồng",
+    "fullName": "Xã Kim Đồng, Tỉnh Cao Bằng",
+    "slug": "kim-dong",
+    "type": "commune"
+  },
+  {
+    "code": "03199",
+    "name": "Quang Trung",
+    "fullName": "Xã Quang Trung, Tỉnh Cao Bằng",
+    "slug": "quang-trung",
+    "type": "commune"
+  },
+  {
+    "code": "03200",
+    "name": "Lý Quốc",
+    "fullName": "Xã Lý Quốc, Tỉnh Cao Bằng",
+    "slug": "ly-quoc",
+    "type": "commune"
+  },
+  {
+    "code": "03211",
+    "name": "Tam Kim",
+    "fullName": "Xã Tam Kim, Tỉnh Cao Bằng",
+    "slug": "tam-kim",
+    "type": "commune"
+  },
+  {
+    "code": "03214",
+    "name": "Tĩnh Túc",
+    "fullName": "Xã Tĩnh Túc, Tỉnh Cao Bằng",
+    "slug": "tinh-tuc",
+    "type": "commune"
+  },
+  {
+    "code": "03217",
+    "name": "Quang Long",
+    "fullName": "Xã Quang Long, Tỉnh Cao Bằng",
+    "slug": "quang-long",
+    "type": "commune"
+  },
+  {
+    "code": "03227",
+    "name": "Xuân Trường",
+    "fullName": "Xã Xuân Trường, Tỉnh Cao Bằng",
+    "slug": "xuan-truong",
+    "type": "commune"
+  },
+  {
+    "code": "03233",
+    "name": "Sơn Lộ",
+    "fullName": "Xã Sơn Lộ, Tỉnh Cao Bằng",
+    "slug": "son-lo",
+    "type": "commune"
+  },
+  {
+    "code": "03246",
+    "name": "Đức Long",
+    "fullName": "Xã Đức Long, Tỉnh Cao Bằng",
+    "slug": "duc-long",
+    "type": "commune"
+  },
+  {
+    "code": "03253",
+    "name": "Thành Công",
+    "fullName": "Xã Thành Công, Tỉnh Cao Bằng",
+    "slug": "thanh-cong",
+    "type": "commune"
+  },
+  {
+    "code": "03261",
+    "name": "Bạch Đằng",
+    "fullName": "Xã Bạch Đằng, Tỉnh Cao Bằng",
+    "slug": "bach-dang",
+    "type": "commune"
+  },
+  {
+    "code": "03263",
+    "name": "Ca Thành",
+    "fullName": "Xã Ca Thành, Tỉnh Cao Bằng",
+    "slug": "ca-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "03272",
+    "name": "Canh Tân",
+    "fullName": "Xã Canh Tân, Tỉnh Cao Bằng",
+    "slug": "canh-tan",
+    "type": "commune"
+  },
+  {
+    "code": "03275",
+    "name": "Minh Khai",
+    "fullName": "Xã Minh Khai, Tỉnh Cao Bằng",
+    "slug": "minh-khai",
+    "type": "commune"
+  }
+]

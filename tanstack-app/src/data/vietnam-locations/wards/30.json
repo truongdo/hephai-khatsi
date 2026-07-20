@@ -1,0 +1,1178 @@
+[
+  {
+    "code": "00002",
+    "name": "Dĩ An",
+    "fullName": "Phường Dĩ An, Thành phố Hồ Chí Minh",
+    "slug": "di-an",
+    "type": "ward"
+  },
+  {
+    "code": "00003",
+    "name": "Hiệp Bình",
+    "fullName": "Phường Hiệp Bình, Thành phố Hồ Chí Minh",
+    "slug": "hiep-binh",
+    "type": "ward"
+  },
+  {
+    "code": "00004",
+    "name": "Tăng Nhơn Phú",
+    "fullName": "Phường Tăng Nhơn Phú, Thành phố Hồ Chí Minh",
+    "slug": "tang-nhon-phu",
+    "type": "ward"
+  },
+  {
+    "code": "00005",
+    "name": "Bà Điểm",
+    "fullName": "Xã Bà Điểm, Thành phố Hồ Chí Minh",
+    "slug": "ba-diem",
+    "type": "commune"
+  },
+  {
+    "code": "00009",
+    "name": "Chánh Hưng",
+    "fullName": "Phường Chánh Hưng, Thành phố Hồ Chí Minh",
+    "slug": "chanh-hung",
+    "type": "ward"
+  },
+  {
+    "code": "00010",
+    "name": "Đông Thạnh",
+    "fullName": "Xã Đông Thạnh, Thành phố Hồ Chí Minh",
+    "slug": "dong-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00012",
+    "name": "Bình Hưng Hòa",
+    "fullName": "Phường Bình Hưng Hòa, Thành phố Hồ Chí Minh",
+    "slug": "binh-hung-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00014",
+    "name": "Bình Hưng",
+    "fullName": "Xã Bình Hưng, Thành phố Hồ Chí Minh",
+    "slug": "binh-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00015",
+    "name": "Đông Hưng Thuận",
+    "fullName": "Phường Đông Hưng Thuận, Thành phố Hồ Chí Minh",
+    "slug": "dong-hung-thuan",
+    "type": "ward"
+  },
+  {
+    "code": "00016",
+    "name": "An Phú Đông",
+    "fullName": "Phường An Phú Đông, Thành phố Hồ Chí Minh",
+    "slug": "an-phu-dong",
+    "type": "ward"
+  },
+  {
+    "code": "00017",
+    "name": "An Lạc",
+    "fullName": "Phường An Lạc, Thành phố Hồ Chí Minh",
+    "slug": "an-lac",
+    "type": "ward"
+  },
+  {
+    "code": "00020",
+    "name": "Tân Thới Hiệp",
+    "fullName": "Phường Tân Thới Hiệp, Thành phố Hồ Chí Minh",
+    "slug": "tan-thoi-hiep",
+    "type": "ward"
+  },
+  {
+    "code": "00021",
+    "name": "Vĩnh Lộc",
+    "fullName": "Xã Vĩnh Lộc, Thành phố Hồ Chí Minh",
+    "slug": "vinh-loc",
+    "type": "commune"
+  },
+  {
+    "code": "00022",
+    "name": "Bình Trị Đông",
+    "fullName": "Phường Bình Trị Đông, Thành phố Hồ Chí Minh",
+    "slug": "binh-tri-dong",
+    "type": "ward"
+  },
+  {
+    "code": "00023",
+    "name": "Tân Vĩnh Lộc",
+    "fullName": "Xã Tân Vĩnh Lộc, Thành phố Hồ Chí Minh",
+    "slug": "tan-vinh-loc",
+    "type": "commune"
+  },
+  {
+    "code": "00024",
+    "name": "An Phú",
+    "fullName": "Phường An Phú, Thành phố Hồ Chí Minh",
+    "slug": "an-phu",
+    "type": "ward"
+  },
+  {
+    "code": "00025",
+    "name": "Bình Tân",
+    "fullName": "Phường Bình Tân, Thành phố Hồ Chí Minh",
+    "slug": "binh-tan",
+    "type": "ward"
+  },
+  {
+    "code": "00027",
+    "name": "Linh Xuân",
+    "fullName": "Phường Linh Xuân, Thành phố Hồ Chí Minh",
+    "slug": "linh-xuan",
+    "type": "ward"
+  },
+  {
+    "code": "00029",
+    "name": "Bình Đông",
+    "fullName": "Phường Bình Đông, Thành phố Hồ Chí Minh",
+    "slug": "binh-dong",
+    "type": "ward"
+  },
+  {
+    "code": "00031",
+    "name": "Tân Hưng",
+    "fullName": "Phường Tân Hưng, Thành phố Hồ Chí Minh",
+    "slug": "tan-hung",
+    "type": "ward"
+  },
+  {
+    "code": "00032",
+    "name": "Tam Bình",
+    "fullName": "Phường Tam Bình, Thành phố Hồ Chí Minh",
+    "slug": "tam-binh",
+    "type": "ward"
+  },
+  {
+    "code": "00033",
+    "name": "Thạnh Mỹ Tây",
+    "fullName": "Phường Thạnh Mỹ Tây, Thành phố Hồ Chí Minh",
+    "slug": "thanh-my-tay",
+    "type": "ward"
+  },
+  {
+    "code": "00034",
+    "name": "Thuận Giao",
+    "fullName": "Phường Thuận Giao, Thành phố Hồ Chí Minh",
+    "slug": "thuan-giao",
+    "type": "ward"
+  },
+  {
+    "code": "00035",
+    "name": "Phú Định",
+    "fullName": "Phường Phú Định, Thành phố Hồ Chí Minh",
+    "slug": "phu-dinh",
+    "type": "ward"
+  },
+  {
+    "code": "00037",
+    "name": "Tân Thuận",
+    "fullName": "Phường Tân Thuận, Thành phố Hồ Chí Minh",
+    "slug": "tan-thuan",
+    "type": "ward"
+  },
+  {
+    "code": "00038",
+    "name": "Tân Hiệp",
+    "fullName": "Phường Tân Hiệp, Thành phố Hồ Chí Minh",
+    "slug": "tan-hiep",
+    "type": "ward"
+  },
+  {
+    "code": "00040",
+    "name": "Phú Thọ Hòa",
+    "fullName": "Phường Phú Thọ Hòa, Thành phố Hồ Chí Minh",
+    "slug": "phu-tho-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00043",
+    "name": "Phước Long",
+    "fullName": "Phường Phước Long, Thành phố Hồ Chí Minh",
+    "slug": "phuoc-long",
+    "type": "ward"
+  },
+  {
+    "code": "00046",
+    "name": "Bảy Hiền",
+    "fullName": "Phường Bảy Hiền, Thành phố Hồ Chí Minh",
+    "slug": "bay-hien",
+    "type": "ward"
+  },
+  {
+    "code": "00047",
+    "name": "Đông Hòa",
+    "fullName": "Phường Đông Hòa, Thành phố Hồ Chí Minh",
+    "slug": "dong-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00053",
+    "name": "Hạnh Thông",
+    "fullName": "Phường Hạnh Thông, Thành phố Hồ Chí Minh",
+    "slug": "hanh-thong",
+    "type": "ward"
+  },
+  {
+    "code": "00054",
+    "name": "Củ Chi",
+    "fullName": "Xã Củ Chi, Thành phố Hồ Chí Minh",
+    "slug": "cu-chi",
+    "type": "commune"
+  },
+  {
+    "code": "00056",
+    "name": "Trung Mỹ Tây",
+    "fullName": "Phường Trung Mỹ Tây, Thành phố Hồ Chí Minh",
+    "slug": "trung-my-tay",
+    "type": "ward"
+  },
+  {
+    "code": "00057",
+    "name": "Tân Khánh",
+    "fullName": "Phường Tân Khánh, Thành phố Hồ Chí Minh",
+    "slug": "tan-khanh",
+    "type": "ward"
+  },
+  {
+    "code": "00058",
+    "name": "Bình Thạnh",
+    "fullName": "Phường Bình Thạnh, Thành phố Hồ Chí Minh",
+    "slug": "binh-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "00060",
+    "name": "Gia Định",
+    "fullName": "Phường Gia Định, Thành phố Hồ Chí Minh",
+    "slug": "gia-dinh",
+    "type": "ward"
+  },
+  {
+    "code": "00061",
+    "name": "Nhà Bè",
+    "fullName": "Xã Nhà Bè, Thành phố Hồ Chí Minh",
+    "slug": "nha-be",
+    "type": "commune"
+  },
+  {
+    "code": "00062",
+    "name": "Thới An",
+    "fullName": "Phường Thới An, Thành phố Hồ Chí Minh",
+    "slug": "thoi-an",
+    "type": "ward"
+  },
+  {
+    "code": "00064",
+    "name": "An Hội Đông",
+    "fullName": "Phường An Hội Đông, Thành phố Hồ Chí Minh",
+    "slug": "an-hoi-dong",
+    "type": "ward"
+  },
+  {
+    "code": "00068",
+    "name": "Bình Trưng",
+    "fullName": "Phường Bình Trưng, Thành phố Hồ Chí Minh",
+    "slug": "binh-trung",
+    "type": "ward"
+  },
+  {
+    "code": "00069",
+    "name": "Thông Tây Hội",
+    "fullName": "Phường Thông Tây Hội, Thành phố Hồ Chí Minh",
+    "slug": "thong-tay-hoi",
+    "type": "ward"
+  },
+  {
+    "code": "00070",
+    "name": "An Hội Tây",
+    "fullName": "Phường An Hội Tây, Thành phố Hồ Chí Minh",
+    "slug": "an-hoi-tay",
+    "type": "ward"
+  },
+  {
+    "code": "00071",
+    "name": "Bình Hòa",
+    "fullName": "Phường Bình Hòa, Thành phố Hồ Chí Minh",
+    "slug": "binh-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00074",
+    "name": "Long Bình",
+    "fullName": "Phường Long Bình, Thành phố Hồ Chí Minh",
+    "slug": "long-binh",
+    "type": "ward"
+  },
+  {
+    "code": "00077",
+    "name": "Thủ Đức",
+    "fullName": "Phường Thủ Đức, Thành phố Hồ Chí Minh",
+    "slug": "thu-duc",
+    "type": "ward"
+  },
+  {
+    "code": "00078",
+    "name": "Lái Thiêu",
+    "fullName": "Phường Lái Thiêu, Thành phố Hồ Chí Minh",
+    "slug": "lai-thieu",
+    "type": "ward"
+  },
+  {
+    "code": "00081",
+    "name": "Vũng Tàu",
+    "fullName": "Phường Vũng Tàu, Thành phố Hồ Chí Minh",
+    "slug": "vung-tau",
+    "type": "ward"
+  },
+  {
+    "code": "00082",
+    "name": "Tân Sơn Nhì",
+    "fullName": "Phường Tân Sơn Nhì, Thành phố Hồ Chí Minh",
+    "slug": "tan-son-nhi",
+    "type": "ward"
+  },
+  {
+    "code": "00083",
+    "name": "Bình Lợi Trung",
+    "fullName": "Phường Bình Lợi Trung, Thành phố Hồ Chí Minh",
+    "slug": "binh-loi-trung",
+    "type": "ward"
+  },
+  {
+    "code": "00086",
+    "name": "Tân Nhựt",
+    "fullName": "Xã Tân Nhựt, Thành phố Hồ Chí Minh",
+    "slug": "tan-nhut",
+    "type": "commune"
+  },
+  {
+    "code": "00087",
+    "name": "An Nhơn",
+    "fullName": "Phường An Nhơn, Thành phố Hồ Chí Minh",
+    "slug": "an-nhon",
+    "type": "ward"
+  },
+  {
+    "code": "00088",
+    "name": "Tân Tạo",
+    "fullName": "Phường Tân Tạo, Thành phố Hồ Chí Minh",
+    "slug": "tan-tao",
+    "type": "ward"
+  },
+  {
+    "code": "00094",
+    "name": "Gò Vấp",
+    "fullName": "Phường Gò Vấp, Thành phố Hồ Chí Minh",
+    "slug": "go-vap",
+    "type": "ward"
+  },
+  {
+    "code": "00095",
+    "name": "Long Hải",
+    "fullName": "Xã Long Hải, Thành phố Hồ Chí Minh",
+    "slug": "long-hai",
+    "type": "commune"
+  },
+  {
+    "code": "00098",
+    "name": "Phú Lợi",
+    "fullName": "Phường Phú Lợi, Thành phố Hồ Chí Minh",
+    "slug": "phu-loi",
+    "type": "ward"
+  },
+  {
+    "code": "00099",
+    "name": "Bình Dương",
+    "fullName": "Phường Bình Dương, Thành phố Hồ Chí Minh",
+    "slug": "binh-duong",
+    "type": "ward"
+  },
+  {
+    "code": "00109",
+    "name": "Vườn Lài",
+    "fullName": "Phường Vườn Lài, Thành phố Hồ Chí Minh",
+    "slug": "vuon-lai",
+    "type": "ward"
+  },
+  {
+    "code": "00110",
+    "name": "Phú Thạnh",
+    "fullName": "Phường Phú Thạnh, Thành phố Hồ Chí Minh",
+    "slug": "phu-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "00111",
+    "name": "Xuân Thới Sơn",
+    "fullName": "Xã Xuân Thới Sơn, Thành phố Hồ Chí Minh",
+    "slug": "xuan-thoi-son",
+    "type": "commune"
+  },
+  {
+    "code": "00118",
+    "name": "Tân Đông Hiệp",
+    "fullName": "Phường Tân Đông Hiệp, Thành phố Hồ Chí Minh",
+    "slug": "tan-dong-hiep",
+    "type": "ward"
+  },
+  {
+    "code": "00122",
+    "name": "Bình Mỹ",
+    "fullName": "Xã Bình Mỹ, Thành phố Hồ Chí Minh",
+    "slug": "binh-my",
+    "type": "commune"
+  },
+  {
+    "code": "00125",
+    "name": "Bến Cát",
+    "fullName": "Phường Bến Cát, Thành phố Hồ Chí Minh",
+    "slug": "ben-cat",
+    "type": "ward"
+  },
+  {
+    "code": "00126",
+    "name": "Phú Hòa Đông",
+    "fullName": "Xã Phú Hòa Đông, Thành phố Hồ Chí Minh",
+    "slug": "phu-hoa-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00131",
+    "name": "Hòa Hưng",
+    "fullName": "Phường Hòa Hưng, Thành phố Hồ Chí Minh",
+    "slug": "hoa-hung",
+    "type": "ward"
+  },
+  {
+    "code": "00134",
+    "name": "Khánh Hội",
+    "fullName": "Phường Khánh Hội, Thành phố Hồ Chí Minh",
+    "slug": "khanh-hoi",
+    "type": "ward"
+  },
+  {
+    "code": "00137",
+    "name": "Tân Hòa",
+    "fullName": "Phường Tân Hòa, Thành phố Hồ Chí Minh",
+    "slug": "tan-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00138",
+    "name": "Hóc Môn",
+    "fullName": "Xã Hóc Môn, Thành phố Hồ Chí Minh",
+    "slug": "hoc-mon",
+    "type": "commune"
+  },
+  {
+    "code": "00139",
+    "name": "Tân Phú",
+    "fullName": "Phường Tân Phú, Thành phố Hồ Chí Minh",
+    "slug": "tan-phu",
+    "type": "ward"
+  },
+  {
+    "code": "00144",
+    "name": "Bình Tiên",
+    "fullName": "Phường Bình Tiên, Thành phố Hồ Chí Minh",
+    "slug": "binh-tien",
+    "type": "ward"
+  },
+  {
+    "code": "00146",
+    "name": "Minh Phụng",
+    "fullName": "Phường Minh Phụng, Thành phố Hồ Chí Minh",
+    "slug": "minh-phung",
+    "type": "ward"
+  },
+  {
+    "code": "00150",
+    "name": "Tân Bình",
+    "fullName": "Phường Tân Bình, Thành phố Hồ Chí Minh",
+    "slug": "tan-binh",
+    "type": "ward"
+  },
+  {
+    "code": "00155",
+    "name": "Thủ Dầu Một",
+    "fullName": "Phường Thủ Dầu Một, Thành phố Hồ Chí Minh",
+    "slug": "thu-dau-mot",
+    "type": "ward"
+  },
+  {
+    "code": "00156",
+    "name": "Nhiêu Lộc",
+    "fullName": "Phường Nhiêu Lộc, Thành phố Hồ Chí Minh",
+    "slug": "nhieu-loc",
+    "type": "ward"
+  },
+  {
+    "code": "00160",
+    "name": "Phú Lâm",
+    "fullName": "Phường Phú Lâm, Thành phố Hồ Chí Minh",
+    "slug": "phu-lam",
+    "type": "ward"
+  },
+  {
+    "code": "00164",
+    "name": "Tam Thắng",
+    "fullName": "Phường Tam Thắng, Thành phố Hồ Chí Minh",
+    "slug": "tam-thang",
+    "type": "ward"
+  },
+  {
+    "code": "00172",
+    "name": "Chợ Lớn",
+    "fullName": "Phường Chợ Lớn, Thành phố Hồ Chí Minh",
+    "slug": "cho-lon",
+    "type": "ward"
+  },
+  {
+    "code": "00173",
+    "name": "Tân Sơn Nhất",
+    "fullName": "Phường Tân Sơn Nhất, Thành phố Hồ Chí Minh",
+    "slug": "tan-son-nhat",
+    "type": "ward"
+  },
+  {
+    "code": "00174",
+    "name": "Tân An Hội",
+    "fullName": "Xã Tân An Hội, Thành phố Hồ Chí Minh",
+    "slug": "tan-an-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "00178",
+    "name": "Phú Thuận",
+    "fullName": "Phường Phú Thuận, Thành phố Hồ Chí Minh",
+    "slug": "phu-thuan",
+    "type": "ward"
+  },
+  {
+    "code": "00189",
+    "name": "An Đông",
+    "fullName": "Phường An Đông, Thành phố Hồ Chí Minh",
+    "slug": "an-dong",
+    "type": "ward"
+  },
+  {
+    "code": "00194",
+    "name": "Hòa Lợi",
+    "fullName": "Phường Hòa Lợi, Thành phố Hồ Chí Minh",
+    "slug": "hoa-loi",
+    "type": "ward"
+  },
+  {
+    "code": "00195",
+    "name": "Thới Hòa",
+    "fullName": "Phường Thới Hòa, Thành phố Hồ Chí Minh",
+    "slug": "thoi-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00200",
+    "name": "Cầu Ông Lãnh",
+    "fullName": "Phường Cầu Ông Lãnh, Thành phố Hồ Chí Minh",
+    "slug": "cau-ong-lanh",
+    "type": "ward"
+  },
+  {
+    "code": "00201",
+    "name": "Phú Mỹ",
+    "fullName": "Phường Phú Mỹ, Thành phố Hồ Chí Minh",
+    "slug": "phu-my",
+    "type": "ward"
+  },
+  {
+    "code": "00211",
+    "name": "Tân Sơn",
+    "fullName": "Phường Tân Sơn, Thành phố Hồ Chí Minh",
+    "slug": "tan-son",
+    "type": "ward"
+  },
+  {
+    "code": "00216",
+    "name": "An Khánh",
+    "fullName": "Phường An Khánh, Thành phố Hồ Chí Minh",
+    "slug": "an-khanh",
+    "type": "ward"
+  },
+  {
+    "code": "00220",
+    "name": "Bình Thới",
+    "fullName": "Phường Bình Thới, Thành phố Hồ Chí Minh",
+    "slug": "binh-thoi",
+    "type": "ward"
+  },
+  {
+    "code": "00221",
+    "name": "Rạch Dừa",
+    "fullName": "Phường Rạch Dừa, Thành phố Hồ Chí Minh",
+    "slug": "rach-dua",
+    "type": "ward"
+  },
+  {
+    "code": "00223",
+    "name": "Bình Chánh",
+    "fullName": "Xã Bình Chánh, Thành phố Hồ Chí Minh",
+    "slug": "binh-chanh",
+    "type": "commune"
+  },
+  {
+    "code": "00225",
+    "name": "Bình Phú",
+    "fullName": "Phường Bình Phú, Thành phố Hồ Chí Minh",
+    "slug": "binh-phu",
+    "type": "ward"
+  },
+  {
+    "code": "00227",
+    "name": "Diên Hồng",
+    "fullName": "Phường Diên Hồng, Thành phố Hồ Chí Minh",
+    "slug": "dien-hong",
+    "type": "ward"
+  },
+  {
+    "code": "00239",
+    "name": "Long Trường",
+    "fullName": "Phường Long Trường, Thành phố Hồ Chí Minh",
+    "slug": "long-truong",
+    "type": "ward"
+  },
+  {
+    "code": "00246",
+    "name": "Tân Uyên",
+    "fullName": "Phường Tân Uyên, Thành phố Hồ Chí Minh",
+    "slug": "tan-uyen",
+    "type": "ward"
+  },
+  {
+    "code": "00249",
+    "name": "Tây Thạnh",
+    "fullName": "Phường Tây Thạnh, Thành phố Hồ Chí Minh",
+    "slug": "tay-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "00257",
+    "name": "Bến Thành",
+    "fullName": "Phường Bến Thành, Thành phố Hồ Chí Minh",
+    "slug": "ben-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "00263",
+    "name": "Hưng Long",
+    "fullName": "Xã Hưng Long, Thành phố Hồ Chí Minh",
+    "slug": "hung-long",
+    "type": "commune"
+  },
+  {
+    "code": "00264",
+    "name": "Đức Nhuận",
+    "fullName": "Phường Đức Nhuận, Thành phố Hồ Chí Minh",
+    "slug": "duc-nhuan",
+    "type": "ward"
+  },
+  {
+    "code": "00291",
+    "name": "Hoà Bình",
+    "fullName": "Phường Hoà Bình, Thành phố Hồ Chí Minh",
+    "slug": "hoa-binh",
+    "type": "ward"
+  },
+  {
+    "code": "00297",
+    "name": "Cát Lái",
+    "fullName": "Phường Cát Lái, Thành phố Hồ Chí Minh",
+    "slug": "cat-lai",
+    "type": "ward"
+  },
+  {
+    "code": "00301",
+    "name": "Phú Nhuận",
+    "fullName": "Phường Phú Nhuận, Thành phố Hồ Chí Minh",
+    "slug": "phu-nhuan",
+    "type": "ward"
+  },
+  {
+    "code": "00303",
+    "name": "Tân Mỹ",
+    "fullName": "Phường Tân Mỹ, Thành phố Hồ Chí Minh",
+    "slug": "tan-my",
+    "type": "ward"
+  },
+  {
+    "code": "00307",
+    "name": "Hiệp Phước",
+    "fullName": "Xã Hiệp Phước, Thành phố Hồ Chí Minh",
+    "slug": "hiep-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "00308",
+    "name": "Bàn Cờ",
+    "fullName": "Phường Bàn Cờ, Thành phố Hồ Chí Minh",
+    "slug": "ban-co",
+    "type": "ward"
+  },
+  {
+    "code": "00323",
+    "name": "Phú Thọ",
+    "fullName": "Phường Phú Thọ, Thành phố Hồ Chí Minh",
+    "slug": "phu-tho",
+    "type": "ward"
+  },
+  {
+    "code": "00330",
+    "name": "Thuận An",
+    "fullName": "Phường Thuận An, Thành phố Hồ Chí Minh",
+    "slug": "thuan-an",
+    "type": "ward"
+  },
+  {
+    "code": "00332",
+    "name": "Bình Cơ",
+    "fullName": "Phường Bình Cơ, Thành phố Hồ Chí Minh",
+    "slug": "binh-co",
+    "type": "ward"
+  },
+  {
+    "code": "00336",
+    "name": "Tân Sơn Hòa",
+    "fullName": "Phường Tân Sơn Hòa, Thành phố Hồ Chí Minh",
+    "slug": "tan-son-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00340",
+    "name": "Chợ Quán",
+    "fullName": "Phường Chợ Quán, Thành phố Hồ Chí Minh",
+    "slug": "cho-quan",
+    "type": "ward"
+  },
+  {
+    "code": "00346",
+    "name": "Bình Tây",
+    "fullName": "Phường Bình Tây, Thành phố Hồ Chí Minh",
+    "slug": "binh-tay",
+    "type": "ward"
+  },
+  {
+    "code": "00352",
+    "name": "Vĩnh Hội",
+    "fullName": "Phường Vĩnh Hội, Thành phố Hồ Chí Minh",
+    "slug": "vinh-hoi",
+    "type": "ward"
+  },
+  {
+    "code": "00359",
+    "name": "Cầu Kiệu",
+    "fullName": "Phường Cầu Kiệu, Thành phố Hồ Chí Minh",
+    "slug": "cau-kieu",
+    "type": "ward"
+  },
+  {
+    "code": "00365",
+    "name": "Vĩnh Tân",
+    "fullName": "Phường Vĩnh Tân, Thành phố Hồ Chí Minh",
+    "slug": "vinh-tan",
+    "type": "ward"
+  },
+  {
+    "code": "00425",
+    "name": "Xóm Chiếu",
+    "fullName": "Phường Xóm Chiếu, Thành phố Hồ Chí Minh",
+    "slug": "xom-chieu",
+    "type": "ward"
+  },
+  {
+    "code": "00434",
+    "name": "Chánh Hiệp",
+    "fullName": "Phường Chánh Hiệp, Thành phố Hồ Chí Minh",
+    "slug": "chanh-hiep",
+    "type": "ward"
+  },
+  {
+    "code": "00440",
+    "name": "Tây Nam",
+    "fullName": "Phường Tây Nam, Thành phố Hồ Chí Minh",
+    "slug": "tay-nam",
+    "type": "ward"
+  },
+  {
+    "code": "00486",
+    "name": "Chánh Phú Hòa",
+    "fullName": "Phường Chánh Phú Hòa, Thành phố Hồ Chí Minh",
+    "slug": "chanh-phu-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00498",
+    "name": "Long Nguyên",
+    "fullName": "Phường Long Nguyên, Thành phố Hồ Chí Minh",
+    "slug": "long-nguyen",
+    "type": "ward"
+  },
+  {
+    "code": "00500",
+    "name": "Long Phước",
+    "fullName": "Phường Long Phước, Thành phố Hồ Chí Minh",
+    "slug": "long-phuoc",
+    "type": "ward"
+  },
+  {
+    "code": "00510",
+    "name": "Phước Thắng",
+    "fullName": "Phường Phước Thắng, Thành phố Hồ Chí Minh",
+    "slug": "phuoc-thang",
+    "type": "ward"
+  },
+  {
+    "code": "00515",
+    "name": "Bà Rịa",
+    "fullName": "Phường Bà Rịa, Thành phố Hồ Chí Minh",
+    "slug": "ba-ria",
+    "type": "ward"
+  },
+  {
+    "code": "00524",
+    "name": "Hồ Tràm",
+    "fullName": "Xã Hồ Tràm, Thành phố Hồ Chí Minh",
+    "slug": "ho-tram",
+    "type": "commune"
+  },
+  {
+    "code": "00578",
+    "name": "Thái Mỹ",
+    "fullName": "Xã Thái Mỹ, Thành phố Hồ Chí Minh",
+    "slug": "thai-my",
+    "type": "commune"
+  },
+  {
+    "code": "00604",
+    "name": "Ngãi Giao",
+    "fullName": "Xã Ngãi Giao, Thành phố Hồ Chí Minh",
+    "slug": "ngai-giao",
+    "type": "commune"
+  },
+  {
+    "code": "00622",
+    "name": "Tân Định",
+    "fullName": "Phường Tân Định, Thành phố Hồ Chí Minh",
+    "slug": "tan-dinh",
+    "type": "ward"
+  },
+  {
+    "code": "00624",
+    "name": "Xuân Hòa",
+    "fullName": "Phường Xuân Hòa, Thành phố Hồ Chí Minh",
+    "slug": "xuan-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00628",
+    "name": "Long Điền",
+    "fullName": "Xã Long Điền, Thành phố Hồ Chí Minh",
+    "slug": "long-dien",
+    "type": "commune"
+  },
+  {
+    "code": "00649",
+    "name": "Bình Lợi",
+    "fullName": "Xã Bình Lợi, Thành phố Hồ Chí Minh",
+    "slug": "binh-loi",
+    "type": "commune"
+  },
+  {
+    "code": "00656",
+    "name": "Sài Gòn",
+    "fullName": "Phường Sài Gòn, Thành phố Hồ Chí Minh",
+    "slug": "sai-gon",
+    "type": "ward"
+  },
+  {
+    "code": "00684",
+    "name": "Bình Quới",
+    "fullName": "Phường Bình Quới, Thành phố Hồ Chí Minh",
+    "slug": "binh-quoi",
+    "type": "ward"
+  },
+  {
+    "code": "00686",
+    "name": "Phú An",
+    "fullName": "Phường Phú An, Thành phố Hồ Chí Minh",
+    "slug": "phu-an",
+    "type": "ward"
+  },
+  {
+    "code": "00757",
+    "name": "Đất Đỏ",
+    "fullName": "Xã Đất Đỏ, Thành phố Hồ Chí Minh",
+    "slug": "dat-do",
+    "type": "commune"
+  },
+  {
+    "code": "00765",
+    "name": "Phước Hải",
+    "fullName": "Xã Phước Hải, Thành phố Hồ Chí Minh",
+    "slug": "phuoc-hai",
+    "type": "commune"
+  },
+  {
+    "code": "00798",
+    "name": "Phú Giáo",
+    "fullName": "Xã Phú Giáo, Thành phố Hồ Chí Minh",
+    "slug": "phu-giao",
+    "type": "commune"
+  },
+  {
+    "code": "00805",
+    "name": "Phước Hòa",
+    "fullName": "Xã Phước Hòa, Thành phố Hồ Chí Minh",
+    "slug": "phuoc-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00818",
+    "name": "Bàu Bàng",
+    "fullName": "Xã Bàu Bàng, Thành phố Hồ Chí Minh",
+    "slug": "bau-bang",
+    "type": "commune"
+  },
+  {
+    "code": "00853",
+    "name": "Tam Long",
+    "fullName": "Phường Tam Long, Thành phố Hồ Chí Minh",
+    "slug": "tam-long",
+    "type": "ward"
+  },
+  {
+    "code": "00865",
+    "name": "An Nhơn Tây",
+    "fullName": "Xã An Nhơn Tây, Thành phố Hồ Chí Minh",
+    "slug": "an-nhon-tay",
+    "type": "commune"
+  },
+  {
+    "code": "00891",
+    "name": "Nhuận Đức",
+    "fullName": "Xã Nhuận Đức, Thành phố Hồ Chí Minh",
+    "slug": "nhuan-duc",
+    "type": "commune"
+  },
+  {
+    "code": "00952",
+    "name": "Dầu Tiếng",
+    "fullName": "Xã Dầu Tiếng, Thành phố Hồ Chí Minh",
+    "slug": "dau-tieng",
+    "type": "commune"
+  },
+  {
+    "code": "01108",
+    "name": "Hòa Hội",
+    "fullName": "Xã Hòa Hội, Thành phố Hồ Chí Minh",
+    "slug": "hoa-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "01158",
+    "name": "Bình Khánh",
+    "fullName": "Xã Bình Khánh, Thành phố Hồ Chí Minh",
+    "slug": "binh-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "01216",
+    "name": "Bình Giã",
+    "fullName": "Xã Bình Giã, Thành phố Hồ Chí Minh",
+    "slug": "binh-gia",
+    "type": "commune"
+  },
+  {
+    "code": "01237",
+    "name": "Tân Thành",
+    "fullName": "Phường Tân Thành, Thành phố Hồ Chí Minh",
+    "slug": "tan-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "01270",
+    "name": "Kim Long",
+    "fullName": "Xã Kim Long, Thành phố Hồ Chí Minh",
+    "slug": "kim-long",
+    "type": "commune"
+  },
+  {
+    "code": "01407",
+    "name": "Long Hương",
+    "fullName": "Phường Long Hương, Thành phố Hồ Chí Minh",
+    "slug": "long-huong",
+    "type": "ward"
+  },
+  {
+    "code": "01497",
+    "name": "Tân Hải",
+    "fullName": "Phường Tân Hải, Thành phố Hồ Chí Minh",
+    "slug": "tan-hai",
+    "type": "ward"
+  },
+  {
+    "code": "01570",
+    "name": "Tân Phước",
+    "fullName": "Phường Tân Phước, Thành phố Hồ Chí Minh",
+    "slug": "tan-phuoc",
+    "type": "ward"
+  },
+  {
+    "code": "01646",
+    "name": "Châu Đức",
+    "fullName": "Xã Châu Đức, Thành phố Hồ Chí Minh",
+    "slug": "chau-duc",
+    "type": "commune"
+  },
+  {
+    "code": "01662",
+    "name": "Bắc Tân Uyên",
+    "fullName": "Xã Bắc Tân Uyên, Thành phố Hồ Chí Minh",
+    "slug": "bac-tan-uyen",
+    "type": "commune"
+  },
+  {
+    "code": "01676",
+    "name": "Nghĩa Thành",
+    "fullName": "Xã Nghĩa Thành, Thành phố Hồ Chí Minh",
+    "slug": "nghia-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01713",
+    "name": "Xuân Sơn",
+    "fullName": "Xã Xuân Sơn, Thành phố Hồ Chí Minh",
+    "slug": "xuan-son",
+    "type": "commune"
+  },
+  {
+    "code": "01735",
+    "name": "Cần Giờ",
+    "fullName": "Xã Cần Giờ, Thành phố Hồ Chí Minh",
+    "slug": "can-gio",
+    "type": "commune"
+  },
+  {
+    "code": "01753",
+    "name": "Xuyên Mộc",
+    "fullName": "Xã Xuyên Mộc, Thành phố Hồ Chí Minh",
+    "slug": "xuyen-moc",
+    "type": "commune"
+  },
+  {
+    "code": "01816",
+    "name": "Bình Châu",
+    "fullName": "Xã Bình Châu, Thành phố Hồ Chí Minh",
+    "slug": "binh-chau",
+    "type": "commune"
+  },
+  {
+    "code": "01822",
+    "name": "Hòa Hiệp",
+    "fullName": "Xã Hòa Hiệp, Thành phố Hồ Chí Minh",
+    "slug": "hoa-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "01862",
+    "name": "Châu Pha",
+    "fullName": "Xã Châu Pha, Thành phố Hồ Chí Minh",
+    "slug": "chau-pha",
+    "type": "commune"
+  },
+  {
+    "code": "01872",
+    "name": "Thanh An",
+    "fullName": "Xã Thanh An, Thành phố Hồ Chí Minh",
+    "slug": "thanh-an",
+    "type": "commune"
+  },
+  {
+    "code": "01885",
+    "name": "Long Hòa",
+    "fullName": "Xã Long Hòa, Thành phố Hồ Chí Minh",
+    "slug": "long-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01935",
+    "name": "Trừ Văn Thố",
+    "fullName": "Xã Trừ Văn Thố, Thành phố Hồ Chí Minh",
+    "slug": "tru-van-tho",
+    "type": "commune"
+  },
+  {
+    "code": "01965",
+    "name": "Minh Thạnh",
+    "fullName": "Xã Minh Thạnh, Thành phố Hồ Chí Minh",
+    "slug": "minh-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02099",
+    "name": "An Thới Đông",
+    "fullName": "Xã An Thới Đông, Thành phố Hồ Chí Minh",
+    "slug": "an-thoi-dong",
+    "type": "commune"
+  },
+  {
+    "code": "02101",
+    "name": "Bàu Lâm",
+    "fullName": "Xã Bàu Lâm, Thành phố Hồ Chí Minh",
+    "slug": "bau-lam",
+    "type": "commune"
+  },
+  {
+    "code": "02184",
+    "name": "Thường Tân",
+    "fullName": "Xã Thường Tân, Thành phố Hồ Chí Minh",
+    "slug": "thuong-tan",
+    "type": "commune"
+  },
+  {
+    "code": "02401",
+    "name": "An Long",
+    "fullName": "Xã An Long, Thành phố Hồ Chí Minh",
+    "slug": "an-long",
+    "type": "commune"
+  },
+  {
+    "code": "02408",
+    "name": "Long Sơn",
+    "fullName": "Xã Long Sơn, Thành phố Hồ Chí Minh",
+    "slug": "long-son",
+    "type": "commune"
+  },
+  {
+    "code": "02549",
+    "name": "Phước Thành",
+    "fullName": "Xã Phước Thành, Thành phố Hồ Chí Minh",
+    "slug": "phuoc-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "03163",
+    "name": "Côn Đảo",
+    "fullName": "Đặc khu Côn Đảo, Thành phố Hồ Chí Minh",
+    "slug": "con-dao",
+    "type": "commune"
+  },
+  {
+    "code": "03249",
+    "name": "Thạnh An",
+    "fullName": "Xã Thạnh An, Thành phố Hồ Chí Minh",
+    "slug": "thanh-an",
+    "type": "commune"
+  }
+]

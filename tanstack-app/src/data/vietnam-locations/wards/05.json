@@ -1,0 +1,800 @@
+[
+  {
+    "code": "00026",
+    "name": "Lê Chân",
+    "fullName": "Phường Lê Chân, Thành phố Hải Phòng",
+    "slug": "le-chan",
+    "type": "ward"
+  },
+  {
+    "code": "00084",
+    "name": "An Biên",
+    "fullName": "Phường An Biên, Thành phố Hải Phòng",
+    "slug": "an-bien",
+    "type": "ward"
+  },
+  {
+    "code": "00089",
+    "name": "Hồng Bàng",
+    "fullName": "Phường Hồng Bàng, Thành phố Hải Phòng",
+    "slug": "hong-bang",
+    "type": "ward"
+  },
+  {
+    "code": "00113",
+    "name": "Hải An",
+    "fullName": "Phường Hải An, Thành phố Hải Phòng",
+    "slug": "hai-an",
+    "type": "ward"
+  },
+  {
+    "code": "00115",
+    "name": "Gia Viên",
+    "fullName": "Phường Gia Viên, Thành phố Hải Phòng",
+    "slug": "gia-vien",
+    "type": "ward"
+  },
+  {
+    "code": "00154",
+    "name": "Ngô Quyền",
+    "fullName": "Phường Ngô Quyền, Thành phố Hải Phòng",
+    "slug": "ngo-quyen",
+    "type": "ward"
+  },
+  {
+    "code": "00186",
+    "name": "Lê Thanh Nghị",
+    "fullName": "Phường Lê Thanh Nghị, Thành phố Hải Phòng",
+    "slug": "le-thanh-nghi",
+    "type": "ward"
+  },
+  {
+    "code": "00212",
+    "name": "An Hải",
+    "fullName": "Phường An Hải, Thành phố Hải Phòng",
+    "slug": "an-hai",
+    "type": "ward"
+  },
+  {
+    "code": "00217",
+    "name": "An Dương",
+    "fullName": "Phường An Dương, Thành phố Hải Phòng",
+    "slug": "an-duong",
+    "type": "ward"
+  },
+  {
+    "code": "00258",
+    "name": "Thuỷ Nguyên",
+    "fullName": "Phường Thuỷ Nguyên, Thành phố Hải Phòng",
+    "slug": "thuy-nguyen",
+    "type": "ward"
+  },
+  {
+    "code": "00271",
+    "name": "Cát Hải",
+    "fullName": "Đặc khu Cát Hải, Thành phố Hải Phòng",
+    "slug": "cat-hai",
+    "type": "commune"
+  },
+  {
+    "code": "00312",
+    "name": "Kiến An",
+    "fullName": "Phường Kiến An, Thành phố Hải Phòng",
+    "slug": "kien-an",
+    "type": "ward"
+  },
+  {
+    "code": "00327",
+    "name": "Hồng An",
+    "fullName": "Phường Hồng An, Thành phố Hải Phòng",
+    "slug": "hong-an",
+    "type": "ward"
+  },
+  {
+    "code": "00386",
+    "name": "Phù Liễn",
+    "fullName": "Phường Phù Liễn, Thành phố Hải Phòng",
+    "slug": "phu-lien",
+    "type": "ward"
+  },
+  {
+    "code": "00447",
+    "name": "Chu Văn An",
+    "fullName": "Phường Chu Văn An, Thành phố Hải Phòng",
+    "slug": "chu-van-an",
+    "type": "ward"
+  },
+  {
+    "code": "00525",
+    "name": "Lê Ích Mộc",
+    "fullName": "Phường Lê Ích Mộc, Thành phố Hải Phòng",
+    "slug": "le-ich-moc",
+    "type": "ward"
+  },
+  {
+    "code": "00532",
+    "name": "Bạch Đằng",
+    "fullName": "Phường Bạch Đằng, Thành phố Hải Phòng",
+    "slug": "bach-dang",
+    "type": "ward"
+  },
+  {
+    "code": "00534",
+    "name": "Hải Dương",
+    "fullName": "Phường Hải Dương, Thành phố Hải Phòng",
+    "slug": "hai-duong",
+    "type": "ward"
+  },
+  {
+    "code": "00556",
+    "name": "Đông Hải",
+    "fullName": "Phường Đông Hải, Thành phố Hải Phòng",
+    "slug": "dong-hai",
+    "type": "ward"
+  },
+  {
+    "code": "00571",
+    "name": "Thành Đông",
+    "fullName": "Phường Thành Đông, Thành phố Hải Phòng",
+    "slug": "thanh-dong",
+    "type": "ward"
+  },
+  {
+    "code": "00596",
+    "name": "Lưu Kiếm",
+    "fullName": "Phường Lưu Kiếm, Thành phố Hải Phòng",
+    "slug": "luu-kiem",
+    "type": "ward"
+  },
+  {
+    "code": "00648",
+    "name": "An Lão",
+    "fullName": "Xã An Lão, Thành phố Hải Phòng",
+    "slug": "an-lao",
+    "type": "commune"
+  },
+  {
+    "code": "00651",
+    "name": "Hoà Bình",
+    "fullName": "Phường Hoà Bình, Thành phố Hải Phòng",
+    "slug": "hoa-binh",
+    "type": "ward"
+  },
+  {
+    "code": "00669",
+    "name": "Gia Lộc",
+    "fullName": "Xã Gia Lộc, Thành phố Hải Phòng",
+    "slug": "gia-loc",
+    "type": "commune"
+  },
+  {
+    "code": "00683",
+    "name": "Phú Thái",
+    "fullName": "Xã Phú Thái, Thành phố Hải Phòng",
+    "slug": "phu-thai",
+    "type": "commune"
+  },
+  {
+    "code": "00708",
+    "name": "Thanh Miện",
+    "fullName": "Xã Thanh Miện, Thành phố Hải Phòng",
+    "slug": "thanh-mien",
+    "type": "commune"
+  },
+  {
+    "code": "00710",
+    "name": "Vĩnh Bảo",
+    "fullName": "Xã Vĩnh Bảo, Thành phố Hải Phòng",
+    "slug": "vinh-bao",
+    "type": "commune"
+  },
+  {
+    "code": "00716",
+    "name": "Thiên Hương",
+    "fullName": "Phường Thiên Hương, Thành phố Hải Phòng",
+    "slug": "thien-huong",
+    "type": "ward"
+  },
+  {
+    "code": "00721",
+    "name": "Kiến Hải",
+    "fullName": "Xã Kiến Hải, Thành phố Hải Phòng",
+    "slug": "kien-hai",
+    "type": "commune"
+  },
+  {
+    "code": "00731",
+    "name": "An Phong",
+    "fullName": "Phường An Phong, Thành phố Hải Phòng",
+    "slug": "an-phong",
+    "type": "ward"
+  },
+  {
+    "code": "00759",
+    "name": "Nhị Chiểu",
+    "fullName": "Phường Nhị Chiểu, Thành phố Hải Phòng",
+    "slug": "nhi-chieu",
+    "type": "ward"
+  },
+  {
+    "code": "00778",
+    "name": "Mao Điền",
+    "fullName": "Xã Mao Điền, Thành phố Hải Phòng",
+    "slug": "mao-dien",
+    "type": "commune"
+  },
+  {
+    "code": "00786",
+    "name": "Kim Thành",
+    "fullName": "Xã Kim Thành, Thành phố Hải Phòng",
+    "slug": "kim-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00788",
+    "name": "Lai Khê",
+    "fullName": "Xã Lai Khê, Thành phố Hải Phòng",
+    "slug": "lai-khe",
+    "type": "commune"
+  },
+  {
+    "code": "00874",
+    "name": "Gia Phúc",
+    "fullName": "Xã Gia Phúc, Thành phố Hải Phòng",
+    "slug": "gia-phuc",
+    "type": "commune"
+  },
+  {
+    "code": "00882",
+    "name": "Tiên Lãng",
+    "fullName": "Xã Tiên Lãng, Thành phố Hải Phòng",
+    "slug": "tien-lang",
+    "type": "commune"
+  },
+  {
+    "code": "00893",
+    "name": "Nam Triệu",
+    "fullName": "Phường Nam Triệu, Thành phố Hải Phòng",
+    "slug": "nam-trieu",
+    "type": "ward"
+  },
+  {
+    "code": "00928",
+    "name": "Kẻ Sặt",
+    "fullName": "Xã Kẻ Sặt, Thành phố Hải Phòng",
+    "slug": "ke-sat",
+    "type": "commune"
+  },
+  {
+    "code": "00930",
+    "name": "Ninh Giang",
+    "fullName": "Xã Ninh Giang, Thành phố Hải Phòng",
+    "slug": "ninh-giang",
+    "type": "commune"
+  },
+  {
+    "code": "00956",
+    "name": "Vĩnh Lại",
+    "fullName": "Xã Vĩnh Lại, Thành phố Hải Phòng",
+    "slug": "vinh-lai",
+    "type": "commune"
+  },
+  {
+    "code": "00967",
+    "name": "Tân Hưng",
+    "fullName": "Phường Tân Hưng, Thành phố Hải Phòng",
+    "slug": "tan-hung",
+    "type": "ward"
+  },
+  {
+    "code": "00996",
+    "name": "Tân Kỳ",
+    "fullName": "Xã Tân Kỳ, Thành phố Hải Phòng",
+    "slug": "tan-ky",
+    "type": "commune"
+  },
+  {
+    "code": "01006",
+    "name": "Kiến Thụy",
+    "fullName": "Xã Kiến Thụy, Thành phố Hải Phòng",
+    "slug": "kien-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "01009",
+    "name": "Việt Khê",
+    "fullName": "Xã Việt Khê, Thành phố Hải Phòng",
+    "slug": "viet-khe",
+    "type": "commune"
+  },
+  {
+    "code": "01014",
+    "name": "Hưng Đạo",
+    "fullName": "Phường Hưng Đạo, Thành phố Hải Phòng",
+    "slug": "hung-dao",
+    "type": "ward"
+  },
+  {
+    "code": "01018",
+    "name": "Tứ Kỳ",
+    "fullName": "Xã Tứ Kỳ, Thành phố Hải Phòng",
+    "slug": "tu-ky",
+    "type": "commune"
+  },
+  {
+    "code": "01028",
+    "name": "Vĩnh Hải",
+    "fullName": "Xã Vĩnh Hải, Thành phố Hải Phòng",
+    "slug": "vinh-hai",
+    "type": "commune"
+  },
+  {
+    "code": "01080",
+    "name": "Nam Sách",
+    "fullName": "Xã Nam Sách, Thành phố Hải Phòng",
+    "slug": "nam-sach",
+    "type": "commune"
+  },
+  {
+    "code": "01084",
+    "name": "Tân Minh",
+    "fullName": "Xã Tân Minh, Thành phố Hải Phòng",
+    "slug": "tan-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01088",
+    "name": "Đồ Sơn",
+    "fullName": "Phường Đồ Sơn, Thành phố Hải Phòng",
+    "slug": "do-son",
+    "type": "ward"
+  },
+  {
+    "code": "01091",
+    "name": "Hà Bắc",
+    "fullName": "Xã Hà Bắc, Thành phố Hải Phòng",
+    "slug": "ha-bac",
+    "type": "commune"
+  },
+  {
+    "code": "01100",
+    "name": "Tiên Minh",
+    "fullName": "Xã Tiên Minh, Thành phố Hải Phòng",
+    "slug": "tien-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01109",
+    "name": "Thanh Hà",
+    "fullName": "Xã Thanh Hà, Thành phố Hải Phòng",
+    "slug": "thanh-ha",
+    "type": "commune"
+  },
+  {
+    "code": "01124",
+    "name": "Trần Phú",
+    "fullName": "Xã Trần Phú, Thành phố Hải Phòng",
+    "slug": "tran-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01125",
+    "name": "Trần Hưng Đạo",
+    "fullName": "Phường Trần Hưng Đạo, Thành phố Hải Phòng",
+    "slug": "tran-hung-dao",
+    "type": "ward"
+  },
+  {
+    "code": "01179",
+    "name": "An Phú",
+    "fullName": "Xã An Phú, Thành phố Hải Phòng",
+    "slug": "an-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01202",
+    "name": "Vĩnh Am",
+    "fullName": "Xã Vĩnh Am, Thành phố Hải Phòng",
+    "slug": "vinh-am",
+    "type": "commune"
+  },
+  {
+    "code": "01203",
+    "name": "Cẩm Giang",
+    "fullName": "Xã Cẩm Giang, Thành phố Hải Phòng",
+    "slug": "cam-giang",
+    "type": "commune"
+  },
+  {
+    "code": "01207",
+    "name": "Thạch Khôi",
+    "fullName": "Phường Thạch Khôi, Thành phố Hải Phòng",
+    "slug": "thach-khoi",
+    "type": "ward"
+  },
+  {
+    "code": "01211",
+    "name": "Đường An",
+    "fullName": "Xã Đường An, Thành phố Hải Phòng",
+    "slug": "duong-an",
+    "type": "commune"
+  },
+  {
+    "code": "01219",
+    "name": "Hà Tây",
+    "fullName": "Xã Hà Tây, Thành phố Hải Phòng",
+    "slug": "ha-tay",
+    "type": "commune"
+  },
+  {
+    "code": "01233",
+    "name": "Cẩm Giàng",
+    "fullName": "Xã Cẩm Giàng, Thành phố Hải Phòng",
+    "slug": "cam-giang",
+    "type": "commune"
+  },
+  {
+    "code": "01239",
+    "name": "An Khánh",
+    "fullName": "Xã An Khánh, Thành phố Hải Phòng",
+    "slug": "an-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "01245",
+    "name": "Nguyễn Lương Bằng",
+    "fullName": "Xã Nguyễn Lương Bằng, Thành phố Hải Phòng",
+    "slug": "nguyen-luong-bang",
+    "type": "commune"
+  },
+  {
+    "code": "01247",
+    "name": "Khúc Thừa Dụ",
+    "fullName": "Xã Khúc Thừa Dụ, Thành phố Hải Phòng",
+    "slug": "khuc-thua-du",
+    "type": "commune"
+  },
+  {
+    "code": "01263",
+    "name": "Yết Kiêu",
+    "fullName": "Xã Yết Kiêu, Thành phố Hải Phòng",
+    "slug": "yet-kieu",
+    "type": "commune"
+  },
+  {
+    "code": "01264",
+    "name": "Hà Đông",
+    "fullName": "Xã Hà Đông, Thành phố Hải Phòng",
+    "slug": "ha-dong",
+    "type": "commune"
+  },
+  {
+    "code": "01283",
+    "name": "Nam Thanh Miện",
+    "fullName": "Xã Nam Thanh Miện, Thành phố Hải Phòng",
+    "slug": "nam-thanh-mien",
+    "type": "commune"
+  },
+  {
+    "code": "01310",
+    "name": "Bình Giang",
+    "fullName": "Xã Bình Giang, Thành phố Hải Phòng",
+    "slug": "binh-giang",
+    "type": "commune"
+  },
+  {
+    "code": "01324",
+    "name": "Hồng Châu",
+    "fullName": "Xã Hồng Châu, Thành phố Hải Phòng",
+    "slug": "hong-chau",
+    "type": "commune"
+  },
+  {
+    "code": "01332",
+    "name": "Chí Minh",
+    "fullName": "Xã Chí Minh, Thành phố Hải Phòng",
+    "slug": "chi-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01372",
+    "name": "Chí Linh",
+    "fullName": "Phường Chí Linh, Thành phố Hải Phòng",
+    "slug": "chi-linh",
+    "type": "ward"
+  },
+  {
+    "code": "01387",
+    "name": "Trường Tân",
+    "fullName": "Xã Trường Tân, Thành phố Hải Phòng",
+    "slug": "truong-tan",
+    "type": "commune"
+  },
+  {
+    "code": "01447",
+    "name": "Việt Hòa",
+    "fullName": "Phường Việt Hòa, Thành phố Hải Phòng",
+    "slug": "viet-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "01473",
+    "name": "Đại Sơn",
+    "fullName": "Xã Đại Sơn, Thành phố Hải Phòng",
+    "slug": "dai-son",
+    "type": "commune"
+  },
+  {
+    "code": "01486",
+    "name": "Tứ Minh",
+    "fullName": "Phường Tứ Minh, Thành phố Hải Phòng",
+    "slug": "tu-minh",
+    "type": "ward"
+  },
+  {
+    "code": "01491",
+    "name": "Nam Đồ Sơn",
+    "fullName": "Phường Nam Đồ Sơn, Thành phố Hải Phòng",
+    "slug": "nam-do-son",
+    "type": "ward"
+  },
+  {
+    "code": "01499",
+    "name": "An Trường",
+    "fullName": "Xã An Trường, Thành phố Hải Phòng",
+    "slug": "an-truong",
+    "type": "commune"
+  },
+  {
+    "code": "01581",
+    "name": "An Quang",
+    "fullName": "Xã An Quang, Thành phố Hải Phòng",
+    "slug": "an-quang",
+    "type": "commune"
+  },
+  {
+    "code": "01582",
+    "name": "Nguyễn Đại Năng",
+    "fullName": "Phường Nguyễn Đại Năng, Thành phố Hải Phòng",
+    "slug": "nguyen-dai-nang",
+    "type": "ward"
+  },
+  {
+    "code": "01596",
+    "name": "Vĩnh Thuận",
+    "fullName": "Xã Vĩnh Thuận, Thành phố Hải Phòng",
+    "slug": "vinh-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "01607",
+    "name": "An Thành",
+    "fullName": "Xã An Thành, Thành phố Hải Phòng",
+    "slug": "an-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01619",
+    "name": "Lạc Phượng",
+    "fullName": "Xã Lạc Phượng, Thành phố Hải Phòng",
+    "slug": "lac-phuong",
+    "type": "commune"
+  },
+  {
+    "code": "01652",
+    "name": "Vĩnh Hòa",
+    "fullName": "Xã Vĩnh Hòa, Thành phố Hải Phòng",
+    "slug": "vinh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01655",
+    "name": "Nguyên Giáp",
+    "fullName": "Xã Nguyên Giáp, Thành phố Hải Phòng",
+    "slug": "nguyen-giap",
+    "type": "commune"
+  },
+  {
+    "code": "01657",
+    "name": "Kiến Hưng",
+    "fullName": "Xã Kiến Hưng, Thành phố Hải Phòng",
+    "slug": "kien-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01672",
+    "name": "Nam An Phụ",
+    "fullName": "Xã Nam An Phụ, Thành phố Hải Phòng",
+    "slug": "nam-an-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01678",
+    "name": "Hà Nam",
+    "fullName": "Xã Hà Nam, Thành phố Hải Phòng",
+    "slug": "ha-nam",
+    "type": "commune"
+  },
+  {
+    "code": "01702",
+    "name": "Tân An",
+    "fullName": "Xã Tân An, Thành phố Hải Phòng",
+    "slug": "tan-an",
+    "type": "commune"
+  },
+  {
+    "code": "01715",
+    "name": "Dương Kinh",
+    "fullName": "Phường Dương Kinh, Thành phố Hải Phòng",
+    "slug": "duong-kinh",
+    "type": "ward"
+  },
+  {
+    "code": "01717",
+    "name": "Hải Hưng",
+    "fullName": "Xã Hải Hưng, Thành phố Hải Phòng",
+    "slug": "hai-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01725",
+    "name": "Bắc Thanh Miện",
+    "fullName": "Xã Bắc Thanh Miện, Thành phố Hải Phòng",
+    "slug": "bac-thanh-mien",
+    "type": "commune"
+  },
+  {
+    "code": "01727",
+    "name": "Tuệ Tĩnh",
+    "fullName": "Xã Tuệ Tĩnh, Thành phố Hải Phòng",
+    "slug": "tue-tinh",
+    "type": "commune"
+  },
+  {
+    "code": "01743",
+    "name": "Trần Nhân Tông",
+    "fullName": "Phường Trần Nhân Tông, Thành phố Hải Phòng",
+    "slug": "tran-nhan-tong",
+    "type": "ward"
+  },
+  {
+    "code": "01757",
+    "name": "Hùng Thắng",
+    "fullName": "Xã Hùng Thắng, Thành phố Hải Phòng",
+    "slug": "hung-thang",
+    "type": "commune"
+  },
+  {
+    "code": "01771",
+    "name": "Trần Liễu",
+    "fullName": "Phường Trần Liễu, Thành phố Hải Phòng",
+    "slug": "tran-lieu",
+    "type": "ward"
+  },
+  {
+    "code": "01797",
+    "name": "Vĩnh Thịnh",
+    "fullName": "Xã Vĩnh Thịnh, Thành phố Hải Phòng",
+    "slug": "vinh-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "01808",
+    "name": "Kiến Minh",
+    "fullName": "Xã Kiến Minh, Thành phố Hải Phòng",
+    "slug": "kien-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01814",
+    "name": "Chấn Hưng",
+    "fullName": "Xã Chấn Hưng, Thành phố Hải Phòng",
+    "slug": "chan-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01840",
+    "name": "Nghi Dương",
+    "fullName": "Xã Nghi Dương, Thành phố Hải Phòng",
+    "slug": "nghi-duong",
+    "type": "commune"
+  },
+  {
+    "code": "01853",
+    "name": "An Hưng",
+    "fullName": "Xã An Hưng, Thành phố Hải Phòng",
+    "slug": "an-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01901",
+    "name": "Kinh Môn",
+    "fullName": "Phường Kinh Môn, Thành phố Hải Phòng",
+    "slug": "kinh-mon",
+    "type": "ward"
+  },
+  {
+    "code": "01904",
+    "name": "Phạm Sư Mạnh",
+    "fullName": "Phường Phạm Sư Mạnh, Thành phố Hải Phòng",
+    "slug": "pham-su-manh",
+    "type": "ward"
+  },
+  {
+    "code": "01906",
+    "name": "Nam Đồng",
+    "fullName": "Phường Nam Đồng, Thành phố Hải Phòng",
+    "slug": "nam-dong",
+    "type": "ward"
+  },
+  {
+    "code": "01919",
+    "name": "Ái Quốc",
+    "fullName": "Phường Ái Quốc, Thành phố Hải Phòng",
+    "slug": "ai-quoc",
+    "type": "ward"
+  },
+  {
+    "code": "01925",
+    "name": "Lê Đại Hành",
+    "fullName": "Phường Lê Đại Hành, Thành phố Hải Phòng",
+    "slug": "le-dai-hanh",
+    "type": "ward"
+  },
+  {
+    "code": "01929",
+    "name": "Thượng Hồng",
+    "fullName": "Xã Thượng Hồng, Thành phố Hải Phòng",
+    "slug": "thuong-hong",
+    "type": "commune"
+  },
+  {
+    "code": "01931",
+    "name": "Nguyễn Bỉnh Khiêm",
+    "fullName": "Xã Nguyễn Bỉnh Khiêm, Thành phố Hải Phòng",
+    "slug": "nguyen-binh-khiem",
+    "type": "commune"
+  },
+  {
+    "code": "02081",
+    "name": "Bắc An Phụ",
+    "fullName": "Phường Bắc An Phụ, Thành phố Hải Phòng",
+    "slug": "bac-an-phu",
+    "type": "ward"
+  },
+  {
+    "code": "02103",
+    "name": "Quyết Thắng",
+    "fullName": "Xã Quyết Thắng, Thành phố Hải Phòng",
+    "slug": "quyet-thang",
+    "type": "commune"
+  },
+  {
+    "code": "02219",
+    "name": "Hợp Tiến",
+    "fullName": "Xã Hợp Tiến, Thành phố Hải Phòng",
+    "slug": "hop-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02240",
+    "name": "Thái Tân",
+    "fullName": "Xã Thái Tân, Thành phố Hải Phòng",
+    "slug": "thai-tan",
+    "type": "commune"
+  },
+  {
+    "code": "02525",
+    "name": "Nguyễn Trãi",
+    "fullName": "Phường Nguyễn Trãi, Thành phố Hải Phòng",
+    "slug": "nguyen-trai",
+    "type": "ward"
+  },
+  {
+    "code": "03317",
+    "name": "Bạch Long Vĩ",
+    "fullName": "Đặc khu Bạch Long Vĩ, Thành phố Hải Phòng",
+    "slug": "bach-long-vi",
+    "type": "commune"
+  }
+]

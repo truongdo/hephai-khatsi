@@ -1,0 +1,268 @@
+[
+  {
+    "code": "01089",
+    "name": "Tân Phong",
+    "fullName": "Phường Tân Phong, Tỉnh Lai Châu",
+    "slug": "tan-phong",
+    "type": "ward"
+  },
+  {
+    "code": "01487",
+    "name": "Tân Uyên",
+    "fullName": "Xã Tân Uyên, Tỉnh Lai Châu",
+    "slug": "tan-uyen",
+    "type": "commune"
+  },
+  {
+    "code": "01722",
+    "name": "Than Uyên",
+    "fullName": "Xã Than Uyên, Tỉnh Lai Châu",
+    "slug": "than-uyen",
+    "type": "commune"
+  },
+  {
+    "code": "01864",
+    "name": "Đoàn Kết",
+    "fullName": "Phường Đoàn Kết, Tỉnh Lai Châu",
+    "slug": "doan-ket",
+    "type": "ward"
+  },
+  {
+    "code": "02042",
+    "name": "Phong Thổ",
+    "fullName": "Xã Phong Thổ, Tỉnh Lai Châu",
+    "slug": "phong-tho",
+    "type": "commune"
+  },
+  {
+    "code": "02235",
+    "name": "Mường Kim",
+    "fullName": "Xã Mường Kim, Tỉnh Lai Châu",
+    "slug": "muong-kim",
+    "type": "commune"
+  },
+  {
+    "code": "02356",
+    "name": "Bình Lư",
+    "fullName": "Xã Bình Lư, Tỉnh Lai Châu",
+    "slug": "binh-lu",
+    "type": "commune"
+  },
+  {
+    "code": "02467",
+    "name": "Khổng Lào",
+    "fullName": "Xã Khổng Lào, Tỉnh Lai Châu",
+    "slug": "khong-lao",
+    "type": "commune"
+  },
+  {
+    "code": "02501",
+    "name": "Sin Suối Hồ",
+    "fullName": "Xã Sin Suối Hồ, Tỉnh Lai Châu",
+    "slug": "sin-suoi-ho",
+    "type": "commune"
+  },
+  {
+    "code": "02513",
+    "name": "Tủa Sín Chải",
+    "fullName": "Xã Tủa Sín Chải, Tỉnh Lai Châu",
+    "slug": "tua-sin-chai",
+    "type": "commune"
+  },
+  {
+    "code": "02515",
+    "name": "Sì Lở Lầu",
+    "fullName": "Xã Sì Lở Lầu, Tỉnh Lai Châu",
+    "slug": "si-lo-lau",
+    "type": "commune"
+  },
+  {
+    "code": "02521",
+    "name": "Dào San",
+    "fullName": "Xã Dào San, Tỉnh Lai Châu",
+    "slug": "dao-san",
+    "type": "commune"
+  },
+  {
+    "code": "02659",
+    "name": "Sìn Hồ",
+    "fullName": "Xã Sìn Hồ, Tỉnh Lai Châu",
+    "slug": "sin-ho",
+    "type": "commune"
+  },
+  {
+    "code": "02665",
+    "name": "Mường Than",
+    "fullName": "Xã Mường Than, Tỉnh Lai Châu",
+    "slug": "muong-than",
+    "type": "commune"
+  },
+  {
+    "code": "02691",
+    "name": "Hồng Thu",
+    "fullName": "Xã Hồng Thu, Tỉnh Lai Châu",
+    "slug": "hong-thu",
+    "type": "commune"
+  },
+  {
+    "code": "02723",
+    "name": "Nậm Tăm",
+    "fullName": "Xã Nậm Tăm, Tỉnh Lai Châu",
+    "slug": "nam-tam",
+    "type": "commune"
+  },
+  {
+    "code": "02732",
+    "name": "Tả Lèng",
+    "fullName": "Xã Tả Lèng, Tỉnh Lai Châu",
+    "slug": "ta-leng",
+    "type": "commune"
+  },
+  {
+    "code": "02742",
+    "name": "Mường Khoa",
+    "fullName": "Xã Mường Khoa, Tỉnh Lai Châu",
+    "slug": "muong-khoa",
+    "type": "commune"
+  },
+  {
+    "code": "02791",
+    "name": "Bum Tở",
+    "fullName": "Xã Bum Tở, Tỉnh Lai Châu",
+    "slug": "bum-to",
+    "type": "commune"
+  },
+  {
+    "code": "02796",
+    "name": "Pu Sam Cáp",
+    "fullName": "Xã Pu Sam Cáp, Tỉnh Lai Châu",
+    "slug": "pu-sam-cap",
+    "type": "commune"
+  },
+  {
+    "code": "02821",
+    "name": "Nậm Hàng",
+    "fullName": "Xã Nậm Hàng, Tỉnh Lai Châu",
+    "slug": "nam-hang",
+    "type": "commune"
+  },
+  {
+    "code": "02859",
+    "name": "Nậm Cuổi",
+    "fullName": "Xã Nậm Cuổi, Tỉnh Lai Châu",
+    "slug": "nam-cuoi",
+    "type": "commune"
+  },
+  {
+    "code": "02868",
+    "name": "Pắc Ta",
+    "fullName": "Xã Pắc Ta, Tỉnh Lai Châu",
+    "slug": "pac-ta",
+    "type": "commune"
+  },
+  {
+    "code": "02871",
+    "name": "Khoen On",
+    "fullName": "Xã Khoen On, Tỉnh Lai Châu",
+    "slug": "khoen-on",
+    "type": "commune"
+  },
+  {
+    "code": "02877",
+    "name": "Nậm Sỏ",
+    "fullName": "Xã Nậm Sỏ, Tỉnh Lai Châu",
+    "slug": "nam-so",
+    "type": "commune"
+  },
+  {
+    "code": "02956",
+    "name": "Bản Bo",
+    "fullName": "Xã Bản Bo, Tỉnh Lai Châu",
+    "slug": "ban-bo",
+    "type": "commune"
+  },
+  {
+    "code": "02986",
+    "name": "Khun Há",
+    "fullName": "Xã Khun Há, Tỉnh Lai Châu",
+    "slug": "khun-ha",
+    "type": "commune"
+  },
+  {
+    "code": "02987",
+    "name": "Lê Lợi",
+    "fullName": "Xã Lê Lợi, Tỉnh Lai Châu",
+    "slug": "le-loi",
+    "type": "commune"
+  },
+  {
+    "code": "02993",
+    "name": "Pa Tần",
+    "fullName": "Xã Pa Tần, Tỉnh Lai Châu",
+    "slug": "pa-tan",
+    "type": "commune"
+  },
+  {
+    "code": "03063",
+    "name": "Tà Tổng",
+    "fullName": "Xã Tà Tổng, Tỉnh Lai Châu",
+    "slug": "ta-tong",
+    "type": "commune"
+  },
+  {
+    "code": "03100",
+    "name": "Mường Mô",
+    "fullName": "Xã Mường Mô, Tỉnh Lai Châu",
+    "slug": "muong-mo",
+    "type": "commune"
+  },
+  {
+    "code": "03115",
+    "name": "Bum Nưa",
+    "fullName": "Xã Bum Nưa, Tỉnh Lai Châu",
+    "slug": "bum-nua",
+    "type": "commune"
+  },
+  {
+    "code": "03162",
+    "name": "Nậm Mạ",
+    "fullName": "Xã Nậm Mạ, Tỉnh Lai Châu",
+    "slug": "nam-ma",
+    "type": "commune"
+  },
+  {
+    "code": "03176",
+    "name": "Mường Tè",
+    "fullName": "Xã Mường Tè, Tỉnh Lai Châu",
+    "slug": "muong-te",
+    "type": "commune"
+  },
+  {
+    "code": "03190",
+    "name": "Pa Ủ",
+    "fullName": "Xã Pa Ủ, Tỉnh Lai Châu",
+    "slug": "pa-u",
+    "type": "commune"
+  },
+  {
+    "code": "03223",
+    "name": "Hua Bum",
+    "fullName": "Xã Hua Bum, Tỉnh Lai Châu",
+    "slug": "hua-bum",
+    "type": "commune"
+  },
+  {
+    "code": "03244",
+    "name": "Thu Lũm",
+    "fullName": "Xã Thu Lũm, Tỉnh Lai Châu",
+    "slug": "thu-lum",
+    "type": "commune"
+  },
+  {
+    "code": "03296",
+    "name": "Mù Cả",
+    "fullName": "Xã Mù Cả, Tỉnh Lai Châu",
+    "slug": "mu-ca",
+    "type": "commune"
+  }
+]

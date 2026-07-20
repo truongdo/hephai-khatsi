@@ -1,0 +1,1038 @@
+[
+  {
+    "code": "00202",
+    "name": "Hoà Bình",
+    "fullName": "Phường Hoà Bình, Tỉnh Phú Thọ",
+    "slug": "hoa-binh",
+    "type": "ward"
+  },
+  {
+    "code": "00205",
+    "name": "Vĩnh Phúc",
+    "fullName": "Phường Vĩnh Phúc, Tỉnh Phú Thọ",
+    "slug": "vinh-phuc",
+    "type": "ward"
+  },
+  {
+    "code": "00247",
+    "name": "Việt Trì",
+    "fullName": "Phường Việt Trì, Tỉnh Phú Thọ",
+    "slug": "viet-tri",
+    "type": "ward"
+  },
+  {
+    "code": "00338",
+    "name": "Phúc Yên",
+    "fullName": "Phường Phúc Yên, Tỉnh Phú Thọ",
+    "slug": "phuc-yen",
+    "type": "ward"
+  },
+  {
+    "code": "00417",
+    "name": "Thanh Miếu",
+    "fullName": "Phường Thanh Miếu, Tỉnh Phú Thọ",
+    "slug": "thanh-mieu",
+    "type": "ward"
+  },
+  {
+    "code": "00428",
+    "name": "Nông Trang",
+    "fullName": "Phường Nông Trang, Tỉnh Phú Thọ",
+    "slug": "nong-trang",
+    "type": "ward"
+  },
+  {
+    "code": "00444",
+    "name": "Vĩnh Yên",
+    "fullName": "Phường Vĩnh Yên, Tỉnh Phú Thọ",
+    "slug": "vinh-yen",
+    "type": "ward"
+  },
+  {
+    "code": "00462",
+    "name": "Xuân Hòa",
+    "fullName": "Phường Xuân Hòa, Tỉnh Phú Thọ",
+    "slug": "xuan-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00581",
+    "name": "Vĩnh Phú",
+    "fullName": "Xã Vĩnh Phú, Tỉnh Phú Thọ",
+    "slug": "vinh-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00627",
+    "name": "Xuân Lãng",
+    "fullName": "Xã Xuân Lãng, Tỉnh Phú Thọ",
+    "slug": "xuan-lang",
+    "type": "commune"
+  },
+  {
+    "code": "00630",
+    "name": "Tam Dương",
+    "fullName": "Xã Tam Dương, Tỉnh Phú Thọ",
+    "slug": "tam-duong",
+    "type": "commune"
+  },
+  {
+    "code": "00644",
+    "name": "Vĩnh Tường",
+    "fullName": "Xã Vĩnh Tường, Tỉnh Phú Thọ",
+    "slug": "vinh-tuong",
+    "type": "commune"
+  },
+  {
+    "code": "00654",
+    "name": "Cẩm Khê",
+    "fullName": "Xã Cẩm Khê, Tỉnh Phú Thọ",
+    "slug": "cam-khe",
+    "type": "commune"
+  },
+  {
+    "code": "00678",
+    "name": "Bình Nguyên",
+    "fullName": "Xã Bình Nguyên, Tỉnh Phú Thọ",
+    "slug": "binh-nguyen",
+    "type": "commune"
+  },
+  {
+    "code": "00709",
+    "name": "Lương Sơn",
+    "fullName": "Xã Lương Sơn, Tỉnh Phú Thọ",
+    "slug": "luong-son",
+    "type": "commune"
+  },
+  {
+    "code": "00718",
+    "name": "Phù Ninh",
+    "fullName": "Xã Phù Ninh, Tỉnh Phú Thọ",
+    "slug": "phu-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "00781",
+    "name": "Thổ Tang",
+    "fullName": "Xã Thổ Tang, Tỉnh Phú Thọ",
+    "slug": "tho-tang",
+    "type": "commune"
+  },
+  {
+    "code": "00825",
+    "name": "Tân Lạc",
+    "fullName": "Xã Tân Lạc, Tỉnh Phú Thọ",
+    "slug": "tan-lac",
+    "type": "commune"
+  },
+  {
+    "code": "00833",
+    "name": "Tu Vũ",
+    "fullName": "Xã Tu Vũ, Tỉnh Phú Thọ",
+    "slug": "tu-vu",
+    "type": "commune"
+  },
+  {
+    "code": "00855",
+    "name": "Phùng Nguyên",
+    "fullName": "Xã Phùng Nguyên, Tỉnh Phú Thọ",
+    "slug": "phung-nguyen",
+    "type": "commune"
+  },
+  {
+    "code": "00892",
+    "name": "Tam Hồng",
+    "fullName": "Xã Tam Hồng, Tỉnh Phú Thọ",
+    "slug": "tam-hong",
+    "type": "commune"
+  },
+  {
+    "code": "00926",
+    "name": "Yên Lạc",
+    "fullName": "Xã Yên Lạc, Tỉnh Phú Thọ",
+    "slug": "yen-lac",
+    "type": "commune"
+  },
+  {
+    "code": "00965",
+    "name": "Vĩnh Hưng",
+    "fullName": "Xã Vĩnh Hưng, Tỉnh Phú Thọ",
+    "slug": "vinh-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00968",
+    "name": "Thanh Sơn",
+    "fullName": "Xã Thanh Sơn, Tỉnh Phú Thọ",
+    "slug": "thanh-son",
+    "type": "commune"
+  },
+  {
+    "code": "00979",
+    "name": "Chân Mộng",
+    "fullName": "Xã Chân Mộng, Tỉnh Phú Thọ",
+    "slug": "chan-mong",
+    "type": "commune"
+  },
+  {
+    "code": "01005",
+    "name": "Tiên Lương",
+    "fullName": "Xã Tiên Lương, Tỉnh Phú Thọ",
+    "slug": "tien-luong",
+    "type": "commune"
+  },
+  {
+    "code": "01036",
+    "name": "Vân Phú",
+    "fullName": "Phường Vân Phú, Tỉnh Phú Thọ",
+    "slug": "van-phu",
+    "type": "ward"
+  },
+  {
+    "code": "01045",
+    "name": "Tam Dương Bắc",
+    "fullName": "Xã Tam Dương Bắc, Tỉnh Phú Thọ",
+    "slug": "tam-duong-bac",
+    "type": "commune"
+  },
+  {
+    "code": "01048",
+    "name": "Tề Lỗ",
+    "fullName": "Xã Tề Lỗ, Tỉnh Phú Thọ",
+    "slug": "te-lo",
+    "type": "commune"
+  },
+  {
+    "code": "01054",
+    "name": "Hội Thịnh",
+    "fullName": "Xã Hội Thịnh, Tỉnh Phú Thọ",
+    "slug": "hoi-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "01077",
+    "name": "Cao Dương",
+    "fullName": "Xã Cao Dương, Tỉnh Phú Thọ",
+    "slug": "cao-duong",
+    "type": "commune"
+  },
+  {
+    "code": "01119",
+    "name": "Sơn Đông",
+    "fullName": "Xã Sơn Đông, Tỉnh Phú Thọ",
+    "slug": "son-dong",
+    "type": "commune"
+  },
+  {
+    "code": "01127",
+    "name": "Kim Bôi",
+    "fullName": "Xã Kim Bôi, Tỉnh Phú Thọ",
+    "slug": "kim-boi",
+    "type": "commune"
+  },
+  {
+    "code": "01184",
+    "name": "Liên Châu",
+    "fullName": "Xã Liên Châu, Tỉnh Phú Thọ",
+    "slug": "lien-chau",
+    "type": "commune"
+  },
+  {
+    "code": "01185",
+    "name": "Vĩnh Thành",
+    "fullName": "Xã Vĩnh Thành, Tỉnh Phú Thọ",
+    "slug": "vinh-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01191",
+    "name": "Tam Đảo",
+    "fullName": "Xã Tam Đảo, Tỉnh Phú Thọ",
+    "slug": "tam-dao",
+    "type": "commune"
+  },
+  {
+    "code": "01198",
+    "name": "Lập Thạch",
+    "fullName": "Xã Lập Thạch, Tỉnh Phú Thọ",
+    "slug": "lap-thach",
+    "type": "commune"
+  },
+  {
+    "code": "01214",
+    "name": "Sông Lô",
+    "fullName": "Xã Sông Lô, Tỉnh Phú Thọ",
+    "slug": "song-lo",
+    "type": "commune"
+  },
+  {
+    "code": "01223",
+    "name": "Nguyệt Đức",
+    "fullName": "Xã Nguyệt Đức, Tỉnh Phú Thọ",
+    "slug": "nguyet-duc",
+    "type": "commune"
+  },
+  {
+    "code": "01252",
+    "name": "Bản Nguyên",
+    "fullName": "Xã Bản Nguyên, Tỉnh Phú Thọ",
+    "slug": "ban-nguyen",
+    "type": "commune"
+  },
+  {
+    "code": "01314",
+    "name": "Vĩnh An",
+    "fullName": "Xã Vĩnh An, Tỉnh Phú Thọ",
+    "slug": "vinh-an",
+    "type": "commune"
+  },
+  {
+    "code": "01328",
+    "name": "Tiên Lữ",
+    "fullName": "Xã Tiên Lữ, Tỉnh Phú Thọ",
+    "slug": "tien-lu",
+    "type": "commune"
+  },
+  {
+    "code": "01337",
+    "name": "Bình Xuyên",
+    "fullName": "Xã Bình Xuyên, Tỉnh Phú Thọ",
+    "slug": "binh-xuyen",
+    "type": "commune"
+  },
+  {
+    "code": "01339",
+    "name": "Phong Châu",
+    "fullName": "Phường Phong Châu, Tỉnh Phú Thọ",
+    "slug": "phong-chau",
+    "type": "ward"
+  },
+  {
+    "code": "01359",
+    "name": "Đào Xá",
+    "fullName": "Xã Đào Xá, Tỉnh Phú Thọ",
+    "slug": "dao-xa",
+    "type": "commune"
+  },
+  {
+    "code": "01377",
+    "name": "Liên Sơn",
+    "fullName": "Xã Liên Sơn, Tỉnh Phú Thọ",
+    "slug": "lien-son",
+    "type": "commune"
+  },
+  {
+    "code": "01415",
+    "name": "Vạn Xuân",
+    "fullName": "Xã Vạn Xuân, Tỉnh Phú Thọ",
+    "slug": "van-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "01420",
+    "name": "Lâm Thao",
+    "fullName": "Xã Lâm Thao, Tỉnh Phú Thọ",
+    "slug": "lam-thao",
+    "type": "commune"
+  },
+  {
+    "code": "01482",
+    "name": "Đoan Hùng",
+    "fullName": "Xã Đoan Hùng, Tỉnh Phú Thọ",
+    "slug": "doan-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01509",
+    "name": "Hải Lựu",
+    "fullName": "Xã Hải Lựu, Tỉnh Phú Thọ",
+    "slug": "hai-luu",
+    "type": "commune"
+  },
+  {
+    "code": "01512",
+    "name": "Thanh Ba",
+    "fullName": "Xã Thanh Ba, Tỉnh Phú Thọ",
+    "slug": "thanh-ba",
+    "type": "commune"
+  },
+  {
+    "code": "01525",
+    "name": "Bình Tuyền",
+    "fullName": "Xã Bình Tuyền, Tỉnh Phú Thọ",
+    "slug": "binh-tuyen",
+    "type": "commune"
+  },
+  {
+    "code": "01542",
+    "name": "Yên Lập",
+    "fullName": "Xã Yên Lập, Tỉnh Phú Thọ",
+    "slug": "yen-lap",
+    "type": "commune"
+  },
+  {
+    "code": "01545",
+    "name": "Bình Phú",
+    "fullName": "Xã Bình Phú, Tỉnh Phú Thọ",
+    "slug": "binh-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01592",
+    "name": "Nật Sơn",
+    "fullName": "Xã Nật Sơn, Tỉnh Phú Thọ",
+    "slug": "nat-son",
+    "type": "commune"
+  },
+  {
+    "code": "01599",
+    "name": "Võ Miếu",
+    "fullName": "Xã Võ Miếu, Tỉnh Phú Thọ",
+    "slug": "vo-mieu",
+    "type": "commune"
+  },
+  {
+    "code": "01601",
+    "name": "Đan Thượng",
+    "fullName": "Xã Đan Thượng, Tỉnh Phú Thọ",
+    "slug": "dan-thuong",
+    "type": "commune"
+  },
+  {
+    "code": "01659",
+    "name": "Chí Đám",
+    "fullName": "Xã Chí Đám, Tỉnh Phú Thọ",
+    "slug": "chi-dam",
+    "type": "commune"
+  },
+  {
+    "code": "01663",
+    "name": "Phú Thọ",
+    "fullName": "Phường Phú Thọ, Tỉnh Phú Thọ",
+    "slug": "phu-tho",
+    "type": "ward"
+  },
+  {
+    "code": "01669",
+    "name": "Hoàng Cương",
+    "fullName": "Xã Hoàng Cương, Tỉnh Phú Thọ",
+    "slug": "hoang-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "01690",
+    "name": "Thanh Thuỷ",
+    "fullName": "Xã Thanh Thuỷ, Tỉnh Phú Thọ",
+    "slug": "thanh-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "01704",
+    "name": "An Nghĩa",
+    "fullName": "Xã An Nghĩa, Tỉnh Phú Thọ",
+    "slug": "an-nghia",
+    "type": "commune"
+  },
+  {
+    "code": "01707",
+    "name": "Lạc Sơn",
+    "fullName": "Xã Lạc Sơn, Tỉnh Phú Thọ",
+    "slug": "lac-son",
+    "type": "commune"
+  },
+  {
+    "code": "01708",
+    "name": "Hiền Quan",
+    "fullName": "Xã Hiền Quan, Tỉnh Phú Thọ",
+    "slug": "hien-quan",
+    "type": "commune"
+  },
+  {
+    "code": "01747",
+    "name": "Yên Trị",
+    "fullName": "Xã Yên Trị, Tỉnh Phú Thọ",
+    "slug": "yen-tri",
+    "type": "commune"
+  },
+  {
+    "code": "01794",
+    "name": "Tam Nông",
+    "fullName": "Xã Tam Nông, Tỉnh Phú Thọ",
+    "slug": "tam-nong",
+    "type": "commune"
+  },
+  {
+    "code": "01815",
+    "name": "Mường Động",
+    "fullName": "Xã Mường Động, Tỉnh Phú Thọ",
+    "slug": "muong-dong",
+    "type": "commune"
+  },
+  {
+    "code": "01821",
+    "name": "Hoàng An",
+    "fullName": "Xã Hoàng An, Tỉnh Phú Thọ",
+    "slug": "hoang-an",
+    "type": "commune"
+  },
+  {
+    "code": "01845",
+    "name": "Phú Khê",
+    "fullName": "Xã Phú Khê, Tỉnh Phú Thọ",
+    "slug": "phu-khe",
+    "type": "commune"
+  },
+  {
+    "code": "01855",
+    "name": "Tam Sơn",
+    "fullName": "Xã Tam Sơn, Tỉnh Phú Thọ",
+    "slug": "tam-son",
+    "type": "commune"
+  },
+  {
+    "code": "01876",
+    "name": "Lạc Lương",
+    "fullName": "Xã Lạc Lương, Tỉnh Phú Thọ",
+    "slug": "lac-luong",
+    "type": "commune"
+  },
+  {
+    "code": "01917",
+    "name": "Đạo Trù",
+    "fullName": "Xã Đạo Trù, Tỉnh Phú Thọ",
+    "slug": "dao-tru",
+    "type": "commune"
+  },
+  {
+    "code": "01937",
+    "name": "Lạc Thủy",
+    "fullName": "Xã Lạc Thủy, Tỉnh Phú Thọ",
+    "slug": "lac-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "01952",
+    "name": "Đại Đồng",
+    "fullName": "Xã Đại Đồng, Tỉnh Phú Thọ",
+    "slug": "dai-dong",
+    "type": "commune"
+  },
+  {
+    "code": "01967",
+    "name": "Minh Đài",
+    "fullName": "Xã Minh Đài, Tỉnh Phú Thọ",
+    "slug": "minh-dai",
+    "type": "commune"
+  },
+  {
+    "code": "01981",
+    "name": "Yên Thủy",
+    "fullName": "Xã Yên Thủy, Tỉnh Phú Thọ",
+    "slug": "yen-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "01986",
+    "name": "Thái Hòa",
+    "fullName": "Xã Thái Hòa, Tỉnh Phú Thọ",
+    "slug": "thai-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02031",
+    "name": "Liên Minh",
+    "fullName": "Xã Liên Minh, Tỉnh Phú Thọ",
+    "slug": "lien-minh",
+    "type": "commune"
+  },
+  {
+    "code": "02033",
+    "name": "Sơn Lương",
+    "fullName": "Xã Sơn Lương, Tỉnh Phú Thọ",
+    "slug": "son-luong",
+    "type": "commune"
+  },
+  {
+    "code": "02069",
+    "name": "Hùng Việt",
+    "fullName": "Xã Hùng Việt, Tỉnh Phú Thọ",
+    "slug": "hung-viet",
+    "type": "commune"
+  },
+  {
+    "code": "02071",
+    "name": "Thống Nhất",
+    "fullName": "Phường Thống Nhất, Tỉnh Phú Thọ",
+    "slug": "thong-nhat",
+    "type": "ward"
+  },
+  {
+    "code": "02086",
+    "name": "Quyết Thắng",
+    "fullName": "Xã Quyết Thắng, Tỉnh Phú Thọ",
+    "slug": "quyet-thang",
+    "type": "commune"
+  },
+  {
+    "code": "02091",
+    "name": "Hy Cương",
+    "fullName": "Xã Hy Cương, Tỉnh Phú Thọ",
+    "slug": "hy-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "02114",
+    "name": "Hiền Lương",
+    "fullName": "Xã Hiền Lương, Tỉnh Phú Thọ",
+    "slug": "hien-luong",
+    "type": "commune"
+  },
+  {
+    "code": "02148",
+    "name": "Hạ Hòa",
+    "fullName": "Xã Hạ Hòa, Tỉnh Phú Thọ",
+    "slug": "ha-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02185",
+    "name": "Tây Cốc",
+    "fullName": "Xã Tây Cốc, Tỉnh Phú Thọ",
+    "slug": "tay-coc",
+    "type": "commune"
+  },
+  {
+    "code": "02199",
+    "name": "Hợp Kim",
+    "fullName": "Xã Hợp Kim, Tỉnh Phú Thọ",
+    "slug": "hop-kim",
+    "type": "commune"
+  },
+  {
+    "code": "02206",
+    "name": "Yên Kỳ",
+    "fullName": "Xã Yên Kỳ, Tỉnh Phú Thọ",
+    "slug": "yen-ky",
+    "type": "commune"
+  },
+  {
+    "code": "02211",
+    "name": "Mường Bi",
+    "fullName": "Xã Mường Bi, Tỉnh Phú Thọ",
+    "slug": "muong-bi",
+    "type": "commune"
+  },
+  {
+    "code": "02215",
+    "name": "Mường Vang",
+    "fullName": "Xã Mường Vang, Tỉnh Phú Thọ",
+    "slug": "muong-vang",
+    "type": "commune"
+  },
+  {
+    "code": "02228",
+    "name": "Xuân Lũng",
+    "fullName": "Xã Xuân Lũng, Tỉnh Phú Thọ",
+    "slug": "xuan-lung",
+    "type": "commune"
+  },
+  {
+    "code": "02230",
+    "name": "Đại Đình",
+    "fullName": "Xã Đại Đình, Tỉnh Phú Thọ",
+    "slug": "dai-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "02236",
+    "name": "Đông Thành",
+    "fullName": "Xã Đông Thành, Tỉnh Phú Thọ",
+    "slug": "dong-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02238",
+    "name": "Cao Phong",
+    "fullName": "Xã Cao Phong, Tỉnh Phú Thọ",
+    "slug": "cao-phong",
+    "type": "commune"
+  },
+  {
+    "code": "02245",
+    "name": "Kỳ Sơn",
+    "fullName": "Phường Kỳ Sơn, Tỉnh Phú Thọ",
+    "slug": "ky-son",
+    "type": "ward"
+  },
+  {
+    "code": "02262",
+    "name": "Dũng Tiến",
+    "fullName": "Xã Dũng Tiến, Tỉnh Phú Thọ",
+    "slug": "dung-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02271",
+    "name": "Mường Thàng",
+    "fullName": "Xã Mường Thàng, Tỉnh Phú Thọ",
+    "slug": "muong-thang",
+    "type": "commune"
+  },
+  {
+    "code": "02273",
+    "name": "Yên Phú",
+    "fullName": "Xã Yên Phú, Tỉnh Phú Thọ",
+    "slug": "yen-phu",
+    "type": "commune"
+  },
+  {
+    "code": "02274",
+    "name": "Đà Bắc",
+    "fullName": "Xã Đà Bắc, Tỉnh Phú Thọ",
+    "slug": "da-bac",
+    "type": "commune"
+  },
+  {
+    "code": "02283",
+    "name": "Hợp Lý",
+    "fullName": "Xã Hợp Lý, Tỉnh Phú Thọ",
+    "slug": "hop-ly",
+    "type": "commune"
+  },
+  {
+    "code": "02296",
+    "name": "Nhân Nghĩa",
+    "fullName": "Xã Nhân Nghĩa, Tỉnh Phú Thọ",
+    "slug": "nhan-nghia",
+    "type": "commune"
+  },
+  {
+    "code": "02309",
+    "name": "Liên Hòa",
+    "fullName": "Xã Liên Hòa, Tỉnh Phú Thọ",
+    "slug": "lien-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02313",
+    "name": "Thịnh Minh",
+    "fullName": "Xã Thịnh Minh, Tỉnh Phú Thọ",
+    "slug": "thinh-minh",
+    "type": "commune"
+  },
+  {
+    "code": "02317",
+    "name": "Mai Châu",
+    "fullName": "Xã Mai Châu, Tỉnh Phú Thọ",
+    "slug": "mai-chau",
+    "type": "commune"
+  },
+  {
+    "code": "02331",
+    "name": "An Bình",
+    "fullName": "Xã An Bình, Tỉnh Phú Thọ",
+    "slug": "an-binh",
+    "type": "commune"
+  },
+  {
+    "code": "02332",
+    "name": "Âu Cơ",
+    "fullName": "Phường Âu Cơ, Tỉnh Phú Thọ",
+    "slug": "au-co",
+    "type": "ward"
+  },
+  {
+    "code": "02345",
+    "name": "Văn Miếu",
+    "fullName": "Xã Văn Miếu, Tỉnh Phú Thọ",
+    "slug": "van-mieu",
+    "type": "commune"
+  },
+  {
+    "code": "02359",
+    "name": "Dân Chủ",
+    "fullName": "Xã Dân Chủ, Tỉnh Phú Thọ",
+    "slug": "dan-chu",
+    "type": "commune"
+  },
+  {
+    "code": "02364",
+    "name": "Yên Lãng",
+    "fullName": "Xã Yên Lãng, Tỉnh Phú Thọ",
+    "slug": "yen-lang",
+    "type": "commune"
+  },
+  {
+    "code": "02367",
+    "name": "Thượng Cốc",
+    "fullName": "Xã Thượng Cốc, Tỉnh Phú Thọ",
+    "slug": "thuong-coc",
+    "type": "commune"
+  },
+  {
+    "code": "02375",
+    "name": "Tân Sơn",
+    "fullName": "Xã Tân Sơn, Tỉnh Phú Thọ",
+    "slug": "tan-son",
+    "type": "commune"
+  },
+  {
+    "code": "02395",
+    "name": "Văn Lang",
+    "fullName": "Xã Văn Lang, Tỉnh Phú Thọ",
+    "slug": "van-lang",
+    "type": "commune"
+  },
+  {
+    "code": "02402",
+    "name": "Hương Cần",
+    "fullName": "Xã Hương Cần, Tỉnh Phú Thọ",
+    "slug": "huong-can",
+    "type": "commune"
+  },
+  {
+    "code": "02424",
+    "name": "Chí Tiên",
+    "fullName": "Xã Chí Tiên, Tỉnh Phú Thọ",
+    "slug": "chi-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02453",
+    "name": "Vĩnh Chân",
+    "fullName": "Xã Vĩnh Chân, Tỉnh Phú Thọ",
+    "slug": "vinh-chan",
+    "type": "commune"
+  },
+  {
+    "code": "02466",
+    "name": "Bằng Luân",
+    "fullName": "Xã Bằng Luân, Tỉnh Phú Thọ",
+    "slug": "bang-luan",
+    "type": "commune"
+  },
+  {
+    "code": "02496",
+    "name": "Minh Hòa",
+    "fullName": "Xã Minh Hòa, Tỉnh Phú Thọ",
+    "slug": "minh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02503",
+    "name": "Lai Đồng",
+    "fullName": "Xã Lai Đồng, Tỉnh Phú Thọ",
+    "slug": "lai-dong",
+    "type": "commune"
+  },
+  {
+    "code": "02520",
+    "name": "Trạm Thản",
+    "fullName": "Xã Trạm Thản, Tỉnh Phú Thọ",
+    "slug": "tram-than",
+    "type": "commune"
+  },
+  {
+    "code": "02523",
+    "name": "Thượng Long",
+    "fullName": "Xã Thượng Long, Tỉnh Phú Thọ",
+    "slug": "thuong-long",
+    "type": "commune"
+  },
+  {
+    "code": "02527",
+    "name": "Yên Sơn",
+    "fullName": "Xã Yên Sơn, Tỉnh Phú Thọ",
+    "slug": "yen-son",
+    "type": "commune"
+  },
+  {
+    "code": "02540",
+    "name": "Vân Bán",
+    "fullName": "Xã Vân Bán, Tỉnh Phú Thọ",
+    "slug": "van-ban",
+    "type": "commune"
+  },
+  {
+    "code": "02541",
+    "name": "Đồng Lương",
+    "fullName": "Xã Đồng Lương, Tỉnh Phú Thọ",
+    "slug": "dong-luong",
+    "type": "commune"
+  },
+  {
+    "code": "02565",
+    "name": "Phú Mỹ",
+    "fullName": "Xã Phú Mỹ, Tỉnh Phú Thọ",
+    "slug": "phu-my",
+    "type": "commune"
+  },
+  {
+    "code": "02567",
+    "name": "Toàn Thắng",
+    "fullName": "Xã Toàn Thắng, Tỉnh Phú Thọ",
+    "slug": "toan-thang",
+    "type": "commune"
+  },
+  {
+    "code": "02577",
+    "name": "Thọ Văn",
+    "fullName": "Xã Thọ Văn, Tỉnh Phú Thọ",
+    "slug": "tho-van",
+    "type": "commune"
+  },
+  {
+    "code": "02584",
+    "name": "Xuân Đài",
+    "fullName": "Xã Xuân Đài, Tỉnh Phú Thọ",
+    "slug": "xuan-dai",
+    "type": "commune"
+  },
+  {
+    "code": "02585",
+    "name": "Quảng Yên",
+    "fullName": "Xã Quảng Yên, Tỉnh Phú Thọ",
+    "slug": "quang-yen",
+    "type": "commune"
+  },
+  {
+    "code": "02592",
+    "name": "Cự Đồng",
+    "fullName": "Xã Cự Đồng, Tỉnh Phú Thọ",
+    "slug": "cu-dong",
+    "type": "commune"
+  },
+  {
+    "code": "02627",
+    "name": "Xuân Viên",
+    "fullName": "Xã Xuân Viên, Tỉnh Phú Thọ",
+    "slug": "xuan-vien",
+    "type": "commune"
+  },
+  {
+    "code": "02637",
+    "name": "Tân Hòa",
+    "fullName": "Phường Tân Hòa, Tỉnh Phú Thọ",
+    "slug": "tan-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "02703",
+    "name": "Khả Cửu",
+    "fullName": "Xã Khả Cửu, Tỉnh Phú Thọ",
+    "slug": "kha-cuu",
+    "type": "commune"
+  },
+  {
+    "code": "02751",
+    "name": "Bao La",
+    "fullName": "Xã Bao La, Tỉnh Phú Thọ",
+    "slug": "bao-la",
+    "type": "commune"
+  },
+  {
+    "code": "02814",
+    "name": "Pà Cò",
+    "fullName": "Xã Pà Cò, Tỉnh Phú Thọ",
+    "slug": "pa-co",
+    "type": "commune"
+  },
+  {
+    "code": "02815",
+    "name": "Thu Cúc",
+    "fullName": "Xã Thu Cúc, Tỉnh Phú Thọ",
+    "slug": "thu-cuc",
+    "type": "commune"
+  },
+  {
+    "code": "02876",
+    "name": "Thung Nai",
+    "fullName": "Xã Thung Nai, Tỉnh Phú Thọ",
+    "slug": "thung-nai",
+    "type": "commune"
+  },
+  {
+    "code": "02881",
+    "name": "Tân Pheo",
+    "fullName": "Xã Tân Pheo, Tỉnh Phú Thọ",
+    "slug": "tan-pheo",
+    "type": "commune"
+  },
+  {
+    "code": "02895",
+    "name": "Mai Hạ",
+    "fullName": "Xã Mai Hạ, Tỉnh Phú Thọ",
+    "slug": "mai-ha",
+    "type": "commune"
+  },
+  {
+    "code": "02958",
+    "name": "Quy Đức",
+    "fullName": "Xã Quy Đức, Tỉnh Phú Thọ",
+    "slug": "quy-duc",
+    "type": "commune"
+  },
+  {
+    "code": "02981",
+    "name": "Vân Sơn",
+    "fullName": "Xã Vân Sơn, Tỉnh Phú Thọ",
+    "slug": "van-son",
+    "type": "commune"
+  },
+  {
+    "code": "02996",
+    "name": "Ngọc Sơn",
+    "fullName": "Xã Ngọc Sơn, Tỉnh Phú Thọ",
+    "slug": "ngoc-son",
+    "type": "commune"
+  },
+  {
+    "code": "03005",
+    "name": "Cao Sơn",
+    "fullName": "Xã Cao Sơn, Tỉnh Phú Thọ",
+    "slug": "cao-son",
+    "type": "commune"
+  },
+  {
+    "code": "03014",
+    "name": "Long Cốc",
+    "fullName": "Xã Long Cốc, Tỉnh Phú Thọ",
+    "slug": "long-coc",
+    "type": "commune"
+  },
+  {
+    "code": "03022",
+    "name": "Mường Hoa",
+    "fullName": "Xã Mường Hoa, Tỉnh Phú Thọ",
+    "slug": "muong-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "03065",
+    "name": "Tân Mai",
+    "fullName": "Xã Tân Mai, Tỉnh Phú Thọ",
+    "slug": "tan-mai",
+    "type": "commune"
+  },
+  {
+    "code": "03095",
+    "name": "Đức Nhàn",
+    "fullName": "Xã Đức Nhàn, Tỉnh Phú Thọ",
+    "slug": "duc-nhan",
+    "type": "commune"
+  },
+  {
+    "code": "03196",
+    "name": "Trung Sơn",
+    "fullName": "Xã Trung Sơn, Tỉnh Phú Thọ",
+    "slug": "trung-son",
+    "type": "commune"
+  },
+  {
+    "code": "03245",
+    "name": "Tiền Phong",
+    "fullName": "Xã Tiền Phong, Tỉnh Phú Thọ",
+    "slug": "tien-phong",
+    "type": "commune"
+  }
+]

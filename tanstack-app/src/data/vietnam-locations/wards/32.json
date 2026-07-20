@@ -1,0 +1,723 @@
+[
+  {
+    "code": "00075",
+    "name": "Ninh Kiều",
+    "fullName": "Phường Ninh Kiều, Thành phố Cần Thơ",
+    "slug": "ninh-kieu",
+    "type": "ward"
+  },
+  {
+    "code": "00133",
+    "name": "Phú Lợi",
+    "fullName": "Phường Phú Lợi, Thành phố Cần Thơ",
+    "slug": "phu-loi",
+    "type": "ward"
+  },
+  {
+    "code": "00166",
+    "name": "Tân An",
+    "fullName": "Phường Tân An, Thành phố Cần Thơ",
+    "slug": "tan-an",
+    "type": "ward"
+  },
+  {
+    "code": "00242",
+    "name": "Ô Môn",
+    "fullName": "Phường Ô Môn, Thành phố Cần Thơ",
+    "slug": "o-mon",
+    "type": "ward"
+  },
+  {
+    "code": "00272",
+    "name": "Cái Răng",
+    "fullName": "Phường Cái Răng, Thành phố Cần Thơ",
+    "slug": "cai-rang",
+    "type": "ward"
+  },
+  {
+    "code": "00300",
+    "name": "Vĩnh Châu",
+    "fullName": "Phường Vĩnh Châu, Thành phố Cần Thơ",
+    "slug": "vinh-chau",
+    "type": "ward"
+  },
+  {
+    "code": "00348",
+    "name": "Thạnh Hòa",
+    "fullName": "Xã Thạnh Hòa, Thành phố Cần Thơ",
+    "slug": "thanh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00360",
+    "name": "Bình Thủy",
+    "fullName": "Phường Bình Thủy, Thành phố Cần Thơ",
+    "slug": "binh-thuy",
+    "type": "ward"
+  },
+  {
+    "code": "00372",
+    "name": "Thốt Nốt",
+    "fullName": "Phường Thốt Nốt, Thành phố Cần Thơ",
+    "slug": "thot-not",
+    "type": "ward"
+  },
+  {
+    "code": "00374",
+    "name": "Sóc Trăng",
+    "fullName": "Phường Sóc Trăng, Thành phố Cần Thơ",
+    "slug": "soc-trang",
+    "type": "ward"
+  },
+  {
+    "code": "00414",
+    "name": "Ngã Năm",
+    "fullName": "Phường Ngã Năm, Thành phố Cần Thơ",
+    "slug": "nga-nam",
+    "type": "ward"
+  },
+  {
+    "code": "00418",
+    "name": "Hưng Phú",
+    "fullName": "Phường Hưng Phú, Thành phố Cần Thơ",
+    "slug": "hung-phu",
+    "type": "ward"
+  },
+  {
+    "code": "00429",
+    "name": "Cái Khế",
+    "fullName": "Phường Cái Khế, Thành phố Cần Thơ",
+    "slug": "cai-khe",
+    "type": "ward"
+  },
+  {
+    "code": "00438",
+    "name": "Thuận Hưng",
+    "fullName": "Phường Thuận Hưng, Thành phố Cần Thơ",
+    "slug": "thuan-hung",
+    "type": "ward"
+  },
+  {
+    "code": "00448",
+    "name": "An Lạc Thôn",
+    "fullName": "Xã An Lạc Thôn, Thành phố Cần Thơ",
+    "slug": "an-lac-thon",
+    "type": "commune"
+  },
+  {
+    "code": "00464",
+    "name": "Trung Hưng",
+    "fullName": "Xã Trung Hưng, Thành phố Cần Thơ",
+    "slug": "trung-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00501",
+    "name": "Thới Long",
+    "fullName": "Phường Thới Long, Thành phố Cần Thơ",
+    "slug": "thoi-long",
+    "type": "ward"
+  },
+  {
+    "code": "00505",
+    "name": "Trần Đề",
+    "fullName": "Xã Trần Đề, Thành phố Cần Thơ",
+    "slug": "tran-de",
+    "type": "commune"
+  },
+  {
+    "code": "00521",
+    "name": "Phong Điền",
+    "fullName": "Xã Phong Điền, Thành phố Cần Thơ",
+    "slug": "phong-dien",
+    "type": "commune"
+  },
+  {
+    "code": "00523",
+    "name": "Vĩnh Phước",
+    "fullName": "Phường Vĩnh Phước, Thành phố Cần Thơ",
+    "slug": "vinh-phuoc",
+    "type": "ward"
+  },
+  {
+    "code": "00529",
+    "name": "Mỹ Xuyên",
+    "fullName": "Phường Mỹ Xuyên, Thành phố Cần Thơ",
+    "slug": "my-xuyen",
+    "type": "ward"
+  },
+  {
+    "code": "00537",
+    "name": "Mỹ Hương",
+    "fullName": "Xã Mỹ Hương, Thành phố Cần Thơ",
+    "slug": "my-huong",
+    "type": "commune"
+  },
+  {
+    "code": "00550",
+    "name": "Tân Hòa",
+    "fullName": "Xã Tân Hòa, Thành phố Cần Thơ",
+    "slug": "tan-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00551",
+    "name": "Phú Lộc",
+    "fullName": "Xã Phú Lộc, Thành phố Cần Thơ",
+    "slug": "phu-loc",
+    "type": "commune"
+  },
+  {
+    "code": "00573",
+    "name": "An Bình",
+    "fullName": "Phường An Bình, Thành phố Cần Thơ",
+    "slug": "an-binh",
+    "type": "ward"
+  },
+  {
+    "code": "00647",
+    "name": "Ngọc Tố",
+    "fullName": "Xã Ngọc Tố, Thành phố Cần Thơ",
+    "slug": "ngoc-to",
+    "type": "commune"
+  },
+  {
+    "code": "00664",
+    "name": "Phước Thới",
+    "fullName": "Phường Phước Thới, Thành phố Cần Thơ",
+    "slug": "phuoc-thoi",
+    "type": "ward"
+  },
+  {
+    "code": "00685",
+    "name": "Xà Phiên",
+    "fullName": "Xã Xà Phiên, Thành phố Cần Thơ",
+    "slug": "xa-phien",
+    "type": "commune"
+  },
+  {
+    "code": "00711",
+    "name": "Long Tuyền",
+    "fullName": "Phường Long Tuyền, Thành phố Cần Thơ",
+    "slug": "long-tuyen",
+    "type": "ward"
+  },
+  {
+    "code": "00719",
+    "name": "Cù Lao Dung",
+    "fullName": "Xã Cù Lao Dung, Thành phố Cần Thơ",
+    "slug": "cu-lao-dung",
+    "type": "commune"
+  },
+  {
+    "code": "00766",
+    "name": "Đại Hải",
+    "fullName": "Xã Đại Hải, Thành phố Cần Thơ",
+    "slug": "dai-hai",
+    "type": "commune"
+  },
+  {
+    "code": "00779",
+    "name": "Kế Sách",
+    "fullName": "Xã Kế Sách, Thành phố Cần Thơ",
+    "slug": "ke-sach",
+    "type": "commune"
+  },
+  {
+    "code": "00795",
+    "name": "Vị Thanh 1",
+    "fullName": "Xã Vị Thanh 1, Thành phố Cần Thơ",
+    "slug": "vi-thanh-1",
+    "type": "commune"
+  },
+  {
+    "code": "00819",
+    "name": "Nhơn Mỹ",
+    "fullName": "Xã Nhơn Mỹ, Thành phố Cần Thơ",
+    "slug": "nhon-my",
+    "type": "commune"
+  },
+  {
+    "code": "00821",
+    "name": "Cờ Đỏ",
+    "fullName": "Xã Cờ Đỏ, Thành phố Cần Thơ",
+    "slug": "co-do",
+    "type": "commune"
+  },
+  {
+    "code": "00847",
+    "name": "Phú Hữu",
+    "fullName": "Xã Phú Hữu, Thành phố Cần Thơ",
+    "slug": "phu-huu",
+    "type": "commune"
+  },
+  {
+    "code": "00856",
+    "name": "Thạnh Xuân",
+    "fullName": "Xã Thạnh Xuân, Thành phố Cần Thơ",
+    "slug": "thanh-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "00871",
+    "name": "Nhơn Ái",
+    "fullName": "Xã Nhơn Ái, Thành phố Cần Thơ",
+    "slug": "nhon-ai",
+    "type": "commune"
+  },
+  {
+    "code": "00897",
+    "name": "An Ninh",
+    "fullName": "Xã An Ninh, Thành phố Cần Thơ",
+    "slug": "an-ninh",
+    "type": "commune"
+  },
+  {
+    "code": "00903",
+    "name": "Gia Hòa",
+    "fullName": "Xã Gia Hòa, Thành phố Cần Thơ",
+    "slug": "gia-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00906",
+    "name": "Đông Phước",
+    "fullName": "Xã Đông Phước, Thành phố Cần Thơ",
+    "slug": "dong-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "00922",
+    "name": "Vĩnh Thuận Đông",
+    "fullName": "Xã Vĩnh Thuận Đông, Thành phố Cần Thơ",
+    "slug": "vinh-thuan-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00925",
+    "name": "Long Phú",
+    "fullName": "Xã Long Phú, Thành phố Cần Thơ",
+    "slug": "long-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00937",
+    "name": "Thới An Đông",
+    "fullName": "Phường Thới An Đông, Thành phố Cần Thơ",
+    "slug": "thoi-an-dong",
+    "type": "ward"
+  },
+  {
+    "code": "00949",
+    "name": "Thạnh Quới",
+    "fullName": "Xã Thạnh Quới, Thành phố Cần Thơ",
+    "slug": "thanh-quoi",
+    "type": "commune"
+  },
+  {
+    "code": "00950",
+    "name": "Châu Thành",
+    "fullName": "Xã Châu Thành, Thành phố Cần Thơ",
+    "slug": "chau-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00989",
+    "name": "Nhu Gia",
+    "fullName": "Xã Nhu Gia, Thành phố Cần Thơ",
+    "slug": "nhu-gia",
+    "type": "commune"
+  },
+  {
+    "code": "01002",
+    "name": "Mỹ Tú",
+    "fullName": "Xã Mỹ Tú, Thành phố Cần Thơ",
+    "slug": "my-tu",
+    "type": "commune"
+  },
+  {
+    "code": "01003",
+    "name": "Tân Bình",
+    "fullName": "Xã Tân Bình, Thành phố Cần Thơ",
+    "slug": "tan-binh",
+    "type": "commune"
+  },
+  {
+    "code": "01013",
+    "name": "Ngã Bảy",
+    "fullName": "Phường Ngã Bảy, Thành phố Cần Thơ",
+    "slug": "nga-bay",
+    "type": "ward"
+  },
+  {
+    "code": "01016",
+    "name": "Trường Thành",
+    "fullName": "Xã Trường Thành, Thành phố Cần Thơ",
+    "slug": "truong-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01021",
+    "name": "An Thạnh",
+    "fullName": "Xã An Thạnh, Thành phố Cần Thơ",
+    "slug": "an-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01025",
+    "name": "Khánh Hòa",
+    "fullName": "Phường Khánh Hòa, Thành phố Cần Thơ",
+    "slug": "khanh-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "01034",
+    "name": "Trung Nhứt",
+    "fullName": "Phường Trung Nhứt, Thành phố Cần Thơ",
+    "slug": "trung-nhut",
+    "type": "ward"
+  },
+  {
+    "code": "01092",
+    "name": "Trường Xuân",
+    "fullName": "Xã Trường Xuân, Thành phố Cần Thơ",
+    "slug": "truong-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "01094",
+    "name": "Thới Lai",
+    "fullName": "Xã Thới Lai, Thành phố Cần Thơ",
+    "slug": "thoi-lai",
+    "type": "commune"
+  },
+  {
+    "code": "01118",
+    "name": "Vị Tân",
+    "fullName": "Phường Vị Tân, Thành phố Cần Thơ",
+    "slug": "vi-tan",
+    "type": "ward"
+  },
+  {
+    "code": "01134",
+    "name": "Long Mỹ",
+    "fullName": "Phường Long Mỹ, Thành phố Cần Thơ",
+    "slug": "long-my",
+    "type": "ward"
+  },
+  {
+    "code": "01136",
+    "name": "Tân Thạnh",
+    "fullName": "Xã Tân Thạnh, Thành phố Cần Thơ",
+    "slug": "tan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01144",
+    "name": "Tân Lộc",
+    "fullName": "Phường Tân Lộc, Thành phố Cần Thơ",
+    "slug": "tan-loc",
+    "type": "ward"
+  },
+  {
+    "code": "01156",
+    "name": "Tân Long",
+    "fullName": "Xã Tân Long, Thành phố Cần Thơ",
+    "slug": "tan-long",
+    "type": "commune"
+  },
+  {
+    "code": "01196",
+    "name": "Trường Khánh",
+    "fullName": "Xã Trường Khánh, Thành phố Cần Thơ",
+    "slug": "truong-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "01199",
+    "name": "Đại Thành",
+    "fullName": "Phường Đại Thành, Thành phố Cần Thơ",
+    "slug": "dai-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "01204",
+    "name": "Tài Văn",
+    "fullName": "Xã Tài Văn, Thành phố Cần Thơ",
+    "slug": "tai-van",
+    "type": "commune"
+  },
+  {
+    "code": "01238",
+    "name": "Phương Bình",
+    "fullName": "Xã Phương Bình, Thành phố Cần Thơ",
+    "slug": "phuong-binh",
+    "type": "commune"
+  },
+  {
+    "code": "01256",
+    "name": "Long Hưng",
+    "fullName": "Xã Long Hưng, Thành phố Cần Thơ",
+    "slug": "long-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01261",
+    "name": "Hiệp Hưng",
+    "fullName": "Xã Hiệp Hưng, Thành phố Cần Thơ",
+    "slug": "hiep-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01266",
+    "name": "Phụng Hiệp",
+    "fullName": "Xã Phụng Hiệp, Thành phố Cần Thơ",
+    "slug": "phung-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "01276",
+    "name": "Phú Tâm",
+    "fullName": "Xã Phú Tâm, Thành phố Cần Thơ",
+    "slug": "phu-tam",
+    "type": "commune"
+  },
+  {
+    "code": "01309",
+    "name": "Hòa An",
+    "fullName": "Xã Hòa An, Thành phố Cần Thơ",
+    "slug": "hoa-an",
+    "type": "commune"
+  },
+  {
+    "code": "01323",
+    "name": "Vị Thanh",
+    "fullName": "Phường Vị Thanh, Thành phố Cần Thơ",
+    "slug": "vi-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "01347",
+    "name": "Vị Thủy",
+    "fullName": "Xã Vị Thủy, Thành phố Cần Thơ",
+    "slug": "vi-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "01369",
+    "name": "Lâm Tân",
+    "fullName": "Xã Lâm Tân, Thành phố Cần Thơ",
+    "slug": "lam-tan",
+    "type": "commune"
+  },
+  {
+    "code": "01388",
+    "name": "Thới An Hội",
+    "fullName": "Xã Thới An Hội, Thành phố Cần Thơ",
+    "slug": "thoi-an-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "01393",
+    "name": "Vĩnh Tường",
+    "fullName": "Xã Vĩnh Tường, Thành phố Cần Thơ",
+    "slug": "vinh-tuong",
+    "type": "commune"
+  },
+  {
+    "code": "01412",
+    "name": "Liêu Tú",
+    "fullName": "Xã Liêu Tú, Thành phố Cần Thơ",
+    "slug": "lieu-tu",
+    "type": "commune"
+  },
+  {
+    "code": "01419",
+    "name": "Hồ Đắc Kiện",
+    "fullName": "Xã Hồ Đắc Kiện, Thành phố Cần Thơ",
+    "slug": "ho-dac-kien",
+    "type": "commune"
+  },
+  {
+    "code": "01471",
+    "name": "Thạnh An",
+    "fullName": "Xã Thạnh An, Thành phố Cần Thơ",
+    "slug": "thanh-an",
+    "type": "commune"
+  },
+  {
+    "code": "01479",
+    "name": "Vĩnh Thạnh",
+    "fullName": "Xã Vĩnh Thạnh, Thành phố Cần Thơ",
+    "slug": "vinh-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01492",
+    "name": "Long Phú 1",
+    "fullName": "Phường Long Phú 1, Thành phố Cần Thơ",
+    "slug": "long-phu-1",
+    "type": "ward"
+  },
+  {
+    "code": "01500",
+    "name": "Mỹ Quới",
+    "fullName": "Phường Mỹ Quới, Thành phố Cần Thơ",
+    "slug": "my-quoi",
+    "type": "ward"
+  },
+  {
+    "code": "01530",
+    "name": "Thuận Hòa",
+    "fullName": "Xã Thuận Hòa, Thành phố Cần Thơ",
+    "slug": "thuan-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01559",
+    "name": "Lai Hòa",
+    "fullName": "Xã Lai Hòa, Thành phố Cần Thơ",
+    "slug": "lai-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01586",
+    "name": "Thạnh Thới An",
+    "fullName": "Xã Thạnh Thới An, Thành phố Cần Thơ",
+    "slug": "thanh-thoi-an",
+    "type": "commune"
+  },
+  {
+    "code": "01666",
+    "name": "Lịch Hội Thượng",
+    "fullName": "Xã Lịch Hội Thượng, Thành phố Cần Thơ",
+    "slug": "lich-hoi-thuong",
+    "type": "commune"
+  },
+  {
+    "code": "01675",
+    "name": "Vĩnh Hải",
+    "fullName": "Xã Vĩnh Hải, Thành phố Cần Thơ",
+    "slug": "vinh-hai",
+    "type": "commune"
+  },
+  {
+    "code": "01744",
+    "name": "Vĩnh Trinh",
+    "fullName": "Xã Vĩnh Trinh, Thành phố Cần Thơ",
+    "slug": "vinh-trinh",
+    "type": "commune"
+  },
+  {
+    "code": "01798",
+    "name": "Long Bình",
+    "fullName": "Phường Long Bình, Thành phố Cần Thơ",
+    "slug": "long-binh",
+    "type": "ward"
+  },
+  {
+    "code": "01834",
+    "name": "Tân Phước Hưng",
+    "fullName": "Xã Tân Phước Hưng, Thành phố Cần Thơ",
+    "slug": "tan-phuoc-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01838",
+    "name": "Thạnh Phú",
+    "fullName": "Xã Thạnh Phú, Thành phố Cần Thơ",
+    "slug": "thanh-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01873",
+    "name": "Trường Long Tây",
+    "fullName": "Xã Trường Long Tây, Thành phố Cần Thơ",
+    "slug": "truong-long-tay",
+    "type": "commune"
+  },
+  {
+    "code": "01928",
+    "name": "Đông Thuận",
+    "fullName": "Xã Đông Thuận, Thành phố Cần Thơ",
+    "slug": "dong-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "01936",
+    "name": "Đại Ngãi",
+    "fullName": "Xã Đại Ngãi, Thành phố Cần Thơ",
+    "slug": "dai-ngai",
+    "type": "commune"
+  },
+  {
+    "code": "01940",
+    "name": "Hòa Tú",
+    "fullName": "Xã Hòa Tú, Thành phố Cần Thơ",
+    "slug": "hoa-tu",
+    "type": "commune"
+  },
+  {
+    "code": "01948",
+    "name": "Vĩnh Viễn",
+    "fullName": "Xã Vĩnh Viễn, Thành phố Cần Thơ",
+    "slug": "vinh-vien",
+    "type": "commune"
+  },
+  {
+    "code": "01957",
+    "name": "Vĩnh Lợi",
+    "fullName": "Xã Vĩnh Lợi, Thành phố Cần Thơ",
+    "slug": "vinh-loi",
+    "type": "commune"
+  },
+  {
+    "code": "01974",
+    "name": "Hỏa Lựu",
+    "fullName": "Xã Hỏa Lựu, Thành phố Cần Thơ",
+    "slug": "hoa-luu",
+    "type": "commune"
+  },
+  {
+    "code": "01977",
+    "name": "Trường Long",
+    "fullName": "Xã Trường Long, Thành phố Cần Thơ",
+    "slug": "truong-long",
+    "type": "commune"
+  },
+  {
+    "code": "01980",
+    "name": "Lương Tâm",
+    "fullName": "Xã Lương Tâm, Thành phố Cần Thơ",
+    "slug": "luong-tam",
+    "type": "commune"
+  },
+  {
+    "code": "02019",
+    "name": "Mỹ Phước",
+    "fullName": "Xã Mỹ Phước, Thành phố Cần Thơ",
+    "slug": "my-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "02084",
+    "name": "Đông Hiệp",
+    "fullName": "Xã Đông Hiệp, Thành phố Cần Thơ",
+    "slug": "dong-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "02322",
+    "name": "Thới Hưng",
+    "fullName": "Xã Thới Hưng, Thành phố Cần Thơ",
+    "slug": "thoi-hung",
+    "type": "commune"
+  },
+  {
+    "code": "03170",
+    "name": "Phong Nẫm",
+    "fullName": "Xã Phong Nẫm, Thành phố Cần Thơ",
+    "slug": "phong-nam",
+    "type": "commune"
+  }
+]

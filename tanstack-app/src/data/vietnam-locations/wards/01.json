@@ -1,0 +1,884 @@
+[
+  {
+    "code": "00013",
+    "name": "Hà Đông",
+    "fullName": "Phường Hà Đông, Thành phố Hà Nội",
+    "slug": "ha-dong",
+    "type": "ward"
+  },
+  {
+    "code": "00044",
+    "name": "Tương Mai",
+    "fullName": "Phường Tương Mai, Thành phố Hà Nội",
+    "slug": "tuong-mai",
+    "type": "ward"
+  },
+  {
+    "code": "00051",
+    "name": "Bạch Mai",
+    "fullName": "Phường Bạch Mai, Thành phố Hà Nội",
+    "slug": "bach-mai",
+    "type": "ward"
+  },
+  {
+    "code": "00063",
+    "name": "Nghĩa Đô",
+    "fullName": "Phường Nghĩa Đô, Thành phố Hà Nội",
+    "slug": "nghia-do",
+    "type": "ward"
+  },
+  {
+    "code": "00066",
+    "name": "Hồng Hà",
+    "fullName": "Phường Hồng Hà, Thành phố Hà Nội",
+    "slug": "hong-ha",
+    "type": "ward"
+  },
+  {
+    "code": "00072",
+    "name": "Bồ Đề",
+    "fullName": "Phường Bồ Đề, Thành phố Hà Nội",
+    "slug": "bo-de",
+    "type": "ward"
+  },
+  {
+    "code": "00073",
+    "name": "Từ Liêm",
+    "fullName": "Phường Từ Liêm, Thành phố Hà Nội",
+    "slug": "tu-liem",
+    "type": "ward"
+  },
+  {
+    "code": "00079",
+    "name": "Đông Anh",
+    "fullName": "Xã Đông Anh, Thành phố Hà Nội",
+    "slug": "dong-anh",
+    "type": "commune"
+  },
+  {
+    "code": "00080",
+    "name": "Sóc Sơn",
+    "fullName": "Xã Sóc Sơn, Thành phố Hà Nội",
+    "slug": "soc-son",
+    "type": "commune"
+  },
+  {
+    "code": "00091",
+    "name": "Phù Đổng",
+    "fullName": "Xã Phù Đổng, Thành phố Hà Nội",
+    "slug": "phu-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00096",
+    "name": "Kim Liên",
+    "fullName": "Phường Kim Liên, Thành phố Hà Nội",
+    "slug": "kim-lien",
+    "type": "ward"
+  },
+  {
+    "code": "00101",
+    "name": "Thanh Xuân",
+    "fullName": "Phường Thanh Xuân, Thành phố Hà Nội",
+    "slug": "thanh-xuan",
+    "type": "ward"
+  },
+  {
+    "code": "00103",
+    "name": "Văn Miếu - Quốc Tử Giám",
+    "fullName": "Phường Văn Miếu - Quốc Tử Giám, Thành phố Hà Nội",
+    "slug": "van-mieu-quoc-tu-giam",
+    "type": "ward"
+  },
+  {
+    "code": "00104",
+    "name": "Hoàn Kiếm",
+    "fullName": "Phường Hoàn Kiếm, Thành phố Hà Nội",
+    "slug": "hoan-kiem",
+    "type": "ward"
+  },
+  {
+    "code": "00106",
+    "name": "Xuân Phương",
+    "fullName": "Phường Xuân Phương, Thành phố Hà Nội",
+    "slug": "xuan-phuong",
+    "type": "ward"
+  },
+  {
+    "code": "00114",
+    "name": "Thư Lâm",
+    "fullName": "Xã Thư Lâm, Thành phố Hà Nội",
+    "slug": "thu-lam",
+    "type": "commune"
+  },
+  {
+    "code": "00116",
+    "name": "An Khánh",
+    "fullName": "Xã An Khánh, Thành phố Hà Nội",
+    "slug": "an-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "00119",
+    "name": "Tây Hồ",
+    "fullName": "Phường Tây Hồ, Thành phố Hà Nội",
+    "slug": "tay-ho",
+    "type": "ward"
+  },
+  {
+    "code": "00120",
+    "name": "Tây Phương",
+    "fullName": "Xã Tây Phương, Thành phố Hà Nội",
+    "slug": "tay-phuong",
+    "type": "commune"
+  },
+  {
+    "code": "00124",
+    "name": "Hoàng Mai",
+    "fullName": "Phường Hoàng Mai, Thành phố Hà Nội",
+    "slug": "hoang-mai",
+    "type": "ward"
+  },
+  {
+    "code": "00127",
+    "name": "Ô Diên",
+    "fullName": "Xã Ô Diên, Thành phố Hà Nội",
+    "slug": "o-dien",
+    "type": "commune"
+  },
+  {
+    "code": "00129",
+    "name": "Giảng Võ",
+    "fullName": "Phường Giảng Võ, Thành phố Hà Nội",
+    "slug": "giang-vo",
+    "type": "ward"
+  },
+  {
+    "code": "00130",
+    "name": "Phú Xuyên",
+    "fullName": "Xã Phú Xuyên, Thành phố Hà Nội",
+    "slug": "phu-xuyen",
+    "type": "commune"
+  },
+  {
+    "code": "00132",
+    "name": "Phúc Thịnh",
+    "fullName": "Xã Phúc Thịnh, Thành phố Hà Nội",
+    "slug": "phuc-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "00136",
+    "name": "Ngọc Hà",
+    "fullName": "Phường Ngọc Hà, Thành phố Hà Nội",
+    "slug": "ngoc-ha",
+    "type": "ward"
+  },
+  {
+    "code": "00142",
+    "name": "Đại Thanh",
+    "fullName": "Xã Đại Thanh, Thành phố Hà Nội",
+    "slug": "dai-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00147",
+    "name": "Vĩnh Tuy",
+    "fullName": "Phường Vĩnh Tuy, Thành phố Hà Nội",
+    "slug": "vinh-tuy",
+    "type": "ward"
+  },
+  {
+    "code": "00148",
+    "name": "Gia Lâm",
+    "fullName": "Xã Gia Lâm, Thành phố Hà Nội",
+    "slug": "gia-lam",
+    "type": "commune"
+  },
+  {
+    "code": "00158",
+    "name": "Chương Mỹ",
+    "fullName": "Phường Chương Mỹ, Thành phố Hà Nội",
+    "slug": "chuong-my",
+    "type": "ward"
+  },
+  {
+    "code": "00159",
+    "name": "Hai Bà Trưng",
+    "fullName": "Phường Hai Bà Trưng, Thành phố Hà Nội",
+    "slug": "hai-ba-trung",
+    "type": "ward"
+  },
+  {
+    "code": "00165",
+    "name": "Khương Đình",
+    "fullName": "Phường Khương Đình, Thành phố Hà Nội",
+    "slug": "khuong-dinh",
+    "type": "ward"
+  },
+  {
+    "code": "00169",
+    "name": "Định Công",
+    "fullName": "Phường Định Công, Thành phố Hà Nội",
+    "slug": "dinh-cong",
+    "type": "ward"
+  },
+  {
+    "code": "00180",
+    "name": "Đa Phúc",
+    "fullName": "Xã Đa Phúc, Thành phố Hà Nội",
+    "slug": "da-phuc",
+    "type": "commune"
+  },
+  {
+    "code": "00181",
+    "name": "Đông Ngạc",
+    "fullName": "Phường Đông Ngạc, Thành phố Hà Nội",
+    "slug": "dong-ngac",
+    "type": "ward"
+  },
+  {
+    "code": "00183",
+    "name": "Việt Hưng",
+    "fullName": "Phường Việt Hưng, Thành phố Hà Nội",
+    "slug": "viet-hung",
+    "type": "ward"
+  },
+  {
+    "code": "00185",
+    "name": "Phương Liệt",
+    "fullName": "Phường Phương Liệt, Thành phố Hà Nội",
+    "slug": "phuong-liet",
+    "type": "ward"
+  },
+  {
+    "code": "00187",
+    "name": "Đống Đa",
+    "fullName": "Phường Đống Đa, Thành phố Hà Nội",
+    "slug": "dong-da",
+    "type": "ward"
+  },
+  {
+    "code": "00192",
+    "name": "Đại Mỗ",
+    "fullName": "Phường Đại Mỗ, Thành phố Hà Nội",
+    "slug": "dai-mo",
+    "type": "ward"
+  },
+  {
+    "code": "00193",
+    "name": "Bình Minh",
+    "fullName": "Xã Bình Minh, Thành phố Hà Nội",
+    "slug": "binh-minh",
+    "type": "commune"
+  },
+  {
+    "code": "00214",
+    "name": "Yên Hòa",
+    "fullName": "Phường Yên Hòa, Thành phố Hà Nội",
+    "slug": "yen-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "00222",
+    "name": "Thanh Liệt",
+    "fullName": "Phường Thanh Liệt, Thành phố Hà Nội",
+    "slug": "thanh-liet",
+    "type": "ward"
+  },
+  {
+    "code": "00228",
+    "name": "Phúc Thọ",
+    "fullName": "Xã Phúc Thọ, Thành phố Hà Nội",
+    "slug": "phuc-tho",
+    "type": "commune"
+  },
+  {
+    "code": "00230",
+    "name": "Đại Xuyên",
+    "fullName": "Xã Đại Xuyên, Thành phố Hà Nội",
+    "slug": "dai-xuyen",
+    "type": "commune"
+  },
+  {
+    "code": "00231",
+    "name": "Phú Diễn",
+    "fullName": "Phường Phú Diễn, Thành phố Hà Nội",
+    "slug": "phu-dien",
+    "type": "ward"
+  },
+  {
+    "code": "00232",
+    "name": "Thiên Lộc",
+    "fullName": "Xã Thiên Lộc, Thành phố Hà Nội",
+    "slug": "thien-loc",
+    "type": "commune"
+  },
+  {
+    "code": "00233",
+    "name": "Cầu Giấy",
+    "fullName": "Phường Cầu Giấy, Thành phố Hà Nội",
+    "slug": "cau-giay",
+    "type": "ward"
+  },
+  {
+    "code": "00252",
+    "name": "Hát Môn",
+    "fullName": "Xã Hát Môn, Thành phố Hà Nội",
+    "slug": "hat-mon",
+    "type": "commune"
+  },
+  {
+    "code": "00267",
+    "name": "Yên Lãng",
+    "fullName": "Xã Yên Lãng, Thành phố Hà Nội",
+    "slug": "yen-lang",
+    "type": "commune"
+  },
+  {
+    "code": "00268",
+    "name": "Sơn Tây",
+    "fullName": "Phường Sơn Tây, Thành phố Hà Nội",
+    "slug": "son-tay",
+    "type": "ward"
+  },
+  {
+    "code": "00269",
+    "name": "Ô Chợ Dừa",
+    "fullName": "Phường Ô Chợ Dừa, Thành phố Hà Nội",
+    "slug": "o-cho-dua",
+    "type": "ward"
+  },
+  {
+    "code": "00273",
+    "name": "Phú Nghĩa",
+    "fullName": "Xã Phú Nghĩa, Thành phố Hà Nội",
+    "slug": "phu-nghia",
+    "type": "commune"
+  },
+  {
+    "code": "00274",
+    "name": "Kiến Hưng",
+    "fullName": "Phường Kiến Hưng, Thành phố Hà Nội",
+    "slug": "kien-hung",
+    "type": "ward"
+  },
+  {
+    "code": "00275",
+    "name": "Thường Tín",
+    "fullName": "Xã Thường Tín, Thành phố Hà Nội",
+    "slug": "thuong-tin",
+    "type": "commune"
+  },
+  {
+    "code": "00277",
+    "name": "Cổ Đô",
+    "fullName": "Xã Cổ Đô, Thành phố Hà Nội",
+    "slug": "co-do",
+    "type": "commune"
+  },
+  {
+    "code": "00281",
+    "name": "Nội Bài",
+    "fullName": "Xã Nội Bài, Thành phố Hà Nội",
+    "slug": "noi-bai",
+    "type": "commune"
+  },
+  {
+    "code": "00288",
+    "name": "Quang Minh",
+    "fullName": "Xã Quang Minh, Thành phố Hà Nội",
+    "slug": "quang-minh",
+    "type": "commune"
+  },
+  {
+    "code": "00289",
+    "name": "Hòa Xá",
+    "fullName": "Xã Hòa Xá, Thành phố Hà Nội",
+    "slug": "hoa-xa",
+    "type": "commune"
+  },
+  {
+    "code": "00292",
+    "name": "Hoài Đức",
+    "fullName": "Xã Hoài Đức, Thành phố Hà Nội",
+    "slug": "hoai-duc",
+    "type": "commune"
+  },
+  {
+    "code": "00302",
+    "name": "Thuận An",
+    "fullName": "Xã Thuận An, Thành phố Hà Nội",
+    "slug": "thuan-an",
+    "type": "commune"
+  },
+  {
+    "code": "00309",
+    "name": "Vĩnh Hưng",
+    "fullName": "Phường Vĩnh Hưng, Thành phố Hà Nội",
+    "slug": "vinh-hung",
+    "type": "ward"
+  },
+  {
+    "code": "00310",
+    "name": "Xuân Mai",
+    "fullName": "Xã Xuân Mai, Thành phố Hà Nội",
+    "slug": "xuan-mai",
+    "type": "commune"
+  },
+  {
+    "code": "00314",
+    "name": "Phúc Lợi",
+    "fullName": "Phường Phúc Lợi, Thành phố Hà Nội",
+    "slug": "phuc-loi",
+    "type": "ward"
+  },
+  {
+    "code": "00324",
+    "name": "Ba Đình",
+    "fullName": "Phường Ba Đình, Thành phố Hà Nội",
+    "slug": "ba-dinh",
+    "type": "ward"
+  },
+  {
+    "code": "00329",
+    "name": "Vĩnh Thanh",
+    "fullName": "Xã Vĩnh Thanh, Thành phố Hà Nội",
+    "slug": "vinh-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00333",
+    "name": "Tiến Thắng",
+    "fullName": "Xã Tiến Thắng, Thành phố Hà Nội",
+    "slug": "tien-thang",
+    "type": "commune"
+  },
+  {
+    "code": "00339",
+    "name": "Ứng Hòa",
+    "fullName": "Xã Ứng Hòa, Thành phố Hà Nội",
+    "slug": "ung-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00344",
+    "name": "Quốc Oai",
+    "fullName": "Xã Quốc Oai, Thành phố Hà Nội",
+    "slug": "quoc-oai",
+    "type": "commune"
+  },
+  {
+    "code": "00347",
+    "name": "Sơn Đồng",
+    "fullName": "Xã Sơn Đồng, Thành phố Hà Nội",
+    "slug": "son-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00351",
+    "name": "Hồng Sơn",
+    "fullName": "Xã Hồng Sơn, Thành phố Hà Nội",
+    "slug": "hong-son",
+    "type": "commune"
+  },
+  {
+    "code": "00353",
+    "name": "Quảng Bị",
+    "fullName": "Xã Quảng Bị, Thành phố Hà Nội",
+    "slug": "quang-bi",
+    "type": "commune"
+  },
+  {
+    "code": "00355",
+    "name": "Long Biên",
+    "fullName": "Phường Long Biên, Thành phố Hà Nội",
+    "slug": "long-bien",
+    "type": "ward"
+  },
+  {
+    "code": "00358",
+    "name": "Dân Hòa",
+    "fullName": "Xã Dân Hòa, Thành phố Hà Nội",
+    "slug": "dan-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00362",
+    "name": "Mê Linh",
+    "fullName": "Xã Mê Linh, Thành phố Hà Nội",
+    "slug": "me-linh",
+    "type": "commune"
+  },
+  {
+    "code": "00371",
+    "name": "Phúc Lộc",
+    "fullName": "Xã Phúc Lộc, Thành phố Hà Nội",
+    "slug": "phuc-loc",
+    "type": "commune"
+  },
+  {
+    "code": "00373",
+    "name": "Trung Giã",
+    "fullName": "Xã Trung Giã, Thành phố Hà Nội",
+    "slug": "trung-gia",
+    "type": "commune"
+  },
+  {
+    "code": "00379",
+    "name": "Láng",
+    "fullName": "Phường Láng, Thành phố Hà Nội",
+    "slug": "lang",
+    "type": "ward"
+  },
+  {
+    "code": "00383",
+    "name": "Kiều Phú",
+    "fullName": "Xã Kiều Phú, Thành phố Hà Nội",
+    "slug": "kieu-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00384",
+    "name": "Vân Đình",
+    "fullName": "Xã Vân Đình, Thành phố Hà Nội",
+    "slug": "van-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "00393",
+    "name": "Phượng Dực",
+    "fullName": "Xã Phượng Dực, Thành phố Hà Nội",
+    "slug": "phuong-duc",
+    "type": "commune"
+  },
+  {
+    "code": "00396",
+    "name": "Chương Dương",
+    "fullName": "Xã Chương Dương, Thành phố Hà Nội",
+    "slug": "chuong-duong",
+    "type": "commune"
+  },
+  {
+    "code": "00409",
+    "name": "Quảng Oai",
+    "fullName": "Xã Quảng Oai, Thành phố Hà Nội",
+    "slug": "quang-oai",
+    "type": "commune"
+  },
+  {
+    "code": "00411",
+    "name": "Dương Hòa",
+    "fullName": "Xã Dương Hòa, Thành phố Hà Nội",
+    "slug": "duong-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00413",
+    "name": "Hồng Vân",
+    "fullName": "Xã Hồng Vân, Thành phố Hà Nội",
+    "slug": "hong-van",
+    "type": "commune"
+  },
+  {
+    "code": "00416",
+    "name": "Vật Lại",
+    "fullName": "Xã Vật Lại, Thành phố Hà Nội",
+    "slug": "vat-lai",
+    "type": "commune"
+  },
+  {
+    "code": "00431",
+    "name": "Thạch Thất",
+    "fullName": "Xã Thạch Thất, Thành phố Hà Nội",
+    "slug": "thach-that",
+    "type": "commune"
+  },
+  {
+    "code": "00449",
+    "name": "Dương Nội",
+    "fullName": "Phường Dương Nội, Thành phố Hà Nội",
+    "slug": "duong-noi",
+    "type": "ward"
+  },
+  {
+    "code": "00453",
+    "name": "Hoàng Liệt",
+    "fullName": "Phường Hoàng Liệt, Thành phố Hà Nội",
+    "slug": "hoang-liet",
+    "type": "ward"
+  },
+  {
+    "code": "00472",
+    "name": "Thanh Oai",
+    "fullName": "Xã Thanh Oai, Thành phố Hà Nội",
+    "slug": "thanh-oai",
+    "type": "commune"
+  },
+  {
+    "code": "00482",
+    "name": "Phúc Sơn",
+    "fullName": "Xã Phúc Sơn, Thành phố Hà Nội",
+    "slug": "phuc-son",
+    "type": "commune"
+  },
+  {
+    "code": "00484",
+    "name": "Ứng Thiên",
+    "fullName": "Xã Ứng Thiên, Thành phố Hà Nội",
+    "slug": "ung-thien",
+    "type": "commune"
+  },
+  {
+    "code": "00490",
+    "name": "Mỹ Đức",
+    "fullName": "Xã Mỹ Đức, Thành phố Hà Nội",
+    "slug": "my-duc",
+    "type": "commune"
+  },
+  {
+    "code": "00506",
+    "name": "Cửa Nam",
+    "fullName": "Phường Cửa Nam, Thành phố Hà Nội",
+    "slug": "cua-nam",
+    "type": "ward"
+  },
+  {
+    "code": "00508",
+    "name": "Hương Sơn",
+    "fullName": "Xã Hương Sơn, Thành phố Hà Nội",
+    "slug": "huong-son",
+    "type": "commune"
+  },
+  {
+    "code": "00519",
+    "name": "Phú Lương",
+    "fullName": "Phường Phú Lương, Thành phố Hà Nội",
+    "slug": "phu-luong",
+    "type": "ward"
+  },
+  {
+    "code": "00538",
+    "name": "Thanh Trì",
+    "fullName": "Xã Thanh Trì, Thành phố Hà Nội",
+    "slug": "thanh-tri",
+    "type": "commune"
+  },
+  {
+    "code": "00576",
+    "name": "Hòa Phú",
+    "fullName": "Xã Hòa Phú, Thành phố Hà Nội",
+    "slug": "hoa-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00585",
+    "name": "Yên Nghĩa",
+    "fullName": "Phường Yên Nghĩa, Thành phố Hà Nội",
+    "slug": "yen-nghia",
+    "type": "ward"
+  },
+  {
+    "code": "00597",
+    "name": "Hưng Đạo",
+    "fullName": "Xã Hưng Đạo, Thành phố Hà Nội",
+    "slug": "hung-dao",
+    "type": "commune"
+  },
+  {
+    "code": "00608",
+    "name": "Bát Tràng",
+    "fullName": "Xã Bát Tràng, Thành phố Hà Nội",
+    "slug": "bat-trang",
+    "type": "commune"
+  },
+  {
+    "code": "00617",
+    "name": "Xuân Đỉnh",
+    "fullName": "Phường Xuân Đỉnh, Thành phố Hà Nội",
+    "slug": "xuan-dinh",
+    "type": "ward"
+  },
+  {
+    "code": "00621",
+    "name": "Kim Anh",
+    "fullName": "Xã Kim Anh, Thành phố Hà Nội",
+    "slug": "kim-anh",
+    "type": "commune"
+  },
+  {
+    "code": "00635",
+    "name": "Liên Minh",
+    "fullName": "Xã Liên Minh, Thành phố Hà Nội",
+    "slug": "lien-minh",
+    "type": "commune"
+  },
+  {
+    "code": "00639",
+    "name": "Đan Phượng",
+    "fullName": "Xã Đan Phượng, Thành phố Hà Nội",
+    "slug": "dan-phuong",
+    "type": "commune"
+  },
+  {
+    "code": "00641",
+    "name": "Trần Phú",
+    "fullName": "Xã Trần Phú, Thành phố Hà Nội",
+    "slug": "tran-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00659",
+    "name": "Tây Mỗ",
+    "fullName": "Phường Tây Mỗ, Thành phố Hà Nội",
+    "slug": "tay-mo",
+    "type": "ward"
+  },
+  {
+    "code": "00706",
+    "name": "Thượng Phúc",
+    "fullName": "Xã Thượng Phúc, Thành phố Hà Nội",
+    "slug": "thuong-phuc",
+    "type": "commune"
+  },
+  {
+    "code": "00722",
+    "name": "Chuyên Mỹ",
+    "fullName": "Xã Chuyên Mỹ, Thành phố Hà Nội",
+    "slug": "chuyen-my",
+    "type": "commune"
+  },
+  {
+    "code": "00756",
+    "name": "Ngọc Hồi",
+    "fullName": "Xã Ngọc Hồi, Thành phố Hà Nội",
+    "slug": "ngoc-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "00777",
+    "name": "Phú Cát",
+    "fullName": "Xã Phú Cát, Thành phố Hà Nội",
+    "slug": "phu-cat",
+    "type": "commune"
+  },
+  {
+    "code": "00793",
+    "name": "Nam Phù",
+    "fullName": "Xã Nam Phù, Thành phố Hà Nội",
+    "slug": "nam-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00824",
+    "name": "Tùng Thiện",
+    "fullName": "Phường Tùng Thiện, Thành phố Hà Nội",
+    "slug": "tung-thien",
+    "type": "ward"
+  },
+  {
+    "code": "00862",
+    "name": "Yên Sở",
+    "fullName": "Phường Yên Sở, Thành phố Hà Nội",
+    "slug": "yen-so",
+    "type": "ward"
+  },
+  {
+    "code": "00908",
+    "name": "Bất Bạt",
+    "fullName": "Xã Bất Bạt, Thành phố Hà Nội",
+    "slug": "bat-bat",
+    "type": "commune"
+  },
+  {
+    "code": "00919",
+    "name": "Đoài Phương",
+    "fullName": "Xã Đoài Phương, Thành phố Hà Nội",
+    "slug": "doai-phuong",
+    "type": "commune"
+  },
+  {
+    "code": "00934",
+    "name": "Tây Tựu",
+    "fullName": "Phường Tây Tựu, Thành phố Hà Nội",
+    "slug": "tay-tuu",
+    "type": "ward"
+  },
+  {
+    "code": "00941",
+    "name": "Phú Thượng",
+    "fullName": "Phường Phú Thượng, Thành phố Hà Nội",
+    "slug": "phu-thuong",
+    "type": "ward"
+  },
+  {
+    "code": "00951",
+    "name": "Tam Hưng",
+    "fullName": "Xã Tam Hưng, Thành phố Hà Nội",
+    "slug": "tam-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00970",
+    "name": "Hạ Bằng",
+    "fullName": "Xã Hạ Bằng, Thành phố Hà Nội",
+    "slug": "ha-bang",
+    "type": "commune"
+  },
+  {
+    "code": "01175",
+    "name": "Suối Hai",
+    "fullName": "Xã Suối Hai, Thành phố Hà Nội",
+    "slug": "suoi-hai",
+    "type": "commune"
+  },
+  {
+    "code": "01568",
+    "name": "Yên Xuân",
+    "fullName": "Xã Yên Xuân, Thành phố Hà Nội",
+    "slug": "yen-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "01776",
+    "name": "Ba Vì",
+    "fullName": "Xã Ba Vì, Thành phố Hà Nội",
+    "slug": "ba-vi",
+    "type": "commune"
+  },
+  {
+    "code": "01921",
+    "name": "Thượng Cát",
+    "fullName": "Phường Thượng Cát, Thành phố Hà Nội",
+    "slug": "thuong-cat",
+    "type": "ward"
+  },
+  {
+    "code": "02175",
+    "name": "Yên Bài",
+    "fullName": "Xã Yên Bài, Thành phố Hà Nội",
+    "slug": "yen-bai",
+    "type": "commune"
+  },
+  {
+    "code": "02216",
+    "name": "Hòa Lạc",
+    "fullName": "Xã Hòa Lạc, Thành phố Hà Nội",
+    "slug": "hoa-lac",
+    "type": "commune"
+  },
+  {
+    "code": "02221",
+    "name": "Lĩnh Nam",
+    "fullName": "Phường Lĩnh Nam, Thành phố Hà Nội",
+    "slug": "linh-nam",
+    "type": "ward"
+  },
+  {
+    "code": "03147",
+    "name": "Minh Châu",
+    "fullName": "Xã Minh Châu, Thành phố Hà Nội",
+    "slug": "minh-chau",
+    "type": "commune"
+  }
+]

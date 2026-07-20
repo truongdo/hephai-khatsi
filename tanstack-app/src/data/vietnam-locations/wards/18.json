@@ -1,0 +1,716 @@
+[
+  {
+    "code": "00001",
+    "name": "Rạch Giá",
+    "fullName": "Phường Rạch Giá, Tỉnh An Giang",
+    "slug": "rach-gia",
+    "type": "ward"
+  },
+  {
+    "code": "00028",
+    "name": "Phú Quốc",
+    "fullName": "Đặc khu Phú Quốc, Tỉnh An Giang",
+    "slug": "phu-quoc",
+    "type": "commune"
+  },
+  {
+    "code": "00030",
+    "name": "Long Xuyên",
+    "fullName": "Phường Long Xuyên, Tỉnh An Giang",
+    "slug": "long-xuyen",
+    "type": "ward"
+  },
+  {
+    "code": "00128",
+    "name": "Châu Đốc",
+    "fullName": "Phường Châu Đốc, Tỉnh An Giang",
+    "slug": "chau-doc",
+    "type": "ward"
+  },
+  {
+    "code": "00153",
+    "name": "Nhơn Mỹ",
+    "fullName": "Xã Nhơn Mỹ, Tỉnh An Giang",
+    "slug": "nhon-my",
+    "type": "commune"
+  },
+  {
+    "code": "00190",
+    "name": "Chợ Mới",
+    "fullName": "Xã Chợ Mới, Tỉnh An Giang",
+    "slug": "cho-moi",
+    "type": "commune"
+  },
+  {
+    "code": "00236",
+    "name": "Hội An",
+    "fullName": "Xã Hội An, Tỉnh An Giang",
+    "slug": "hoi-an",
+    "type": "commune"
+  },
+  {
+    "code": "00248",
+    "name": "Bình Đức",
+    "fullName": "Phường Bình Đức, Tỉnh An Giang",
+    "slug": "binh-duc",
+    "type": "ward"
+  },
+  {
+    "code": "00270",
+    "name": "Phú Tân",
+    "fullName": "Xã Phú Tân, Tỉnh An Giang",
+    "slug": "phu-tan",
+    "type": "commune"
+  },
+  {
+    "code": "00283",
+    "name": "Giồng Riềng",
+    "fullName": "Xã Giồng Riềng, Tỉnh An Giang",
+    "slug": "giong-rieng",
+    "type": "commune"
+  },
+  {
+    "code": "00284",
+    "name": "Cù Lao Giêng",
+    "fullName": "Xã Cù Lao Giêng, Tỉnh An Giang",
+    "slug": "cu-lao-gieng",
+    "type": "commune"
+  },
+  {
+    "code": "00286",
+    "name": "Châu Thành",
+    "fullName": "Xã Châu Thành, Tỉnh An Giang",
+    "slug": "chau-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00298",
+    "name": "Bình Mỹ",
+    "fullName": "Xã Bình Mỹ, Tỉnh An Giang",
+    "slug": "binh-my",
+    "type": "commune"
+  },
+  {
+    "code": "00316",
+    "name": "Tân Hiệp",
+    "fullName": "Xã Tân Hiệp, Tỉnh An Giang",
+    "slug": "tan-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "00321",
+    "name": "An Châu",
+    "fullName": "Xã An Châu, Tỉnh An Giang",
+    "slug": "an-chau",
+    "type": "commune"
+  },
+  {
+    "code": "00322",
+    "name": "Long Điền",
+    "fullName": "Xã Long Điền, Tỉnh An Giang",
+    "slug": "long-dien",
+    "type": "commune"
+  },
+  {
+    "code": "00326",
+    "name": "Thạnh Mỹ Tây",
+    "fullName": "Xã Thạnh Mỹ Tây, Tỉnh An Giang",
+    "slug": "thanh-my-tay",
+    "type": "commune"
+  },
+  {
+    "code": "00331",
+    "name": "Vĩnh Thạnh Trung",
+    "fullName": "Xã Vĩnh Thạnh Trung, Tỉnh An Giang",
+    "slug": "vinh-thanh-trung",
+    "type": "commune"
+  },
+  {
+    "code": "00368",
+    "name": "Hòn Đất",
+    "fullName": "Xã Hòn Đất, Tỉnh An Giang",
+    "slug": "hon-dat",
+    "type": "commune"
+  },
+  {
+    "code": "00369",
+    "name": "Bình Sơn",
+    "fullName": "Xã Bình Sơn, Tỉnh An Giang",
+    "slug": "binh-son",
+    "type": "commune"
+  },
+  {
+    "code": "00385",
+    "name": "Mỹ Thuận",
+    "fullName": "Xã Mỹ Thuận, Tỉnh An Giang",
+    "slug": "my-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "00389",
+    "name": "Mỹ Đức",
+    "fullName": "Xã Mỹ Đức, Tỉnh An Giang",
+    "slug": "my-duc",
+    "type": "commune"
+  },
+  {
+    "code": "00390",
+    "name": "Mỹ Thới",
+    "fullName": "Phường Mỹ Thới, Tỉnh An Giang",
+    "slug": "my-thoi",
+    "type": "ward"
+  },
+  {
+    "code": "00391",
+    "name": "Vĩnh Hậu",
+    "fullName": "Xã Vĩnh Hậu, Tỉnh An Giang",
+    "slug": "vinh-hau",
+    "type": "commune"
+  },
+  {
+    "code": "00395",
+    "name": "Châu Phú",
+    "fullName": "Xã Châu Phú, Tỉnh An Giang",
+    "slug": "chau-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00402",
+    "name": "Thạnh Lộc",
+    "fullName": "Xã Thạnh Lộc, Tỉnh An Giang",
+    "slug": "thanh-loc",
+    "type": "commune"
+  },
+  {
+    "code": "00403",
+    "name": "Bình An",
+    "fullName": "Xã Bình An, Tỉnh An Giang",
+    "slug": "binh-an",
+    "type": "commune"
+  },
+  {
+    "code": "00421",
+    "name": "Kiên Lương",
+    "fullName": "Xã Kiên Lương, Tỉnh An Giang",
+    "slug": "kien-luong",
+    "type": "commune"
+  },
+  {
+    "code": "00432",
+    "name": "Nhơn Hội",
+    "fullName": "Xã Nhơn Hội, Tỉnh An Giang",
+    "slug": "nhon-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "00433",
+    "name": "Long Kiến",
+    "fullName": "Xã Long Kiến, Tỉnh An Giang",
+    "slug": "long-kien",
+    "type": "commune"
+  },
+  {
+    "code": "00442",
+    "name": "Định Hòa",
+    "fullName": "Xã Định Hòa, Tỉnh An Giang",
+    "slug": "dinh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00443",
+    "name": "Bình Hòa",
+    "fullName": "Xã Bình Hòa, Tỉnh An Giang",
+    "slug": "binh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00446",
+    "name": "Châu Phong",
+    "fullName": "Xã Châu Phong, Tỉnh An Giang",
+    "slug": "chau-phong",
+    "type": "commune"
+  },
+  {
+    "code": "00463",
+    "name": "Vĩnh Thông",
+    "fullName": "Phường Vĩnh Thông, Tỉnh An Giang",
+    "slug": "vinh-thong",
+    "type": "ward"
+  },
+  {
+    "code": "00477",
+    "name": "Đông Thái",
+    "fullName": "Xã Đông Thái, Tỉnh An Giang",
+    "slug": "dong-thai",
+    "type": "commune"
+  },
+  {
+    "code": "00488",
+    "name": "An Biên",
+    "fullName": "Xã An Biên, Tỉnh An Giang",
+    "slug": "an-bien",
+    "type": "commune"
+  },
+  {
+    "code": "00489",
+    "name": "Thạnh Đông",
+    "fullName": "Xã Thạnh Đông, Tỉnh An Giang",
+    "slug": "thanh-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00509",
+    "name": "Tây Yên",
+    "fullName": "Xã Tây Yên, Tỉnh An Giang",
+    "slug": "tay-yen",
+    "type": "commune"
+  },
+  {
+    "code": "00511",
+    "name": "Thoại Sơn",
+    "fullName": "Xã Thoại Sơn, Tỉnh An Giang",
+    "slug": "thoai-son",
+    "type": "commune"
+  },
+  {
+    "code": "00531",
+    "name": "Vĩnh Hòa",
+    "fullName": "Xã Vĩnh Hòa, Tỉnh An Giang",
+    "slug": "vinh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00559",
+    "name": "Tri Tôn",
+    "fullName": "Xã Tri Tôn, Tỉnh An Giang",
+    "slug": "tri-ton",
+    "type": "commune"
+  },
+  {
+    "code": "00563",
+    "name": "Bình Thạnh Đông",
+    "fullName": "Xã Bình Thạnh Đông, Tỉnh An Giang",
+    "slug": "binh-thanh-dong",
+    "type": "commune"
+  },
+  {
+    "code": "00570",
+    "name": "Chợ Vàm",
+    "fullName": "Xã Chợ Vàm, Tỉnh An Giang",
+    "slug": "cho-vam",
+    "type": "commune"
+  },
+  {
+    "code": "00593",
+    "name": "Tân Hội",
+    "fullName": "Xã Tân Hội, Tỉnh An Giang",
+    "slug": "tan-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "00605",
+    "name": "An Phú",
+    "fullName": "Xã An Phú, Tỉnh An Giang",
+    "slug": "an-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00663",
+    "name": "Long Phú",
+    "fullName": "Phường Long Phú, Tỉnh An Giang",
+    "slug": "long-phu",
+    "type": "ward"
+  },
+  {
+    "code": "00665",
+    "name": "Thạnh Hưng",
+    "fullName": "Xã Thạnh Hưng, Tỉnh An Giang",
+    "slug": "thanh-hung",
+    "type": "commune"
+  },
+  {
+    "code": "00682",
+    "name": "U Minh Thượng",
+    "fullName": "Xã U Minh Thượng, Tỉnh An Giang",
+    "slug": "u-minh-thuong",
+    "type": "commune"
+  },
+  {
+    "code": "00712",
+    "name": "Đông Hòa",
+    "fullName": "Xã Đông Hòa, Tỉnh An Giang",
+    "slug": "dong-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00730",
+    "name": "Gò Quao",
+    "fullName": "Xã Gò Quao, Tỉnh An Giang",
+    "slug": "go-quao",
+    "type": "commune"
+  },
+  {
+    "code": "00767",
+    "name": "Vĩnh Bình",
+    "fullName": "Xã Vĩnh Bình, Tỉnh An Giang",
+    "slug": "vinh-binh",
+    "type": "commune"
+  },
+  {
+    "code": "00780",
+    "name": "Vĩnh Phong",
+    "fullName": "Xã Vĩnh Phong, Tỉnh An Giang",
+    "slug": "vinh-phong",
+    "type": "commune"
+  },
+  {
+    "code": "00797",
+    "name": "Khánh Bình",
+    "fullName": "Xã Khánh Bình, Tỉnh An Giang",
+    "slug": "khanh-binh",
+    "type": "commune"
+  },
+  {
+    "code": "00799",
+    "name": "Phú Hữu",
+    "fullName": "Xã Phú Hữu, Tỉnh An Giang",
+    "slug": "phu-huu",
+    "type": "commune"
+  },
+  {
+    "code": "00811",
+    "name": "Định Mỹ",
+    "fullName": "Xã Định Mỹ, Tỉnh An Giang",
+    "slug": "dinh-my",
+    "type": "commune"
+  },
+  {
+    "code": "00816",
+    "name": "Long Thạnh",
+    "fullName": "Xã Long Thạnh, Tỉnh An Giang",
+    "slug": "long-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00827",
+    "name": "Tân An",
+    "fullName": "Xã Tân An, Tỉnh An Giang",
+    "slug": "tan-an",
+    "type": "commune"
+  },
+  {
+    "code": "00841",
+    "name": "Vĩnh Xương",
+    "fullName": "Xã Vĩnh Xương, Tỉnh An Giang",
+    "slug": "vinh-xuong",
+    "type": "commune"
+  },
+  {
+    "code": "00845",
+    "name": "Phú Hòa",
+    "fullName": "Xã Phú Hòa, Tỉnh An Giang",
+    "slug": "phu-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00879",
+    "name": "Hà Tiên",
+    "fullName": "Phường Hà Tiên, Tỉnh An Giang",
+    "slug": "ha-tien",
+    "type": "ward"
+  },
+  {
+    "code": "00894",
+    "name": "Vĩnh Tế",
+    "fullName": "Phường Vĩnh Tế, Tỉnh An Giang",
+    "slug": "vinh-te",
+    "type": "ward"
+  },
+  {
+    "code": "00912",
+    "name": "Phú An",
+    "fullName": "Xã Phú An, Tỉnh An Giang",
+    "slug": "phu-an",
+    "type": "commune"
+  },
+  {
+    "code": "00918",
+    "name": "An Cư",
+    "fullName": "Xã An Cư, Tỉnh An Giang",
+    "slug": "an-cu",
+    "type": "commune"
+  },
+  {
+    "code": "00932",
+    "name": "Óc Eo",
+    "fullName": "Xã Óc Eo, Tỉnh An Giang",
+    "slug": "oc-eo",
+    "type": "commune"
+  },
+  {
+    "code": "00971",
+    "name": "Ngọc Chúc",
+    "fullName": "Xã Ngọc Chúc, Tỉnh An Giang",
+    "slug": "ngoc-chuc",
+    "type": "commune"
+  },
+  {
+    "code": "01011",
+    "name": "Hòa Hưng",
+    "fullName": "Xã Hòa Hưng, Tỉnh An Giang",
+    "slug": "hoa-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01031",
+    "name": "Vĩnh Hòa Hưng",
+    "fullName": "Xã Vĩnh Hòa Hưng, Tỉnh An Giang",
+    "slug": "vinh-hoa-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01039",
+    "name": "Ô Lâm",
+    "fullName": "Xã Ô Lâm, Tỉnh An Giang",
+    "slug": "o-lam",
+    "type": "commune"
+  },
+  {
+    "code": "01074",
+    "name": "Vĩnh Tuy",
+    "fullName": "Xã Vĩnh Tuy, Tỉnh An Giang",
+    "slug": "vinh-tuy",
+    "type": "commune"
+  },
+  {
+    "code": "01120",
+    "name": "Tân Thạnh",
+    "fullName": "Xã Tân Thạnh, Tỉnh An Giang",
+    "slug": "tan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01146",
+    "name": "An Minh",
+    "fullName": "Xã An Minh, Tỉnh An Giang",
+    "slug": "an-minh",
+    "type": "commune"
+  },
+  {
+    "code": "01170",
+    "name": "Cần Đăng",
+    "fullName": "Xã Cần Đăng, Tỉnh An Giang",
+    "slug": "can-dang",
+    "type": "commune"
+  },
+  {
+    "code": "01189",
+    "name": "Tịnh Biên",
+    "fullName": "Phường Tịnh Biên, Tỉnh An Giang",
+    "slug": "tinh-bien",
+    "type": "ward"
+  },
+  {
+    "code": "01262",
+    "name": "Tân Châu",
+    "fullName": "Phường Tân Châu, Tỉnh An Giang",
+    "slug": "tan-chau",
+    "type": "ward"
+  },
+  {
+    "code": "01287",
+    "name": "Phú Lâm",
+    "fullName": "Xã Phú Lâm, Tỉnh An Giang",
+    "slug": "phu-lam",
+    "type": "commune"
+  },
+  {
+    "code": "01300",
+    "name": "Thới Sơn",
+    "fullName": "Phường Thới Sơn, Tỉnh An Giang",
+    "slug": "thoi-son",
+    "type": "ward"
+  },
+  {
+    "code": "01301",
+    "name": "Vĩnh An",
+    "fullName": "Xã Vĩnh An, Tỉnh An Giang",
+    "slug": "vinh-an",
+    "type": "commune"
+  },
+  {
+    "code": "01344",
+    "name": "Vĩnh Trạch",
+    "fullName": "Xã Vĩnh Trạch, Tỉnh An Giang",
+    "slug": "vinh-trach",
+    "type": "commune"
+  },
+  {
+    "code": "01367",
+    "name": "Ba Chúc",
+    "fullName": "Xã Ba Chúc, Tỉnh An Giang",
+    "slug": "ba-chuc",
+    "type": "commune"
+  },
+  {
+    "code": "01391",
+    "name": "Hòa Thuận",
+    "fullName": "Xã Hòa Thuận, Tỉnh An Giang",
+    "slug": "hoa-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "01424",
+    "name": "Cô Tô",
+    "fullName": "Xã Cô Tô, Tỉnh An Giang",
+    "slug": "co-to",
+    "type": "commune"
+  },
+  {
+    "code": "01454",
+    "name": "Hòa Lạc",
+    "fullName": "Xã Hòa Lạc, Tỉnh An Giang",
+    "slug": "hoa-lac",
+    "type": "commune"
+  },
+  {
+    "code": "01481",
+    "name": "Vĩnh Thuận",
+    "fullName": "Xã Vĩnh Thuận, Tỉnh An Giang",
+    "slug": "vinh-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "01541",
+    "name": "Sơn Kiên",
+    "fullName": "Xã Sơn Kiên, Tỉnh An Giang",
+    "slug": "son-kien",
+    "type": "commune"
+  },
+  {
+    "code": "01572",
+    "name": "Vĩnh Hanh",
+    "fullName": "Xã Vĩnh Hanh, Tỉnh An Giang",
+    "slug": "vinh-hanh",
+    "type": "commune"
+  },
+  {
+    "code": "01637",
+    "name": "Chi Lăng",
+    "fullName": "Phường Chi Lăng, Tỉnh An Giang",
+    "slug": "chi-lang",
+    "type": "ward"
+  },
+  {
+    "code": "01767",
+    "name": "Mỹ Hòa Hưng",
+    "fullName": "Xã Mỹ Hòa Hưng, Tỉnh An Giang",
+    "slug": "my-hoa-hung",
+    "type": "commune"
+  },
+  {
+    "code": "01828",
+    "name": "Tô Châu",
+    "fullName": "Phường Tô Châu, Tỉnh An Giang",
+    "slug": "to-chau",
+    "type": "ward"
+  },
+  {
+    "code": "01887",
+    "name": "Núi Cấm",
+    "fullName": "Xã Núi Cấm, Tỉnh An Giang",
+    "slug": "nui-cam",
+    "type": "commune"
+  },
+  {
+    "code": "01973",
+    "name": "Hòa Điền",
+    "fullName": "Xã Hòa Điền, Tỉnh An Giang",
+    "slug": "hoa-dien",
+    "type": "commune"
+  },
+  {
+    "code": "02048",
+    "name": "Tây Phú",
+    "fullName": "Xã Tây Phú, Tỉnh An Giang",
+    "slug": "tay-phu",
+    "type": "commune"
+  },
+  {
+    "code": "02050",
+    "name": "Kiên Hải",
+    "fullName": "Đặc khu Kiên Hải, Tỉnh An Giang",
+    "slug": "kien-hai",
+    "type": "commune"
+  },
+  {
+    "code": "02120",
+    "name": "Đông Hưng",
+    "fullName": "Xã Đông Hưng, Tỉnh An Giang",
+    "slug": "dong-hung",
+    "type": "commune"
+  },
+  {
+    "code": "02149",
+    "name": "Vân Khánh",
+    "fullName": "Xã Vân Khánh, Tỉnh An Giang",
+    "slug": "van-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "02214",
+    "name": "Vĩnh Gia",
+    "fullName": "Xã Vĩnh Gia, Tỉnh An Giang",
+    "slug": "vinh-gia",
+    "type": "commune"
+  },
+  {
+    "code": "02260",
+    "name": "Giang Thành",
+    "fullName": "Xã Giang Thành, Tỉnh An Giang",
+    "slug": "giang-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02374",
+    "name": "Bình Giang",
+    "fullName": "Xã Bình Giang, Tỉnh An Giang",
+    "slug": "binh-giang",
+    "type": "commune"
+  },
+  {
+    "code": "02428",
+    "name": "Vĩnh Điều",
+    "fullName": "Xã Vĩnh Điều, Tỉnh An Giang",
+    "slug": "vinh-dieu",
+    "type": "commune"
+  },
+  {
+    "code": "03304",
+    "name": "Sơn Hải",
+    "fullName": "Xã Sơn Hải, Tỉnh An Giang",
+    "slug": "son-hai",
+    "type": "commune"
+  },
+  {
+    "code": "03307",
+    "name": "Hòn Nghệ",
+    "fullName": "Xã Hòn Nghệ, Tỉnh An Giang",
+    "slug": "hon-nghe",
+    "type": "commune"
+  },
+  {
+    "code": "03312",
+    "name": "Thổ Châu",
+    "fullName": "Đặc khu Thổ Châu, Tỉnh An Giang",
+    "slug": "tho-chau",
+    "type": "commune"
+  },
+  {
+    "code": "03313",
+    "name": "Tiên Hải",
+    "fullName": "Xã Tiên Hải, Tỉnh An Giang",
+    "slug": "tien-hai",
+    "type": "commune"
+  }
+]

@@ -1,0 +1,646 @@
+[
+  {
+    "code": "00092",
+    "name": "Phan Đình Phùng",
+    "fullName": "Phường Phan Đình Phùng, Tỉnh Thái Nguyên",
+    "slug": "phan-dinh-phung",
+    "type": "ward"
+  },
+  {
+    "code": "00367",
+    "name": "Vạn Xuân",
+    "fullName": "Phường Vạn Xuân, Tỉnh Thái Nguyên",
+    "slug": "van-xuan",
+    "type": "ward"
+  },
+  {
+    "code": "00461",
+    "name": "Tích Lương",
+    "fullName": "Phường Tích Lương, Tỉnh Thái Nguyên",
+    "slug": "tich-luong",
+    "type": "ward"
+  },
+  {
+    "code": "00602",
+    "name": "Phổ Yên",
+    "fullName": "Phường Phổ Yên, Tỉnh Thái Nguyên",
+    "slug": "pho-yen",
+    "type": "ward"
+  },
+  {
+    "code": "00670",
+    "name": "Linh Sơn",
+    "fullName": "Phường Linh Sơn, Tỉnh Thái Nguyên",
+    "slug": "linh-son",
+    "type": "ward"
+  },
+  {
+    "code": "00723",
+    "name": "Phú Bình",
+    "fullName": "Xã Phú Bình, Tỉnh Thái Nguyên",
+    "slug": "phu-binh",
+    "type": "commune"
+  },
+  {
+    "code": "00748",
+    "name": "Gia Sàng",
+    "fullName": "Phường Gia Sàng, Tỉnh Thái Nguyên",
+    "slug": "gia-sang",
+    "type": "ward"
+  },
+  {
+    "code": "00755",
+    "name": "Phú Lương",
+    "fullName": "Xã Phú Lương, Tỉnh Thái Nguyên",
+    "slug": "phu-luong",
+    "type": "commune"
+  },
+  {
+    "code": "00812",
+    "name": "Quan Triều",
+    "fullName": "Phường Quan Triều, Tỉnh Thái Nguyên",
+    "slug": "quan-trieu",
+    "type": "ward"
+  },
+  {
+    "code": "00817",
+    "name": "Kha Sơn",
+    "fullName": "Xã Kha Sơn, Tỉnh Thái Nguyên",
+    "slug": "kha-son",
+    "type": "commune"
+  },
+  {
+    "code": "00828",
+    "name": "Điềm Thụy",
+    "fullName": "Xã Điềm Thụy, Tỉnh Thái Nguyên",
+    "slug": "diem-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "00945",
+    "name": "Đại Phúc",
+    "fullName": "Xã Đại Phúc, Tỉnh Thái Nguyên",
+    "slug": "dai-phuc",
+    "type": "commune"
+  },
+  {
+    "code": "00992",
+    "name": "Vô Tranh",
+    "fullName": "Xã Vô Tranh, Tỉnh Thái Nguyên",
+    "slug": "vo-tranh",
+    "type": "commune"
+  },
+  {
+    "code": "01056",
+    "name": "Trung Thành",
+    "fullName": "Phường Trung Thành, Tỉnh Thái Nguyên",
+    "slug": "trung-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "01445",
+    "name": "Đồng Hỷ",
+    "fullName": "Xã Đồng Hỷ, Tỉnh Thái Nguyên",
+    "slug": "dong-hy",
+    "type": "commune"
+  },
+  {
+    "code": "01524",
+    "name": "Quyết Thắng",
+    "fullName": "Phường Quyết Thắng, Tỉnh Thái Nguyên",
+    "slug": "quyet-thang",
+    "type": "ward"
+  },
+  {
+    "code": "01584",
+    "name": "Phúc Thuận",
+    "fullName": "Phường Phúc Thuận, Tỉnh Thái Nguyên",
+    "slug": "phuc-thuan",
+    "type": "ward"
+  },
+  {
+    "code": "01643",
+    "name": "Thành Công",
+    "fullName": "Xã Thành Công, Tỉnh Thái Nguyên",
+    "slug": "thanh-cong",
+    "type": "commune"
+  },
+  {
+    "code": "01745",
+    "name": "Đại Từ",
+    "fullName": "Xã Đại Từ, Tỉnh Thái Nguyên",
+    "slug": "dai-tu",
+    "type": "commune"
+  },
+  {
+    "code": "01773",
+    "name": "Bách Quang",
+    "fullName": "Phường Bách Quang, Tỉnh Thái Nguyên",
+    "slug": "bach-quang",
+    "type": "ward"
+  },
+  {
+    "code": "01837",
+    "name": "Tân Thành",
+    "fullName": "Xã Tân Thành, Tỉnh Thái Nguyên",
+    "slug": "tan-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01854",
+    "name": "Tân Cương",
+    "fullName": "Xã Tân Cương, Tỉnh Thái Nguyên",
+    "slug": "tan-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "01866",
+    "name": "Bắc Kạn",
+    "fullName": "Phường Bắc Kạn, Tỉnh Thái Nguyên",
+    "slug": "bac-kan",
+    "type": "ward"
+  },
+  {
+    "code": "02005",
+    "name": "Tân Khánh",
+    "fullName": "Xã Tân Khánh, Tỉnh Thái Nguyên",
+    "slug": "tan-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "02018",
+    "name": "Yên Trạch",
+    "fullName": "Xã Yên Trạch, Tỉnh Thái Nguyên",
+    "slug": "yen-trach",
+    "type": "commune"
+  },
+  {
+    "code": "02060",
+    "name": "Phú Xuyên",
+    "fullName": "Xã Phú Xuyên, Tỉnh Thái Nguyên",
+    "slug": "phu-xuyen",
+    "type": "commune"
+  },
+  {
+    "code": "02094",
+    "name": "Đức Xuân",
+    "fullName": "Phường Đức Xuân, Tỉnh Thái Nguyên",
+    "slug": "duc-xuan",
+    "type": "ward"
+  },
+  {
+    "code": "02115",
+    "name": "Định Hóa",
+    "fullName": "Xã Định Hóa, Tỉnh Thái Nguyên",
+    "slug": "dinh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02132",
+    "name": "Vạn Phú",
+    "fullName": "Xã Vạn Phú, Tỉnh Thái Nguyên",
+    "slug": "van-phu",
+    "type": "commune"
+  },
+  {
+    "code": "02179",
+    "name": "Phú Thịnh",
+    "fullName": "Xã Phú Thịnh, Tỉnh Thái Nguyên",
+    "slug": "phu-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "02195",
+    "name": "Phú Lạc",
+    "fullName": "Xã Phú Lạc, Tỉnh Thái Nguyên",
+    "slug": "phu-lac",
+    "type": "commune"
+  },
+  {
+    "code": "02198",
+    "name": "Sông Công",
+    "fullName": "Phường Sông Công, Tỉnh Thái Nguyên",
+    "slug": "song-cong",
+    "type": "ward"
+  },
+  {
+    "code": "02256",
+    "name": "An Khánh",
+    "fullName": "Xã An Khánh, Tỉnh Thái Nguyên",
+    "slug": "an-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "02259",
+    "name": "Bá Xuyên",
+    "fullName": "Phường Bá Xuyên, Tỉnh Thái Nguyên",
+    "slug": "ba-xuyen",
+    "type": "ward"
+  },
+  {
+    "code": "02270",
+    "name": "Văn Hán",
+    "fullName": "Xã Văn Hán, Tỉnh Thái Nguyên",
+    "slug": "van-han",
+    "type": "commune"
+  },
+  {
+    "code": "02302",
+    "name": "Dân Tiến",
+    "fullName": "Xã Dân Tiến, Tỉnh Thái Nguyên",
+    "slug": "dan-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02376",
+    "name": "La Bằng",
+    "fullName": "Xã La Bằng, Tỉnh Thái Nguyên",
+    "slug": "la-bang",
+    "type": "commune"
+  },
+  {
+    "code": "02430",
+    "name": "Võ Nhai",
+    "fullName": "Xã Võ Nhai, Tỉnh Thái Nguyên",
+    "slug": "vo-nhai",
+    "type": "commune"
+  },
+  {
+    "code": "02442",
+    "name": "Trại Cau",
+    "fullName": "Xã Trại Cau, Tỉnh Thái Nguyên",
+    "slug": "trai-cau",
+    "type": "commune"
+  },
+  {
+    "code": "02508",
+    "name": "Chợ Đồn",
+    "fullName": "Xã Chợ Đồn, Tỉnh Thái Nguyên",
+    "slug": "cho-don",
+    "type": "commune"
+  },
+  {
+    "code": "02509",
+    "name": "Nam Hòa",
+    "fullName": "Xã Nam Hòa, Tỉnh Thái Nguyên",
+    "slug": "nam-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02524",
+    "name": "Bình Yên",
+    "fullName": "Xã Bình Yên, Tỉnh Thái Nguyên",
+    "slug": "binh-yen",
+    "type": "commune"
+  },
+  {
+    "code": "02618",
+    "name": "Tràng Xá",
+    "fullName": "Xã Tràng Xá, Tỉnh Thái Nguyên",
+    "slug": "trang-xa",
+    "type": "commune"
+  },
+  {
+    "code": "02621",
+    "name": "Chợ Rã",
+    "fullName": "Xã Chợ Rã, Tỉnh Thái Nguyên",
+    "slug": "cho-ra",
+    "type": "commune"
+  },
+  {
+    "code": "02644",
+    "name": "Chợ Mới",
+    "fullName": "Xã Chợ Mới, Tỉnh Thái Nguyên",
+    "slug": "cho-moi",
+    "type": "commune"
+  },
+  {
+    "code": "02663",
+    "name": "Bằng Thành",
+    "fullName": "Xã Bằng Thành, Tỉnh Thái Nguyên",
+    "slug": "bang-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02668",
+    "name": "Trung Hội",
+    "fullName": "Xã Trung Hội, Tỉnh Thái Nguyên",
+    "slug": "trung-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "02693",
+    "name": "Phủ Thông",
+    "fullName": "Xã Phủ Thông, Tỉnh Thái Nguyên",
+    "slug": "phu-thong",
+    "type": "commune"
+  },
+  {
+    "code": "02695",
+    "name": "Phượng Tiến",
+    "fullName": "Xã Phượng Tiến, Tỉnh Thái Nguyên",
+    "slug": "phuong-tien",
+    "type": "commune"
+  },
+  {
+    "code": "02702",
+    "name": "Đức Lương",
+    "fullName": "Xã Đức Lương, Tỉnh Thái Nguyên",
+    "slug": "duc-luong",
+    "type": "commune"
+  },
+  {
+    "code": "02704",
+    "name": "Quân Chu",
+    "fullName": "Xã Quân Chu, Tỉnh Thái Nguyên",
+    "slug": "quan-chu",
+    "type": "commune"
+  },
+  {
+    "code": "02721",
+    "name": "Cao Minh",
+    "fullName": "Xã Cao Minh, Tỉnh Thái Nguyên",
+    "slug": "cao-minh",
+    "type": "commune"
+  },
+  {
+    "code": "02761",
+    "name": "La Hiên",
+    "fullName": "Xã La Hiên, Tỉnh Thái Nguyên",
+    "slug": "la-hien",
+    "type": "commune"
+  },
+  {
+    "code": "02788",
+    "name": "Ba Bể",
+    "fullName": "Xã Ba Bể, Tỉnh Thái Nguyên",
+    "slug": "ba-be",
+    "type": "commune"
+  },
+  {
+    "code": "02789",
+    "name": "Phú Đình",
+    "fullName": "Xã Phú Đình, Tỉnh Thái Nguyên",
+    "slug": "phu-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "02790",
+    "name": "Đồng Phúc",
+    "fullName": "Xã Đồng Phúc, Tỉnh Thái Nguyên",
+    "slug": "dong-phuc",
+    "type": "commune"
+  },
+  {
+    "code": "02803",
+    "name": "Bình Thành",
+    "fullName": "Xã Bình Thành, Tỉnh Thái Nguyên",
+    "slug": "binh-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02805",
+    "name": "Na Rì",
+    "fullName": "Xã Na Rì, Tỉnh Thái Nguyên",
+    "slug": "na-ri",
+    "type": "commune"
+  },
+  {
+    "code": "02812",
+    "name": "Cẩm Giàng",
+    "fullName": "Xã Cẩm Giàng, Tỉnh Thái Nguyên",
+    "slug": "cam-giang",
+    "type": "commune"
+  },
+  {
+    "code": "02830",
+    "name": "Kim Phượng",
+    "fullName": "Xã Kim Phượng, Tỉnh Thái Nguyên",
+    "slug": "kim-phuong",
+    "type": "commune"
+  },
+  {
+    "code": "02838",
+    "name": "Nghiên Loan",
+    "fullName": "Xã Nghiên Loan, Tỉnh Thái Nguyên",
+    "slug": "nghien-loan",
+    "type": "commune"
+  },
+  {
+    "code": "02840",
+    "name": "Thượng Minh",
+    "fullName": "Xã Thượng Minh, Tỉnh Thái Nguyên",
+    "slug": "thuong-minh",
+    "type": "commune"
+  },
+  {
+    "code": "02854",
+    "name": "Quang Sơn",
+    "fullName": "Xã Quang Sơn, Tỉnh Thái Nguyên",
+    "slug": "quang-son",
+    "type": "commune"
+  },
+  {
+    "code": "02856",
+    "name": "Hợp Thành",
+    "fullName": "Xã Hợp Thành, Tỉnh Thái Nguyên",
+    "slug": "hop-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02860",
+    "name": "Nam Cường",
+    "fullName": "Xã Nam Cường, Tỉnh Thái Nguyên",
+    "slug": "nam-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "02893",
+    "name": "Phúc Lộc",
+    "fullName": "Xã Phúc Lộc, Tỉnh Thái Nguyên",
+    "slug": "phuc-loc",
+    "type": "commune"
+  },
+  {
+    "code": "02954",
+    "name": "Văn Lăng",
+    "fullName": "Xã Văn Lăng, Tỉnh Thái Nguyên",
+    "slug": "van-lang",
+    "type": "commune"
+  },
+  {
+    "code": "02979",
+    "name": "Nà Phặc",
+    "fullName": "Xã Nà Phặc, Tỉnh Thái Nguyên",
+    "slug": "na-phac",
+    "type": "commune"
+  },
+  {
+    "code": "03008",
+    "name": "Thanh Thịnh",
+    "fullName": "Xã Thanh Thịnh, Tỉnh Thái Nguyên",
+    "slug": "thanh-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "03047",
+    "name": "Ngân Sơn",
+    "fullName": "Xã Ngân Sơn, Tỉnh Thái Nguyên",
+    "slug": "ngan-son",
+    "type": "commune"
+  },
+  {
+    "code": "03048",
+    "name": "Bạch Thông",
+    "fullName": "Xã Bạch Thông, Tỉnh Thái Nguyên",
+    "slug": "bach-thong",
+    "type": "commune"
+  },
+  {
+    "code": "03059",
+    "name": "Lam Vỹ",
+    "fullName": "Xã Lam Vỹ, Tỉnh Thái Nguyên",
+    "slug": "lam-vy",
+    "type": "commune"
+  },
+  {
+    "code": "03070",
+    "name": "Nghĩa Tá",
+    "fullName": "Xã Nghĩa Tá, Tỉnh Thái Nguyên",
+    "slug": "nghia-ta",
+    "type": "commune"
+  },
+  {
+    "code": "03076",
+    "name": "Tân Kỳ",
+    "fullName": "Xã Tân Kỳ, Tỉnh Thái Nguyên",
+    "slug": "tan-ky",
+    "type": "commune"
+  },
+  {
+    "code": "03083",
+    "name": "Văn Lang",
+    "fullName": "Xã Văn Lang, Tỉnh Thái Nguyên",
+    "slug": "van-lang",
+    "type": "commune"
+  },
+  {
+    "code": "03093",
+    "name": "Thanh Mai",
+    "fullName": "Xã Thanh Mai, Tỉnh Thái Nguyên",
+    "slug": "thanh-mai",
+    "type": "commune"
+  },
+  {
+    "code": "03096",
+    "name": "Yên Phong",
+    "fullName": "Xã Yên Phong, Tỉnh Thái Nguyên",
+    "slug": "yen-phong",
+    "type": "commune"
+  },
+  {
+    "code": "03102",
+    "name": "Hiệp Lực",
+    "fullName": "Xã Hiệp Lực, Tỉnh Thái Nguyên",
+    "slug": "hiep-luc",
+    "type": "commune"
+  },
+  {
+    "code": "03121",
+    "name": "Trần Phú",
+    "fullName": "Xã Trần Phú, Tỉnh Thái Nguyên",
+    "slug": "tran-phu",
+    "type": "commune"
+  },
+  {
+    "code": "03122",
+    "name": "Yên Bình",
+    "fullName": "Xã Yên Bình, Tỉnh Thái Nguyên",
+    "slug": "yen-binh",
+    "type": "commune"
+  },
+  {
+    "code": "03124",
+    "name": "Xuân Dương",
+    "fullName": "Xã Xuân Dương, Tỉnh Thái Nguyên",
+    "slug": "xuan-duong",
+    "type": "commune"
+  },
+  {
+    "code": "03148",
+    "name": "Côn Minh",
+    "fullName": "Xã Côn Minh, Tỉnh Thái Nguyên",
+    "slug": "con-minh",
+    "type": "commune"
+  },
+  {
+    "code": "03155",
+    "name": "Nghinh Tường",
+    "fullName": "Xã Nghinh Tường, Tỉnh Thái Nguyên",
+    "slug": "nghinh-tuong",
+    "type": "commune"
+  },
+  {
+    "code": "03186",
+    "name": "Phong Quang",
+    "fullName": "Xã Phong Quang, Tỉnh Thái Nguyên",
+    "slug": "phong-quang",
+    "type": "commune"
+  },
+  {
+    "code": "03197",
+    "name": "Thần Sa",
+    "fullName": "Xã Thần Sa, Tỉnh Thái Nguyên",
+    "slug": "than-sa",
+    "type": "commune"
+  },
+  {
+    "code": "03221",
+    "name": "Cường Lợi",
+    "fullName": "Xã Cường Lợi, Tỉnh Thái Nguyên",
+    "slug": "cuong-loi",
+    "type": "commune"
+  },
+  {
+    "code": "03229",
+    "name": "Bằng Vân",
+    "fullName": "Xã Bằng Vân, Tỉnh Thái Nguyên",
+    "slug": "bang-van",
+    "type": "commune"
+  },
+  {
+    "code": "03238",
+    "name": "Yên Thịnh",
+    "fullName": "Xã Yên Thịnh, Tỉnh Thái Nguyên",
+    "slug": "yen-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "03266",
+    "name": "Vĩnh Thông",
+    "fullName": "Xã Vĩnh Thông, Tỉnh Thái Nguyên",
+    "slug": "vinh-thong",
+    "type": "commune"
+  },
+  {
+    "code": "03288",
+    "name": "Quảng Bạch",
+    "fullName": "Xã Quảng Bạch, Tỉnh Thái Nguyên",
+    "slug": "quang-bach",
+    "type": "commune"
+  },
+  {
+    "code": "03291",
+    "name": "Thượng Quan",
+    "fullName": "Xã Thượng Quan, Tỉnh Thái Nguyên",
+    "slug": "thuong-quan",
+    "type": "commune"
+  },
+  {
+    "code": "03297",
+    "name": "Sảng Mộc",
+    "fullName": "Xã Sảng Mộc, Tỉnh Thái Nguyên",
+    "slug": "sang-moc",
+    "type": "commune"
+  }
+]

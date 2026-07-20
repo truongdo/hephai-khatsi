@@ -1,0 +1,870 @@
+[
+  {
+    "code": "00363",
+    "name": "Phú Túc",
+    "fullName": "Xã Phú Túc, Tỉnh Vĩnh Long",
+    "slug": "phu-tuc",
+    "type": "commune"
+  },
+  {
+    "code": "00478",
+    "name": "Long Hồ",
+    "fullName": "Xã Long Hồ, Tỉnh Vĩnh Long",
+    "slug": "long-ho",
+    "type": "commune"
+  },
+  {
+    "code": "00496",
+    "name": "An Hội",
+    "fullName": "Phường An Hội, Tỉnh Vĩnh Long",
+    "slug": "an-hoi",
+    "type": "ward"
+  },
+  {
+    "code": "00518",
+    "name": "Ba Tri",
+    "fullName": "Xã Ba Tri, Tỉnh Vĩnh Long",
+    "slug": "ba-tri",
+    "type": "commune"
+  },
+  {
+    "code": "00539",
+    "name": "An Bình",
+    "fullName": "Xã An Bình, Tỉnh Vĩnh Long",
+    "slug": "an-binh",
+    "type": "commune"
+  },
+  {
+    "code": "00553",
+    "name": "Tân Quới",
+    "fullName": "Xã Tân Quới, Tỉnh Vĩnh Long",
+    "slug": "tan-quoi",
+    "type": "commune"
+  },
+  {
+    "code": "00554",
+    "name": "Phước Hậu",
+    "fullName": "Phường Phước Hậu, Tỉnh Vĩnh Long",
+    "slug": "phuoc-hau",
+    "type": "ward"
+  },
+  {
+    "code": "00561",
+    "name": "Song Phú",
+    "fullName": "Xã Song Phú, Tỉnh Vĩnh Long",
+    "slug": "song-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00564",
+    "name": "Châu Thành",
+    "fullName": "Xã Châu Thành, Tỉnh Vĩnh Long",
+    "slug": "chau-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00579",
+    "name": "Mỏ Cày",
+    "fullName": "Xã Mỏ Cày, Tỉnh Vĩnh Long",
+    "slug": "mo-cay",
+    "type": "commune"
+  },
+  {
+    "code": "00584",
+    "name": "Phú Quới",
+    "fullName": "Xã Phú Quới, Tỉnh Vĩnh Long",
+    "slug": "phu-quoi",
+    "type": "commune"
+  },
+  {
+    "code": "00589",
+    "name": "Long Châu",
+    "fullName": "Phường Long Châu, Tỉnh Vĩnh Long",
+    "slug": "long-chau",
+    "type": "ward"
+  },
+  {
+    "code": "00613",
+    "name": "Ngãi Tứ",
+    "fullName": "Xã Ngãi Tứ, Tỉnh Vĩnh Long",
+    "slug": "ngai-tu",
+    "type": "commune"
+  },
+  {
+    "code": "00655",
+    "name": "Phú Khương",
+    "fullName": "Phường Phú Khương, Tỉnh Vĩnh Long",
+    "slug": "phu-khuong",
+    "type": "ward"
+  },
+  {
+    "code": "00661",
+    "name": "Tân Thành Bình",
+    "fullName": "Xã Tân Thành Bình, Tỉnh Vĩnh Long",
+    "slug": "tan-thanh-binh",
+    "type": "commune"
+  },
+  {
+    "code": "00695",
+    "name": "Trà Côn",
+    "fullName": "Xã Trà Côn, Tỉnh Vĩnh Long",
+    "slug": "tra-con",
+    "type": "commune"
+  },
+  {
+    "code": "00697",
+    "name": "Tân Thủy",
+    "fullName": "Xã Tân Thủy, Tỉnh Vĩnh Long",
+    "slug": "tan-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "00703",
+    "name": "An Trường",
+    "fullName": "Xã An Trường, Tỉnh Vĩnh Long",
+    "slug": "an-truong",
+    "type": "commune"
+  },
+  {
+    "code": "00707",
+    "name": "Trà Vinh",
+    "fullName": "Phường Trà Vinh, Tỉnh Vĩnh Long",
+    "slug": "tra-vinh",
+    "type": "ward"
+  },
+  {
+    "code": "00744",
+    "name": "Chợ Lách",
+    "fullName": "Xã Chợ Lách, Tỉnh Vĩnh Long",
+    "slug": "cho-lach",
+    "type": "commune"
+  },
+  {
+    "code": "00787",
+    "name": "Vĩnh Thành",
+    "fullName": "Xã Vĩnh Thành, Tỉnh Vĩnh Long",
+    "slug": "vinh-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00801",
+    "name": "Song Lộc",
+    "fullName": "Xã Song Lộc, Tỉnh Vĩnh Long",
+    "slug": "song-loc",
+    "type": "commune"
+  },
+  {
+    "code": "00808",
+    "name": "Vĩnh Xuân",
+    "fullName": "Xã Vĩnh Xuân, Tỉnh Vĩnh Long",
+    "slug": "vinh-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "00814",
+    "name": "Thạnh Phú",
+    "fullName": "Xã Thạnh Phú, Tỉnh Vĩnh Long",
+    "slug": "thanh-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00830",
+    "name": "Đông Thành",
+    "fullName": "Phường Đông Thành, Tỉnh Vĩnh Long",
+    "slug": "dong-thanh",
+    "type": "ward"
+  },
+  {
+    "code": "00834",
+    "name": "Càng Long",
+    "fullName": "Xã Càng Long, Tỉnh Vĩnh Long",
+    "slug": "cang-long",
+    "type": "commune"
+  },
+  {
+    "code": "00835",
+    "name": "Phong Thạnh",
+    "fullName": "Xã Phong Thạnh, Tỉnh Vĩnh Long",
+    "slug": "phong-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "00849",
+    "name": "Tân Hòa",
+    "fullName": "Xã Tân Hòa, Tỉnh Vĩnh Long",
+    "slug": "tan-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "00888",
+    "name": "Tam Ngãi",
+    "fullName": "Xã Tam Ngãi, Tỉnh Vĩnh Long",
+    "slug": "tam-ngai",
+    "type": "commune"
+  },
+  {
+    "code": "00890",
+    "name": "Hưng Mỹ",
+    "fullName": "Xã Hưng Mỹ, Tỉnh Vĩnh Long",
+    "slug": "hung-my",
+    "type": "commune"
+  },
+  {
+    "code": "00902",
+    "name": "Giao Long",
+    "fullName": "Xã Giao Long, Tỉnh Vĩnh Long",
+    "slug": "giao-long",
+    "type": "commune"
+  },
+  {
+    "code": "00914",
+    "name": "Tập Sơn",
+    "fullName": "Xã Tập Sơn, Tỉnh Vĩnh Long",
+    "slug": "tap-son",
+    "type": "commune"
+  },
+  {
+    "code": "00924",
+    "name": "Hoà Bình",
+    "fullName": "Xã Hoà Bình, Tỉnh Vĩnh Long",
+    "slug": "hoa-binh",
+    "type": "commune"
+  },
+  {
+    "code": "00947",
+    "name": "Bình Phú",
+    "fullName": "Xã Bình Phú, Tỉnh Vĩnh Long",
+    "slug": "binh-phu",
+    "type": "commune"
+  },
+  {
+    "code": "00962",
+    "name": "Tân Lược",
+    "fullName": "Xã Tân Lược, Tỉnh Vĩnh Long",
+    "slug": "tan-luoc",
+    "type": "commune"
+  },
+  {
+    "code": "00963",
+    "name": "Nhuận Phú Tân",
+    "fullName": "Xã Nhuận Phú Tân, Tỉnh Vĩnh Long",
+    "slug": "nhuan-phu-tan",
+    "type": "commune"
+  },
+  {
+    "code": "00981",
+    "name": "Cái Nhum",
+    "fullName": "Xã Cái Nhum, Tỉnh Vĩnh Long",
+    "slug": "cai-nhum",
+    "type": "commune"
+  },
+  {
+    "code": "00983",
+    "name": "Phú Phụng",
+    "fullName": "Xã Phú Phụng, Tỉnh Vĩnh Long",
+    "slug": "phu-phung",
+    "type": "commune"
+  },
+  {
+    "code": "00986",
+    "name": "Hương Mỹ",
+    "fullName": "Xã Hương Mỹ, Tỉnh Vĩnh Long",
+    "slug": "huong-my",
+    "type": "commune"
+  },
+  {
+    "code": "00995",
+    "name": "Nhị Trường",
+    "fullName": "Xã Nhị Trường, Tỉnh Vĩnh Long",
+    "slug": "nhi-truong",
+    "type": "commune"
+  },
+  {
+    "code": "01012",
+    "name": "Trà Ôn",
+    "fullName": "Xã Trà Ôn, Tỉnh Vĩnh Long",
+    "slug": "tra-on",
+    "type": "commune"
+  },
+  {
+    "code": "01022",
+    "name": "An Định",
+    "fullName": "Xã An Định, Tỉnh Vĩnh Long",
+    "slug": "an-dinh",
+    "type": "commune"
+  },
+  {
+    "code": "01027",
+    "name": "Giồng Trôm",
+    "fullName": "Xã Giồng Trôm, Tỉnh Vĩnh Long",
+    "slug": "giong-trom",
+    "type": "commune"
+  },
+  {
+    "code": "01030",
+    "name": "Hưng Nhượng",
+    "fullName": "Xã Hưng Nhượng, Tỉnh Vĩnh Long",
+    "slug": "hung-nhuong",
+    "type": "commune"
+  },
+  {
+    "code": "01046",
+    "name": "Đại Điền",
+    "fullName": "Xã Đại Điền, Tỉnh Vĩnh Long",
+    "slug": "dai-dien",
+    "type": "commune"
+  },
+  {
+    "code": "01057",
+    "name": "Nguyệt Hóa",
+    "fullName": "Phường Nguyệt Hóa, Tỉnh Vĩnh Long",
+    "slug": "nguyet-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "01082",
+    "name": "Cái Ngang",
+    "fullName": "Xã Cái Ngang, Tỉnh Vĩnh Long",
+    "slug": "cai-ngang",
+    "type": "commune"
+  },
+  {
+    "code": "01087",
+    "name": "Phước Mỹ Trung",
+    "fullName": "Xã Phước Mỹ Trung, Tỉnh Vĩnh Long",
+    "slug": "phuoc-my-trung",
+    "type": "commune"
+  },
+  {
+    "code": "01093",
+    "name": "Tân Xuân",
+    "fullName": "Xã Tân Xuân, Tỉnh Vĩnh Long",
+    "slug": "tan-xuan",
+    "type": "commune"
+  },
+  {
+    "code": "01121",
+    "name": "Cái Vồn",
+    "fullName": "Phường Cái Vồn, Tỉnh Vĩnh Long",
+    "slug": "cai-von",
+    "type": "ward"
+  },
+  {
+    "code": "01126",
+    "name": "Bến Tre",
+    "fullName": "Phường Bến Tre, Tỉnh Vĩnh Long",
+    "slug": "ben-tre",
+    "type": "ward"
+  },
+  {
+    "code": "01147",
+    "name": "Trung Thành",
+    "fullName": "Xã Trung Thành, Tỉnh Vĩnh Long",
+    "slug": "trung-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01157",
+    "name": "Cầu Kè",
+    "fullName": "Xã Cầu Kè, Tỉnh Vĩnh Long",
+    "slug": "cau-ke",
+    "type": "commune"
+  },
+  {
+    "code": "01163",
+    "name": "Đồng Khởi",
+    "fullName": "Xã Đồng Khởi, Tỉnh Vĩnh Long",
+    "slug": "dong-khoi",
+    "type": "commune"
+  },
+  {
+    "code": "01165",
+    "name": "Tân Phú",
+    "fullName": "Xã Tân Phú, Tỉnh Vĩnh Long",
+    "slug": "tan-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01177",
+    "name": "Thanh Đức",
+    "fullName": "Phường Thanh Đức, Tỉnh Vĩnh Long",
+    "slug": "thanh-duc",
+    "type": "ward"
+  },
+  {
+    "code": "01181",
+    "name": "Thành Thới",
+    "fullName": "Xã Thành Thới, Tỉnh Vĩnh Long",
+    "slug": "thanh-thoi",
+    "type": "commune"
+  },
+  {
+    "code": "01187",
+    "name": "Nhơn Phú",
+    "fullName": "Xã Nhơn Phú, Tỉnh Vĩnh Long",
+    "slug": "nhon-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01195",
+    "name": "Nhị Long",
+    "fullName": "Xã Nhị Long, Tỉnh Vĩnh Long",
+    "slug": "nhi-long",
+    "type": "commune"
+  },
+  {
+    "code": "01206",
+    "name": "Trung Hiệp",
+    "fullName": "Xã Trung Hiệp, Tỉnh Vĩnh Long",
+    "slug": "trung-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "01212",
+    "name": "Hiếu Thành",
+    "fullName": "Xã Hiếu Thành, Tỉnh Vĩnh Long",
+    "slug": "hieu-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01217",
+    "name": "Bình Minh",
+    "fullName": "Phường Bình Minh, Tỉnh Vĩnh Long",
+    "slug": "binh-minh",
+    "type": "ward"
+  },
+  {
+    "code": "01218",
+    "name": "Sơn Đông",
+    "fullName": "Phường Sơn Đông, Tỉnh Vĩnh Long",
+    "slug": "son-dong",
+    "type": "ward"
+  },
+  {
+    "code": "01225",
+    "name": "Tiểu Cần",
+    "fullName": "Xã Tiểu Cần, Tỉnh Vĩnh Long",
+    "slug": "tieu-can",
+    "type": "commune"
+  },
+  {
+    "code": "01243",
+    "name": "Bình Đại",
+    "fullName": "Xã Bình Đại, Tỉnh Vĩnh Long",
+    "slug": "binh-dai",
+    "type": "commune"
+  },
+  {
+    "code": "01253",
+    "name": "Long Đức",
+    "fullName": "Phường Long Đức, Tỉnh Vĩnh Long",
+    "slug": "long-duc",
+    "type": "ward"
+  },
+  {
+    "code": "01302",
+    "name": "Tân An",
+    "fullName": "Xã Tân An, Tỉnh Vĩnh Long",
+    "slug": "tan-an",
+    "type": "commune"
+  },
+  {
+    "code": "01333",
+    "name": "Tam Bình",
+    "fullName": "Xã Tam Bình, Tỉnh Vĩnh Long",
+    "slug": "tam-binh",
+    "type": "commune"
+  },
+  {
+    "code": "01343",
+    "name": "Long Hiệp",
+    "fullName": "Xã Long Hiệp, Tỉnh Vĩnh Long",
+    "slug": "long-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "01352",
+    "name": "Ngũ Lạc",
+    "fullName": "Xã Ngũ Lạc, Tỉnh Vĩnh Long",
+    "slug": "ngu-lac",
+    "type": "commune"
+  },
+  {
+    "code": "01366",
+    "name": "Tân Hạnh",
+    "fullName": "Phường Tân Hạnh, Tỉnh Vĩnh Long",
+    "slug": "tan-hanh",
+    "type": "ward"
+  },
+  {
+    "code": "01368",
+    "name": "Đôn Châu",
+    "fullName": "Xã Đôn Châu, Tỉnh Vĩnh Long",
+    "slug": "don-chau",
+    "type": "commune"
+  },
+  {
+    "code": "01379",
+    "name": "Tập Ngãi",
+    "fullName": "Xã Tập Ngãi, Tỉnh Vĩnh Long",
+    "slug": "tap-ngai",
+    "type": "commune"
+  },
+  {
+    "code": "01382",
+    "name": "Tiên Thủy",
+    "fullName": "Xã Tiên Thủy, Tỉnh Vĩnh Long",
+    "slug": "tien-thuy",
+    "type": "commune"
+  },
+  {
+    "code": "01406",
+    "name": "Hiệp Mỹ",
+    "fullName": "Xã Hiệp Mỹ, Tỉnh Vĩnh Long",
+    "slug": "hiep-my",
+    "type": "commune"
+  },
+  {
+    "code": "01422",
+    "name": "Tân Ngãi",
+    "fullName": "Phường Tân Ngãi, Tỉnh Vĩnh Long",
+    "slug": "tan-ngai",
+    "type": "ward"
+  },
+  {
+    "code": "01427",
+    "name": "An Hiệp",
+    "fullName": "Xã An Hiệp, Tỉnh Vĩnh Long",
+    "slug": "an-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "01439",
+    "name": "Hòa Hiệp",
+    "fullName": "Xã Hòa Hiệp, Tỉnh Vĩnh Long",
+    "slug": "hoa-hiep",
+    "type": "commune"
+  },
+  {
+    "code": "01466",
+    "name": "Hàm Giang",
+    "fullName": "Xã Hàm Giang, Tỉnh Vĩnh Long",
+    "slug": "ham-giang",
+    "type": "commune"
+  },
+  {
+    "code": "01470",
+    "name": "Tân Hào",
+    "fullName": "Xã Tân Hào, Tỉnh Vĩnh Long",
+    "slug": "tan-hao",
+    "type": "commune"
+  },
+  {
+    "code": "01498",
+    "name": "Vinh Kim",
+    "fullName": "Xã Vinh Kim, Tỉnh Vĩnh Long",
+    "slug": "vinh-kim",
+    "type": "commune"
+  },
+  {
+    "code": "01511",
+    "name": "Trà Cú",
+    "fullName": "Xã Trà Cú, Tỉnh Vĩnh Long",
+    "slug": "tra-cu",
+    "type": "commune"
+  },
+  {
+    "code": "01513",
+    "name": "Quới Điền",
+    "fullName": "Xã Quới Điền, Tỉnh Vĩnh Long",
+    "slug": "quoi-dien",
+    "type": "commune"
+  },
+  {
+    "code": "01544",
+    "name": "Lưu Nghiệp Anh",
+    "fullName": "Xã Lưu Nghiệp Anh, Tỉnh Vĩnh Long",
+    "slug": "luu-nghiep-anh",
+    "type": "commune"
+  },
+  {
+    "code": "01558",
+    "name": "Thạnh Trị",
+    "fullName": "Xã Thạnh Trị, Tỉnh Vĩnh Long",
+    "slug": "thanh-tri",
+    "type": "commune"
+  },
+  {
+    "code": "01561",
+    "name": "Bình Phước",
+    "fullName": "Xã Bình Phước, Tỉnh Vĩnh Long",
+    "slug": "binh-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "01567",
+    "name": "Mỹ Chánh Hòa",
+    "fullName": "Xã Mỹ Chánh Hòa, Tỉnh Vĩnh Long",
+    "slug": "my-chanh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01574",
+    "name": "Mỹ Thuận",
+    "fullName": "Xã Mỹ Thuận, Tỉnh Vĩnh Long",
+    "slug": "my-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "01580",
+    "name": "Quới An",
+    "fullName": "Xã Quới An, Tỉnh Vĩnh Long",
+    "slug": "quoi-an",
+    "type": "commune"
+  },
+  {
+    "code": "01587",
+    "name": "Cầu Ngang",
+    "fullName": "Xã Cầu Ngang, Tỉnh Vĩnh Long",
+    "slug": "cau-ngang",
+    "type": "commune"
+  },
+  {
+    "code": "01591",
+    "name": "An Ngãi Trung",
+    "fullName": "Xã An Ngãi Trung, Tỉnh Vĩnh Long",
+    "slug": "an-ngai-trung",
+    "type": "commune"
+  },
+  {
+    "code": "01615",
+    "name": "Lộc Thuận",
+    "fullName": "Xã Lộc Thuận, Tỉnh Vĩnh Long",
+    "slug": "loc-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "01620",
+    "name": "Phú Tân",
+    "fullName": "Phường Phú Tân, Tỉnh Vĩnh Long",
+    "slug": "phu-tan",
+    "type": "ward"
+  },
+  {
+    "code": "01632",
+    "name": "Châu Hòa",
+    "fullName": "Xã Châu Hòa, Tỉnh Vĩnh Long",
+    "slug": "chau-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01633",
+    "name": "Hiếu Phụng",
+    "fullName": "Xã Hiếu Phụng, Tỉnh Vĩnh Long",
+    "slug": "hieu-phung",
+    "type": "commune"
+  },
+  {
+    "code": "01640",
+    "name": "An Qui",
+    "fullName": "Xã An Qui, Tỉnh Vĩnh Long",
+    "slug": "an-qui",
+    "type": "commune"
+  },
+  {
+    "code": "01648",
+    "name": "Hùng Hòa",
+    "fullName": "Xã Hùng Hòa, Tỉnh Vĩnh Long",
+    "slug": "hung-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01692",
+    "name": "Hưng Khánh Trung",
+    "fullName": "Xã Hưng Khánh Trung, Tỉnh Vĩnh Long",
+    "slug": "hung-khanh-trung",
+    "type": "commune"
+  },
+  {
+    "code": "01709",
+    "name": "An Phú Tân",
+    "fullName": "Xã An Phú Tân, Tỉnh Vĩnh Long",
+    "slug": "an-phu-tan",
+    "type": "commune"
+  },
+  {
+    "code": "01718",
+    "name": "Trung Ngãi",
+    "fullName": "Xã Trung Ngãi, Tỉnh Vĩnh Long",
+    "slug": "trung-ngai",
+    "type": "commune"
+  },
+  {
+    "code": "01720",
+    "name": "Phước Long",
+    "fullName": "Xã Phước Long, Tỉnh Vĩnh Long",
+    "slug": "phuoc-long",
+    "type": "commune"
+  },
+  {
+    "code": "01799",
+    "name": "Tân Long Hội",
+    "fullName": "Xã Tân Long Hội, Tỉnh Vĩnh Long",
+    "slug": "tan-long-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "01802",
+    "name": "Quới Thiện",
+    "fullName": "Xã Quới Thiện, Tỉnh Vĩnh Long",
+    "slug": "quoi-thien",
+    "type": "commune"
+  },
+  {
+    "code": "01824",
+    "name": "Lương Hòa",
+    "fullName": "Xã Lương Hòa, Tỉnh Vĩnh Long",
+    "slug": "luong-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "01851",
+    "name": "Lương Phú",
+    "fullName": "Xã Lương Phú, Tỉnh Vĩnh Long",
+    "slug": "luong-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01867",
+    "name": "Mỹ Long",
+    "fullName": "Xã Mỹ Long, Tỉnh Vĩnh Long",
+    "slug": "my-long",
+    "type": "commune"
+  },
+  {
+    "code": "01868",
+    "name": "Hòa Thuận",
+    "fullName": "Phường Hòa Thuận, Tỉnh Vĩnh Long",
+    "slug": "hoa-thuan",
+    "type": "ward"
+  },
+  {
+    "code": "01883",
+    "name": "Bảo Thạnh",
+    "fullName": "Xã Bảo Thạnh, Tỉnh Vĩnh Long",
+    "slug": "bao-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "01951",
+    "name": "Duyên Hải",
+    "fullName": "Phường Duyên Hải, Tỉnh Vĩnh Long",
+    "slug": "duyen-hai",
+    "type": "ward"
+  },
+  {
+    "code": "02029",
+    "name": "Lục Sỹ Thành",
+    "fullName": "Xã Lục Sỹ Thành, Tỉnh Vĩnh Long",
+    "slug": "luc-sy-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02047",
+    "name": "Châu Hưng",
+    "fullName": "Xã Châu Hưng, Tỉnh Vĩnh Long",
+    "slug": "chau-hung",
+    "type": "commune"
+  },
+  {
+    "code": "02093",
+    "name": "Đại An",
+    "fullName": "Xã Đại An, Tỉnh Vĩnh Long",
+    "slug": "dai-an",
+    "type": "commune"
+  },
+  {
+    "code": "02186",
+    "name": "Thạnh Phước",
+    "fullName": "Xã Thạnh Phước, Tỉnh Vĩnh Long",
+    "slug": "thanh-phuoc",
+    "type": "commune"
+  },
+  {
+    "code": "02207",
+    "name": "Thới Thuận",
+    "fullName": "Xã Thới Thuận, Tỉnh Vĩnh Long",
+    "slug": "thoi-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "02247",
+    "name": "Thạnh Phong",
+    "fullName": "Xã Thạnh Phong, Tỉnh Vĩnh Long",
+    "slug": "thanh-phong",
+    "type": "commune"
+  },
+  {
+    "code": "02373",
+    "name": "Thạnh Hải",
+    "fullName": "Xã Thạnh Hải, Tỉnh Vĩnh Long",
+    "slug": "thanh-hai",
+    "type": "commune"
+  },
+  {
+    "code": "02469",
+    "name": "Phú Thuận",
+    "fullName": "Xã Phú Thuận, Tỉnh Vĩnh Long",
+    "slug": "phu-thuan",
+    "type": "commune"
+  },
+  {
+    "code": "02472",
+    "name": "Hòa Minh",
+    "fullName": "Xã Hòa Minh, Tỉnh Vĩnh Long",
+    "slug": "hoa-minh",
+    "type": "commune"
+  },
+  {
+    "code": "02500",
+    "name": "Long Vĩnh",
+    "fullName": "Xã Long Vĩnh, Tỉnh Vĩnh Long",
+    "slug": "long-vinh",
+    "type": "commune"
+  },
+  {
+    "code": "02518",
+    "name": "Trường Long Hòa",
+    "fullName": "Phường Trường Long Hòa, Tỉnh Vĩnh Long",
+    "slug": "truong-long-hoa",
+    "type": "ward"
+  },
+  {
+    "code": "02566",
+    "name": "Long Thành",
+    "fullName": "Xã Long Thành, Tỉnh Vĩnh Long",
+    "slug": "long-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02574",
+    "name": "Long Hữu",
+    "fullName": "Xã Long Hữu, Tỉnh Vĩnh Long",
+    "slug": "long-huu",
+    "type": "commune"
+  },
+  {
+    "code": "02643",
+    "name": "Đông Hải",
+    "fullName": "Xã Đông Hải, Tỉnh Vĩnh Long",
+    "slug": "dong-hai",
+    "type": "commune"
+  },
+  {
+    "code": "02696",
+    "name": "Long Hòa",
+    "fullName": "Xã Long Hòa, Tỉnh Vĩnh Long",
+    "slug": "long-hoa",
+    "type": "commune"
+  }
+]

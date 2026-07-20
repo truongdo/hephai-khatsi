@@ -1,0 +1,695 @@
+[
+  {
+    "code": "00215",
+    "name": "Lào Cai",
+    "fullName": "Phường Lào Cai, Tỉnh Lào Cai",
+    "slug": "lao-cai",
+    "type": "ward"
+  },
+  {
+    "code": "00282",
+    "name": "Yên Bái",
+    "fullName": "Phường Yên Bái, Tỉnh Lào Cai",
+    "slug": "yen-bai",
+    "type": "ward"
+  },
+  {
+    "code": "00306",
+    "name": "Cam Đường",
+    "fullName": "Phường Cam Đường, Tỉnh Lào Cai",
+    "slug": "cam-duong",
+    "type": "ward"
+  },
+  {
+    "code": "00875",
+    "name": "Mậu A",
+    "fullName": "Xã Mậu A, Tỉnh Lào Cai",
+    "slug": "mau-a",
+    "type": "commune"
+  },
+  {
+    "code": "01178",
+    "name": "Thác Bà",
+    "fullName": "Xã Thác Bà, Tỉnh Lào Cai",
+    "slug": "thac-ba",
+    "type": "commune"
+  },
+  {
+    "code": "01232",
+    "name": "Bảo Hà",
+    "fullName": "Xã Bảo Hà, Tỉnh Lào Cai",
+    "slug": "bao-ha",
+    "type": "commune"
+  },
+  {
+    "code": "01320",
+    "name": "Bảo Thắng",
+    "fullName": "Xã Bảo Thắng, Tỉnh Lào Cai",
+    "slug": "bao-thang",
+    "type": "commune"
+  },
+  {
+    "code": "01480",
+    "name": "Bắc Hà",
+    "fullName": "Xã Bắc Hà, Tỉnh Lào Cai",
+    "slug": "bac-ha",
+    "type": "commune"
+  },
+  {
+    "code": "01503",
+    "name": "Lục Yên",
+    "fullName": "Xã Lục Yên, Tỉnh Lào Cai",
+    "slug": "luc-yen",
+    "type": "commune"
+  },
+  {
+    "code": "01569",
+    "name": "Yên Bình",
+    "fullName": "Xã Yên Bình, Tỉnh Lào Cai",
+    "slug": "yen-binh",
+    "type": "commune"
+  },
+  {
+    "code": "01576",
+    "name": "Trấn Yên",
+    "fullName": "Xã Trấn Yên, Tỉnh Lào Cai",
+    "slug": "tran-yen",
+    "type": "commune"
+  },
+  {
+    "code": "01630",
+    "name": "Gia Phú",
+    "fullName": "Xã Gia Phú, Tỉnh Lào Cai",
+    "slug": "gia-phu",
+    "type": "commune"
+  },
+  {
+    "code": "01724",
+    "name": "Bát Xát",
+    "fullName": "Xã Bát Xát, Tỉnh Lào Cai",
+    "slug": "bat-xat",
+    "type": "commune"
+  },
+  {
+    "code": "01726",
+    "name": "Xuân Quang",
+    "fullName": "Xã Xuân Quang, Tỉnh Lào Cai",
+    "slug": "xuan-quang",
+    "type": "commune"
+  },
+  {
+    "code": "01756",
+    "name": "Trung Tâm",
+    "fullName": "Phường Trung Tâm, Tỉnh Lào Cai",
+    "slug": "trung-tam",
+    "type": "ward"
+  },
+  {
+    "code": "01782",
+    "name": "Văn Phú",
+    "fullName": "Phường Văn Phú, Tỉnh Lào Cai",
+    "slug": "van-phu",
+    "type": "ward"
+  },
+  {
+    "code": "01849",
+    "name": "Mường Lai",
+    "fullName": "Xã Mường Lai, Tỉnh Lào Cai",
+    "slug": "muong-lai",
+    "type": "commune"
+  },
+  {
+    "code": "01882",
+    "name": "Cầu Thia",
+    "fullName": "Phường Cầu Thia, Tỉnh Lào Cai",
+    "slug": "cau-thia",
+    "type": "ward"
+  },
+  {
+    "code": "01918",
+    "name": "Xuân Ái",
+    "fullName": "Xã Xuân Ái, Tỉnh Lào Cai",
+    "slug": "xuan-ai",
+    "type": "commune"
+  },
+  {
+    "code": "01947",
+    "name": "Mường Khương",
+    "fullName": "Xã Mường Khương, Tỉnh Lào Cai",
+    "slug": "muong-khuong",
+    "type": "commune"
+  },
+  {
+    "code": "01961",
+    "name": "Bảo Ái",
+    "fullName": "Xã Bảo Ái, Tỉnh Lào Cai",
+    "slug": "bao-ai",
+    "type": "commune"
+  },
+  {
+    "code": "01987",
+    "name": "Văn Bàn",
+    "fullName": "Xã Văn Bàn, Tỉnh Lào Cai",
+    "slug": "van-ban",
+    "type": "commune"
+  },
+  {
+    "code": "01998",
+    "name": "Văn Chấn",
+    "fullName": "Xã Văn Chấn, Tỉnh Lào Cai",
+    "slug": "van-chan",
+    "type": "commune"
+  },
+  {
+    "code": "02045",
+    "name": "Âu Lâu",
+    "fullName": "Phường Âu Lâu, Tỉnh Lào Cai",
+    "slug": "au-lau",
+    "type": "ward"
+  },
+  {
+    "code": "02072",
+    "name": "Sa Pa",
+    "fullName": "Phường Sa Pa, Tỉnh Lào Cai",
+    "slug": "sa-pa",
+    "type": "ward"
+  },
+  {
+    "code": "02074",
+    "name": "Si Ma Cai",
+    "fullName": "Xã Si Ma Cai, Tỉnh Lào Cai",
+    "slug": "si-ma-cai",
+    "type": "commune"
+  },
+  {
+    "code": "02140",
+    "name": "Đông Cuông",
+    "fullName": "Xã Đông Cuông, Tỉnh Lào Cai",
+    "slug": "dong-cuong",
+    "type": "commune"
+  },
+  {
+    "code": "02163",
+    "name": "Bảo Yên",
+    "fullName": "Xã Bảo Yên, Tỉnh Lào Cai",
+    "slug": "bao-yen",
+    "type": "commune"
+  },
+  {
+    "code": "02231",
+    "name": "Tằng Lỏong",
+    "fullName": "Xã Tằng Lỏong, Tỉnh Lào Cai",
+    "slug": "tang-loong",
+    "type": "commune"
+  },
+  {
+    "code": "02253",
+    "name": "Tân Lĩnh",
+    "fullName": "Xã Tân Lĩnh, Tỉnh Lào Cai",
+    "slug": "tan-linh",
+    "type": "commune"
+  },
+  {
+    "code": "02287",
+    "name": "Lâm Thượng",
+    "fullName": "Xã Lâm Thượng, Tỉnh Lào Cai",
+    "slug": "lam-thuong",
+    "type": "commune"
+  },
+  {
+    "code": "02290",
+    "name": "Púng Luông",
+    "fullName": "Xã Púng Luông, Tỉnh Lào Cai",
+    "slug": "pung-luong",
+    "type": "commune"
+  },
+  {
+    "code": "02328",
+    "name": "Nghĩa Tâm",
+    "fullName": "Xã Nghĩa Tâm, Tỉnh Lào Cai",
+    "slug": "nghia-tam",
+    "type": "commune"
+  },
+  {
+    "code": "02343",
+    "name": "Chấn Thịnh",
+    "fullName": "Xã Chấn Thịnh, Tỉnh Lào Cai",
+    "slug": "chan-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "02349",
+    "name": "Nghĩa Lộ",
+    "fullName": "Phường Nghĩa Lộ, Tỉnh Lào Cai",
+    "slug": "nghia-lo",
+    "type": "ward"
+  },
+  {
+    "code": "02351",
+    "name": "Tả Van",
+    "fullName": "Xã Tả Van, Tỉnh Lào Cai",
+    "slug": "ta-van",
+    "type": "commune"
+  },
+  {
+    "code": "02360",
+    "name": "Bản Lầu",
+    "fullName": "Xã Bản Lầu, Tỉnh Lào Cai",
+    "slug": "ban-lau",
+    "type": "commune"
+  },
+  {
+    "code": "02399",
+    "name": "Võ Lao",
+    "fullName": "Xã Võ Lao, Tỉnh Lào Cai",
+    "slug": "vo-lao",
+    "type": "commune"
+  },
+  {
+    "code": "02409",
+    "name": "Nam Cường",
+    "fullName": "Phường Nam Cường, Tỉnh Lào Cai",
+    "slug": "nam-cuong",
+    "type": "ward"
+  },
+  {
+    "code": "02421",
+    "name": "Khánh Hòa",
+    "fullName": "Xã Khánh Hòa, Tỉnh Lào Cai",
+    "slug": "khanh-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02440",
+    "name": "Bảo Nhai",
+    "fullName": "Xã Bảo Nhai, Tỉnh Lào Cai",
+    "slug": "bao-nhai",
+    "type": "commune"
+  },
+  {
+    "code": "02441",
+    "name": "Cảm Nhân",
+    "fullName": "Xã Cảm Nhân, Tỉnh Lào Cai",
+    "slug": "cam-nhan",
+    "type": "commune"
+  },
+  {
+    "code": "02465",
+    "name": "Phong Hải",
+    "fullName": "Xã Phong Hải, Tỉnh Lào Cai",
+    "slug": "phong-hai",
+    "type": "commune"
+  },
+  {
+    "code": "02495",
+    "name": "Lâm Giang",
+    "fullName": "Xã Lâm Giang, Tỉnh Lào Cai",
+    "slug": "lam-giang",
+    "type": "commune"
+  },
+  {
+    "code": "02516",
+    "name": "Quy Mông",
+    "fullName": "Xã Quy Mông, Tỉnh Lào Cai",
+    "slug": "quy-mong",
+    "type": "commune"
+  },
+  {
+    "code": "02564",
+    "name": "Yên Thành",
+    "fullName": "Xã Yên Thành, Tỉnh Lào Cai",
+    "slug": "yen-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02570",
+    "name": "Phúc Lợi",
+    "fullName": "Xã Phúc Lợi, Tỉnh Lào Cai",
+    "slug": "phuc-loi",
+    "type": "commune"
+  },
+  {
+    "code": "02600",
+    "name": "Gia Hội",
+    "fullName": "Xã Gia Hội, Tỉnh Lào Cai",
+    "slug": "gia-hoi",
+    "type": "commune"
+  },
+  {
+    "code": "02609",
+    "name": "Mù Cang Chải",
+    "fullName": "Xã Mù Cang Chải, Tỉnh Lào Cai",
+    "slug": "mu-cang-chai",
+    "type": "commune"
+  },
+  {
+    "code": "02615",
+    "name": "Thượng Bằng La",
+    "fullName": "Xã Thượng Bằng La, Tỉnh Lào Cai",
+    "slug": "thuong-bang-la",
+    "type": "commune"
+  },
+  {
+    "code": "02624",
+    "name": "Pha Long",
+    "fullName": "Xã Pha Long, Tỉnh Lào Cai",
+    "slug": "pha-long",
+    "type": "commune"
+  },
+  {
+    "code": "02640",
+    "name": "Khánh Yên",
+    "fullName": "Xã Khánh Yên, Tỉnh Lào Cai",
+    "slug": "khanh-yen",
+    "type": "commune"
+  },
+  {
+    "code": "02650",
+    "name": "Thượng Hà",
+    "fullName": "Xã Thượng Hà, Tỉnh Lào Cai",
+    "slug": "thuong-ha",
+    "type": "commune"
+  },
+  {
+    "code": "02656",
+    "name": "Hưng Khánh",
+    "fullName": "Xã Hưng Khánh, Tỉnh Lào Cai",
+    "slug": "hung-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "02658",
+    "name": "Cao Sơn",
+    "fullName": "Xã Cao Sơn, Tỉnh Lào Cai",
+    "slug": "cao-son",
+    "type": "commune"
+  },
+  {
+    "code": "02666",
+    "name": "Nghĩa Đô",
+    "fullName": "Xã Nghĩa Đô, Tỉnh Lào Cai",
+    "slug": "nghia-do",
+    "type": "commune"
+  },
+  {
+    "code": "02674",
+    "name": "Hạnh Phúc",
+    "fullName": "Xã Hạnh Phúc, Tỉnh Lào Cai",
+    "slug": "hanh-phuc",
+    "type": "commune"
+  },
+  {
+    "code": "02687",
+    "name": "Châu Quế",
+    "fullName": "Xã Châu Quế, Tỉnh Lào Cai",
+    "slug": "chau-que",
+    "type": "commune"
+  },
+  {
+    "code": "02694",
+    "name": "Liên Sơn",
+    "fullName": "Xã Liên Sơn, Tỉnh Lào Cai",
+    "slug": "lien-son",
+    "type": "commune"
+  },
+  {
+    "code": "02697",
+    "name": "Tú Lệ",
+    "fullName": "Xã Tú Lệ, Tỉnh Lào Cai",
+    "slug": "tu-le",
+    "type": "commune"
+  },
+  {
+    "code": "02711",
+    "name": "Xuân Hòa",
+    "fullName": "Xã Xuân Hòa, Tỉnh Lào Cai",
+    "slug": "xuan-hoa",
+    "type": "commune"
+  },
+  {
+    "code": "02728",
+    "name": "Lương Thịnh",
+    "fullName": "Xã Lương Thịnh, Tỉnh Lào Cai",
+    "slug": "luong-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "02743",
+    "name": "Sơn Lương",
+    "fullName": "Xã Sơn Lương, Tỉnh Lào Cai",
+    "slug": "son-luong",
+    "type": "commune"
+  },
+  {
+    "code": "02744",
+    "name": "Hợp Thành",
+    "fullName": "Xã Hợp Thành, Tỉnh Lào Cai",
+    "slug": "hop-thanh",
+    "type": "commune"
+  },
+  {
+    "code": "02754",
+    "name": "Trịnh Tường",
+    "fullName": "Xã Trịnh Tường, Tỉnh Lào Cai",
+    "slug": "trinh-tuong",
+    "type": "commune"
+  },
+  {
+    "code": "02766",
+    "name": "Dền Sáng",
+    "fullName": "Xã Dền Sáng, Tỉnh Lào Cai",
+    "slug": "den-sang",
+    "type": "commune"
+  },
+  {
+    "code": "02768",
+    "name": "Lùng Phình",
+    "fullName": "Xã Lùng Phình, Tỉnh Lào Cai",
+    "slug": "lung-phinh",
+    "type": "commune"
+  },
+  {
+    "code": "02804",
+    "name": "Tân Hợp",
+    "fullName": "Xã Tân Hợp, Tỉnh Lào Cai",
+    "slug": "tan-hop",
+    "type": "commune"
+  },
+  {
+    "code": "02806",
+    "name": "Trạm Tấu",
+    "fullName": "Xã Trạm Tấu, Tỉnh Lào Cai",
+    "slug": "tram-tau",
+    "type": "commune"
+  },
+  {
+    "code": "02811",
+    "name": "Cát Thịnh",
+    "fullName": "Xã Cát Thịnh, Tỉnh Lào Cai",
+    "slug": "cat-thinh",
+    "type": "commune"
+  },
+  {
+    "code": "02832",
+    "name": "Cốc San",
+    "fullName": "Xã Cốc San, Tỉnh Lào Cai",
+    "slug": "coc-san",
+    "type": "commune"
+  },
+  {
+    "code": "02846",
+    "name": "Phình Hồ",
+    "fullName": "Xã Phình Hồ, Tỉnh Lào Cai",
+    "slug": "phinh-ho",
+    "type": "commune"
+  },
+  {
+    "code": "02858",
+    "name": "Việt Hồng",
+    "fullName": "Xã Việt Hồng, Tỉnh Lào Cai",
+    "slug": "viet-hong",
+    "type": "commune"
+  },
+  {
+    "code": "02897",
+    "name": "Y Tý",
+    "fullName": "Xã Y Tý, Tỉnh Lào Cai",
+    "slug": "y-ty",
+    "type": "commune"
+  },
+  {
+    "code": "02906",
+    "name": "Lao Chải",
+    "fullName": "Xã Lao Chải, Tỉnh Lào Cai",
+    "slug": "lao-chai",
+    "type": "commune"
+  },
+  {
+    "code": "02915",
+    "name": "Mỏ Vàng",
+    "fullName": "Xã Mỏ Vàng, Tỉnh Lào Cai",
+    "slug": "mo-vang",
+    "type": "commune"
+  },
+  {
+    "code": "02917",
+    "name": "Nậm Có",
+    "fullName": "Xã Nậm Có, Tỉnh Lào Cai",
+    "slug": "nam-co",
+    "type": "commune"
+  },
+  {
+    "code": "02924",
+    "name": "Tả Phìn",
+    "fullName": "Xã Tả Phìn, Tỉnh Lào Cai",
+    "slug": "ta-phin",
+    "type": "commune"
+  },
+  {
+    "code": "02967",
+    "name": "Bản Hồ",
+    "fullName": "Xã Bản Hồ, Tỉnh Lào Cai",
+    "slug": "ban-ho",
+    "type": "commune"
+  },
+  {
+    "code": "02969",
+    "name": "Khao Mang",
+    "fullName": "Xã Khao Mang, Tỉnh Lào Cai",
+    "slug": "khao-mang",
+    "type": "commune"
+  },
+  {
+    "code": "02973",
+    "name": "Chiềng Ken",
+    "fullName": "Xã Chiềng Ken, Tỉnh Lào Cai",
+    "slug": "chieng-ken",
+    "type": "commune"
+  },
+  {
+    "code": "02985",
+    "name": "Minh Lương",
+    "fullName": "Xã Minh Lương, Tỉnh Lào Cai",
+    "slug": "minh-luong",
+    "type": "commune"
+  },
+  {
+    "code": "03000",
+    "name": "Dương Quỳ",
+    "fullName": "Xã Dương Quỳ, Tỉnh Lào Cai",
+    "slug": "duong-quy",
+    "type": "commune"
+  },
+  {
+    "code": "03009",
+    "name": "Cốc Lầu",
+    "fullName": "Xã Cốc Lầu, Tỉnh Lào Cai",
+    "slug": "coc-lau",
+    "type": "commune"
+  },
+  {
+    "code": "03023",
+    "name": "Bản Xèo",
+    "fullName": "Xã Bản Xèo, Tỉnh Lào Cai",
+    "slug": "ban-xeo",
+    "type": "commune"
+  },
+  {
+    "code": "03025",
+    "name": "Phúc Khánh",
+    "fullName": "Xã Phúc Khánh, Tỉnh Lào Cai",
+    "slug": "phuc-khanh",
+    "type": "commune"
+  },
+  {
+    "code": "03060",
+    "name": "Phong Dụ Hạ",
+    "fullName": "Xã Phong Dụ Hạ, Tỉnh Lào Cai",
+    "slug": "phong-du-ha",
+    "type": "commune"
+  },
+  {
+    "code": "03085",
+    "name": "Ngũ Chỉ Sơn",
+    "fullName": "Xã Ngũ Chỉ Sơn, Tỉnh Lào Cai",
+    "slug": "ngu-chi-son",
+    "type": "commune"
+  },
+  {
+    "code": "03108",
+    "name": "Mường Bo",
+    "fullName": "Xã Mường Bo, Tỉnh Lào Cai",
+    "slug": "muong-bo",
+    "type": "commune"
+  },
+  {
+    "code": "03134",
+    "name": "Mường Hum",
+    "fullName": "Xã Mường Hum, Tỉnh Lào Cai",
+    "slug": "muong-hum",
+    "type": "commune"
+  },
+  {
+    "code": "03140",
+    "name": "Phong Dụ Thượng",
+    "fullName": "Xã Phong Dụ Thượng, Tỉnh Lào Cai",
+    "slug": "phong-du-thuong",
+    "type": "commune"
+  },
+  {
+    "code": "03156",
+    "name": "Tả Củ Tỷ",
+    "fullName": "Xã Tả Củ Tỷ, Tỉnh Lào Cai",
+    "slug": "ta-cu-ty",
+    "type": "commune"
+  },
+  {
+    "code": "03201",
+    "name": "A Mú Sung",
+    "fullName": "Xã A Mú Sung, Tỉnh Lào Cai",
+    "slug": "a-mu-sung",
+    "type": "commune"
+  },
+  {
+    "code": "03222",
+    "name": "Sín Chéng",
+    "fullName": "Xã Sín Chéng, Tỉnh Lào Cai",
+    "slug": "sin-cheng",
+    "type": "commune"
+  },
+  {
+    "code": "03232",
+    "name": "Nậm Chày",
+    "fullName": "Xã Nậm Chày, Tỉnh Lào Cai",
+    "slug": "nam-chay",
+    "type": "commune"
+  },
+  {
+    "code": "03280",
+    "name": "Bản Liền",
+    "fullName": "Xã Bản Liền, Tỉnh Lào Cai",
+    "slug": "ban-lien",
+    "type": "commune"
+  },
+  {
+    "code": "03305",
+    "name": "Chế Tạo",
+    "fullName": "Xã Chế Tạo, Tỉnh Lào Cai",
+    "slug": "che-tao",
+    "type": "commune"
+  },
+  {
+    "code": "03311",
+    "name": "Tà Xi Láng",
+    "fullName": "Xã Tà Xi Láng, Tỉnh Lào Cai",
+    "slug": "ta-xi-lang",
+    "type": "commune"
+  },
+  {
+    "code": "03315",
+    "name": "Nậm Xé",
+    "fullName": "Xã Nậm Xé, Tỉnh Lào Cai",
+    "slug": "nam-xe",
+    "type": "commune"
+  }
+]

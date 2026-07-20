@@ -5,11 +5,19 @@ import {
   Select,
   SimpleGrid,
   Stack,
+  Text,
   Textarea,
   TextInput,
 } from '@mantine/core'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { VietnamAddressFields } from '#/components/address/VietnamAddressFields'
+import type { AddressDraft } from '#/domain/address'
+import {
+  addressDraftToValue,
+  hydrateAddress,
+  validateAddressDraft,
+} from '#/domain/address'
 import type { GiaoPham, Member, PreceptRecord, SanghaType } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { fillerKeys } from '#/query/fillerKeys'
@@ -85,7 +93,7 @@ type MemberDraft = {
   danToc: string
   dienThoai: string
   email: string
-  diaChiThuongTru: string
+  diaChiThuongTru: AddressDraft
   ngayXuatGia: string
   noiXuatGia: string
   hienTuHoc: string
@@ -207,7 +215,7 @@ function emptyMemberDraft(initial: Partial<Member> = {}): MemberDraft {
     danToc: initial.danToc ?? '',
     dienThoai: initial.dienThoai ?? '',
     email: initial.email ?? '',
-    diaChiThuongTru: initial.diaChiThuongTru ?? '',
+    diaChiThuongTru: hydrateAddress(initial.diaChiThuongTru),
     ngayXuatGia: initial.ngayXuatGia ?? '',
     noiXuatGia: initial.noiXuatGia ?? '',
     hienTuHoc: initial.hienTuHoc ?? '',
@@ -347,7 +355,7 @@ function buildPatch(draft: MemberDraft): MemberProfilePatch {
     danToc: textOrUndefined(draft.danToc),
     dienThoai: textOrUndefined(draft.dienThoai),
     email: textOrUndefined(draft.email),
-    diaChiThuongTru: textOrUndefined(draft.diaChiThuongTru),
+    diaChiThuongTru: addressDraftToValue(draft.diaChiThuongTru),
     ngayXuatGia: textOrUndefined(draft.ngayXuatGia),
     noiXuatGia: textOrUndefined(draft.noiXuatGia),
     hienTuHoc: textOrUndefined(draft.hienTuHoc),
@@ -460,6 +468,10 @@ export function MemberEditorForm({
   )
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
+  const [addressErrors, setAddressErrors] = useState<{
+    city?: string
+    ward?: string
+  }>({})
   const disabled = status === 'view'
   const ranks = rankOptions(sanghaType)
 
@@ -676,7 +688,28 @@ export function MemberEditorForm({
     <FillerEditorShell
       title={title}
       status={status}
-      onSave={status === 'draft' ? () => saveMutation.mutate() : undefined}
+      onSave={
+        status === 'draft'
+          ? () => {
+              const result = validateAddressDraft(draft.diaChiThuongTru)
+              if (!result.valid) {
+                setAddressErrors({
+                  city:
+                    result.errors.city === 'REQUIRED'
+                      ? m.filler_address_city_required()
+                      : undefined,
+                  ward:
+                    result.errors.ward === 'REQUIRED'
+                      ? m.filler_address_ward_required()
+                      : undefined,
+                })
+                return
+              }
+              setAddressErrors({})
+              saveMutation.mutate()
+            }
+          : undefined
+      }
       savePending={saveMutation.isPending}
       saveError={saveError}
       saveSuccess={saveSuccess}
@@ -801,14 +834,16 @@ export function MemberEditorForm({
               disabled={disabled}
             />
           </SimpleGrid>
-          <TextInput
-            label={m.filler_field_dia_chi_thuong_tru()}
-            value={draft.diaChiThuongTru}
-            onChange={(event) =>
-              updateDraft('diaChiThuongTru', event.currentTarget.value)
-            }
-            disabled={disabled}
-          />
+          <Stack gap="xs">
+            <Text fw={600}>{m.filler_field_dia_chi_thuong_tru()}</Text>
+            <VietnamAddressFields
+              label={m.filler_field_dia_chi_thuong_tru()}
+              value={draft.diaChiThuongTru}
+              onChange={(value) => updateDraft('diaChiThuongTru', value)}
+              disabled={disabled}
+              errors={addressErrors}
+            />
+          </Stack>
         </FormSection>
 
         <FormSection title={m.filler_section_xuat_gia()}>
