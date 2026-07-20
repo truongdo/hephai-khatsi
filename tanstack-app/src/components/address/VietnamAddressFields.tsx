@@ -1,5 +1,5 @@
 import { Select, SimpleGrid, Stack, TextInput } from '@mantine/core'
-import { useEffect, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { cities, getWards } from '#/data/vietnam-locations'
 import type { Ward } from '#/data/vietnam-locations'
 import type { AddressDraft } from '#/domain/address'
@@ -13,13 +13,23 @@ export type VietnamAddressFieldsProps = {
   errors?: { city?: string; ward?: string }
 }
 
-export function VietnamAddressFields({
-  label,
-  value,
-  onChange,
-  disabled = false,
+type LocationFields = Omit<AddressDraft, 'line'>
+
+type LocationSelectsProps = {
+  cityCode: string
+  wardCode: string
+  disabled: boolean
+  errors?: { city?: string; ward?: string }
+  onLocationChange: (location: LocationFields) => void
+}
+
+const LocationSelects = memo(function LocationSelects({
+  cityCode,
+  wardCode,
+  disabled,
   errors,
-}: VietnamAddressFieldsProps) {
+  onLocationChange,
+}: LocationSelectsProps) {
   const [wards, setWards] = useState<Ward[]>([])
   const [wardsLoading, setWardsLoading] = useState(false)
 
@@ -42,13 +52,13 @@ export function VietnamAddressFields({
   )
 
   useEffect(() => {
-    if (!value.cityCode) {
+    if (!cityCode) {
       setWards([])
       return
     }
     let cancelled = false
     setWardsLoading(true)
-    getWards(value.cityCode)
+    getWards(cityCode)
       .then((loaded) => {
         if (!cancelled) setWards(loaded)
       })
@@ -58,54 +68,82 @@ export function VietnamAddressFields({
     return () => {
       cancelled = true
     }
-  }, [value.cityCode])
+  }, [cityCode])
 
-  const handleCityChange = (cityCode: string | null) => {
-    const city = cities.find((item) => item.code === cityCode)
-    onChange({
-      ...value,
-      cityCode: cityCode ?? '',
+  const handleCityChange = (nextCityCode: string | null) => {
+    const city = cities.find((item) => item.code === nextCityCode)
+    onLocationChange({
+      cityCode: nextCityCode ?? '',
       cityName: city?.name ?? '',
       wardCode: '',
       wardName: '',
     })
   }
 
-  const handleWardChange = (wardCode: string | null) => {
-    const ward = wards.find((item) => item.code === wardCode)
-    onChange({
-      ...value,
-      wardCode: wardCode ?? '',
+  const handleWardChange = (nextWardCode: string | null) => {
+    const ward = wards.find((item) => item.code === nextWardCode)
+    const city = cities.find((item) => item.code === cityCode)
+    onLocationChange({
+      cityCode,
+      cityName: city?.name ?? '',
+      wardCode: nextWardCode ?? '',
       wardName: ward?.name ?? '',
     })
   }
 
   return (
+    <SimpleGrid cols={{ base: 1, sm: 2 }}>
+      <Select
+        label={m.filler_field_city()}
+        placeholder={m.filler_ph_city()}
+        data={cityOptions}
+        value={cityCode || null}
+        onChange={handleCityChange}
+        searchable
+        disabled={disabled}
+        error={errors?.city}
+      />
+      <Select
+        label={m.filler_field_ward()}
+        placeholder={
+          wardsLoading ? m.filler_address_wards_loading() : m.filler_ph_ward()
+        }
+        data={wardOptions}
+        value={wardCode || null}
+        onChange={handleWardChange}
+        searchable
+        disabled={disabled || !cityCode || wardsLoading}
+        error={errors?.ward}
+      />
+    </SimpleGrid>
+  )
+})
+
+export const VietnamAddressFields = memo(function VietnamAddressFields({
+  label,
+  value,
+  onChange,
+  disabled = false,
+  errors,
+}: VietnamAddressFieldsProps) {
+  const valueRef = useRef(value)
+  valueRef.current = value
+  const onChangeRef = useRef(onChange)
+  onChangeRef.current = onChange
+
+  const onLocationChange = useCallback((location: LocationFields) => {
+    onChangeRef.current({ ...location, line: valueRef.current.line })
+  }, [])
+
+  return (
     <Stack gap="sm" aria-label={label}>
-      <SimpleGrid cols={{ base: 1, sm: 2 }}>
-        <Select
-          label={m.filler_field_city()}
-          placeholder={m.filler_ph_city()}
-          data={cityOptions}
-          value={value.cityCode || null}
-          onChange={handleCityChange}
-          searchable
-          disabled={disabled}
-          error={errors?.city}
-        />
-        <Select
-          label={m.filler_field_ward()}
-          placeholder={
-            wardsLoading ? m.filler_address_wards_loading() : m.filler_ph_ward()
-          }
-          data={wardOptions}
-          value={value.wardCode || null}
-          onChange={handleWardChange}
-          searchable
-          disabled={disabled || !value.cityCode || wardsLoading}
-          error={errors?.ward}
-        />
-      </SimpleGrid>
+      <LocationSelects
+        cityCode={value.cityCode}
+        wardCode={value.wardCode}
+        disabled={disabled}
+        errors={errors}
+        onLocationChange={onLocationChange}
+      />
       <TextInput
         label={m.filler_field_address_line()}
         placeholder={m.filler_ph_address_line()}
@@ -117,4 +155,4 @@ export function VietnamAddressFields({
       />
     </Stack>
   )
-}
+})

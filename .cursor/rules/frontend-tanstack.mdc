@@ -40,3 +40,4 @@ When planning or coding, treat re-renders as a first-class concern:
 - Prefer Mantine props/`styles`/`classNames` over new React state for pure visual toggles when possible.
 - Do not add `useMemo`/`useCallback` by default; use them only for proven unstable deps or expensive work.
 - In plans: call out high-frequency update paths and how the tree is split to limit re-paints.
+- **Large multi-section forms:** follow `.cursor/rules/large-forms-rerender.mdc` — memoized sections + `setDraft`, never one monolith that re-renders all fields/Selects per keystroke.

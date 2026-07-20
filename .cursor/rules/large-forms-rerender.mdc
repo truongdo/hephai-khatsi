@@ -1,0 +1,61 @@
+---
+description: Prevent laggy large controlled forms from full-tree re-renders
+globs: tanstack-app/src/components/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Large forms — isolate keystroke re-renders
+
+Multi-section controlled forms must not re-render the entire tree on every keystroke.
+
+## Required pattern
+
+1. Keep one `draft` / `setDraft` in the parent shell (save still reads full draft).
+2. Split each `FormSection` into a **`memo()` child** (or cache the section element with `useMemo` + field deps).
+3. Pass **`setDraft`** (stable) and **only that section’s field values** — never the whole draft object.
+4. Read `event.currentTarget.value` **before** calling `setDraft` (updaters run async; `currentTarget` may be null).
+5. For address / searchable `Select`s: `memo` the control, keep **stable `onChange`** (`useCallback` + `setDraft`), and do not pass unrelated fields (e.g. address line) into location selects.
+
+```tsx
+// ✅ memo section + setDraft + field slices
+export const IdentitySection = memo(function IdentitySection({
+  danhHieu,
+  setDraft,
+  disabled,
+}: {
+  danhHieu: string
+  setDraft: Dispatch<SetStateAction<TempleDraft>>
+  disabled: boolean
+}) {
+  return (
+    <TextInput
+      value={danhHieu}
+      onChange={(event) => {
+        const value = event.currentTarget.value
+        setDraft((current) => ({ ...current, danhHieu: value }))
+      }}
+      disabled={disabled}
+    />
+  )
+})
+
+// ❌ one component + one draft → every keystroke rebuilds all sections / Selects
+function BigForm() {
+  const [draft, setDraft] = useState(empty)
+  return (
+    <>
+      <TextInput value={draft.a} onChange={(e) => setDraft({ ...draft, a: e.currentTarget.value })} />
+      <ExpensiveAddressFields value={draft.address} onChange={(v) => setDraft({ ...draft, address: v })} />
+      {/* dozens more fields */}
+    </>
+  )
+}
+```
+
+## Checklist before merging a large form
+
+- [ ] Typing in section A does not re-render section B (React Profiler).
+- [ ] Address city/ward `Select`s do not re-render when only the address line changes.
+- [ ] No inline `onChange` passed into memoized heavy children unless stabilized.
+
+See `TempleEditorForm.tsx` + `TempleEditorFormSections.tsx` and `VietnamAddressFields.tsx`.

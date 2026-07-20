@@ -10,7 +10,7 @@ import {
   TextInput,
 } from '@mantine/core'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { VietnamAddressFields } from '#/components/address/VietnamAddressFields'
 import type { AddressDraft } from '#/domain/address'
 import {
@@ -473,7 +473,7 @@ export function MemberEditorForm({
     ward?: string
   }>({})
   const disabled = status === 'view'
-  const ranks = rankOptions(sanghaType)
+  const ranks = useMemo(() => rankOptions(sanghaType), [sanghaType])
 
   const saveMutation = useMutation({
     mutationFn: () =>
@@ -621,6 +621,172 @@ export function MemberEditorForm({
       }
     })
 
+  const onDiaChiThuongTruChange = useCallback(
+    (value: AddressDraft) =>
+      setDraft((current) => ({ ...current, diaChiThuongTru: value })),
+    [],
+  )
+
+  const identitySection = useMemo(
+    () => (
+      <FormSection title={m.filler_section_identity()}>
+        <SimpleGrid cols={{ base: 1, sm: 2 }}>
+          <TextInput
+            label={m.filler_field_the_danh()}
+            value={draft.theDanh}
+            onChange={(event) =>
+              updateDraft('theDanh', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+          <TextInput
+            label={m.filler_field_phap_danh()}
+            value={draft.phapDanh}
+            onChange={(event) =>
+              updateDraft('phapDanh', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+          <TextInput
+            label={m.filler_field_ngay_sinh()}
+            value={draft.ngaySinh}
+            onChange={(event) =>
+              updateDraft('ngaySinh', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+          <TextInput
+            label={m.filler_field_noi_sinh()}
+            value={draft.noiSinh}
+            onChange={(event) =>
+              updateDraft('noiSinh', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+          <TextInput
+            label={m.filler_field_nguyen_quan()}
+            value={draft.nguyenQuan}
+            onChange={(event) =>
+              updateDraft('nguyenQuan', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+          <TextInput
+            label={m.filler_field_cccd()}
+            value={resolvedCccd}
+            disabled={!isCreate || disabled}
+            onChange={(event) => setCccdDraft(event.currentTarget.value)}
+            required={isCreate}
+          />
+          <TextInput
+            label={m.filler_field_cccd_ngay_cap()}
+            value={draft.cccdMeta.ngayCap}
+            onChange={(event) =>
+              updateNested('cccdMeta', 'ngayCap', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+          <TextInput
+            label={m.filler_field_cccd_noi_cap()}
+            value={draft.cccdMeta.noiCap}
+            onChange={(event) =>
+              updateNested('cccdMeta', 'noiCap', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+          <TextInput
+            label={m.filler_field_cntn_so()}
+            value={draft.cntn.so}
+            onChange={(event) =>
+              updateNested('cntn', 'so', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+          <TextInput
+            label={m.filler_field_cntn_ngay_cap()}
+            value={draft.cntn.ngayCap}
+            onChange={(event) =>
+              updateNested('cntn', 'ngayCap', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+          <TextInput
+            label={m.filler_field_cntn_noi_cap()}
+            value={draft.cntn.noiCap}
+            onChange={(event) =>
+              updateNested('cntn', 'noiCap', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+          <TextInput
+            label={m.filler_field_dan_toc()}
+            value={draft.danToc}
+            onChange={(event) =>
+              updateDraft('danToc', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+        </SimpleGrid>
+      </FormSection>
+    ),
+    [
+      draft.theDanh,
+      draft.phapDanh,
+      draft.ngaySinh,
+      draft.noiSinh,
+      draft.nguyenQuan,
+      draft.cccdMeta,
+      draft.cntn,
+      draft.danToc,
+      resolvedCccd,
+      isCreate,
+      disabled,
+    ],
+  )
+
+  const contactSection = useMemo(
+    () => (
+      <FormSection title={m.filler_section_contact()}>
+        <SimpleGrid cols={{ base: 1, sm: 2 }}>
+          <TextInput
+            label={m.filler_field_dien_thoai()}
+            value={draft.dienThoai}
+            onChange={(event) =>
+              updateDraft('dienThoai', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+          <TextInput
+            label={m.filler_field_email()}
+            value={draft.email}
+            onChange={(event) =>
+              updateDraft('email', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+        </SimpleGrid>
+        <Stack gap="xs">
+          <Text fw={600}>{m.filler_field_dia_chi_thuong_tru()}</Text>
+          <VietnamAddressFields
+            label={m.filler_field_dia_chi_thuong_tru()}
+            value={draft.diaChiThuongTru}
+            onChange={onDiaChiThuongTruChange}
+            disabled={disabled}
+            errors={addressErrors}
+          />
+        </Stack>
+      </FormSection>
+    ),
+    [
+      draft.dienThoai,
+      draft.email,
+      draft.diaChiThuongTru,
+      onDiaChiThuongTruChange,
+      addressErrors,
+      disabled,
+    ],
+  )
+
   const renderChucVuRows = (key: 'chucVuHePhai' | 'chucVuGhpgvn') =>
     draft[key].map((row, index) => (
       <Fieldset
@@ -684,168 +850,9 @@ export function MemberEditorForm({
       </Fieldset>
     ))
 
-  return (
-    <FillerEditorShell
-      title={title}
-      status={status}
-      onSave={
-        status === 'draft'
-          ? () => {
-              const result = validateAddressDraft(draft.diaChiThuongTru)
-              if (!result.valid) {
-                setAddressErrors({
-                  city:
-                    result.errors.city === 'REQUIRED'
-                      ? m.filler_address_city_required()
-                      : undefined,
-                  ward:
-                    result.errors.ward === 'REQUIRED'
-                      ? m.filler_address_ward_required()
-                      : undefined,
-                })
-                return
-              }
-              setAddressErrors({})
-              saveMutation.mutate()
-            }
-          : undefined
-      }
-      savePending={saveMutation.isPending}
-      saveError={saveError}
-      saveSuccess={saveSuccess}
-    >
-      <Stack gap="xl" maw={760}>
-        <FormSection title={m.filler_section_identity()}>
-          <SimpleGrid cols={{ base: 1, sm: 2 }}>
-            <TextInput
-              label={m.filler_field_the_danh()}
-              value={draft.theDanh}
-              onChange={(event) =>
-                updateDraft('theDanh', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-            <TextInput
-              label={m.filler_field_phap_danh()}
-              value={draft.phapDanh}
-              onChange={(event) =>
-                updateDraft('phapDanh', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-            <TextInput
-              label={m.filler_field_ngay_sinh()}
-              value={draft.ngaySinh}
-              onChange={(event) =>
-                updateDraft('ngaySinh', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-            <TextInput
-              label={m.filler_field_noi_sinh()}
-              value={draft.noiSinh}
-              onChange={(event) =>
-                updateDraft('noiSinh', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-            <TextInput
-              label={m.filler_field_nguyen_quan()}
-              value={draft.nguyenQuan}
-              onChange={(event) =>
-                updateDraft('nguyenQuan', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-            <TextInput
-              label={m.filler_field_cccd()}
-              value={resolvedCccd}
-              disabled={!isCreate || disabled}
-              onChange={(event) => setCccdDraft(event.currentTarget.value)}
-              required={isCreate}
-            />
-            <TextInput
-              label={m.filler_field_cccd_ngay_cap()}
-              value={draft.cccdMeta.ngayCap}
-              onChange={(event) =>
-                updateNested('cccdMeta', 'ngayCap', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-            <TextInput
-              label={m.filler_field_cccd_noi_cap()}
-              value={draft.cccdMeta.noiCap}
-              onChange={(event) =>
-                updateNested('cccdMeta', 'noiCap', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-            <TextInput
-              label={m.filler_field_cntn_so()}
-              value={draft.cntn.so}
-              onChange={(event) =>
-                updateNested('cntn', 'so', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-            <TextInput
-              label={m.filler_field_cntn_ngay_cap()}
-              value={draft.cntn.ngayCap}
-              onChange={(event) =>
-                updateNested('cntn', 'ngayCap', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-            <TextInput
-              label={m.filler_field_cntn_noi_cap()}
-              value={draft.cntn.noiCap}
-              onChange={(event) =>
-                updateNested('cntn', 'noiCap', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-            <TextInput
-              label={m.filler_field_dan_toc()}
-              value={draft.danToc}
-              onChange={(event) =>
-                updateDraft('danToc', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-          </SimpleGrid>
-        </FormSection>
-
-        <FormSection title={m.filler_section_contact()}>
-          <SimpleGrid cols={{ base: 1, sm: 2 }}>
-            <TextInput
-              label={m.filler_field_dien_thoai()}
-              value={draft.dienThoai}
-              onChange={(event) =>
-                updateDraft('dienThoai', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-            <TextInput
-              label={m.filler_field_email()}
-              value={draft.email}
-              onChange={(event) =>
-                updateDraft('email', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-          </SimpleGrid>
-          <Stack gap="xs">
-            <Text fw={600}>{m.filler_field_dia_chi_thuong_tru()}</Text>
-            <VietnamAddressFields
-              label={m.filler_field_dia_chi_thuong_tru()}
-              value={draft.diaChiThuongTru}
-              onChange={(value) => updateDraft('diaChiThuongTru', value)}
-              disabled={disabled}
-              errors={addressErrors}
-            />
-          </Stack>
-        </FormSection>
-
+  const restSections = useMemo(
+    () => (
+      <>
         <FormSection title={m.filler_section_xuat_gia()}>
           <SimpleGrid cols={{ base: 1, sm: 2 }}>
             <TextInput
@@ -1090,7 +1097,42 @@ export function MemberEditorForm({
             disabled={disabled}
           />
         </FormSection>
+      </>
+    ),
+    [
+      draft.ngayXuatGia,
+      draft.noiXuatGia,
+      draft.hienTuHoc,
+      draft.bonSu,
+      draft.hePhaiGoc,
+      draft.giaoDoanGoc,
+      draft.haLap,
+      draft.gioiSaDi,
+      draft.gioiTyKheo,
+      draft.gioiSaDiNi,
+      draft.gioiThucXoaMaNa,
+      draft.gioiTyKheoNi,
+      draft.giaoPhamGiaoHoi,
+      draft.giaoPhamHePhai,
+      draft.trinhDoTheHoc,
+      draft.ngoaiNgu,
+      draft.trinhDoChuyenMon,
+      draft.capBac,
+      draft.trinhDoPhatHoc,
+      draft.coNgu,
+      draft.hocViHocHam,
+      draft.chucVuHePhai,
+      draft.chucVuGhpgvn,
+      draft.chucVuDoanThe,
+      sanghaType,
+      ranks,
+      disabled,
+    ],
+  )
 
+  const tailSections = useMemo(
+    () => (
+      <>
         <FormSection title={m.filler_section_khoa_tu()}>
           <RepeatableFieldset
             label={m.filler_section_khoa_tu()}
@@ -1312,6 +1354,46 @@ export function MemberEditorForm({
             minRows={4}
           />
         </FormSection>
+      </>
+    ),
+    [draft.khoaTu, draft.giaDinh, draft.nguyenVong, disabled],
+  )
+
+  return (
+    <FillerEditorShell
+      title={title}
+      status={status}
+      onSave={
+        status === 'draft'
+          ? () => {
+              const result = validateAddressDraft(draft.diaChiThuongTru)
+              if (!result.valid) {
+                setAddressErrors({
+                  city:
+                    result.errors.city === 'REQUIRED'
+                      ? m.filler_address_city_required()
+                      : undefined,
+                  ward:
+                    result.errors.ward === 'REQUIRED'
+                      ? m.filler_address_ward_required()
+                      : undefined,
+                })
+                return
+              }
+              setAddressErrors({})
+              saveMutation.mutate()
+            }
+          : undefined
+      }
+      savePending={saveMutation.isPending}
+      saveError={saveError}
+      saveSuccess={saveSuccess}
+    >
+      <Stack gap="xl" maw={760}>
+        {identitySection}
+        {contactSection}
+        {restSections}
+        {tailSections}
       </Stack>
     </FillerEditorShell>
   )
