@@ -23,6 +23,7 @@ export const DAC_DIEM_OPTIONS: FillerOption[] = [
   { value: 'to_dinh', label: () => m.filler_opt_dac_diem_to_dinh() },
   { value: 'thang_tich', label: () => m.filler_opt_dac_diem_thang_tich() },
   { value: 'di_tich', label: () => m.filler_opt_dac_diem_di_tich() },
+  { value: 'khac', label: () => m.filler_opt_dac_diem_khac() },
 ]
 
 export const HANG_MUC_XAY_DUNG_OPTIONS: FillerOption[] = [
