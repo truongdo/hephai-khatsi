@@ -32,6 +32,9 @@ function memberStoreWith(members: Member[]): MemberStore & {
     async getByCccd() {
       return null
     },
+    async listByOrgSanghaAndPhone() {
+      return []
+    },
     async lock() {
       throw new Error('not implemented')
     },

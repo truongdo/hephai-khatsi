@@ -76,9 +76,18 @@ describe('FillerEditorShell', () => {
     expect(screen.queryByText(m.filler_editor_placeholder())).toBeNull()
   })
 
-  it('does not render a Save button', () => {
-    renderShell()
+  it('renders Save when draft and onSave provided', () => {
+    renderShell({ onSave: () => {}, saveLabel: 'Lưu' })
+    expect(screen.getByRole('button', { name: 'Lưu' })).toBeTruthy()
+  })
 
+  it('hides Save when status is view', () => {
+    renderShell({ status: 'view', onSave: () => {}, saveLabel: 'Lưu' })
     expect(screen.queryByRole('button', { name: 'Lưu' })).toBeNull()
+  })
+
+  it('disables Save while pending', () => {
+    renderShell({ onSave: () => {}, saveLabel: 'Lưu', savePending: true })
+    expect(screen.getByRole('button', { name: 'Lưu' })).toBeDisabled()
   })
 })

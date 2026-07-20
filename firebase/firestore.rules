@@ -148,5 +148,14 @@ service cloud.firestore {
         && request.resource.data.templeIds.size() >= (resource == null ? 0 : resource.data.templeIds.size());
       allow delete: if false;
     }
+
+    match /memberPhoneIndex/{indexId} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create, update: if request.resource.data.memberIds is list
+        && request.resource.data.memberIds.size() <= 20
+        && request.resource.data.memberIds.size() >= (resource == null ? 0 : resource.data.memberIds.size());
+      allow delete: if false;
+    }
   }
 }

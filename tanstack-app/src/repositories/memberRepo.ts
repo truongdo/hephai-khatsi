@@ -9,12 +9,16 @@ import {
   runTransaction,
   startAfter,
   where,
+  type DocumentReference,
   type DocumentSnapshot,
   type Firestore,
   type QueryConstraint,
+  type Transaction,
 } from 'firebase/firestore'
 import { DomainError } from '#/domain/errors'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
+import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
+import { normalizeVnPhone } from '#/domain/normalize'
 import type { Member, SanghaType } from '#/domain/types'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
@@ -50,6 +54,12 @@ export type MemberLookupInput = {
   cccd: string
 }
 
+export type MemberPhoneLookupInput = {
+  orgUnitId: string
+  sanghaType: SanghaType
+  phone: string
+}
+
 export type MemberStore = {
   createOrUpdateDraft(
     input: CreateOrUpdateMemberDraftInput,
@@ -57,16 +67,57 @@ export type MemberStore = {
   updateDraftById(memberId: string, patch: MemberProfilePatch): Promise<Member>
   getByCccd(input: MemberLookupInput): Promise<Member | null>
   getById(memberId: string): Promise<Member | null>
+  listByOrgSanghaAndPhone(input: MemberPhoneLookupInput): Promise<Member[]>
   list(input: ListMembersAdminInput): Promise<AdminListPage<Member>>
   setPhotoPath(memberId: string, photoPath: string): Promise<Member>
   lock(memberId: string, lockedBy: string): Promise<Member>
   unlock(memberId: string): Promise<Member>
 }
 
+const PHONE_INDEX_CAP = 20
+
 function requireDb(): Firestore {
   const db = getClientFirestore()
   if (!db) throw new Error('Firestore is not configured')
   return db
+}
+
+async function readPhoneIndexForTransaction(
+  transaction: Transaction,
+  orgUnitId: string,
+  sanghaType: SanghaType,
+  rawPhone: string | undefined,
+) {
+  if (!rawPhone) return null
+  let phone: string
+  try {
+    phone = normalizeVnPhone(rawPhone)
+  } catch {
+    return null
+  }
+  const ref = doc(
+    requireDb(),
+    COLLECTIONS.memberPhoneIndex,
+    memberPhoneIndexId(orgUnitId, sanghaType, phone),
+  )
+  const snap = await transaction.get(ref)
+  return { ref, snap, phone }
+}
+
+function writePhoneIndex(
+  transaction: Transaction,
+  index: { ref: DocumentReference; snap: DocumentSnapshot } | null,
+  memberId: string,
+) {
+  if (!index) return
+  const existingIds =
+    (index.snap.exists()
+      ? (index.snap.data()?.memberIds as string[] | undefined)
+      : undefined) ?? []
+  if (existingIds.includes(memberId) || existingIds.length >= PHONE_INDEX_CAP) {
+    return
+  }
+  transaction.set(index.ref, { memberIds: [...existingIds, memberId] })
 }
 
 // Member doc ids are deterministic ({orgUnitId}_{sanghaType}_{cccd}), which
@@ -97,13 +148,16 @@ async function createOrUpdateDraft(
     const snap = await transaction.get(memberRef)
     const now = new Date().toISOString()
 
+    let member: Member
+    let mode: 'created' | 'updated'
+
     if (snap.exists()) {
       const existing = memberFromSnap(snap)
       if (existing.status === 'locked') {
         throw new DomainError('RECORD_LOCKED', 'Member is locked')
       }
 
-      const member: Member = {
+      member = {
         ...existing,
         ...input.patch,
         id: existing.id,
@@ -119,27 +173,37 @@ async function createOrUpdateDraft(
         lockedBy: existing.lockedBy,
         updatedAt: now,
       }
-      transaction.set(memberRef, memberData(member))
-      return { member, mode: 'updated' as const }
+      mode = 'updated'
+    } else {
+      member = {
+        currentTempleId: null,
+        photoPath: null,
+        ...input.patch,
+        id: memberId,
+        orgUnitId: input.orgUnitId,
+        sanghaType: input.sanghaType,
+        status: 'draft',
+        cccd: input.cccd,
+        inviteId: input.inviteId,
+        createdAt: now,
+        updatedAt: now,
+        lockedAt: null,
+        lockedBy: null,
+      }
+      mode = 'created'
     }
 
-    const member: Member = {
-      currentTempleId: null,
-      photoPath: null,
-      ...input.patch,
-      id: memberId,
-      orgUnitId: input.orgUnitId,
-      sanghaType: input.sanghaType,
-      status: 'draft',
-      cccd: input.cccd,
-      inviteId: input.inviteId,
-      createdAt: now,
-      updatedAt: now,
-      lockedAt: null,
-      lockedBy: null,
-    }
+    // Firestore transactions require all reads before any writes.
+    const phoneIndex = await readPhoneIndexForTransaction(
+      transaction,
+      member.orgUnitId,
+      member.sanghaType,
+      member.dienThoai,
+    )
+
     transaction.set(memberRef, memberData(member))
-    return { member, mode: 'created' as const }
+    writePhoneIndex(transaction, phoneIndex, member.id)
+    return { member, mode }
   })
 }
 
@@ -173,7 +237,17 @@ async function updateDraftById(memberId: string, patch: MemberProfilePatch): Pro
       lockedBy: existing.lockedBy,
       updatedAt: now,
     }
+
+    // Firestore transactions require all reads before any writes.
+    const phoneIndex = await readPhoneIndexForTransaction(
+      transaction,
+      member.orgUnitId,
+      member.sanghaType,
+      member.dienThoai,
+    )
+
     transaction.set(memberRef, memberData(member))
+    writePhoneIndex(transaction, phoneIndex, member.id)
     return member
   })
 }
@@ -191,6 +265,37 @@ async function getById(memberId: string): Promise<Member | null> {
   const snap = await getDoc(doc(requireDb(), COLLECTIONS.members, memberId))
   if (!snap.exists()) return null
   return memberFromSnap(snap)
+}
+
+async function listByOrgSanghaAndPhone(input: MemberPhoneLookupInput): Promise<Member[]> {
+  const db = requireDb()
+  const phone = input.phone // already normalized by use-case
+  const indexSnap = await getDoc(
+    doc(
+      db,
+      COLLECTIONS.memberPhoneIndex,
+      memberPhoneIndexId(input.orgUnitId, input.sanghaType, phone),
+    ),
+  )
+  if (!indexSnap.exists()) return []
+  const memberIds = (indexSnap.data().memberIds as string[] | undefined) ?? []
+  const members = await Promise.all(
+    memberIds.map(async (id) => {
+      const snap = await getDoc(doc(db, COLLECTIONS.members, id))
+      return snap.exists() ? memberFromSnap(snap) : null
+    }),
+  )
+  return members.filter((m): m is Member => {
+    if (!m) return false
+    if (m.orgUnitId !== input.orgUnitId || m.sanghaType !== input.sanghaType) {
+      return false
+    }
+    try {
+      return normalizeVnPhone(m.dienThoai ?? '') === phone
+    } catch {
+      return false
+    }
+  })
 }
 
 async function list(input: ListMembersAdminInput): Promise<AdminListPage<Member>> {
@@ -288,6 +393,7 @@ export const memberRepo: MemberStore = {
   updateDraftById,
   getByCccd,
   getById,
+  listByOrgSanghaAndPhone,
   list,
   setPhotoPath,
   lock,

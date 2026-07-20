@@ -1,5 +1,7 @@
 import { DomainError } from '#/domain/errors'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
+import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
+import { normalizeVnPhone } from '#/domain/normalize'
 import type { Member, SanghaType, Temple } from '#/domain/types'
 import type {
   AdminListPage,
@@ -15,6 +17,27 @@ import type {
   CreateOrUpdateTempleDraftInput,
   TempleStore,
 } from '#/repositories/templeRepo'
+
+const PHONE_INDEX_CAP = 20
+
+function appendPhoneIndex(
+  phoneIndex: Map<string, string[]>,
+  member: Member,
+) {
+  if (!member.dienThoai) return
+  let phone: string
+  try {
+    phone = normalizeVnPhone(member.dienThoai)
+  } catch {
+    return
+  }
+  const key = memberPhoneIndexId(member.orgUnitId, member.sanghaType, phone)
+  const existingIds = phoneIndex.get(key) ?? []
+  if (existingIds.includes(member.id) || existingIds.length >= PHONE_INDEX_CAP) {
+    return
+  }
+  phoneIndex.set(key, [...existingIds, member.id])
+}
 
 function listInMemory<T extends { id: string }>(
   all: Iterable<T>,
@@ -46,22 +69,27 @@ export function createMemoryMemberStore(
 ): MemberStore & {
   members: Map<string, Member>
   index: Map<string, string>
+  phoneIndex: Map<string, string[]>
 } {
   const members = new Map(seed.map((member) => [member.id, member]))
   const index = new Map<string, string>()
+  const phoneIndex = new Map<string, string[]>()
   for (const member of seed) {
     index.set(
       memberCccdIndexId(member.orgUnitId, member.sanghaType, member.cccd),
       member.id,
     )
+    appendPhoneIndex(phoneIndex, member)
   }
 
   const store: MemberStore & {
     members: Map<string, Member>
     index: Map<string, string>
+    phoneIndex: Map<string, string[]>
   } = {
     members,
     index,
+    phoneIndex,
     async createOrUpdateDraft(input: CreateOrUpdateMemberDraftInput) {
       const indexId = memberCccdIndexId(
         input.orgUnitId,
@@ -86,6 +114,7 @@ export function createMemoryMemberStore(
           updatedAt: now,
         }
         members.set(existing.id, member)
+        appendPhoneIndex(phoneIndex, member)
         return { member, mode: 'updated' as const }
       }
 
@@ -107,6 +136,7 @@ export function createMemoryMemberStore(
       }
       members.set(id, member)
       index.set(indexId, id)
+      appendPhoneIndex(phoneIndex, member)
       return { member, mode: 'created' as const }
     },
     async updateDraftById(memberId: string, patch: MemberProfilePatch) {
@@ -131,6 +161,7 @@ export function createMemoryMemberStore(
         updatedAt: now,
       }
       members.set(memberId, member)
+      appendPhoneIndex(phoneIndex, member)
       return member
     },
     async getByCccd(input: {
@@ -145,6 +176,33 @@ export function createMemoryMemberStore(
     },
     async getById(memberId: string) {
       return members.get(memberId) ?? null
+    },
+    async listByOrgSanghaAndPhone(input: {
+      orgUnitId: string
+      sanghaType: SanghaType
+      phone: string
+    }) {
+      const phone = input.phone
+      const ids =
+        phoneIndex.get(
+          memberPhoneIndexId(input.orgUnitId, input.sanghaType, phone),
+        ) ?? []
+      return ids
+        .map((id) => members.get(id) ?? null)
+        .filter((m): m is Member => {
+          if (!m) return false
+          if (
+            m.orgUnitId !== input.orgUnitId ||
+            m.sanghaType !== input.sanghaType
+          ) {
+            return false
+          }
+          try {
+            return normalizeVnPhone(m.dienThoai ?? '') === phone
+          } catch {
+            return false
+          }
+        })
     },
     async setPhotoPath(memberId: string, photoPath: string) {
       const existing = members.get(memberId)

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { normalizeCccd, normalizeVnPhone } from './normalize'
 import { memberCccdIndexId } from './memberCccdIndex'
+import { memberPhoneIndexId } from './memberPhoneIndex'
 import { buildManagerPhones, mergeManagerPhones } from './templePhones'
 
 describe('normalizeCccd', () => {
@@ -25,6 +26,14 @@ describe('memberCccdIndexId', () => {
   it('joins org, type, cccd', () => {
     expect(memberCccdIndexId('gd-i', 'tang', '012345678901')).toBe(
       'gd-i_tang_012345678901',
+    )
+  })
+})
+
+describe('memberPhoneIndexId', () => {
+  it('joins org, sangha type, and phone', () => {
+    expect(memberPhoneIndexId('gd-i', 'tang', '0901234567')).toBe(
+      'gd-i_tang_0901234567',
     )
   })
 })

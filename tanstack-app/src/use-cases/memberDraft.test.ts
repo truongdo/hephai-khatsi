@@ -5,6 +5,7 @@ import type { InviteStore } from '#/repositories/inviteRepo'
 import { createMemoryMemberStore } from '#/test/memoryStores'
 import { lockMember } from './lockMember'
 import { resumeMemberByCccd } from './resumeMemberByCccd'
+import { resumeMemberByPhone } from './resumeMemberByPhone'
 import { saveMemberDraft } from './saveMemberDraft'
 
 function memoryInviteStore(invites: Invite[]): InviteStore {
@@ -126,5 +127,52 @@ describe('member draft save, resume, and lock', () => {
         invites,
       ),
     ).rejects.toMatchObject({ code: 'RECORD_LOCKED' })
+  })
+
+  it('returns empty members when phone has no index hits', async () => {
+    const store = createMemoryMemberStore()
+    const invites = memoryInviteStore([PUBLIC_INVITE])
+    const result = await resumeMemberByPhone(
+      {
+        token: 'public',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        phone: '0901234567',
+      },
+      store,
+      invites,
+    )
+    expect(result.members).toEqual([])
+  })
+
+  it('returns matching members with access from status', async () => {
+    const store = createMemoryMemberStore()
+    const invites = memoryInviteStore([PUBLIC_INVITE])
+    await store.createOrUpdateDraft({
+      orgUnitId: 'gd-i',
+      sanghaType: 'tang',
+      inviteId: 'public',
+      cccd: '012345678901',
+      patch: { dienThoai: '0901234567', phapDanh: 'Minh Tam' },
+    })
+
+    const result = await resumeMemberByPhone(
+      {
+        token: 'public',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        phone: '0901.234.567',
+      },
+      store,
+      invites,
+    )
+    expect(result.members).toHaveLength(1)
+    expect(result.members[0]!.access).toBe('edit')
+    expect(result.members[0]!.member).toMatchObject({
+      orgUnitId: 'gd-i',
+      sanghaType: 'tang',
+      dienThoai: '0901234567',
+      phapDanh: 'Minh Tam',
+    })
   })
 })

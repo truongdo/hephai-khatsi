@@ -4,7 +4,6 @@ import {
   Group,
   Radio,
   Select,
-  SimpleGrid,
   Stack,
   Text,
   TextInput,
@@ -13,7 +12,7 @@ import {
 import { useMemo, useState, type FormEvent } from 'react'
 import { filterOrgUnitsForFormType } from '#/components/filler/filterOrgUnitsForFormType'
 import { isDomainError } from '#/domain/errors'
-import { normalizeCccd, normalizeVnPhone } from '#/domain/normalize'
+import { normalizeVnPhone } from '#/domain/normalize'
 import type { FormType, OrgUnit } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 
@@ -21,13 +20,14 @@ export type FillerEntryFormProps = {
   orgUnits: OrgUnit[]
   pending?: boolean
   templeMatches?: Array<{ id: string; label: string }>
+  memberMatches?: Array<{ id: string; label: string }>
   onSubmit: (payload: {
     formType: FormType
     orgUnitId: string
-    cccd: string
     phone: string
   }) => void
   onPickTemple?: (templeId: string) => void
+  onPickMember?: (memberId: string) => void
   onCreateTemple?: () => void
   onCreateMember?: () => void
   notFound?: boolean
@@ -37,16 +37,11 @@ export type FillerEntryFormProps = {
 type FieldErrors = {
   formType?: string
   orgUnitId?: string
-  cccd?: string
   phone?: string
 }
 
 function identityFieldError(code: string): string {
   switch (code) {
-    case 'CCCD_REQUIRED':
-      return 'Nhập CCCD.'
-    case 'CCCD_INVALID':
-      return 'CCCD phải có 9–12 chữ số.'
     case 'PHONE_INVALID':
       return 'Số điện thoại không hợp lệ.'
     default:
@@ -58,8 +53,10 @@ export function FillerEntryForm({
   orgUnits,
   pending = false,
   templeMatches,
+  memberMatches,
   onSubmit,
   onPickTemple,
+  onPickMember,
   onCreateTemple,
   onCreateMember,
   notFound = false,
@@ -67,7 +64,6 @@ export function FillerEntryForm({
 }: FillerEntryFormProps) {
   const [formType, setFormType] = useState<FormType | ''>('')
   const [orgUnitId, setOrgUnitId] = useState<string | null>(null)
-  const [cccd, setCccd] = useState('')
   const [phone, setPhone] = useState('')
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
 
@@ -78,6 +74,13 @@ export function FillerEntryForm({
       label: unit.name,
     }))
   }, [formType, orgUnits])
+
+  const phoneDescription =
+    formType === 'temple'
+      ? m.filler_phone_description_temple()
+      : formType === 'member_tang' || formType === 'member_ni'
+        ? m.filler_phone_description_member()
+        : undefined
 
   function handleTypeChange(value: string) {
     setFormType(value as FormType)
@@ -97,20 +100,9 @@ export function FillerEntryForm({
       nextErrors.orgUnitId = m.filler_error_org_required()
     }
 
-    let normalizedCccd = ''
     let normalizedPhone = ''
 
-    if (formType === 'member_tang' || formType === 'member_ni') {
-      try {
-        normalizedCccd = normalizeCccd(cccd)
-      } catch (err) {
-        if (isDomainError(err)) {
-          nextErrors.cccd = identityFieldError(err.code)
-        }
-      }
-    }
-
-    if (formType === 'temple') {
+    if (formType) {
       try {
         normalizedPhone = normalizeVnPhone(phone)
       } catch (err) {
@@ -129,7 +121,6 @@ export function FillerEntryForm({
     onSubmit({
       formType: formType as FormType,
       orgUnitId: orgUnitId as string,
-      cccd: normalizedCccd,
       phone: normalizedPhone,
     })
   }
@@ -165,25 +156,13 @@ export function FillerEntryForm({
           error={fieldErrors.orgUnitId}
         />
 
-        <Stack gap="xs">
-          <SimpleGrid cols={{ base: 1, sm: 2 }}>
-            <TextInput
-              label={m.filler_cccd_label()}
-              value={cccd}
-              onChange={(event) => setCccd(event.currentTarget.value)}
-              error={fieldErrors.cccd}
-            />
-            <TextInput
-              label={m.filler_phone_label()}
-              value={phone}
-              onChange={(event) => setPhone(event.currentTarget.value)}
-              error={fieldErrors.phone}
-            />
-          </SimpleGrid>
-          <Text size="sm" c="dimmed">
-            {m.filler_identity_helper()}
-          </Text>
-        </Stack>
+        <TextInput
+          label={m.filler_phone_label()}
+          description={phoneDescription}
+          value={phone}
+          onChange={(event) => setPhone(event.currentTarget.value)}
+          error={fieldErrors.phone}
+        />
 
         <Button type="submit" loading={pending}>
           {m.filler_continue()}
@@ -194,6 +173,28 @@ export function FillerEntryForm({
             <Text>{m.filler_identity_not_found()}</Text>
             {onCreateMember ? (
               <Button variant="light" onClick={onCreateMember}>
+                {m.filler_identity_create_member()}
+              </Button>
+            ) : null}
+          </Stack>
+        ) : null}
+
+        {memberMatches && memberMatches.length > 0 ? (
+          <Stack gap="sm">
+            <Text fw={600}>{m.filler_identity_pick_member()}</Text>
+            <Group gap="sm">
+              {memberMatches.map((match) => (
+                <Button
+                  key={match.id}
+                  variant="light"
+                  onClick={() => onPickMember?.(match.id)}
+                >
+                  {match.label}
+                </Button>
+              ))}
+            </Group>
+            {onCreateMember ? (
+              <Button variant="default" onClick={onCreateMember}>
                 {m.filler_identity_create_member()}
               </Button>
             ) : null}

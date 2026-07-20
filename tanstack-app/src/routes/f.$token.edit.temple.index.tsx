@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { FillerEditorShell } from '#/components/filler/FillerEditorShell'
+import { TempleEditorForm } from '#/components/filler/TempleEditorForm'
 import { m } from '#/paraglide/messages'
 
 export const Route = createFileRoute('/f/$token/edit/temple/')({
@@ -11,10 +11,24 @@ export const Route = createFileRoute('/f/$token/edit/temple/')({
 })
 
 function TempleNewRoute() {
+  const { token } = Route.useParams()
+  const { orgUnitId, phone } = Route.useSearch()
+  const navigate = Route.useNavigate()
+
   return (
-    <FillerEditorShell
+    <TempleEditorForm
+      key={`new-${orgUnitId}-${phone}`}
       title={m.filler_editor_title_temple_new()}
+      token={token}
+      orgUnitId={orgUnitId}
       status="draft"
+      initial={{ seedPhone: phone }}
+      onCreated={(templeId) =>
+        navigate({
+          to: '/f/$token/edit/temple/$templeId',
+          params: { token, templeId },
+        })
+      }
     />
   )
 }

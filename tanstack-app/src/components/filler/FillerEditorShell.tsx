@@ -1,4 +1,4 @@
-import { Badge, Box, Group, Stack, Text, Title } from '@mantine/core'
+import { Alert, Badge, Box, Button, Group, Stack, Text, Title } from '@mantine/core'
 import type { ReactNode } from 'react'
 import { m } from '#/paraglide/messages'
 
@@ -8,6 +8,11 @@ export type FillerEditorShellProps = {
   title: string
   status: FillerEditorStatus
   children?: ReactNode
+  onSave?: () => void
+  savePending?: boolean
+  saveLabel?: string
+  saveSuccess?: string | null
+  saveError?: string | null
 }
 
 const STATUS_COLOR: Record<FillerEditorStatus, string> = {
@@ -23,6 +28,11 @@ export function FillerEditorShell({
   title,
   status,
   children,
+  onSave,
+  savePending,
+  saveLabel,
+  saveSuccess,
+  saveError,
 }: FillerEditorShellProps) {
   return (
     <Stack gap="lg">
@@ -40,11 +50,25 @@ export function FillerEditorShell({
       >
         <Group justify="space-between" align="center" wrap="wrap" gap="sm">
           <Title order={2}>{title}</Title>
-          <Badge color={STATUS_COLOR[status]} variant="light" radius="sm">
-            {statusLabel(status)}
-          </Badge>
+          <Group gap="sm" align="center" wrap="wrap">
+            <Badge color={STATUS_COLOR[status]} variant="light" radius="sm">
+              {statusLabel(status)}
+            </Badge>
+            {status === 'draft' && onSave ? (
+              <Button
+                type="button"
+                onClick={onSave}
+                loading={savePending}
+                disabled={savePending}
+              >
+                {saveLabel ?? m.filler_save()}
+              </Button>
+            ) : null}
+          </Group>
         </Group>
       </Box>
+      {saveError ? <Alert color="red">{saveError}</Alert> : null}
+      {saveSuccess ? <Text c="teal">{saveSuccess}</Text> : null}
       {children ?? (
         <Text c="dimmed">{m.filler_editor_placeholder()}</Text>
       )}

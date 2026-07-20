@@ -244,6 +244,25 @@ describe('templeManagerPhoneIndex', () => {
   })
 })
 
+describe('memberPhoneIndex', () => {
+  it('anyone can get, only admin can list, and the id list can only grow up to the cap', async () => {
+    const env = await getTestEnv()
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(
+      setDoc(doc(anon, 'memberPhoneIndex', 'gd-i_tang_0912345678'), {
+        memberIds: ['member-1'],
+      }),
+    )
+    await assertSucceeds(getDoc(doc(anon, 'memberPhoneIndex', 'gd-i_tang_0912345678')))
+    await assertFails(getDocs(fsCollection(anon, 'memberPhoneIndex')))
+    await assertFails(
+      updateDoc(doc(anon, 'memberPhoneIndex', 'gd-i_tang_0912345678'), {
+        memberIds: [],
+      }),
+    )
+  })
+})
+
 describe('memberCccdIndex (retired collection)', () => {
   it('has no rules matched, so it defaults to fully denied', async () => {
     const env = await getTestEnv()

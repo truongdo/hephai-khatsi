@@ -61,17 +61,17 @@ async function pickOrgUnit(
 }
 
 describe('FillerEntryForm', () => {
-  it('renders type radios, org select, CCCD, phone, and continue', () => {
+  it('renders type radios, org select, phone, and continue — no CCCD', () => {
     renderForm()
     expect(screen.getByRole('heading', { name: m.filler_entry_title() })).toBeTruthy()
     expect(screen.getByRole('radio', { name: m.filler_type_tang() })).toBeTruthy()
     expect(screen.getByRole('radio', { name: m.filler_type_ni() })).toBeTruthy()
     expect(screen.getByRole('radio', { name: m.filler_type_temple() })).toBeTruthy()
     expect(screen.getByRole('combobox', { name: m.filler_org_label() })).toBeTruthy()
-    expect(screen.getByRole('textbox', { name: m.filler_cccd_label() })).toBeTruthy()
+    expect(screen.queryByRole('textbox', { name: m.filler_cccd_label() })).toBeNull()
     expect(screen.getByRole('textbox', { name: m.filler_phone_label() })).toBeTruthy()
     expect(screen.getByRole('button', { name: m.filler_continue() })).toBeTruthy()
-    expect(screen.getByText(m.filler_identity_helper())).toBeTruthy()
+    expect(screen.queryByText(m.filler_identity_helper())).toBeNull()
   })
 
   it('shows type required error and does not call onSubmit without type', async () => {
@@ -84,23 +84,29 @@ describe('FillerEntryForm', () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
-  it('submits member_tang with org and CCCD', async () => {
+  it('shows member phone description after selecting tang', async () => {
+    const user = userEvent.setup()
+    renderForm()
+    await pickFormType(user, m.filler_type_tang())
+    expect(screen.getByText(m.filler_phone_description_member())).toBeTruthy()
+  })
+
+  it('submits member_tang with org and phone', async () => {
     const user = userEvent.setup()
     const { onSubmit } = renderForm()
 
     await pickFormType(user, m.filler_type_tang())
     await pickOrgUnit(user, 'Giáo đoàn I')
     await user.type(
-      screen.getByRole('textbox', { name: m.filler_cccd_label() }),
-      '012345678901',
+      screen.getByRole('textbox', { name: m.filler_phone_label() }),
+      '0901234567',
     )
     await user.click(screen.getByRole('button', { name: m.filler_continue() }))
 
     expect(onSubmit).toHaveBeenCalledWith({
       formType: 'member_tang',
       orgUnitId: 'gd-i',
-      cccd: '012345678901',
-      phone: '',
+      phone: '0901234567',
     })
   })
 
@@ -119,7 +125,6 @@ describe('FillerEntryForm', () => {
     expect(onSubmit).toHaveBeenCalledWith({
       formType: 'temple',
       orgUnitId: 'gd-i',
-      cccd: '',
       phone: '0901234567',
     })
   })
@@ -139,6 +144,24 @@ describe('FillerEntryForm', () => {
     expect(screen.getByRole('button', { name: 'Tịnh xá B' })).toBeTruthy()
     expect(
       screen.getByRole('button', { name: m.filler_identity_create_temple() }),
+    ).toBeTruthy()
+  })
+
+  it('shows member pick list and create member when matches provided', () => {
+    renderForm({
+      memberMatches: [
+        { id: 'm1', label: 'Minh Tam' },
+        { id: 'm2', label: 'Minh Tam 2' },
+      ],
+      onPickMember: vi.fn(),
+      onCreateMember: vi.fn(),
+    })
+
+    expect(screen.getByText(m.filler_identity_pick_member())).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Minh Tam' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Minh Tam 2' })).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: m.filler_identity_create_member() }),
     ).toBeTruthy()
   })
 })
