@@ -4,8 +4,13 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { MantineProvider } from '@mantine/core'
+import { DatesProvider } from '@mantine/dates'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import 'dayjs/locale/vi'
 
 import '@mantine/core/styles.css'
+import '@mantine/dates/styles.css'
 import '@fontsource/be-vietnam-pro/vietnamese-400.css'
 import '@fontsource/be-vietnam-pro/vietnamese-500.css'
 import '@fontsource/be-vietnam-pro/vietnamese-600.css'
@@ -24,6 +29,9 @@ import { AppHeader } from '#/components/AppHeader'
 import { createAppQueryClient } from '#/query/queryClient'
 import { theme } from '../theme'
 
+dayjs.extend(customParseFormat)
+dayjs.locale('vi')
+
 export const Route = createRootRoute({
   component: RootComponent,
 })
@@ -36,23 +44,25 @@ function RootComponent() {
 
   return (
     <MantineProvider theme={theme} defaultColorScheme="light" deduplicateInlineStyles>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          {showAppHeader ? <AppHeader /> : null}
-          <Outlet />
-        </AuthProvider>
-      </QueryClientProvider>
-      <TanStackDevtools
-        config={{
-          position: 'bottom-right',
-        }}
-        plugins={[
-          {
-            name: 'Tanstack Router',
-            render: <TanStackRouterDevtoolsPanel />,
-          },
-        ]}
-      />
+      <DatesProvider settings={{ locale: 'vi', firstDayOfWeek: 1 }}>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            {showAppHeader ? <AppHeader /> : null}
+            <Outlet />
+          </AuthProvider>
+        </QueryClientProvider>
+        <TanStackDevtools
+          config={{
+            position: 'bottom-right',
+          }}
+          plugins={[
+            {
+              name: 'Tanstack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />
+      </DatesProvider>
     </MantineProvider>
   )
 }

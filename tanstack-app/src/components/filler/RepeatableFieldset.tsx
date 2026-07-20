@@ -3,12 +3,14 @@ import type { ReactNode } from 'react'
 
 export function RepeatableFieldset({
   label,
+  description,
   addLabel,
   onAdd,
   disabled,
   children,
 }: {
   label: string
+  description?: string
   addLabel: string
   onAdd: () => void
   disabled?: boolean
@@ -16,8 +18,15 @@ export function RepeatableFieldset({
 }) {
   return (
     <Stack gap="sm">
-      <Group justify="space-between" align="center">
-        <Text fw={600}>{label}</Text>
+      <Group justify="space-between" align="flex-start">
+        <Stack gap={2}>
+          <Text fw={600}>{label}</Text>
+          {description ? (
+            <Text size="xs" c="dimmed">
+              {description}
+            </Text>
+          ) : null}
+        </Stack>
         <Button
           type="button"
           variant="light"

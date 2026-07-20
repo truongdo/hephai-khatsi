@@ -1,4 +1,5 @@
 import { Fieldset, Stack, TextInput } from '@mantine/core'
+import { DateInput } from '@mantine/dates'
 import type { PreceptRecord } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 
@@ -13,37 +14,44 @@ export function PreceptFields({
   onChange: (next: PreceptRecord) => void
   disabled?: boolean
 }) {
-  const set =
+  const setText =
     (key: keyof PreceptRecord) => (e: React.ChangeEvent<HTMLInputElement>) =>
       onChange({ ...value, [key]: e.currentTarget.value })
 
   return (
     <Fieldset legend={legend} disabled={disabled}>
       <Stack gap="sm">
-        <TextInput
+        <DateInput
           label={m.filler_field_precept_ngay_gh()}
-          value={value.ngayGh ?? ''}
-          onChange={set('ngayGh')}
+          valueFormat="YYYY-MM-DD"
+          clearable
+          value={value.ngayGh || null}
+          onChange={(next) => onChange({ ...value, ngayGh: next ?? '' })}
         />
         <TextInput
           label={m.filler_field_precept_tai_gh()}
+          placeholder={m.filler_ph_precept_tai()}
           value={value.taiGh ?? ''}
-          onChange={set('taiGh')}
+          onChange={setText('taiGh')}
         />
         <TextInput
           label={m.filler_field_precept_ton_hieu()}
+          placeholder={m.filler_ph_precept_ton_hieu()}
           value={value.tonHieuGioiDan ?? ''}
-          onChange={set('tonHieuGioiDan')}
+          onChange={setText('tonHieuGioiDan')}
         />
-        <TextInput
+        <DateInput
           label={m.filler_field_precept_ngay_hp()}
-          value={value.ngayHePhai ?? ''}
-          onChange={set('ngayHePhai')}
+          valueFormat="YYYY-MM-DD"
+          clearable
+          value={value.ngayHePhai || null}
+          onChange={(next) => onChange({ ...value, ngayHePhai: next ?? '' })}
         />
         <TextInput
           label={m.filler_field_precept_tai_hp()}
+          placeholder={m.filler_ph_precept_tai()}
           value={value.taiHePhai ?? ''}
-          onChange={set('taiHePhai')}
+          onChange={setText('taiHePhai')}
         />
       </Stack>
     </Fieldset>

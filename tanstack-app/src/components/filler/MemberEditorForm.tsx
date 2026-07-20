@@ -9,7 +9,8 @@ import {
   Textarea,
   TextInput,
 } from '@mantine/core'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { DateInput, MonthPickerInput } from '@mantine/dates'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useMemo, useState } from 'react'
 import { VietnamAddressFields } from '#/components/address/VietnamAddressFields'
 import type { AddressDraft } from '#/domain/address'
@@ -21,6 +22,7 @@ import {
 import type { GiaoPham, Member, PreceptRecord, SanghaType } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { fillerKeys } from '#/query/fillerKeys'
+import { fillerOrgUnitsQuery } from '#/query/fillerQueries'
 import type { MemberProfilePatch } from '#/repositories/memberRepo'
 import { saveMemberDraft } from '#/use-cases/saveMemberDraft'
 import type { FillerOption } from './fillerFormOptions'
@@ -444,6 +446,18 @@ function rankOptions(sanghaType: SanghaType) {
   return optionData(sanghaType === 'tang' ? TANG_RANKS : NI_RANKS)
 }
 
+const MONTH_YEAR_RE = /^\d{4}-\d{2}$/
+
+function toMonthPickerValue(value: string): string | null {
+  if (MONTH_YEAR_RE.test(value)) return `${value}-01`
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return `${value.slice(0, 7)}-01`
+  return null
+}
+
+function fromMonthPickerValue(value: string | null): string {
+  return value ? value.slice(0, 7) : ''
+}
+
 export function MemberEditorForm({
   title,
   token,
@@ -474,6 +488,14 @@ export function MemberEditorForm({
   }>({})
   const disabled = status === 'view'
   const ranks = useMemo(() => rankOptions(sanghaType), [sanghaType])
+  const orgUnitsQuery = useQuery(fillerOrgUnitsQuery())
+  const giaoDoanOptions = useMemo(
+    () =>
+      (orgUnitsQuery.data ?? [])
+        .filter((unit) => unit.kind === 'giao_doan')
+        .map((unit) => ({ value: unit.id, label: unit.name })),
+    [orgUnitsQuery.data],
+  )
 
   const saveMutation = useMutation({
     mutationFn: () =>
@@ -633,6 +655,7 @@ export function MemberEditorForm({
         <SimpleGrid cols={{ base: 1, sm: 2 }}>
           <TextInput
             label={m.filler_field_the_danh()}
+            placeholder={m.filler_ph_the_danh()}
             value={draft.theDanh}
             onChange={(event) =>
               updateDraft('theDanh', event.currentTarget.value)
@@ -641,22 +664,24 @@ export function MemberEditorForm({
           />
           <TextInput
             label={m.filler_field_phap_danh()}
+            placeholder={m.filler_ph_phap_danh_member()}
             value={draft.phapDanh}
             onChange={(event) =>
               updateDraft('phapDanh', event.currentTarget.value)
             }
             disabled={disabled}
           />
-          <TextInput
+          <DateInput
             label={m.filler_field_ngay_sinh()}
-            value={draft.ngaySinh}
-            onChange={(event) =>
-              updateDraft('ngaySinh', event.currentTarget.value)
-            }
+            valueFormat="YYYY-MM-DD"
+            clearable
+            value={draft.ngaySinh || null}
+            onChange={(value) => updateDraft('ngaySinh', value ?? '')}
             disabled={disabled}
           />
           <TextInput
             label={m.filler_field_noi_sinh()}
+            placeholder={m.filler_ph_noi_sinh()}
             value={draft.noiSinh}
             onChange={(event) =>
               updateDraft('noiSinh', event.currentTarget.value)
@@ -665,6 +690,7 @@ export function MemberEditorForm({
           />
           <TextInput
             label={m.filler_field_nguyen_quan()}
+            placeholder={m.filler_ph_nguyen_quan()}
             value={draft.nguyenQuan}
             onChange={(event) =>
               updateDraft('nguyenQuan', event.currentTarget.value)
@@ -673,21 +699,25 @@ export function MemberEditorForm({
           />
           <TextInput
             label={m.filler_field_cccd()}
+            placeholder={m.filler_ph_cccd()}
             value={resolvedCccd}
             disabled={!isCreate || disabled}
             onChange={(event) => setCccdDraft(event.currentTarget.value)}
             required={isCreate}
           />
-          <TextInput
+          <DateInput
             label={m.filler_field_cccd_ngay_cap()}
-            value={draft.cccdMeta.ngayCap}
-            onChange={(event) =>
-              updateNested('cccdMeta', 'ngayCap', event.currentTarget.value)
+            valueFormat="YYYY-MM-DD"
+            clearable
+            value={draft.cccdMeta.ngayCap || null}
+            onChange={(value) =>
+              updateNested('cccdMeta', 'ngayCap', value ?? '')
             }
             disabled={disabled}
           />
           <TextInput
             label={m.filler_field_cccd_noi_cap()}
+            placeholder={m.filler_ph_noi_cap()}
             value={draft.cccdMeta.noiCap}
             onChange={(event) =>
               updateNested('cccdMeta', 'noiCap', event.currentTarget.value)
@@ -696,22 +726,24 @@ export function MemberEditorForm({
           />
           <TextInput
             label={m.filler_field_cntn_so()}
+            placeholder={m.filler_ph_cntn_so()}
             value={draft.cntn.so}
             onChange={(event) =>
               updateNested('cntn', 'so', event.currentTarget.value)
             }
             disabled={disabled}
           />
-          <TextInput
+          <DateInput
             label={m.filler_field_cntn_ngay_cap()}
-            value={draft.cntn.ngayCap}
-            onChange={(event) =>
-              updateNested('cntn', 'ngayCap', event.currentTarget.value)
-            }
+            valueFormat="YYYY-MM-DD"
+            clearable
+            value={draft.cntn.ngayCap || null}
+            onChange={(value) => updateNested('cntn', 'ngayCap', value ?? '')}
             disabled={disabled}
           />
           <TextInput
             label={m.filler_field_cntn_noi_cap()}
+            placeholder={m.filler_ph_noi_cap()}
             value={draft.cntn.noiCap}
             onChange={(event) =>
               updateNested('cntn', 'noiCap', event.currentTarget.value)
@@ -720,6 +752,7 @@ export function MemberEditorForm({
           />
           <TextInput
             label={m.filler_field_dan_toc()}
+            placeholder={m.filler_ph_dan_toc()}
             value={draft.danToc}
             onChange={(event) =>
               updateDraft('danToc', event.currentTarget.value)
@@ -750,6 +783,7 @@ export function MemberEditorForm({
         <SimpleGrid cols={{ base: 1, sm: 2 }}>
           <TextInput
             label={m.filler_field_dien_thoai()}
+            placeholder={m.filler_ph_phone()}
             value={draft.dienThoai}
             onChange={(event) =>
               updateDraft('dienThoai', event.currentTarget.value)
@@ -758,6 +792,7 @@ export function MemberEditorForm({
           />
           <TextInput
             label={m.filler_field_email()}
+            placeholder={m.filler_ph_email()}
             value={draft.email}
             onChange={(event) =>
               updateDraft('email', event.currentTarget.value)
@@ -766,7 +801,12 @@ export function MemberEditorForm({
           />
         </SimpleGrid>
         <Stack gap="xs">
-          <Text fw={600}>{m.filler_field_dia_chi_thuong_tru()}</Text>
+          <Stack gap={2}>
+            <Text fw={600}>{m.filler_field_dia_chi_thuong_tru()}</Text>
+            <Text size="xs" c="dimmed">
+              {m.filler_desc_dia_chi_thuong_tru()}
+            </Text>
+          </Stack>
           <VietnamAddressFields
             label={m.filler_field_dia_chi_thuong_tru()}
             value={draft.diaChiThuongTru}
@@ -796,28 +836,34 @@ export function MemberEditorForm({
       >
         <Stack>
           <SimpleGrid cols={{ base: 1, sm: 2 }}>
-            <TextInput
+            <MonthPickerInput
               label={m.filler_field_tu_thang_nam()}
-              value={row.tuThangNam}
-              onChange={(event) =>
+              valueFormat="MM/YYYY"
+              clearable
+              value={toMonthPickerValue(row.tuThangNam)}
+              onChange={(value) =>
                 updateChucVuRow(key, index, {
                   ...row,
-                  tuThangNam: event.currentTarget.value,
+                  tuThangNam: fromMonthPickerValue(value),
                 })
               }
             />
-            <TextInput
+            <MonthPickerInput
               label={m.filler_field_den_thang_nam()}
-              value={row.denThangNam}
-              onChange={(event) =>
+              valueFormat="MM/YYYY"
+              clearable
+              value={toMonthPickerValue(row.denThangNam)}
+              onChange={(value) =>
                 updateChucVuRow(key, index, {
                   ...row,
-                  denThangNam: event.currentTarget.value,
+                  denThangNam: fromMonthPickerValue(value),
                 })
               }
             />
             <TextInput
               label={m.filler_field_noi_dung()}
+              description={m.filler_desc_noi_dung()}
+              placeholder={m.filler_ph_noi_dung()}
               value={row.noiDung}
               onChange={(event) =>
                 updateChucVuRow(key, index, {
@@ -828,6 +874,7 @@ export function MemberEditorForm({
             />
             <TextInput
               label={m.filler_field_dia_chi()}
+              placeholder={m.filler_ph_dia_chi_row()}
               value={row.diaChi}
               onChange={(event) =>
                 updateChucVuRow(key, index, {
@@ -855,16 +902,18 @@ export function MemberEditorForm({
       <>
         <FormSection title={m.filler_section_xuat_gia()}>
           <SimpleGrid cols={{ base: 1, sm: 2 }}>
-            <TextInput
+            <DateInput
               label={m.filler_field_ngay_xuat_gia()}
-              value={draft.ngayXuatGia}
-              onChange={(event) =>
-                updateDraft('ngayXuatGia', event.currentTarget.value)
-              }
+              valueFormat="YYYY-MM-DD"
+              clearable
+              value={draft.ngayXuatGia || null}
+              onChange={(value) => updateDraft('ngayXuatGia', value ?? '')}
               disabled={disabled}
             />
             <TextInput
               label={m.filler_field_noi_xuat_gia()}
+              description={m.filler_desc_noi_xuat_gia()}
+              placeholder={m.filler_ph_noi_xuat_gia()}
               value={draft.noiXuatGia}
               onChange={(event) =>
                 updateDraft('noiXuatGia', event.currentTarget.value)
@@ -873,6 +922,8 @@ export function MemberEditorForm({
             />
             <TextInput
               label={m.filler_field_hien_tu_hoc()}
+              description={m.filler_desc_hien_tu_hoc()}
+              placeholder={m.filler_ph_hien_tu_hoc()}
               value={draft.hienTuHoc}
               onChange={(event) =>
                 updateDraft('hienTuHoc', event.currentTarget.value)
@@ -881,6 +932,8 @@ export function MemberEditorForm({
             />
             <TextInput
               label={m.filler_field_bon_su()}
+              description={m.filler_desc_bon_su()}
+              placeholder={m.filler_ph_bon_su()}
               value={draft.bonSu}
               onChange={(event) =>
                 updateDraft('bonSu', event.currentTarget.value)
@@ -889,22 +942,35 @@ export function MemberEditorForm({
             />
             <TextInput
               label={m.filler_field_he_phai_goc()}
+              description={m.filler_desc_he_phai_goc()}
+              placeholder={m.filler_ph_he_phai_goc()}
               value={draft.hePhaiGoc}
               onChange={(event) =>
                 updateDraft('hePhaiGoc', event.currentTarget.value)
               }
               disabled={disabled}
             />
-            <TextInput
+            <Select
               label={m.filler_field_giao_doan_goc()}
-              value={draft.giaoDoanGoc}
-              onChange={(event) =>
-                updateDraft('giaoDoanGoc', event.currentTarget.value)
+              description={m.filler_desc_giao_doan_goc()}
+              placeholder={m.filler_org_placeholder()}
+              data={giaoDoanOptions}
+              value={
+                giaoDoanOptions.some(
+                  (option) => option.value === draft.giaoDoanGoc,
+                )
+                  ? draft.giaoDoanGoc || null
+                  : null
               }
+              onChange={(value) => updateDraft('giaoDoanGoc', value ?? '')}
+              searchable
+              clearable
               disabled={disabled}
             />
             <NumberInput
               label={m.filler_field_ha_lap()}
+              description={m.filler_desc_ha_lap()}
+              placeholder={m.filler_ph_number()}
               value={draft.haLap}
               onChange={(value) =>
                 updateDraft('haLap', numberInputValue(value))
@@ -970,6 +1036,7 @@ export function MemberEditorForm({
                 />
                 <NumberInput
                   label={m.filler_field_nam_tien_phong()}
+                  placeholder={m.filler_ph_year()}
                   value={draft.giaoPhamGiaoHoi.namTienPhong}
                   onChange={(value) =>
                     updateNested(
@@ -995,6 +1062,7 @@ export function MemberEditorForm({
                 />
                 <NumberInput
                   label={m.filler_field_nam_tien_phong()}
+                  placeholder={m.filler_ph_year()}
                   value={draft.giaoPhamHePhai.namTienPhong}
                   onChange={(value) =>
                     updateNested(
@@ -1014,6 +1082,7 @@ export function MemberEditorForm({
           <SimpleGrid cols={{ base: 1, sm: 2 }}>
             <TextInput
               label={m.filler_field_trinh_do_the_hoc()}
+              placeholder={m.filler_ph_trinh_do()}
               value={draft.trinhDoTheHoc}
               onChange={(event) =>
                 updateDraft('trinhDoTheHoc', event.currentTarget.value)
@@ -1022,6 +1091,7 @@ export function MemberEditorForm({
             />
             <TextInput
               label={m.filler_field_ngoai_ngu()}
+              placeholder={m.filler_ph_ngoai_ngu()}
               value={draft.ngoaiNgu}
               onChange={(event) =>
                 updateDraft('ngoaiNgu', event.currentTarget.value)
@@ -1030,6 +1100,7 @@ export function MemberEditorForm({
             />
             <TextInput
               label={m.filler_field_trinh_do_chuyen_mon()}
+              placeholder={m.filler_ph_chuyen_mon()}
               value={draft.trinhDoChuyenMon}
               onChange={(event) =>
                 updateDraft('trinhDoChuyenMon', event.currentTarget.value)
@@ -1038,6 +1109,7 @@ export function MemberEditorForm({
             />
             <TextInput
               label={m.filler_field_cap_bac()}
+              placeholder={m.filler_ph_cap_bac()}
               value={draft.capBac}
               onChange={(event) =>
                 updateDraft('capBac', event.currentTarget.value)
@@ -1046,6 +1118,7 @@ export function MemberEditorForm({
             />
             <TextInput
               label={m.filler_field_trinh_do_phat_hoc()}
+              placeholder={m.filler_ph_phat_hoc()}
               value={draft.trinhDoPhatHoc}
               onChange={(event) =>
                 updateDraft('trinhDoPhatHoc', event.currentTarget.value)
@@ -1054,6 +1127,7 @@ export function MemberEditorForm({
             />
             <TextInput
               label={m.filler_field_co_ngu()}
+              placeholder={m.filler_ph_co_ngu()}
               value={draft.coNgu}
               onChange={(event) =>
                 updateDraft('coNgu', event.currentTarget.value)
@@ -1062,6 +1136,7 @@ export function MemberEditorForm({
             />
             <TextInput
               label={m.filler_field_hoc_vi()}
+              placeholder={m.filler_ph_hoc_vi()}
               value={draft.hocViHocHam}
               onChange={(event) =>
                 updateDraft('hocViHocHam', event.currentTarget.value)
@@ -1090,6 +1165,8 @@ export function MemberEditorForm({
           </RepeatableFieldset>
           <TextInput
             label={m.filler_field_chuc_vu_doan_the()}
+            description={m.filler_desc_chuc_vu_doan_the()}
+            placeholder={m.filler_ph_chuc_vu_doan_the()}
             value={draft.chucVuDoanThe}
             onChange={(event) =>
               updateDraft('chucVuDoanThe', event.currentTarget.value)
@@ -1126,6 +1203,7 @@ export function MemberEditorForm({
       draft.chucVuDoanThe,
       sanghaType,
       ranks,
+      giaoDoanOptions,
       disabled,
     ],
   )
@@ -1150,6 +1228,8 @@ export function MemberEditorForm({
                   <SimpleGrid cols={{ base: 1, sm: 3 }}>
                     <TextInput
                       label={m.filler_field_khoa_tu_ten()}
+                      description={m.filler_desc_khoa_tu_ten()}
+                      placeholder={m.filler_ph_khoa_tu_ten()}
                       value={row.ten}
                       onChange={(event) =>
                         updateKhoaTuRow(index, {
@@ -1160,6 +1240,7 @@ export function MemberEditorForm({
                     />
                     <NumberInput
                       label={m.filler_field_khoa_tu_so_lan()}
+                      placeholder={m.filler_ph_number()}
                       value={row.soLan}
                       onChange={(value) =>
                         updateKhoaTuRow(index, {
@@ -1171,6 +1252,7 @@ export function MemberEditorForm({
                     />
                     <TextInput
                       label={m.filler_field_ghi_chu()}
+                      placeholder={m.filler_ph_ghi_chu()}
                       value={row.ghiChu}
                       onChange={(event) =>
                         updateKhoaTuRow(index, {
@@ -1207,6 +1289,7 @@ export function MemberEditorForm({
               <SimpleGrid cols={{ base: 1, sm: 2 }}>
                 <TextInput
                   label={m.filler_field_ho_ten()}
+                  placeholder={m.filler_ph_ho_ten()}
                   value={draft.giaDinh[person].hoTen}
                   onChange={(event) =>
                     updateFamilyPerson(
@@ -1218,6 +1301,7 @@ export function MemberEditorForm({
                 />
                 <TextInput
                   label={m.filler_field_nam_sinh()}
+                  placeholder={m.filler_ph_nam_sinh()}
                   value={draft.giaDinh[person].namSinh}
                   onChange={(event) =>
                     updateFamilyPerson(
@@ -1229,6 +1313,7 @@ export function MemberEditorForm({
                 />
                 <TextInput
                   label={m.filler_field_nghe_nghiep()}
+                  placeholder={m.filler_ph_nghe_nghiep()}
                   value={draft.giaDinh[person].ngheNghiep}
                   onChange={(event) =>
                     updateFamilyPerson(
@@ -1240,6 +1325,7 @@ export function MemberEditorForm({
                 />
                 <TextInput
                   label={m.filler_field_dien_thoai()}
+                  placeholder={m.filler_ph_phone()}
                   value={draft.giaDinh[person].dienThoai}
                   onChange={(event) =>
                     updateFamilyPerson(
@@ -1251,6 +1337,7 @@ export function MemberEditorForm({
                 />
                 <TextInput
                   label={m.filler_field_noi_o()}
+                  placeholder={m.filler_ph_noi_o()}
                   value={draft.giaDinh[person].noiO}
                   onChange={(event) =>
                     updateFamilyPerson(
@@ -1265,6 +1352,7 @@ export function MemberEditorForm({
           ))}
           <RepeatableFieldset
             label={m.filler_field_anh_chi_em()}
+            description={m.filler_desc_anh_chi_em()}
             addLabel={m.filler_add_row()}
             onAdd={addAnhChiEmRow}
             disabled={disabled}
@@ -1279,6 +1367,7 @@ export function MemberEditorForm({
                   <SimpleGrid cols={{ base: 1, sm: 2 }}>
                     <TextInput
                       label={m.filler_field_quan_he()}
+                      placeholder={m.filler_ph_quan_he()}
                       value={row.quanHe}
                       onChange={(event) =>
                         updateAnhChiEmRow(index, {
@@ -1289,6 +1378,7 @@ export function MemberEditorForm({
                     />
                     <TextInput
                       label={m.filler_field_ho_ten()}
+                      placeholder={m.filler_ph_ho_ten()}
                       value={row.hoTen}
                       onChange={(event) =>
                         updateAnhChiEmRow(index, {
@@ -1299,6 +1389,7 @@ export function MemberEditorForm({
                     />
                     <TextInput
                       label={m.filler_field_nam_sinh()}
+                      placeholder={m.filler_ph_nam_sinh()}
                       value={row.namSinh}
                       onChange={(event) =>
                         updateAnhChiEmRow(index, {
@@ -1309,6 +1400,7 @@ export function MemberEditorForm({
                     />
                     <TextInput
                       label={m.filler_field_nghe_nghiep()}
+                      placeholder={m.filler_ph_nghe_nghiep()}
                       value={row.ngheNghiep}
                       onChange={(event) =>
                         updateAnhChiEmRow(index, {
@@ -1319,6 +1411,7 @@ export function MemberEditorForm({
                     />
                     <TextInput
                       label={m.filler_field_noi_o()}
+                      placeholder={m.filler_ph_noi_o()}
                       value={row.noiO}
                       onChange={(event) =>
                         updateAnhChiEmRow(index, {
@@ -1346,6 +1439,7 @@ export function MemberEditorForm({
         <FormSection title={m.filler_section_nguyen_vong()}>
           <Textarea
             label={m.filler_field_nguyen_vong()}
+            placeholder={m.filler_ph_nguyen_vong()}
             value={draft.nguyenVong}
             onChange={(event) =>
               updateDraft('nguyenVong', event.currentTarget.value)

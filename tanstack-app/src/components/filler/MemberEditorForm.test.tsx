@@ -1,7 +1,11 @@
 import { MantineProvider } from '@mantine/core'
+import { DatesProvider } from '@mantine/dates'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import 'dayjs/locale/vi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Member } from '#/domain/types'
 import { m } from '#/paraglide/messages'
@@ -9,9 +13,43 @@ import { saveMemberDraft } from '#/use-cases/saveMemberDraft'
 import { theme } from '../../theme'
 import { MemberEditorForm } from './MemberEditorForm'
 
+dayjs.extend(customParseFormat)
+dayjs.locale('vi')
+
 vi.mock('#/use-cases/saveMemberDraft', () => ({
   saveMemberDraft: vi.fn(),
 }))
+
+vi.mock('#/query/fillerQueries', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('#/query/fillerQueries')>()
+  return {
+    ...actual,
+    fillerOrgUnitsQuery: () => ({
+      queryKey: ['filler', 'orgUnits'],
+      queryFn: async () => [
+        {
+          id: 'gd-i',
+          code: 'gd-i',
+          name: 'Giáo đoàn I',
+          kind: 'giao_doan' as const,
+          order: 1,
+          allowsTang: true,
+          allowsNi: true,
+        },
+        {
+          id: 'ni-gioi',
+          code: 'ni-gioi',
+          name: 'Ni giới Hệ phái Khất sĩ',
+          kind: 'ni_gioi' as const,
+          order: 7,
+          allowsTang: false,
+          allowsNi: true,
+        },
+      ],
+      staleTime: 0,
+    }),
+  }
+})
 
 vi.mock('#/data/vietnam-locations', () => ({
   cities: [
@@ -74,16 +112,18 @@ function renderForm(
   const result = render(
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme} defaultColorScheme="light">
-        <MemberEditorForm
-          title={m.filler_editor_title_member_new()}
-          token="invite-token"
-          orgUnitId="gd-i"
-          sanghaType="tang"
-          initial={{}}
-          status="draft"
-          onCreated={onCreated}
-          {...props}
-        />
+        <DatesProvider settings={{ locale: 'vi', firstDayOfWeek: 1 }}>
+          <MemberEditorForm
+            title={m.filler_editor_title_member_new()}
+            token="invite-token"
+            orgUnitId="gd-i"
+            sanghaType="tang"
+            initial={{}}
+            status="draft"
+            onCreated={onCreated}
+            {...props}
+          />
+        </DatesProvider>
       </MantineProvider>
     </QueryClientProvider>,
   )
@@ -120,6 +160,34 @@ describe('MemberEditorForm', () => {
       screen.getByRole('heading', { name: m.filler_section_identity() }),
     ).toBeTruthy()
     expect(screen.getByLabelText(m.filler_field_cccd())).toBeDisabled()
+  })
+
+  it('shows paper descriptions and placeholders on key fields', () => {
+    renderForm({ sanghaType: 'tang', cccd: '012345678901', memberId: 'm1' })
+
+    expect(screen.getByText(m.filler_desc_dia_chi_thuong_tru())).toBeTruthy()
+    expect(screen.getByText(m.filler_desc_ha_lap())).toBeTruthy()
+    expect(screen.getByText(m.filler_desc_anh_chi_em())).toBeTruthy()
+
+    expect(screen.getByPlaceholderText(m.filler_ph_the_danh())).toBeTruthy()
+    expect(
+      screen.getAllByPlaceholderText(m.filler_ph_phone()).length,
+    ).toBeGreaterThan(0)
+  })
+
+  it('uses date inputs for calendar dates and giáo đoàn select', async () => {
+    const user = userEvent.setup()
+    renderForm({ sanghaType: 'tang', cccd: '012345678901', memberId: 'm1' })
+
+    expect(screen.getByLabelText(m.filler_field_ngay_sinh())).toBeTruthy()
+    expect(screen.getByLabelText(m.filler_field_ngay_xuat_gia())).toBeTruthy()
+
+    const giaoDoan = await screen.findByRole('combobox', {
+      name: m.filler_field_giao_doan_goc(),
+    })
+    await user.click(giaoDoan)
+    expect(await screen.findByText('Giáo đoàn I')).toBeTruthy()
+    expect(screen.queryByText('Ni giới Hệ phái Khất sĩ')).toBeNull()
   })
 
   it('allows editing CCCD on create and seeds phone', () => {
@@ -194,6 +262,12 @@ describe('MemberEditorForm', () => {
     renderForm()
 
     expect(screen.getAllByLabelText(m.filler_field_noi_dung())).toHaveLength(2)
+    expect(screen.getAllByLabelText(m.filler_field_tu_thang_nam())).toHaveLength(
+      2,
+    )
+    expect(
+      screen.getAllByLabelText(m.filler_field_den_thang_nam()),
+    ).toHaveLength(2)
 
     await user.click(screen.getAllByRole('button', { name: m.filler_add_row() })[0]!)
     expect(screen.getAllByLabelText(m.filler_field_noi_dung())).toHaveLength(3)
