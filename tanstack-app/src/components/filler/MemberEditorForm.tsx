@@ -14,11 +14,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useMemo, useState } from 'react'
 import { VietnamAddressFields } from '#/components/address/VietnamAddressFields'
 import type { AddressDraft } from '#/domain/address'
-import {
-  addressDraftToValue,
-  hydrateAddress,
-  validateAddressDraft,
-} from '#/domain/address'
+import { addressDraftToValue, hydrateAddress } from '#/domain/address'
 import type { GiaoPham, Member, PreceptRecord, SanghaType } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { fillerKeys } from '#/query/fillerKeys'
@@ -32,6 +28,10 @@ import {
   type FillerEditorStatus,
 } from './FillerEditorShell'
 import { FormSection } from './FormSection'
+import {
+  validateMemberRequiredFields,
+  type MemberRequiredFieldErrors,
+} from './memberRequiredValidation'
 import { PreceptFields } from './PreceptFields'
 import { RepeatableFieldset } from './RepeatableFieldset'
 
@@ -284,17 +284,29 @@ function emptyMemberDraft(initial: Partial<Member> = {}): MemberDraft {
   }
 }
 
-function mapAddressErrors(result: ReturnType<typeof validateAddressDraft>) {
+function mapAddressErrors(errors?: { city?: 'REQUIRED'; ward?: 'REQUIRED' }) {
   return {
     city:
-      result.errors.city === 'REQUIRED'
+      errors?.city === 'REQUIRED'
         ? m.filler_address_city_required()
         : undefined,
     ward:
-      result.errors.ward === 'REQUIRED'
+      errors?.ward === 'REQUIRED'
         ? m.filler_address_ward_required()
         : undefined,
   }
+}
+
+function mapRequiredError(code: 'REQUIRED' | undefined): string | undefined {
+  return code === 'REQUIRED' ? m.filler_error_field_required() : undefined
+}
+
+function mapEmailError(
+  code: 'REQUIRED' | 'INVALID' | undefined,
+): string | undefined {
+  if (code === 'REQUIRED') return m.filler_error_field_required()
+  if (code === 'INVALID') return m.filler_error_email_invalid()
+  return undefined
 }
 
 function buildPrecept(value: PreceptRecord): PreceptRecord | undefined {
@@ -495,18 +507,7 @@ export function MemberEditorForm({
   )
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
-  const [addressErrors, setAddressErrors] = useState<{
-    city?: string
-    ward?: string
-  }>({})
-  const [noiSinhAddressErrors, setNoiSinhAddressErrors] = useState<{
-    city?: string
-    ward?: string
-  }>({})
-  const [noiXuatGiaAddressErrors, setNoiXuatGiaAddressErrors] = useState<{
-    city?: string
-    ward?: string
-  }>({})
+  const [fieldErrors, setFieldErrors] = useState<MemberRequiredFieldErrors>({})
   const disabled = status === 'view'
   const ranks = useMemo(() => rankOptions(sanghaType), [sanghaType])
   const orgUnitsQuery = useQuery(fillerOrgUnitsQuery())
@@ -694,6 +695,8 @@ export function MemberEditorForm({
               updateDraft('theDanh', event.currentTarget.value)
             }
             disabled={disabled}
+            required
+            error={mapRequiredError(fieldErrors.theDanh)}
           />
           <TextInput
             label={m.filler_field_phap_danh()}
@@ -703,6 +706,8 @@ export function MemberEditorForm({
               updateDraft('phapDanh', event.currentTarget.value)
             }
             disabled={disabled}
+            required
+            error={mapRequiredError(fieldErrors.phapDanh)}
           />
           <DateInput
             label={m.filler_field_ngay_sinh()}
@@ -711,6 +716,8 @@ export function MemberEditorForm({
             value={draft.ngaySinh || null}
             onChange={(value) => updateDraft('ngaySinh', value ?? '')}
             disabled={disabled}
+            required
+            error={mapRequiredError(fieldErrors.ngaySinh)}
           />
           <TextInput
             label={m.filler_field_nguyen_quan()}
@@ -767,7 +774,7 @@ export function MemberEditorForm({
           />
           <TextInput
             label={m.filler_field_cntn_noi_cap()}
-            placeholder={m.filler_ph_noi_cap()}
+            placeholder={m.filler_ph_noi_cap_cntn()}
             value={draft.cntn.noiCap}
             onChange={(event) =>
               updateNested('cntn', 'noiCap', event.currentTarget.value)
@@ -792,7 +799,7 @@ export function MemberEditorForm({
             onChange={onNoiSinhChange}
             disabled={disabled}
             required
-            errors={noiSinhAddressErrors}
+            errors={mapAddressErrors(fieldErrors.noiSinh)}
           />
         </Stack>
       </FormSection>
@@ -810,7 +817,10 @@ export function MemberEditorForm({
       isCreate,
       disabled,
       onNoiSinhChange,
-      noiSinhAddressErrors,
+      fieldErrors.theDanh,
+      fieldErrors.phapDanh,
+      fieldErrors.ngaySinh,
+      fieldErrors.noiSinh,
     ],
   )
 
@@ -826,6 +836,8 @@ export function MemberEditorForm({
               updateDraft('dienThoai', event.currentTarget.value)
             }
             disabled={disabled}
+            required
+            error={mapRequiredError(fieldErrors.dienThoai)}
           />
           <TextInput
             label={m.filler_field_email()}
@@ -835,6 +847,8 @@ export function MemberEditorForm({
               updateDraft('email', event.currentTarget.value)
             }
             disabled={disabled}
+            required
+            error={mapEmailError(fieldErrors.email)}
           />
         </SimpleGrid>
         <Stack gap="xs">
@@ -849,7 +863,8 @@ export function MemberEditorForm({
             value={draft.diaChiThuongTru}
             onChange={onDiaChiThuongTruChange}
             disabled={disabled}
-            errors={addressErrors}
+            required
+            errors={mapAddressErrors(fieldErrors.diaChiThuongTru)}
           />
         </Stack>
       </FormSection>
@@ -859,7 +874,9 @@ export function MemberEditorForm({
       draft.email,
       draft.diaChiThuongTru,
       onDiaChiThuongTruChange,
-      addressErrors,
+      fieldErrors.dienThoai,
+      fieldErrors.email,
+      fieldErrors.diaChiThuongTru,
       disabled,
     ],
   )
@@ -946,6 +963,8 @@ export function MemberEditorForm({
               value={draft.ngayXuatGia || null}
               onChange={(value) => updateDraft('ngayXuatGia', value ?? '')}
               disabled={disabled}
+              required
+              error={mapRequiredError(fieldErrors.ngayXuatGia)}
             />
             <TextInput
               label={m.filler_field_hien_tu_hoc()}
@@ -956,6 +975,8 @@ export function MemberEditorForm({
                 updateDraft('hienTuHoc', event.currentTarget.value)
               }
               disabled={disabled}
+              required
+              error={mapRequiredError(fieldErrors.hienTuHoc)}
             />
             <TextInput
               label={m.filler_field_bon_su()}
@@ -966,6 +987,8 @@ export function MemberEditorForm({
                 updateDraft('bonSu', event.currentTarget.value)
               }
               disabled={disabled}
+              required
+              error={mapRequiredError(fieldErrors.bonSu)}
             />
             <TextInput
               label={m.filler_field_he_phai_goc()}
@@ -1020,7 +1043,7 @@ export function MemberEditorForm({
               disabled={disabled}
               required
               linePlaceholder={m.filler_ph_noi_xuat_gia_line()}
-              errors={noiXuatGiaAddressErrors}
+              errors={mapAddressErrors(fieldErrors.noiXuatGia)}
             />
           </Stack>
         </FormSection>
@@ -1250,7 +1273,10 @@ export function MemberEditorForm({
       giaoDoanOptions,
       disabled,
       onNoiXuatGiaChange,
-      noiXuatGiaAddressErrors,
+      fieldErrors.ngayXuatGia,
+      fieldErrors.hienTuHoc,
+      fieldErrors.bonSu,
+      fieldErrors.noiXuatGia,
     ],
   )
 
@@ -1506,23 +1532,24 @@ export function MemberEditorForm({
       onSave={
         status === 'draft'
           ? () => {
-              const thuongTru = validateAddressDraft(draft.diaChiThuongTru)
-              const noiSinh = validateAddressDraft(draft.noiSinh, {
-                required: true,
+              const result = validateMemberRequiredFields({
+                theDanh: draft.theDanh,
+                phapDanh: draft.phapDanh,
+                ngaySinh: draft.ngaySinh,
+                noiSinh: draft.noiSinh,
+                dienThoai: draft.dienThoai,
+                email: draft.email,
+                diaChiThuongTru: draft.diaChiThuongTru,
+                ngayXuatGia: draft.ngayXuatGia,
+                noiXuatGia: draft.noiXuatGia,
+                hienTuHoc: draft.hienTuHoc,
+                bonSu: draft.bonSu,
               })
-              const noiXuatGia = validateAddressDraft(draft.noiXuatGia, {
-                required: true,
-              })
-
-              if (!thuongTru.valid || !noiSinh.valid || !noiXuatGia.valid) {
-                setAddressErrors(mapAddressErrors(thuongTru))
-                setNoiSinhAddressErrors(mapAddressErrors(noiSinh))
-                setNoiXuatGiaAddressErrors(mapAddressErrors(noiXuatGia))
+              if (!result.valid) {
+                setFieldErrors(result.errors)
                 return
               }
-              setAddressErrors({})
-              setNoiSinhAddressErrors({})
-              setNoiXuatGiaAddressErrors({})
+              setFieldErrors({})
               saveMutation.mutate()
             }
           : undefined

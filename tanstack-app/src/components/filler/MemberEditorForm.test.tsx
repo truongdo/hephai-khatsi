@@ -74,36 +74,6 @@ vi.mock('#/data/vietnam-locations', () => ({
 
 const saveMemberDraftMock = vi.mocked(saveMemberDraft)
 
-async function selectComboboxOption(
-  user: ReturnType<typeof userEvent.setup>,
-  combo: HTMLElement,
-  optionText: string,
-) {
-  await user.click(combo)
-  const listboxId = combo.getAttribute('aria-controls')
-  if (!listboxId) throw new Error('combobox has no aria-controls')
-  const listbox = document.getElementById(listboxId)
-  if (!listbox) throw new Error(`listbox #${listboxId} not found`)
-  await user.click(within(listbox).getByText(optionText))
-}
-
-async function fillRequiredAddress(
-  user: ReturnType<typeof userEvent.setup>,
-  label: string,
-) {
-  const container = screen.getByLabelText(label)
-  await selectComboboxOption(
-    user,
-    within(container).getByRole('combobox', { name: m.filler_field_city() }),
-    'Thành phố Hà Nội',
-  )
-  await selectComboboxOption(
-    user,
-    within(container).getByRole('combobox', { name: m.filler_field_ward() }),
-    'Phường Hà Đông, Thành phố Hà Nội',
-  )
-}
-
 beforeAll(() => {
   class ResizeObserverMock {
     observe() {}
@@ -178,6 +148,27 @@ function member(overrides: Partial<Member> = {}): Member {
   }
 }
 
+const completeAddress = {
+  cityCode: '01',
+  cityName: 'Hà Nội',
+  wardCode: '00013',
+  wardName: 'Hà Đông',
+} as const
+
+const requiredCoreInitial = {
+  theDanh: 'Nguyễn Văn A',
+  phapDanh: 'Minh Tâm',
+  ngaySinh: '1990-01-01',
+  ngayXuatGia: '2010-01-01',
+  dienThoai: '0901234567',
+  email: 'a@b.co',
+  hienTuHoc: 'Tịnh xá X',
+  bonSu: 'TT. Minh',
+  noiSinh: { ...completeAddress },
+  diaChiThuongTru: { ...completeAddress },
+  noiXuatGia: { ...completeAddress },
+}
+
 describe('MemberEditorForm', () => {
   it('renders identity section and locked CCCD', () => {
     renderForm({
@@ -209,8 +200,10 @@ describe('MemberEditorForm', () => {
     const user = userEvent.setup()
     renderForm({ sanghaType: 'tang', cccd: '012345678901', memberId: 'm1' })
 
-    expect(screen.getByLabelText(m.filler_field_ngay_sinh())).toBeTruthy()
-    expect(screen.getByLabelText(m.filler_field_ngay_xuat_gia())).toBeTruthy()
+    expect(screen.getByLabelText(new RegExp(`^${m.filler_field_ngay_sinh()}`))).toBeTruthy()
+    expect(
+      screen.getByLabelText(new RegExp(`^${m.filler_field_ngay_xuat_gia()}`)),
+    ).toBeTruthy()
 
     const giaoDoan = await screen.findByRole('combobox', {
       name: m.filler_field_giao_doan_goc(),
@@ -230,7 +223,9 @@ describe('MemberEditorForm', () => {
     expect(cccd.disabled).toBe(false)
     expect(
       (
-        screen.getAllByLabelText(m.filler_field_dien_thoai())[0] as HTMLInputElement
+        screen.getAllByLabelText(
+          new RegExp(`^${m.filler_field_dien_thoai()}`),
+        )[0] as HTMLInputElement
       ).value,
     ).toBe('0901234567')
   })
@@ -266,15 +261,11 @@ describe('MemberEditorForm', () => {
       member: member({ id: 'created-member', phapDanh: 'Minh Tâm' }),
       mode: 'created',
     })
-    const { onCreated } = renderForm()
+    const { onCreated } = renderForm({
+      cccd: '012345678901',
+      initial: requiredCoreInitial,
+    })
 
-    await user.type(
-      screen.getByLabelText(/^CCCD/),
-      '012345678901',
-    )
-    await user.type(screen.getByLabelText(m.filler_field_phap_danh()), 'Minh Tâm')
-    await fillRequiredAddress(user, m.filler_field_noi_sinh())
-    await fillRequiredAddress(user, m.filler_field_noi_xuat_gia())
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
 
     expect(saveMemberDraftMock).toHaveBeenCalledWith({
@@ -319,13 +310,21 @@ describe('MemberEditorForm', () => {
     expect(screen.getByDisplayValue('123 Đường A')).toBeTruthy()
   })
 
-  it('blocks save when permanent address line lacks city and ward', async () => {
+  it('blocks save when permanent address lacks city and ward', async () => {
     const user = userEvent.setup()
-    renderForm()
+    renderForm({
+      cccd: '012345678901',
+      initial: {
+        ...requiredCoreInitial,
+        diaChiThuongTru: undefined,
+      },
+    })
 
     const permanent = screen.getByLabelText(m.filler_field_dia_chi_thuong_tru())
     await user.type(
-      within(permanent).getByRole('textbox', { name: m.filler_field_address_line() }),
+      within(permanent).getByRole('textbox', {
+        name: m.filler_field_address_line(),
+      }),
       '15 Ngõ 4',
     )
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
@@ -345,13 +344,31 @@ describe('MemberEditorForm', () => {
     expect(screen.getByDisplayValue('Cũ nơi sinh')).toBeTruthy()
   })
 
-  it('blocks save when noiSinh and noiXuatGia lack city and ward', async () => {
+  it('blocks save when required core fields are empty', async () => {
     const user = userEvent.setup()
-    renderForm()
+    renderForm({ cccd: '012345678901' })
 
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
 
     expect(saveMemberDraftMock).not.toHaveBeenCalled()
-    expect(screen.getAllByText(m.filler_address_city_required()).length).toBeGreaterThanOrEqual(1)
+    expect(
+      screen.getAllByText(m.filler_error_field_required()).length,
+    ).toBeGreaterThanOrEqual(1)
+  })
+
+  it('blocks save when email format is invalid', async () => {
+    const user = userEvent.setup()
+    renderForm({
+      cccd: '012345678901',
+      initial: {
+        ...requiredCoreInitial,
+        email: 'not-an-email',
+      },
+    })
+
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+
+    expect(saveMemberDraftMock).not.toHaveBeenCalled()
+    expect(screen.getByText(m.filler_error_email_invalid())).toBeTruthy()
   })
 })
