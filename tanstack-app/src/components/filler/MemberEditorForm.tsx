@@ -916,8 +916,16 @@ export function MemberEditorForm({
             />
             <TextInput
               label={m.filler_field_noi_dung()}
-              description={m.filler_desc_noi_dung()}
-              placeholder={m.filler_ph_noi_dung()}
+              description={
+                key === 'chucVuHePhai'
+                  ? m.filler_desc_noi_dung()
+                  : m.filler_desc_noi_dung_ghpgvn()
+              }
+              placeholder={
+                key === 'chucVuHePhai'
+                  ? m.filler_ph_noi_dung_he_phai()
+                  : m.filler_ph_noi_dung_ghpgvn()
+              }
               value={row.noiDung}
               onChange={(event) =>
                 updateChucVuRow(key, index, {
@@ -928,7 +936,11 @@ export function MemberEditorForm({
             />
             <TextInput
               label={m.filler_field_dia_chi()}
-              placeholder={m.filler_ph_dia_chi_row()}
+              placeholder={
+                key === 'chucVuHePhai'
+                  ? m.filler_ph_dia_chi_he_phai()
+                  : m.filler_ph_dia_chi_ghpgvn()
+              }
               value={row.diaChi}
               onChange={(event) =>
                 updateChucVuRow(key, index, {
@@ -1324,7 +1336,7 @@ export function MemberEditorForm({
                     />
                     <TextInput
                       label={m.filler_field_ghi_chu()}
-                      placeholder={m.filler_ph_ghi_chu()}
+                      placeholder={m.filler_ph_khoa_tu_ghi_chu()}
                       value={row.ghiChu}
                       onChange={(event) =>
                         updateKhoaTuRow(index, {
