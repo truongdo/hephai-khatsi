@@ -43,13 +43,14 @@ export function PreceptFields({
         <DateInput
           label={m.filler_field_precept_ngay_hp()}
           valueFormat="YYYY-MM-DD"
+          placeholder={m.filler_field_precept_ngay_hp_placeholder()}
           clearable
           value={value.ngayHePhai || null}
           onChange={(next) => onChange({ ...value, ngayHePhai: next ?? '' })}
         />
         <TextInput
           label={m.filler_field_precept_tai_hp()}
-          placeholder={m.filler_ph_precept_tai()}
+          placeholder={m.filler_ph_precept_tai_he_phai()}
           value={value.taiHePhai ?? ''}
           onChange={setText('taiHePhai')}
         />
