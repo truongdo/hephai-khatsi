@@ -33,8 +33,15 @@ export function isAddressBlank(draft: AddressDraft): boolean {
 
 export function validateAddressDraft(
   draft: AddressDraft,
+  options?: { required?: boolean },
 ): AddressValidationResult {
   if (isAddressBlank(draft)) {
+    if (options?.required) {
+      return {
+        valid: false,
+        errors: { city: 'REQUIRED', ward: 'REQUIRED' },
+      }
+    }
     return { valid: true, errors: {} }
   }
   const errors: AddressValidationResult['errors'] = {}

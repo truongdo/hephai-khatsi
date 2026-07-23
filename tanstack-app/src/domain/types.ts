@@ -51,7 +51,7 @@ export type Member = {
   theDanh?: string
   phapDanh?: string
   ngaySinh?: string
-  noiSinh?: string
+  noiSinh?: AddressValue | string
   nguyenQuan?: string
   cccdMeta?: { ngayCap?: string; noiCap?: string }
   cntn?: { so?: string; ngayCap?: string; noiCap?: string }
@@ -60,7 +60,7 @@ export type Member = {
   email?: string
   diaChiThuongTru?: AddressValue | string
   ngayXuatGia?: string
-  noiXuatGia?: string
+  noiXuatGia?: AddressValue | string
   hienTuHoc?: string
   gioiSaDi?: PreceptRecord
   gioiTyKheo?: PreceptRecord

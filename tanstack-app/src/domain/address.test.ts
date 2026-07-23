@@ -116,6 +116,40 @@ describe('validateAddressDraft', () => {
       }),
     ).toEqual({ valid: true, errors: {} })
   })
+
+  it('rejects blank when required', () => {
+    expect(validateAddressDraft(EMPTY_ADDRESS_DRAFT, { required: true })).toEqual({
+      valid: false,
+      errors: { city: 'REQUIRED', ward: 'REQUIRED' },
+    })
+  })
+
+  it('rejects line-only when required', () => {
+    expect(
+      validateAddressDraft(
+        { ...EMPTY_ADDRESS_DRAFT, line: '15 Ngõ 4' },
+        { required: true },
+      ),
+    ).toEqual({
+      valid: false,
+      errors: { city: 'REQUIRED', ward: 'REQUIRED' },
+    })
+  })
+
+  it('accepts complete address when required', () => {
+    expect(
+      validateAddressDraft(
+        {
+          cityCode: '01',
+          cityName: 'Hà Nội',
+          wardCode: '00013',
+          wardName: 'Hà Đông',
+          line: '',
+        },
+        { required: true },
+      ),
+    ).toEqual({ valid: true, errors: {} })
+  })
 })
 
 describe('formatAddressDisplay', () => {
