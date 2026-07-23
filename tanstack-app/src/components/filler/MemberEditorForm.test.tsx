@@ -10,6 +10,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Member } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { saveMemberDraft } from '#/use-cases/saveMemberDraft'
+import { uploadMemberPhoto } from '#/use-cases/uploadMemberPhoto'
 import { theme } from '../../theme'
 import { MemberEditorForm } from './MemberEditorForm'
 
@@ -18,6 +19,12 @@ dayjs.locale('vi')
 
 vi.mock('#/use-cases/saveMemberDraft', () => ({
   saveMemberDraft: vi.fn(),
+}))
+
+vi.mock('#/use-cases/uploadMemberPhoto', () => ({
+  uploadMemberPhoto: vi.fn(async () => ({
+    photoPath: 'members/created-member/photo.jpg',
+  })),
 }))
 
 vi.mock('#/query/fillerQueries', async (importOriginal) => {
@@ -73,6 +80,14 @@ vi.mock('#/data/vietnam-locations', () => ({
 }))
 
 const saveMemberDraftMock = vi.mocked(saveMemberDraft)
+const uploadMemberPhotoMock = vi.mocked(uploadMemberPhoto)
+
+function getPortraitFileInput(): HTMLInputElement {
+  const button = screen.getByRole('button', { name: m.filler_photo_choose() })
+  return button.parentElement?.querySelector(
+    'input[type="file"]',
+  ) as HTMLInputElement
+}
 
 beforeAll(() => {
   class ResizeObserverMock {
@@ -96,10 +111,17 @@ beforeAll(() => {
       dispatchEvent: () => false,
     }),
   })
+
+  URL.createObjectURL = vi.fn(() => 'blob:preview')
+  URL.revokeObjectURL = vi.fn()
 })
 
 beforeEach(() => {
   saveMemberDraftMock.mockReset()
+  uploadMemberPhotoMock.mockReset()
+  uploadMemberPhotoMock.mockResolvedValue({
+    photoPath: 'members/created-member/photo.jpg',
+  })
 })
 
 function renderForm(
@@ -278,6 +300,43 @@ describe('MemberEditorForm', () => {
       }),
     })
     expect(onCreated).toHaveBeenCalledWith('created-member')
+    expect(uploadMemberPhotoMock).not.toHaveBeenCalled()
+  })
+
+  it('uploads pending portrait after successful create', async () => {
+    const user = userEvent.setup()
+    let resolveUpload!: (value: { photoPath: string }) => void
+    const uploadPromise = new Promise<{ photoPath: string }>((resolve) => {
+      resolveUpload = resolve
+    })
+    uploadMemberPhotoMock.mockReturnValue(uploadPromise)
+    saveMemberDraftMock.mockResolvedValue({
+      member: member({ id: 'created-member', phapDanh: 'Minh Tâm' }),
+      mode: 'created',
+    })
+    const { onCreated } = renderForm({
+      cccd: '012345678901',
+      initial: requiredCoreInitial,
+    })
+    const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
+
+    await user.upload(getPortraitFileInput(), file)
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+
+    expect(saveMemberDraftMock).toHaveBeenCalled()
+    expect(uploadMemberPhotoMock).toHaveBeenCalledWith({
+      memberId: 'created-member',
+      cccd: '012345678901',
+      bytes: expect.any(Uint8Array),
+      contentType: 'image/jpeg',
+      inviteToken: 'invite-token',
+    })
+    expect(onCreated).not.toHaveBeenCalled()
+
+    resolveUpload({ photoPath: 'members/created-member/photo.jpg' })
+    await vi.waitFor(() =>
+      expect(onCreated).toHaveBeenCalledWith('created-member'),
+    )
   })
 
   it('adds and removes chuc vu rows', async () => {

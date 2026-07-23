@@ -21,6 +21,7 @@ import { fillerKeys } from '#/query/fillerKeys'
 import { fillerOrgUnitsQuery } from '#/query/fillerQueries'
 import type { MemberProfilePatch } from '#/repositories/memberRepo'
 import { saveMemberDraft } from '#/use-cases/saveMemberDraft'
+import { uploadMemberPhoto } from '#/use-cases/uploadMemberPhoto'
 import type { FillerOption } from './fillerFormOptions'
 import { NI_RANKS, TANG_RANKS } from './fillerFormOptions'
 import {
@@ -28,6 +29,7 @@ import {
   type FillerEditorStatus,
 } from './FillerEditorShell'
 import { FormSection } from './FormSection'
+import { MemberPortraitField } from './MemberPortraitField'
 import {
   validateMemberRequiredFields,
   type MemberRequiredFieldErrors,
@@ -507,6 +509,10 @@ export function MemberEditorForm({
   )
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
+  const [photoPath, setPhotoPath] = useState<string | null>(
+    initial.photoPath ?? null,
+  )
+  const [pendingPhoto, setPendingPhoto] = useState<File | null>(null)
   const [fieldErrors, setFieldErrors] = useState<MemberRequiredFieldErrors>({})
   const disabled = status === 'view'
   const ranks = useMemo(() => rankOptions(sanghaType), [sanghaType])
@@ -528,22 +534,70 @@ export function MemberEditorForm({
         cccd: resolvedCccd,
         patch: buildPatch(draft),
       }),
-    onSuccess: async (result) => {
-      setSaveError(null)
-      if (result.mode === 'created') {
-        onCreated(result.member.id)
-        return
-      }
-      setSaveSuccess(m.filler_save_success())
-      await queryClient.invalidateQueries({
-        queryKey: fillerKeys.member(result.member.id),
-      })
-    },
     onError: () => {
       setSaveSuccess(null)
       setSaveError(m.filler_save_error())
     },
   })
+
+  const handleSave = useCallback(async () => {
+    const result = validateMemberRequiredFields({
+      theDanh: draft.theDanh,
+      phapDanh: draft.phapDanh,
+      ngaySinh: draft.ngaySinh,
+      noiSinh: draft.noiSinh,
+      dienThoai: draft.dienThoai,
+      email: draft.email,
+      diaChiThuongTru: draft.diaChiThuongTru,
+      ngayXuatGia: draft.ngayXuatGia,
+      noiXuatGia: draft.noiXuatGia,
+      hienTuHoc: draft.hienTuHoc,
+      bonSu: draft.bonSu,
+    })
+    if (!result.valid) {
+      setFieldErrors(result.errors)
+      return
+    }
+    setFieldErrors({})
+    try {
+      const saveResult = await saveMutation.mutateAsync()
+      setSaveError(null)
+      if (saveResult.mode === 'created') {
+        if (pendingPhoto) {
+          try {
+            const bytes = new Uint8Array(await pendingPhoto.arrayBuffer())
+            const uploadResult = await uploadMemberPhoto({
+              memberId: saveResult.member.id,
+              cccd: resolvedCccd,
+              bytes,
+              contentType: pendingPhoto.type,
+              inviteToken: token,
+            })
+            setPhotoPath(uploadResult.photoPath)
+            setPendingPhoto(null)
+          } catch {
+            setSaveError(m.filler_photo_upload_error())
+          }
+        }
+        onCreated(saveResult.member.id)
+        return
+      }
+      setSaveSuccess(m.filler_save_success())
+      await queryClient.invalidateQueries({
+        queryKey: fillerKeys.member(saveResult.member.id),
+      })
+    } catch {
+      // onError handles save failure
+    }
+  }, [
+    draft,
+    pendingPhoto,
+    queryClient,
+    resolvedCccd,
+    saveMutation,
+    token,
+    onCreated,
+  ])
 
   const updateDraft = <K extends keyof MemberDraft>(
     key: K,
@@ -1541,36 +1595,23 @@ export function MemberEditorForm({
     <FillerEditorShell
       title={title}
       status={status}
-      onSave={
-        status === 'draft'
-          ? () => {
-              const result = validateMemberRequiredFields({
-                theDanh: draft.theDanh,
-                phapDanh: draft.phapDanh,
-                ngaySinh: draft.ngaySinh,
-                noiSinh: draft.noiSinh,
-                dienThoai: draft.dienThoai,
-                email: draft.email,
-                diaChiThuongTru: draft.diaChiThuongTru,
-                ngayXuatGia: draft.ngayXuatGia,
-                noiXuatGia: draft.noiXuatGia,
-                hienTuHoc: draft.hienTuHoc,
-                bonSu: draft.bonSu,
-              })
-              if (!result.valid) {
-                setFieldErrors(result.errors)
-                return
-              }
-              setFieldErrors({})
-              saveMutation.mutate()
-            }
-          : undefined
-      }
+      onSave={status === 'draft' ? () => void handleSave() : undefined}
       savePending={saveMutation.isPending}
       saveError={saveError}
       saveSuccess={saveSuccess}
     >
       <Stack gap="xl" maw={760}>
+        <MemberPortraitField
+          memberId={memberId}
+          cccd={resolvedCccd}
+          inviteToken={token}
+          photoPath={photoPath}
+          disabled={disabled}
+          pendingFile={pendingPhoto}
+          onPendingFileChange={setPendingPhoto}
+          onPhotoPathChange={setPhotoPath}
+          onUploadError={setSaveError}
+        />
         {identitySection}
         {contactSection}
         {restSections}
