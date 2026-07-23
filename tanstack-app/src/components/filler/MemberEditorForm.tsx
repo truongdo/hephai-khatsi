@@ -88,7 +88,7 @@ type MemberDraft = {
   theDanh: string
   phapDanh: string
   ngaySinh: string
-  noiSinh: string
+  noiSinh: AddressDraft
   nguyenQuan: string
   cccdMeta: { ngayCap: string; noiCap: string }
   cntn: { so: string; ngayCap: string; noiCap: string }
@@ -97,7 +97,7 @@ type MemberDraft = {
   email: string
   diaChiThuongTru: AddressDraft
   ngayXuatGia: string
-  noiXuatGia: string
+  noiXuatGia: AddressDraft
   hienTuHoc: string
   bonSu: string
   hePhaiGoc: string
@@ -203,7 +203,7 @@ function emptyMemberDraft(initial: Partial<Member> = {}): MemberDraft {
     theDanh: initial.theDanh ?? '',
     phapDanh: initial.phapDanh ?? '',
     ngaySinh: initial.ngaySinh ?? '',
-    noiSinh: initial.noiSinh ?? '',
+    noiSinh: hydrateAddress(initial.noiSinh),
     nguyenQuan: initial.nguyenQuan ?? '',
     cccdMeta: {
       ngayCap: initial.cccdMeta?.ngayCap ?? '',
@@ -219,7 +219,7 @@ function emptyMemberDraft(initial: Partial<Member> = {}): MemberDraft {
     email: initial.email ?? '',
     diaChiThuongTru: hydrateAddress(initial.diaChiThuongTru),
     ngayXuatGia: initial.ngayXuatGia ?? '',
-    noiXuatGia: initial.noiXuatGia ?? '',
+    noiXuatGia: hydrateAddress(initial.noiXuatGia),
     hienTuHoc: initial.hienTuHoc ?? '',
     bonSu: initial.bonSu ?? '',
     hePhaiGoc: initial.hePhaiGoc ?? '',
@@ -284,6 +284,19 @@ function emptyMemberDraft(initial: Partial<Member> = {}): MemberDraft {
   }
 }
 
+function mapAddressErrors(result: ReturnType<typeof validateAddressDraft>) {
+  return {
+    city:
+      result.errors.city === 'REQUIRED'
+        ? m.filler_address_city_required()
+        : undefined,
+    ward:
+      result.errors.ward === 'REQUIRED'
+        ? m.filler_address_ward_required()
+        : undefined,
+  }
+}
+
 function buildPrecept(value: PreceptRecord): PreceptRecord | undefined {
   if (
     !hasText([
@@ -343,7 +356,7 @@ function buildPatch(draft: MemberDraft): MemberProfilePatch {
     theDanh: textOrUndefined(draft.theDanh),
     phapDanh: textOrUndefined(draft.phapDanh),
     ngaySinh: textOrUndefined(draft.ngaySinh),
-    noiSinh: textOrUndefined(draft.noiSinh),
+    noiSinh: addressDraftToValue(draft.noiSinh),
     nguyenQuan: textOrUndefined(draft.nguyenQuan),
     cccdMeta: {
       ngayCap: textOrUndefined(draft.cccdMeta.ngayCap),
@@ -359,7 +372,7 @@ function buildPatch(draft: MemberDraft): MemberProfilePatch {
     email: textOrUndefined(draft.email),
     diaChiThuongTru: addressDraftToValue(draft.diaChiThuongTru),
     ngayXuatGia: textOrUndefined(draft.ngayXuatGia),
-    noiXuatGia: textOrUndefined(draft.noiXuatGia),
+    noiXuatGia: addressDraftToValue(draft.noiXuatGia),
     hienTuHoc: textOrUndefined(draft.hienTuHoc),
     bonSu: textOrUndefined(draft.bonSu),
     hePhaiGoc: textOrUndefined(draft.hePhaiGoc),
@@ -483,6 +496,14 @@ export function MemberEditorForm({
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
   const [addressErrors, setAddressErrors] = useState<{
+    city?: string
+    ward?: string
+  }>({})
+  const [noiSinhAddressErrors, setNoiSinhAddressErrors] = useState<{
+    city?: string
+    ward?: string
+  }>({})
+  const [noiXuatGiaAddressErrors, setNoiXuatGiaAddressErrors] = useState<{
     city?: string
     ward?: string
   }>({})
@@ -649,6 +670,18 @@ export function MemberEditorForm({
     [],
   )
 
+  const onNoiSinhChange = useCallback(
+    (value: AddressDraft) =>
+      setDraft((current) => ({ ...current, noiSinh: value })),
+    [],
+  )
+
+  const onNoiXuatGiaChange = useCallback(
+    (value: AddressDraft) =>
+      setDraft((current) => ({ ...current, noiXuatGia: value })),
+    [],
+  )
+
   const identitySection = useMemo(
     () => (
       <FormSection title={m.filler_section_identity()}>
@@ -677,15 +710,6 @@ export function MemberEditorForm({
             clearable
             value={draft.ngaySinh || null}
             onChange={(value) => updateDraft('ngaySinh', value ?? '')}
-            disabled={disabled}
-          />
-          <TextInput
-            label={m.filler_field_noi_sinh()}
-            placeholder={m.filler_ph_noi_sinh()}
-            value={draft.noiSinh}
-            onChange={(event) =>
-              updateDraft('noiSinh', event.currentTarget.value)
-            }
             disabled={disabled}
           />
           <TextInput
@@ -760,6 +784,17 @@ export function MemberEditorForm({
             disabled={disabled}
           />
         </SimpleGrid>
+        <Stack gap="xs">
+          <Text fw={600}>{m.filler_field_noi_sinh()}</Text>
+          <VietnamAddressFields
+            label={m.filler_field_noi_sinh()}
+            value={draft.noiSinh}
+            onChange={onNoiSinhChange}
+            disabled={disabled}
+            required
+            errors={noiSinhAddressErrors}
+          />
+        </Stack>
       </FormSection>
     ),
     [
@@ -774,6 +809,8 @@ export function MemberEditorForm({
       resolvedCccd,
       isCreate,
       disabled,
+      onNoiSinhChange,
+      noiSinhAddressErrors,
     ],
   )
 
@@ -911,16 +948,6 @@ export function MemberEditorForm({
               disabled={disabled}
             />
             <TextInput
-              label={m.filler_field_noi_xuat_gia()}
-              description={m.filler_desc_noi_xuat_gia()}
-              placeholder={m.filler_ph_noi_xuat_gia()}
-              value={draft.noiXuatGia}
-              onChange={(event) =>
-                updateDraft('noiXuatGia', event.currentTarget.value)
-              }
-              disabled={disabled}
-            />
-            <TextInput
               label={m.filler_field_hien_tu_hoc()}
               description={m.filler_desc_hien_tu_hoc()}
               placeholder={m.filler_ph_hien_tu_hoc()}
@@ -979,6 +1006,23 @@ export function MemberEditorForm({
               min={0}
             />
           </SimpleGrid>
+          <Stack gap="xs">
+            <Stack gap={2}>
+              <Text fw={600}>{m.filler_field_noi_xuat_gia()}</Text>
+              <Text size="xs" c="dimmed">
+                {m.filler_desc_noi_xuat_gia()}
+              </Text>
+            </Stack>
+            <VietnamAddressFields
+              label={m.filler_field_noi_xuat_gia()}
+              value={draft.noiXuatGia}
+              onChange={onNoiXuatGiaChange}
+              disabled={disabled}
+              required
+              linePlaceholder={m.filler_ph_noi_xuat_gia_line()}
+              errors={noiXuatGiaAddressErrors}
+            />
+          </Stack>
         </FormSection>
 
         <FormSection title={m.filler_section_gioi()}>
@@ -1205,6 +1249,8 @@ export function MemberEditorForm({
       ranks,
       giaoDoanOptions,
       disabled,
+      onNoiXuatGiaChange,
+      noiXuatGiaAddressErrors,
     ],
   )
 
@@ -1460,21 +1506,23 @@ export function MemberEditorForm({
       onSave={
         status === 'draft'
           ? () => {
-              const result = validateAddressDraft(draft.diaChiThuongTru)
-              if (!result.valid) {
-                setAddressErrors({
-                  city:
-                    result.errors.city === 'REQUIRED'
-                      ? m.filler_address_city_required()
-                      : undefined,
-                  ward:
-                    result.errors.ward === 'REQUIRED'
-                      ? m.filler_address_ward_required()
-                      : undefined,
-                })
+              const thuongTru = validateAddressDraft(draft.diaChiThuongTru)
+              const noiSinh = validateAddressDraft(draft.noiSinh, {
+                required: true,
+              })
+              const noiXuatGia = validateAddressDraft(draft.noiXuatGia, {
+                required: true,
+              })
+
+              if (!thuongTru.valid || !noiSinh.valid || !noiXuatGia.valid) {
+                setAddressErrors(mapAddressErrors(thuongTru))
+                setNoiSinhAddressErrors(mapAddressErrors(noiSinh))
+                setNoiXuatGiaAddressErrors(mapAddressErrors(noiXuatGia))
                 return
               }
               setAddressErrors({})
+              setNoiSinhAddressErrors({})
+              setNoiXuatGiaAddressErrors({})
               saveMutation.mutate()
             }
           : undefined

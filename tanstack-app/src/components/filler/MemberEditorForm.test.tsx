@@ -1,7 +1,7 @@
 import { MantineProvider } from '@mantine/core'
 import { DatesProvider } from '@mantine/dates'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
@@ -73,6 +73,36 @@ vi.mock('#/data/vietnam-locations', () => ({
 }))
 
 const saveMemberDraftMock = vi.mocked(saveMemberDraft)
+
+async function selectComboboxOption(
+  user: ReturnType<typeof userEvent.setup>,
+  combo: HTMLElement,
+  optionText: string,
+) {
+  await user.click(combo)
+  const listboxId = combo.getAttribute('aria-controls')
+  if (!listboxId) throw new Error('combobox has no aria-controls')
+  const listbox = document.getElementById(listboxId)
+  if (!listbox) throw new Error(`listbox #${listboxId} not found`)
+  await user.click(within(listbox).getByText(optionText))
+}
+
+async function fillRequiredAddress(
+  user: ReturnType<typeof userEvent.setup>,
+  label: string,
+) {
+  const container = screen.getByLabelText(label)
+  await selectComboboxOption(
+    user,
+    within(container).getByRole('combobox', { name: m.filler_field_city() }),
+    'Thành phố Hà Nội',
+  )
+  await selectComboboxOption(
+    user,
+    within(container).getByRole('combobox', { name: m.filler_field_ward() }),
+    'Phường Hà Đông, Thành phố Hà Nội',
+  )
+}
 
 beforeAll(() => {
   class ResizeObserverMock {
@@ -243,6 +273,8 @@ describe('MemberEditorForm', () => {
       '012345678901',
     )
     await user.type(screen.getByLabelText(m.filler_field_phap_danh()), 'Minh Tâm')
+    await fillRequiredAddress(user, m.filler_field_noi_sinh())
+    await fillRequiredAddress(user, m.filler_field_noi_xuat_gia())
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
 
     expect(saveMemberDraftMock).toHaveBeenCalledWith({
@@ -291,13 +323,35 @@ describe('MemberEditorForm', () => {
     const user = userEvent.setup()
     renderForm()
 
+    const permanent = screen.getByLabelText(m.filler_field_dia_chi_thuong_tru())
     await user.type(
-      screen.getByRole('textbox', { name: m.filler_field_address_line() }),
+      within(permanent).getByRole('textbox', { name: m.filler_field_address_line() }),
       '15 Ngõ 4',
     )
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
 
     expect(saveMemberDraftMock).not.toHaveBeenCalled()
-    expect(screen.getByText(m.filler_address_city_required())).toBeTruthy()
+    expect(
+      within(permanent).getByText(m.filler_address_city_required()),
+    ).toBeTruthy()
+  })
+
+  it('hydrates legacy noiSinh string into line field', () => {
+    renderForm({
+      initial: {
+        noiSinh: 'Cũ nơi sinh' as unknown as Member['noiSinh'],
+      },
+    })
+    expect(screen.getByDisplayValue('Cũ nơi sinh')).toBeTruthy()
+  })
+
+  it('blocks save when noiSinh and noiXuatGia lack city and ward', async () => {
+    const user = userEvent.setup()
+    renderForm()
+
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+
+    expect(saveMemberDraftMock).not.toHaveBeenCalled()
+    expect(screen.getAllByText(m.filler_address_city_required()).length).toBeGreaterThanOrEqual(1)
   })
 })
