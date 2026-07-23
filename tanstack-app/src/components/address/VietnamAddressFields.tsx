@@ -11,6 +11,8 @@ export type VietnamAddressFieldsProps = {
   onChange: (value: AddressDraft) => void
   disabled?: boolean
   errors?: { city?: string; ward?: string }
+  linePlaceholder?: string
+  required?: boolean
 }
 
 type LocationFields = Omit<AddressDraft, 'line'>
@@ -20,6 +22,7 @@ type LocationSelectsProps = {
   wardCode: string
   disabled: boolean
   errors?: { city?: string; ward?: string }
+  required?: boolean
   onLocationChange: (location: LocationFields) => void
 }
 
@@ -28,6 +31,7 @@ const LocationSelects = memo(function LocationSelects({
   wardCode,
   disabled,
   errors,
+  required,
   onLocationChange,
 }: LocationSelectsProps) {
   const [wards, setWards] = useState<Ward[]>([])
@@ -101,6 +105,7 @@ const LocationSelects = memo(function LocationSelects({
         onChange={handleCityChange}
         searchable
         disabled={disabled}
+        required={required}
         error={errors?.city}
       />
       <Select
@@ -113,6 +118,7 @@ const LocationSelects = memo(function LocationSelects({
         onChange={handleWardChange}
         searchable
         disabled={disabled || !cityCode || wardsLoading}
+        required={required}
         error={errors?.ward}
       />
     </SimpleGrid>
@@ -125,6 +131,8 @@ export const VietnamAddressFields = memo(function VietnamAddressFields({
   onChange,
   disabled = false,
   errors,
+  linePlaceholder,
+  required,
 }: VietnamAddressFieldsProps) {
   const valueRef = useRef(value)
   valueRef.current = value
@@ -142,11 +150,12 @@ export const VietnamAddressFields = memo(function VietnamAddressFields({
         wardCode={value.wardCode}
         disabled={disabled}
         errors={errors}
+        required={required}
         onLocationChange={onLocationChange}
       />
       <TextInput
         label={m.filler_field_address_line()}
-        placeholder={m.filler_ph_address_line()}
+        placeholder={linePlaceholder ?? m.filler_ph_address_line()}
         value={value.line}
         onChange={(event) =>
           onChange({ ...value, line: event.currentTarget.value })

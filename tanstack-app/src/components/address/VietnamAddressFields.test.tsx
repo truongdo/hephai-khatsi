@@ -192,4 +192,22 @@ describe('VietnamAddressFields', () => {
     expect(screen.getByText(m.filler_address_city_required())).toBeTruthy()
     expect(screen.getByText(m.filler_address_ward_required())).toBeTruthy()
   })
+
+  it('uses custom linePlaceholder when provided', () => {
+    renderFields({ linePlaceholder: 'vd: Tịnh xá …' })
+    expect(screen.getByPlaceholderText('vd: Tịnh xá …')).toBeTruthy()
+  })
+
+  it('marks city and ward required when required prop is set', () => {
+    renderFields({ required: true })
+    expect(
+      screen.getByRole('combobox', { name: m.filler_field_city() }),
+    ).toBeRequired()
+    expect(
+      screen.getByRole('combobox', { name: m.filler_field_ward() }),
+    ).toBeRequired()
+    expect(
+      screen.getByRole('textbox', { name: m.filler_field_address_line() }),
+    ).not.toBeRequired()
+  })
 })

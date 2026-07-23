@@ -219,6 +219,7 @@
   "filler_ph_city": "Chọn tỉnh / thành phố",
   "filler_ph_ward": "Chọn phường / xã",
   "filler_ph_address_line": "Ví dụ: 123 đường ABC, tổ 5, thôn X",
+  "filler_ph_noi_xuat_gia_line": "vd: Tịnh xá …",
   "filler_address_city_required": "Vui lòng chọn tỉnh / thành phố",
   "filler_address_ward_required": "Vui lòng chọn phường / xã",
   "filler_address_wards_loading": "Đang tải…",
