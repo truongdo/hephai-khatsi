@@ -415,6 +415,22 @@ describe('MemberEditorForm', () => {
     ).toBeGreaterThanOrEqual(1)
   })
 
+  it('does not show phone fields for father or mother', () => {
+    renderForm({ cccd: '012345678901', memberId: 'm1' })
+
+    const cha = screen.getByRole('group', { name: m.filler_field_cha() })
+    const me = screen.getByRole('group', { name: m.filler_field_me() })
+
+    expect(
+      within(cha).queryByLabelText(m.filler_field_dien_thoai()),
+    ).toBeNull()
+    expect(within(me).queryByLabelText(m.filler_field_dien_thoai())).toBeNull()
+
+    expect(
+      screen.getByLabelText(new RegExp(`^${m.filler_field_dien_thoai()}`)),
+    ).toBeTruthy()
+  })
+
   it('blocks save when email format is invalid', async () => {
     const user = userEvent.setup()
     renderForm({

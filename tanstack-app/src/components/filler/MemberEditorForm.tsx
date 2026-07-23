@@ -69,7 +69,6 @@ type FamilyPersonDraft = {
   hoTen: string
   namSinh: string
   ngheNghiep: string
-  dienThoai: string
   noiO: string
 }
 
@@ -195,7 +194,6 @@ function emptyFamilyPerson(
     hoTen: value?.hoTen ?? '',
     namSinh: value?.namSinh ?? '',
     ngheNghiep: value?.ngheNghiep ?? '',
-    dienThoai: value?.dienThoai ?? '',
     noiO: value?.noiO ?? '',
   }
 }
@@ -345,13 +343,7 @@ function buildFamilyPerson(
   value: FamilyPersonDraft,
 ): Member['giaDinh'] extends { cha?: infer T } ? T | undefined : never {
   if (
-    !hasText([
-      value.hoTen,
-      value.namSinh,
-      value.ngheNghiep,
-      value.dienThoai,
-      value.noiO,
-    ])
+    !hasText([value.hoTen, value.namSinh, value.ngheNghiep, value.noiO])
   ) {
     return undefined as never
   }
@@ -360,7 +352,6 @@ function buildFamilyPerson(
     hoTen: textOrUndefined(value.hoTen),
     namSinh: textOrUndefined(value.namSinh),
     ngheNghiep: textOrUndefined(value.ngheNghiep),
-    dienThoai: textOrUndefined(value.dienThoai),
     noiO: textOrUndefined(value.noiO),
   } as never
 }
@@ -1457,18 +1448,6 @@ export function MemberEditorForm({
                     updateFamilyPerson(
                       person,
                       'ngheNghiep',
-                      event.currentTarget.value,
-                    )
-                  }
-                />
-                <TextInput
-                  label={m.filler_field_dien_thoai()}
-                  placeholder={m.filler_ph_phone()}
-                  value={draft.giaDinh[person].dienThoai}
-                  onChange={(event) =>
-                    updateFamilyPerson(
-                      person,
-                      'dienThoai',
                       event.currentTarget.value,
                     )
                   }
