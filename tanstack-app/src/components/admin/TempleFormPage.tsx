@@ -1,28 +1,23 @@
-import {
-  Button,
-  Group,
-  Loader,
-  Select,
-  Stack,
-  Text,
-  TextInput,
-  Title,
-} from '@mantine/core'
+import { Button, Group, Loader, Select, Stack, Text, Title } from '@mantine/core'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
-import {
-  formatAddressDisplay,
-  isStructuredAddress,
-} from '#/domain/address'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
+import { useAuth } from '#/auth/useAuth'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
+import { buildTemplePatch } from '#/components/filler/templeDraft'
+import { validateTempleRequiredFields } from '#/components/filler/templeRequiredValidation'
+import {
+  TempleFormFields,
+  type TempleFormFieldsApi,
+} from '#/components/temple/TempleFormFields'
 import { adminKeys } from '#/query/adminKeys'
 import { orgUnitsQuery, templeQuery } from '#/query/adminQueries'
 import { lockTemple } from '#/use-cases/lockTemple'
 import { saveAdminTemple } from '#/use-cases/saveAdminTemple'
 import { unlockTemple } from '#/use-cases/unlockTemple'
+import { uploadTemplePhoto } from '#/use-cases/uploadTemplePhoto'
 
 type TempleFormPageProps = {
   mode: 'create' | 'edit'
@@ -31,14 +26,14 @@ type TempleFormPageProps = {
 
 export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
   const claim = useAdminClaim()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const fieldsApiRef = useRef<TempleFormFieldsApi | null>(null)
 
   const [orgUnitId, setOrgUnitId] = useState<string | null>(null)
-  const [danhHieu, setDanhHieu] = useState('')
-  const [truTriPhone, setTruTriPhone] = useState('')
-  const [diaChiMoi, setDiaChiMoi] = useState('')
-  const [diaChiMoiStructured, setDiaChiMoiStructured] = useState(false)
+  const [photoError, setPhotoError] = useState<string | null>(null)
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
 
   const orgUnits = useQuery({
     ...orgUnitsQuery(),
@@ -53,10 +48,6 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
   useEffect(() => {
     if (!temple.data) return
     setOrgUnitId(temple.data.orgUnitId)
-    setDanhHieu(temple.data.danhHieu ?? '')
-    setTruTriPhone(temple.data.truTriHienNay?.dienThoai ?? '')
-    setDiaChiMoi(formatAddressDisplay(temple.data.diaChiMoi))
-    setDiaChiMoiStructured(isStructuredAddress(temple.data.diaChiMoi))
   }, [temple.data])
 
   const orgUnitSelectData = useMemo(
@@ -69,25 +60,46 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
   )
 
   const isLocked = mode === 'edit' && temple.data?.status === 'locked'
-  const isReadOnly = isLocked
+
+  async function persist() {
+    const api = fieldsApiRef.current
+    if (!api || !orgUnitId) throw new Error('Missing org unit')
+
+    const draft = api.getDraft()
+    const result = await saveAdminTemple({
+      orgUnitId,
+      templeId: mode === 'edit' ? templeId : undefined,
+      patch: buildTemplePatch(draft),
+      explicitPhones: api.getExtraManagerPhone().trim()
+        ? [api.getExtraManagerPhone().trim()]
+        : [],
+    })
+
+    const pending = api.getPendingPhoto()
+    if (pending && result.temple.id && user) {
+      const idToken = await user.getIdToken()
+      const bytes = new Uint8Array(await pending.arrayBuffer())
+      try {
+        const uploaded = await uploadTemplePhoto({
+          templeId: result.temple.id,
+          bytes,
+          contentType: pending.type,
+          idToken,
+        })
+        api.setPhotoPath(uploaded.photoPath)
+        api.clearPendingPhoto()
+      } catch {
+        setPhotoError(m.filler_photo_upload_error())
+      }
+    }
+
+    return result
+  }
 
   const saveMutation = useMutation({
-    mutationFn: async () => {
-      if (!orgUnitId) throw new Error('Missing org unit')
-      return saveAdminTemple({
-        orgUnitId,
-        templeId: mode === 'edit' ? templeId : undefined,
-        patch: {
-          danhHieu: danhHieu || undefined,
-          // Preserve structured AddressValue from filler — do not overwrite with a string.
-          ...(diaChiMoiStructured
-            ? {}
-            : { diaChiMoi: diaChiMoi || undefined }),
-          truTriHienNay: { dienThoai: truTriPhone || undefined },
-        },
-      })
-    },
+    mutationFn: persist,
     onSuccess: async (result) => {
+      setSaveSuccess(m.filler_save_success())
       await queryClient.invalidateQueries({
         queryKey: [...adminKeys.all, 'temples'],
       })
@@ -101,6 +113,9 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
           queryKey: adminKeys.temple(templeId),
         })
       }
+    },
+    onError: () => {
+      setSaveSuccess(null)
     },
   })
 
@@ -139,12 +154,50 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
     },
   })
 
+  const saveDraft = () => {
+    setPhotoError(null)
+    setSaveSuccess(null)
+    saveMutation.mutate()
+  }
+
+  const complete = () => {
+    const api = fieldsApiRef.current
+    if (!api) return
+
+    const draft = api.getDraft()
+    const result = validateTempleRequiredFields({
+      danhHieu: draft.danhHieu,
+      nguoiKhaiSon: draft.nguoiKhaiSon,
+      namThanhLap: draft.namThanhLap,
+      diaChiCu: draft.diaChiCu,
+      diaChiMoi: draft.diaChiMoi,
+      truTriHienNay: draft.truTriHienNay,
+      truTriTienNhiem: draft.truTriTienNhiem,
+      tangSoHienTru: draft.tangSoHienTru,
+      soPhatTuQuyY: draft.soPhatTuQuyY,
+      soPhatTuThuongXuyen: draft.soPhatTuThuongXuyen,
+    })
+    if (!result.valid) {
+      api.setFieldErrors(result.errors)
+      return
+    }
+    api.clearFieldErrors()
+    setPhotoError(null)
+    setSaveSuccess(null)
+    saveMutation.mutate()
+  }
+
   const mutationError =
     saveMutation.error?.message ??
     lockMutation.error?.message ??
     unlockMutation.error?.message
 
   const isLoading = mode === 'edit' && temple.isPending
+
+  const formInitial =
+    mode === 'edit' && temple.data
+      ? { ...temple.data, photoPath: temple.data.photoPath ?? null }
+      : {}
 
   return (
     <Stack>
@@ -164,7 +217,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
         <QueryErrorAlert error={temple.error} />
       )}
       {(mode === 'create' || temple.data) && !temple.isError && (
-        <Stack maw={480}>
+        <Stack maw={760}>
           {mode === 'edit' && temple.data && (
             <Text size="sm" c="dimmed">
               {temple.data.inviteId
@@ -180,30 +233,16 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
             onChange={setOrgUnitId}
             searchable
             required
-            disabled={mode === 'edit' || isReadOnly}
+            disabled={mode === 'edit'}
           />
-          <TextInput
-            label={m.admin_temples_form_danh_hieu()}
-            value={danhHieu}
-            onChange={(event) => setDanhHieu(event.currentTarget.value)}
-            readOnly={isReadOnly}
-          />
-          <TextInput
-            label={m.admin_temples_form_tru_tri_phone()}
-            value={truTriPhone}
-            onChange={(event) => setTruTriPhone(event.currentTarget.value)}
-            readOnly={isReadOnly}
-          />
-          <TextInput
-            label={m.admin_temples_form_dia_chi_moi()}
-            description={
-              diaChiMoiStructured
-                ? m.admin_temples_form_dia_chi_structured_readonly()
-                : undefined
-            }
-            value={diaChiMoi}
-            onChange={(event) => setDiaChiMoi(event.currentTarget.value)}
-            readOnly={isReadOnly || diaChiMoiStructured}
+
+          <TempleFormFields
+            key={mode === 'edit' ? templeId : 'create'}
+            apiRef={fieldsApiRef}
+            initial={formInitial}
+            disabled={false}
+            templeId={templeId}
+            getIdToken={async () => (user ? user.getIdToken() : undefined)}
           />
 
           {mutationError && (
@@ -211,17 +250,32 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
               {mutationError}
             </Text>
           )}
+          {photoError && (
+            <Text c="red" size="sm" role="alert">
+              {photoError}
+            </Text>
+          )}
+          {saveSuccess && (
+            <Text c="green" size="sm">
+              {saveSuccess}
+            </Text>
+          )}
 
           <Group>
-            {!isLocked && (
-              <Button
-                loading={saveMutation.isPending}
-                disabled={!orgUnitId}
-                onClick={() => saveMutation.mutate()}
-              >
-                {m.admin_temples_save()}
-              </Button>
-            )}
+            <Button
+              loading={saveMutation.isPending}
+              disabled={!orgUnitId}
+              onClick={() => void saveDraft()}
+            >
+              {m.admin_temples_save_draft()}
+            </Button>
+            <Button
+              loading={saveMutation.isPending}
+              disabled={!orgUnitId}
+              onClick={() => void complete()}
+            >
+              {m.admin_temples_complete()}
+            </Button>
             {mode === 'edit' && temple.data?.status === 'draft' && (
               <Button
                 variant="outline"

@@ -6,6 +6,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import type { AddressValue } from '#/domain/address'
 import { m } from '#/paraglide/messages'
 import { saveAdminTemple } from '#/use-cases/saveAdminTemple'
+import { uploadTemplePhoto } from '#/use-cases/uploadTemplePhoto'
 import { theme } from '../../theme'
 import { TempleFormPage } from './TempleFormPage'
 
@@ -41,8 +42,17 @@ const draftTemple = {
   diaChiMoi: structuredAddress as string | AddressValue,
 }
 
+const getIdTokenMock = vi.fn(async () => 'admin-id-token')
+
 vi.mock('#/auth/useAdminClaim', () => ({
   useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid' }),
+}))
+
+vi.mock('#/auth/useAuth', () => ({
+  useAuth: () => ({
+    user: { getIdToken: getIdTokenMock },
+    loading: false,
+  }),
 }))
 
 vi.mock('@tanstack/react-router', () => ({
@@ -95,6 +105,31 @@ vi.mock('#/use-cases/lockTemple', () => ({
 vi.mock('#/use-cases/unlockTemple', () => ({
   unlockTemple: vi.fn(),
 }))
+vi.mock('#/use-cases/uploadTemplePhoto', () => ({
+  uploadTemplePhoto: vi.fn(async () => ({
+    photoPath: 'temples/created-temple/photo.jpg',
+  })),
+}))
+vi.mock('#/data/vietnam-locations', () => ({
+  cities: [
+    {
+      code: '01',
+      name: 'Hà Nội',
+      fullName: 'Thành phố Hà Nội',
+      slug: 'ha-noi',
+      type: 'city',
+    },
+  ],
+  getWards: vi.fn(async () => [
+    {
+      code: '00013',
+      name: 'Hà Đông',
+      fullName: 'Phường Hà Đông, Thành phố Hà Nội',
+      slug: 'ha-dong',
+      type: 'ward',
+    },
+  ]),
+}))
 
 const saveAdminTempleMock = vi.mocked(saveAdminTemple)
 
@@ -120,6 +155,9 @@ beforeAll(() => {
       dispatchEvent: () => false,
     }),
   })
+
+  URL.createObjectURL = vi.fn(() => 'blob:preview')
+  URL.revokeObjectURL = vi.fn()
 })
 
 afterEach(() => {
@@ -130,12 +168,28 @@ beforeEach(() => {
   templeFixture = lockedTemple
   lockedTemple.diaChiMoi = '123 Đường A'
   saveAdminTempleMock.mockReset()
+  getIdTokenMock.mockClear()
+  saveAdminTempleMock.mockResolvedValue({
+    temple: { ...draftTemple, id: 'created-temple' },
+    mode: 'created',
+  } as never)
 })
 
 function renderForm({ mode }: { mode: 'create' | 'edit' }) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
+  queryClient.setQueryData(['admin', 'orgUnits'], [
+    {
+      id: 'gd-i',
+      code: 'I',
+      name: 'Giáo đoàn I',
+      kind: 'giao_doan',
+      order: 1,
+      allowsTang: true,
+      allowsNi: true,
+    },
+  ])
   return render(
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme} defaultColorScheme="light">
@@ -143,6 +197,15 @@ function renderForm({ mode }: { mode: 'create' | 'edit' }) {
       </MantineProvider>
     </QueryClientProvider>,
   )
+}
+
+async function selectOrgUnit(user: ReturnType<typeof userEvent.setup>) {
+  await screen.findByRole('button', { name: m.admin_temples_save_draft() })
+  const select = await screen.findByRole('combobox', {
+    name: new RegExp(`^${m.admin_temples_form_org_unit()}`),
+  })
+  await user.click(select)
+  await user.click(await screen.findByText('Giáo đoàn I'))
 }
 
 describe('TempleFormPage', () => {
@@ -153,42 +216,64 @@ describe('TempleFormPage', () => {
     ).toBeTruthy()
   })
 
-  it('displays formatted structured address as read-only', async () => {
+  it('renders full temple sections', async () => {
     templeFixture = draftTemple
     renderForm({ mode: 'edit' })
-    const input = await screen.findByDisplayValue('15 Ngõ 4, Hà Đông, Hà Nội')
-    expect(input).toHaveAttribute('readonly')
     expect(
-      screen.getByText(m.admin_temples_form_dia_chi_structured_readonly()),
+      await screen.findByText(m.filler_section_temple_identity()),
     ).toBeTruthy()
+    expect(screen.getByText(m.filler_section_temple_address())).toBeTruthy()
+    expect(screen.getByText(m.filler_field_anh_tinh_xa())).toBeTruthy()
   })
 
-  it('omits structured diaChiMoi from admin save patch', async () => {
+  it('Lưu nháp saves without temple required-field validation when a manager phone is present', async () => {
     const user = userEvent.setup()
-    templeFixture = draftTemple
-    saveAdminTempleMock.mockResolvedValue({
-      temple: { ...draftTemple, id: 't1' },
-      mode: 'updated',
-    } as never)
-
-    renderForm({ mode: 'edit' })
-    await screen.findByDisplayValue('15 Ngõ 4, Hà Đông, Hà Nội')
-
+    renderForm({ mode: 'create' })
+    await selectOrgUnit(user)
     await user.type(
-      screen.getByLabelText(m.admin_temples_form_danh_hieu()),
-      ' updated',
+      screen.getByLabelText(m.filler_field_manager_phone()),
+      '0901234567',
     )
-    await user.click(screen.getByRole('button', { name: m.admin_temples_save() }))
+    await user.click(
+      screen.getByRole('button', { name: m.admin_temples_save_draft() }),
+    )
 
+    await vi.waitFor(() => expect(saveAdminTempleMock).toHaveBeenCalled())
     expect(saveAdminTempleMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        patch: expect.not.objectContaining({
-          diaChiMoi: expect.anything(),
-        }),
+        orgUnitId: 'gd-i',
+        explicitPhones: ['0901234567'],
       }),
     )
-    expect(saveAdminTempleMock.mock.calls[0]?.[0].patch).not.toHaveProperty(
-      'diaChiMoi',
+  })
+
+  it('Hoàn thành does not save when required fields missing', async () => {
+    const user = userEvent.setup()
+    renderForm({ mode: 'create' })
+    await selectOrgUnit(user)
+    await user.type(
+      screen.getByLabelText(m.filler_field_manager_phone()),
+      '0901234567',
     )
+    await user.click(
+      screen.getByRole('button', { name: m.admin_temples_complete() }),
+    )
+
+    expect(saveAdminTempleMock).not.toHaveBeenCalled()
+    expect(
+      screen.getAllByText(m.filler_error_field_required()).length,
+    ).toBeGreaterThan(0)
+  })
+
+  it('keeps fields editable when locked', async () => {
+    templeFixture = lockedTemple
+    renderForm({ mode: 'edit' })
+    const input = await screen.findByLabelText(
+      new RegExp(`^${m.filler_field_danh_hieu()}`),
+    )
+    expect(input).not.toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: m.admin_temples_save_draft() }),
+    ).toBeTruthy()
   })
 })
