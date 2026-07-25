@@ -65,6 +65,21 @@ Attendance (phase 6) and certificate/QR (phase 7) fields are added to `retreatRe
 
 ## Phases
 
+### Trạng thái các phase
+
+| Phase | Nội dung | Trạng thái | Plan |
+| --- | --- | --- | --- |
+| 0 | RBAC nhẹ (nền tảng) | Đã lập kế hoạch | [2026-07-25-khoa-tu-rbac-phase0.md](../plans/2026-07-25-khoa-tu-rbac-phase0.md) |
+| 1 | CRUD khóa tu (Giáo đoàn only) | Chưa bắt đầu | — |
+| 2 | Đăng ký (tự đăng ký + đăng ký thay) | Chưa bắt đầu | — |
+| 3 | Xét duyệt cấp Giáo đoàn | Chưa bắt đầu | — |
+| 4 | Xuất danh sách & báo cáo (Giáo đoàn) | Chưa bắt đầu | — |
+| 5 | Khóa tu Hệ phái (7 bước, tổng hợp) | Chưa bắt đầu | — |
+| 6 | Điểm danh (thủ công) | Chưa bắt đầu | — |
+| 7 | Kết thúc khóa tu (lịch sử, chứng nhận, QR) | Chưa bắt đầu | — |
+
+Cập nhật bảng này mỗi khi một phase có plan mới hoặc đổi trạng thái (Chưa bắt đầu → Đã lập kế hoạch → Đang thực hiện → Hoàn thành).
+
 ### Phase 0 — RBAC nhẹ (nền tảng)
 
 - Extend custom claims with `role` + `orgUnitId`; keep `admin: true` working (mapped to `he_phai_admin`).
