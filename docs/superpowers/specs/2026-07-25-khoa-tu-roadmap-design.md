@@ -72,7 +72,7 @@ Attendance (phase 6) and certificate/QR (phase 7) fields are added to `retreatRe
 | Phase | Nội dung | Trạng thái | Plan |
 | --- | --- | --- | --- |
 | 0 | RBAC nhẹ (nền tảng) | Hoàn thành | [2026-07-25-khoa-tu-rbac-phase0.md](../plans/2026-07-25-khoa-tu-rbac-phase0.md) |
-| 1 | CRUD khóa tu (Giáo đoàn only) | Chưa bắt đầu | — |
+| 1 | CRUD khóa tu (Giáo đoàn only) | Đã thiết kế | [design](./2026-07-25-khoa-tu-retreats-crud-phase1-design.md) |
 | 2 | Đăng ký (tự đăng ký + đăng ký thay) | Chưa bắt đầu | — |
 | 3 | Xét duyệt cấp Giáo đoàn | Chưa bắt đầu | — |
 | 4 | Xuất danh sách & báo cáo (Giáo đoàn) | Chưa bắt đầu | — |
@@ -92,11 +92,13 @@ Cập nhật bảng này mỗi khi một phase có plan mới hoặc đổi tr�
 
 ### Phase 1 — CRUD khóa tu (Giáo đoàn only)
 
-- `retreats` collection, repository, use-cases: `createRetreat`, `updateRetreat`, `listRetreats` (scoped: `giao_doan_admin` sees own `orgUnitId`; `he_phai_admin` sees all).
-- Admin UI: `/admin/retreats` (list), `/admin/retreats/new`, `/admin/retreats/$id` — reuse `AdminDataTable`, `AdminShell`, breadcrumbs patterns.
-- **Acceptance**: a `giao_doan_admin` can create/edit a khóa tu for their own org unit only; cannot see/edit other units' courses.
-- **Carried over from Phase 0 review:** `firebase/firestore.rules` and `firebase/storage.rules` must learn about the `role` claim (not just `admin == true`) — Phase 1 already touches rules for the new `retreats` collection, so extend `isAdmin()` (or equivalent) there rather than patching it separately.
-- **Carried over from Phase 0 review:** `useAdminClaim` / `RequireAuth` currently treat "has any recognized role" (including `kiem_soat`) as full admin-UI access. Before any `kiem_soat` claim is provisioned in production, split "recognized role" (lets you into `/admin` shell) from "may write retreats/members/temples" (a narrower capability check) — `kiem_soat` should only reach attendance marking (Phase 6), never member/temple CRUD.
+Detailed design: [2026-07-25-khoa-tu-retreats-crud-phase1-design.md](./2026-07-25-khoa-tu-retreats-crud-phase1-design.md).
+
+- `retreats` collection, repository, use-cases: `createRetreat`, `updateRetreat`, `openRetreat`, `closeRetreat`, `deleteRetreat`, `listRetreats` (scoped: `giao_doan_admin` sees own `orgUnitId`; `he_phai_admin` sees all / may create for any unit).
+- Admin UI: `/admin/retreats` (list), `/admin/retreats/new`, `/admin/retreats/$id` — full schema form including registration settings + `extraFields`; status via open/close actions; hard-delete only in `draft`.
+- Firestore/Storage rules learn `role`; directory + retreat writes exclude `kiem_soat`; retreat reads/writes scoped by `orgUnitId` for `giao_doan_admin`.
+- Capability split: `canManageDirectory` / `canManageRetreats` — `kiem_soat` may enter `/admin` shell only.
+- **Acceptance**: a `giao_doan_admin` can create/edit a khóa tu for their own org unit only; cannot see/edit other units' courses; `kiem_soat` cannot CRUD directory or retreats.
 
 ### Phase 2 — Đăng ký
 
@@ -153,4 +155,4 @@ Cập nhật bảng này mỗi khi một phase có plan mới hoặc đổi tr�
 
 ## Next step
 
-Invoke `writing-plans` for **Phase 0** (RBAC nhẹ) — it is the dependency every later phase needs and is small enough to plan and implement first.
+Invoke `writing-plans` for **Phase 1** (CRUD khóa tu Giáo đoàn) from [2026-07-25-khoa-tu-retreats-crud-phase1-design.md](./2026-07-25-khoa-tu-retreats-crud-phase1-design.md). Phase 0 is complete.
