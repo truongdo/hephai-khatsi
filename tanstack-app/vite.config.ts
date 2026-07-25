@@ -6,6 +6,11 @@ import { paraglideVitePlugin } from '@inlang/paraglide-js'
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
+  server: {
+    proxy: {
+      '/api': 'http://127.0.0.1:8787',
+    },
+  },
   plugins: [
     paraglideVitePlugin({
       project: './project.inlang',

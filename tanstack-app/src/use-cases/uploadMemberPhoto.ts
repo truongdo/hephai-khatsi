@@ -1,12 +1,15 @@
-import { ref, uploadBytes } from 'firebase/storage'
 import { DomainError } from '#/domain/errors'
 import { normalizeCccd } from '#/domain/normalize'
-import { getClientStorage } from '#/firebase/storage'
+import {
+  putToPresignedUrl,
+  requestMemberPhotoUploadUrl,
+} from '#/photos/photosApiClient'
 import { memberRepo, type MemberStore } from '#/repositories/memberRepo'
 
 export type StoragePort = {
   put(
-    path: string,
+    memberId: string,
+    cccd: string,
     bytes: Uint8Array,
     contentType: string,
     inviteToken?: string,
@@ -18,8 +21,7 @@ export type UploadMemberPhotoInput = {
   cccd: string
   bytes: Uint8Array
   contentType: string
-  // Required for the public invite-claim flow; omitted for admin uploads
-  // (see firebase/storage.rules — admin bypasses this check).
+  // Required for the public invite-claim flow; omitted for admin uploads.
   inviteToken?: string
 }
 
@@ -28,13 +30,14 @@ export type UploadMemberPhotoResult = {
 }
 
 const clientStorage: StoragePort = {
-  async put(path, bytes, contentType, inviteToken) {
-    const storage = getClientStorage()
-    if (!storage) throw new Error('Storage is not configured')
-    await uploadBytes(ref(storage, path), bytes, {
+  async put(memberId, cccd, bytes, contentType, inviteToken) {
+    const { uploadUrl } = await requestMemberPhotoUploadUrl({
+      memberId,
+      cccd,
       contentType,
-      customMetadata: inviteToken ? { inviteToken } : undefined,
+      inviteToken,
     })
+    await putToPresignedUrl(uploadUrl, bytes, contentType)
   },
 }
 
@@ -63,7 +66,13 @@ export async function uploadMemberPhoto(
   }
 
   const photoPath = memberPhotoPath(input.memberId)
-  await storage.put(photoPath, input.bytes, input.contentType, input.inviteToken)
+  await storage.put(
+    input.memberId,
+    cccd,
+    input.bytes,
+    input.contentType,
+    input.inviteToken,
+  )
   await memberStore.setPhotoPath(input.memberId, photoPath)
 
   return { photoPath }

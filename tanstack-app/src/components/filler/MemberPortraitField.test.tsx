@@ -16,7 +16,7 @@ vi.mock('#/use-cases/uploadMemberPhoto', () => ({
 }))
 
 vi.mock('./memberPhotoUrl', () => ({
-  getMemberPhotoDownloadUrl: vi.fn(async () => 'https://cdn.example/p.jpg'),
+  getMemberPhotoDownloadUrl: vi.fn(() => 'https://cdn.example/p.jpg'),
 }))
 
 const uploadMemberPhotoMock = vi.mocked(uploadMemberPhoto)

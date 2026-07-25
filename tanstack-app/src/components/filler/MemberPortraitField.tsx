@@ -55,17 +55,10 @@ export function MemberPortraitField({
       return
     }
 
-    let cancelled = false
-    void getMemberPhotoDownloadUrl(photoPath)
-      .then((url) => {
-        if (!cancelled) setDownloadUrl(url)
-      })
-      .catch(() => {
-        if (!cancelled) setDownloadUrl(null)
-      })
-
-    return () => {
-      cancelled = true
+    try {
+      setDownloadUrl(getMemberPhotoDownloadUrl(photoPath))
+    } catch {
+      setDownloadUrl(null)
     }
   }, [photoPath, pendingFile])
 

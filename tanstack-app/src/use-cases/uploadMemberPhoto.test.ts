@@ -10,8 +10,8 @@ import {
 function fakeStorage() {
   const files = new Map<string, { bytes: Uint8Array; contentType: string }>()
   const storage: StoragePort = {
-    async put(path, bytes, contentType) {
-      files.set(path, { bytes, contentType })
+    async put(memberId, _cccd, bytes, contentType) {
+      files.set(`members/${memberId}/photo.jpg`, { bytes, contentType })
     },
   }
   return { storage, files }
