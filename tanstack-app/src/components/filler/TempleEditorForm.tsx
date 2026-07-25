@@ -1,7 +1,6 @@
 import { Stack, TextInput } from '@mantine/core'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { validateAddressDraft } from '#/domain/address'
 import type { Temple } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { fillerKeys } from '#/query/fillerKeys'
@@ -23,6 +22,10 @@ import {
   TempleXayDungSection,
 } from './TempleEditorFormSections'
 import { buildTemplePatch, emptyTempleDraft } from './templeDraft'
+import {
+  validateTempleRequiredFields,
+  type TempleRequiredFieldErrors,
+} from './templeRequiredValidation'
 
 export type TempleEditorFormProps = {
   title: string
@@ -36,20 +39,44 @@ export type TempleEditorFormProps = {
 
 type AddressFieldErrors = { city?: string; ward?: string }
 
-function mapAddressErrors(
-  result: ReturnType<typeof validateAddressDraft>,
+function mapRequiredError(code: 'REQUIRED' | undefined): string | undefined {
+  return code === 'REQUIRED' ? m.filler_error_field_required() : undefined
+}
+
+function mapEmailError(
+  code: 'REQUIRED' | 'INVALID' | undefined,
+): string | undefined {
+  if (code === 'REQUIRED') return m.filler_error_field_required()
+  if (code === 'INVALID') return m.filler_error_email_invalid()
+  return undefined
+}
+
+function mapAddressCodeErrors(
+  errors?: { city?: 'REQUIRED'; ward?: 'REQUIRED' },
 ): AddressFieldErrors | undefined {
-  if (result.valid) return undefined
+  if (!errors) return undefined
   return {
     city:
-      result.errors.city === 'REQUIRED'
+      errors.city === 'REQUIRED'
         ? m.filler_address_city_required()
         : undefined,
     ward:
-      result.errors.ward === 'REQUIRED'
+      errors.ward === 'REQUIRED'
         ? m.filler_address_ward_required()
         : undefined,
   }
+}
+
+function mapTienNhiemErrors(
+  errors: TempleRequiredFieldErrors['truTriTienNhiem'],
+): string | Array<{ phapDanh?: string } | undefined> | undefined {
+  if (!errors) return undefined
+  if (errors === 'REQUIRED') return m.filler_error_field_required()
+  return errors.map((row) =>
+    row?.phapDanh === 'REQUIRED'
+      ? { phapDanh: m.filler_error_field_required() }
+      : undefined,
+  )
 }
 
 export function TempleEditorForm({
@@ -66,10 +93,7 @@ export function TempleEditorForm({
   const [extraManagerPhone, setExtraManagerPhone] = useState('')
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
-  const [addressErrors, setAddressErrors] = useState<{
-    diaChiCu?: AddressFieldErrors
-    diaChiMoi?: AddressFieldErrors
-  }>({})
+  const [fieldErrors, setFieldErrors] = useState<TempleRequiredFieldErrors>({})
   const disabled = status === 'view'
 
   const saveMutation = useMutation({
@@ -101,13 +125,23 @@ export function TempleEditorForm({
   })
 
   const handleSave = () => {
-    const cu = validateAddressDraft(draft.diaChiCu)
-    const moi = validateAddressDraft(draft.diaChiMoi)
-    setAddressErrors({
-      diaChiCu: mapAddressErrors(cu),
-      diaChiMoi: mapAddressErrors(moi),
+    const result = validateTempleRequiredFields({
+      danhHieu: draft.danhHieu,
+      nguoiKhaiSon: draft.nguoiKhaiSon,
+      namThanhLap: draft.namThanhLap,
+      diaChiCu: draft.diaChiCu,
+      diaChiMoi: draft.diaChiMoi,
+      truTriHienNay: draft.truTriHienNay,
+      truTriTienNhiem: draft.truTriTienNhiem,
+      tangSoHienTru: draft.tangSoHienTru,
+      soPhatTuQuyY: draft.soPhatTuQuyY,
+      soPhatTuThuongXuyen: draft.soPhatTuThuongXuyen,
     })
-    if (!cu.valid || !moi.valid) return
+    if (!result.valid) {
+      setFieldErrors(result.errors)
+      return
+    }
+    setFieldErrors({})
     saveMutation.mutate()
   }
 
@@ -128,19 +162,35 @@ export function TempleEditorForm({
           tinChuHienCung={draft.tinChuHienCung}
           dacDiem={draft.dacDiem}
           setDraft={setDraft}
+          errors={{
+            danhHieu: mapRequiredError(fieldErrors.danhHieu),
+            nguoiKhaiSon: mapRequiredError(fieldErrors.nguoiKhaiSon),
+            namThanhLap: mapRequiredError(fieldErrors.namThanhLap),
+          }}
           disabled={disabled}
         />
         <TempleAddressSection
           diaChiCu={draft.diaChiCu}
           diaChiMoi={draft.diaChiMoi}
           setDraft={setDraft}
-          errors={addressErrors}
+          errors={{
+            diaChiCu: mapAddressCodeErrors(fieldErrors.diaChiCu),
+            diaChiMoi: mapAddressCodeErrors(fieldErrors.diaChiMoi),
+          }}
           disabled={disabled}
         />
         <TempleTruTriSection
           truTriHienNay={draft.truTriHienNay}
           truTriTienNhiem={draft.truTriTienNhiem}
           setDraft={setDraft}
+          errors={{
+            truTriHienNay: {
+              phapDanh: mapRequiredError(fieldErrors.truTriHienNay?.phapDanh),
+              dienThoai: mapRequiredError(fieldErrors.truTriHienNay?.dienThoai),
+              email: mapEmailError(fieldErrors.truTriHienNay?.email),
+            },
+            truTriTienNhiem: mapTienNhiemErrors(fieldErrors.truTriTienNhiem),
+          }}
           disabled={disabled}
         />
         <TempleBanQuanTriSection
@@ -153,6 +203,18 @@ export function TempleEditorForm({
           soPhatTuQuyY={draft.soPhatTuQuyY}
           soPhatTuThuongXuyen={draft.soPhatTuThuongXuyen}
           setDraft={setDraft}
+          errors={{
+            tangSoHienTru: {
+              tyKheo: mapRequiredError(fieldErrors.tangSoHienTru?.tyKheo),
+              tyKheoNi: mapRequiredError(fieldErrors.tangSoHienTru?.tyKheoNi),
+              saDi: mapRequiredError(fieldErrors.tangSoHienTru?.saDi),
+              tapSu: mapRequiredError(fieldErrors.tangSoHienTru?.tapSu),
+            },
+            soPhatTuQuyY: mapRequiredError(fieldErrors.soPhatTuQuyY),
+            soPhatTuThuongXuyen: mapRequiredError(
+              fieldErrors.soPhatTuThuongXuyen,
+            ),
+          }}
           disabled={disabled}
         />
         <TempleHoatDongSection

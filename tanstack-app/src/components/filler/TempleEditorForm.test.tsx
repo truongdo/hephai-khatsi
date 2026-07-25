@@ -36,6 +36,37 @@ vi.mock('#/data/vietnam-locations', () => ({
 
 const saveTempleDraftMock = vi.mocked(saveTempleDraft)
 
+const completeAddress = {
+  cityCode: '01',
+  cityName: 'Hà Nội',
+  wardCode: '00013',
+  wardName: 'Hà Đông',
+  line: '15 Ngõ 4',
+}
+
+function requiredTempleInitial(
+  overrides: Partial<Temple> & { seedPhone?: string } = {},
+): Partial<Temple> & { seedPhone?: string } {
+  return {
+    seedPhone: '0901234567',
+    danhHieu: 'Tịnh xá Ngọc Viên',
+    nguoiKhaiSon: 'HT. Minh',
+    namThanhLap: '1954',
+    diaChiCu: completeAddress,
+    diaChiMoi: completeAddress,
+    truTriHienNay: {
+      phapDanh: 'Thích A',
+      dienThoai: '0901234567',
+      email: 'a@b.co',
+    },
+    truTriTienNhiem: [{ phapDanh: 'Thích B' }],
+    tangSoHienTru: { tyKheo: 0, tyKheoNi: 0, saDi: 0, tapSu: 0 },
+    soPhatTuQuyY: 0,
+    soPhatTuThuongXuyen: 0,
+    ...overrides,
+  }
+}
+
 beforeAll(() => {
   class ResizeObserverMock {
     observe() {}
@@ -142,7 +173,9 @@ describe('TempleEditorForm', () => {
     expect(
       screen.getByRole('heading', { name: m.filler_section_temple_phones() }),
     ).toBeTruthy()
-    expect(screen.getByLabelText(m.filler_field_danh_hieu())).toBeTruthy()
+    expect(
+      screen.getByLabelText(new RegExp(`^${m.filler_field_danh_hieu()}`)),
+    ).toBeTruthy()
   })
 
   it('calls saveTempleDraft with patch and navigates on create', async () => {
@@ -151,12 +184,10 @@ describe('TempleEditorForm', () => {
       temple: temple({ id: 'created-temple' }),
       mode: 'created',
     })
-    const { onCreated } = renderForm()
+    const { onCreated } = renderForm({
+      initial: requiredTempleInitial(),
+    })
 
-    await user.type(
-      screen.getByLabelText(m.filler_field_danh_hieu()),
-      'Tịnh xá Ngọc Viên',
-    )
     await user.type(
       screen.getByLabelText(m.filler_field_manager_phone()),
       '0912345678',
@@ -176,14 +207,30 @@ describe('TempleEditorForm', () => {
     expect(onCreated).toHaveBeenCalledWith('created-temple')
   })
 
-  it('blocks save when address line is set without city and ward', async () => {
+  it('blocks save when required temple fields are empty', async () => {
     const user = userEvent.setup()
     renderForm()
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+    expect(saveTempleDraftMock).not.toHaveBeenCalled()
+    expect(
+      screen.getAllByText(m.filler_error_field_required()).length,
+    ).toBeGreaterThan(0)
+  })
 
-    const lineInputs = screen.getAllByRole('textbox', {
-      name: m.filler_field_address_line(),
+  it('blocks save when address line is set without city and ward', async () => {
+    const user = userEvent.setup()
+    renderForm({
+      initial: requiredTempleInitial({
+        diaChiCu: {
+          cityCode: '',
+          cityName: '',
+          wardCode: '',
+          wardName: '',
+          line: '15 Ngõ 4',
+        } as unknown as Temple['diaChiCu'],
+      }),
     })
-    await user.type(lineInputs[0]!, '15 Ngõ 4')
+
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
 
     expect(saveTempleDraftMock).not.toHaveBeenCalled()
@@ -197,8 +244,7 @@ describe('TempleEditorForm', () => {
       mode: 'created',
     })
     renderForm({
-      initial: {
-        seedPhone: '0901234567',
+      initial: requiredTempleInitial({
         diaChiMoi: {
           cityCode: '01',
           cityName: 'Hà Nội',
@@ -206,7 +252,7 @@ describe('TempleEditorForm', () => {
           wardName: 'Hà Đông',
           line: '15 Ngõ 4',
         },
-      },
+      }),
     })
 
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
@@ -240,6 +286,8 @@ describe('TempleEditorForm', () => {
     renderForm({ status: 'view' })
 
     expect(screen.queryByRole('button', { name: m.filler_save() })).toBeNull()
-    expect(screen.getByLabelText(m.filler_field_danh_hieu())).toBeDisabled()
+    expect(
+      screen.getByLabelText(new RegExp(`^${m.filler_field_danh_hieu()}`)),
+    ).toBeDisabled()
   })
 })

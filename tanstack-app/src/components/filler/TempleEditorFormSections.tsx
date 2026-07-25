@@ -56,6 +56,7 @@ export const TempleIdentitySection = memo(function TempleIdentitySection({
   tinChuHienCung,
   dacDiem,
   setDraft,
+  errors,
   disabled,
 }: {
   danhHieu: string
@@ -64,6 +65,11 @@ export const TempleIdentitySection = memo(function TempleIdentitySection({
   tinChuHienCung: string
   dacDiem: string[]
   setDraft: SetDraft
+  errors?: {
+    danhHieu?: string
+    nguoiKhaiSon?: string
+    namThanhLap?: string
+  }
   disabled: boolean
 }) {
   return (
@@ -80,6 +86,8 @@ export const TempleIdentitySection = memo(function TempleIdentitySection({
               danhHieu: value,
             }))
           }}
+          required
+          error={errors?.danhHieu}
           disabled={disabled}
         />
         <TextInput
@@ -93,6 +101,8 @@ export const TempleIdentitySection = memo(function TempleIdentitySection({
               nguoiKhaiSon: value,
             }))
           }}
+          required
+          error={errors?.nguoiKhaiSon}
           disabled={disabled}
         />
         <TextInput
@@ -106,6 +116,8 @@ export const TempleIdentitySection = memo(function TempleIdentitySection({
               namThanhLap: value,
             }))
           }}
+          required
+          error={errors?.namThanhLap}
           disabled={disabled}
         />
         <TextInput
@@ -181,6 +193,7 @@ export const TempleAddressSection = memo(function TempleAddressSection({
             value={diaChiCu}
             onChange={onDiaChiCu}
             disabled={disabled}
+            required
             errors={errors.diaChiCu}
           />
         </Stack>
@@ -191,6 +204,7 @@ export const TempleAddressSection = memo(function TempleAddressSection({
             value={diaChiMoi}
             onChange={onDiaChiMoi}
             disabled={disabled}
+            required
             errors={errors.diaChiMoi}
           />
         </Stack>
@@ -203,11 +217,20 @@ export const TempleTruTriSection = memo(function TempleTruTriSection({
   truTriHienNay,
   truTriTienNhiem,
   setDraft,
+  errors,
   disabled,
 }: {
   truTriHienNay: TempleDraft['truTriHienNay']
   truTriTienNhiem: TempleDraft['truTriTienNhiem']
   setDraft: SetDraft
+  errors?: {
+    truTriHienNay?: {
+      phapDanh?: string
+      dienThoai?: string
+      email?: string
+    }
+    truTriTienNhiem?: string | Array<{ phapDanh?: string } | undefined>
+  }
   disabled: boolean
 }) {
   return (
@@ -227,6 +250,8 @@ export const TempleTruTriSection = memo(function TempleTruTriSection({
               },
             }))
           }}
+          required
+          error={errors?.truTriHienNay?.phapDanh}
           disabled={disabled}
         />
         <TextInput
@@ -243,6 +268,8 @@ export const TempleTruTriSection = memo(function TempleTruTriSection({
               },
             }))
           }}
+          required
+          error={errors?.truTriHienNay?.dienThoai}
           disabled={disabled}
         />
         <TextInput
@@ -259,6 +286,8 @@ export const TempleTruTriSection = memo(function TempleTruTriSection({
               },
             }))
           }}
+          required
+          error={errors?.truTriHienNay?.email}
           disabled={disabled}
         />
       </SimpleGrid>
@@ -303,6 +332,14 @@ export const TempleTruTriSection = memo(function TempleTruTriSection({
                       ),
                     }))
                   }}
+                  required
+                  error={
+                    Array.isArray(errors?.truTriTienNhiem)
+                      ? errors.truTriTienNhiem[index]?.phapDanh
+                      : index === 0 && errors?.truTriTienNhiem
+                        ? errors.truTriTienNhiem
+                        : undefined
+                  }
                 />
                 <TextInput
                   label={m.filler_field_thoi_gian()}
@@ -468,12 +505,23 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
   soPhatTuQuyY,
   soPhatTuThuongXuyen,
   setDraft,
+  errors,
   disabled,
 }: {
   tangSoHienTru: TempleDraft['tangSoHienTru']
   soPhatTuQuyY: NumericValue
   soPhatTuThuongXuyen: NumericValue
   setDraft: SetDraft
+  errors?: {
+    tangSoHienTru?: {
+      tyKheo?: string
+      tyKheoNi?: string
+      saDi?: string
+      tapSu?: string
+    }
+    soPhatTuQuyY?: string
+    soPhatTuThuongXuyen?: string
+  }
   disabled: boolean
 }) {
   return (
@@ -492,6 +540,8 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
               },
             }))
           }
+          required
+          error={errors?.tangSoHienTru?.tyKheo}
           disabled={disabled}
           min={0}
         />
@@ -508,6 +558,8 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
               },
             }))
           }
+          required
+          error={errors?.tangSoHienTru?.tyKheoNi}
           disabled={disabled}
           min={0}
         />
@@ -524,6 +576,8 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
               },
             }))
           }
+          required
+          error={errors?.tangSoHienTru?.saDi}
           disabled={disabled}
           min={0}
         />
@@ -540,6 +594,8 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
               },
             }))
           }
+          required
+          error={errors?.tangSoHienTru?.tapSu}
           disabled={disabled}
           min={0}
         />
@@ -553,6 +609,8 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
               soPhatTuQuyY: numberInputValue(value),
             }))
           }
+          required
+          error={errors?.soPhatTuQuyY}
           disabled={disabled}
           min={0}
         />
@@ -566,6 +624,8 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
               soPhatTuThuongXuyen: numberInputValue(value),
             }))
           }
+          required
+          error={errors?.soPhatTuThuongXuyen}
           disabled={disabled}
           min={0}
         />
