@@ -34,6 +34,7 @@
     "@tanstack/router-plugin": "^1.132.0",
     "dayjs": "^1.11.21",
     "firebase": "^12.16.0",
+    "jose": "^6.2.4",
     "lucide-react": "^0.545.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
