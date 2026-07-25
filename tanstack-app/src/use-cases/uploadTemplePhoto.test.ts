@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { DomainError } from '#/domain/errors'
 import type { Temple } from '#/domain/types'
 import type { TempleStore } from '#/repositories/templeRepo'
