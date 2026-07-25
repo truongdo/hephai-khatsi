@@ -26,6 +26,11 @@ describe('postLoginPath', () => {
     await expect(postLoginPath(user, undefined)).resolves.toBe('/admin')
   })
 
+  it('returns /admin when no redirect and a scoped role claim is present (no admin boolean)', async () => {
+    const user = userWithClaims({ role: 'giao_doan_admin', orgUnitId: 'gd-i' })
+    await expect(postLoginPath(user, undefined)).resolves.toBe('/admin')
+  })
+
   it('returns /admin when redirect is only "/" and admin claim is true', async () => {
     const user = userWithClaims({ admin: true })
     await expect(postLoginPath(user, '/')).resolves.toBe('/admin')

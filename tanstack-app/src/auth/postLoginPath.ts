@@ -1,4 +1,5 @@
 import { safeRedirectPath } from '#/auth/safeRedirect'
+import { parseAuthClaims } from '#/domain/authClaims'
 
 type TokenUser = {
   getIdTokenResult: (
@@ -22,7 +23,7 @@ export async function postLoginPath(
 
   try {
     const result = await user.getIdTokenResult()
-    if (result.claims.admin === true) return '/admin'
+    if (parseAuthClaims(result.claims)) return '/admin'
   } catch {
     // fall through
   }
