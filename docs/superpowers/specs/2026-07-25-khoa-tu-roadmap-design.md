@@ -72,7 +72,7 @@ Attendance (phase 6) and certificate/QR (phase 7) fields are added to `retreatRe
 | Phase | Nội dung | Trạng thái | Plan |
 | --- | --- | --- | --- |
 | 0 | RBAC nhẹ (nền tảng) | Hoàn thành | [2026-07-25-khoa-tu-rbac-phase0.md](../plans/2026-07-25-khoa-tu-rbac-phase0.md) |
-| 1 | CRUD khóa tu (Giáo đoàn only) | Đã thiết kế | [design](./2026-07-25-khoa-tu-retreats-crud-phase1-design.md) |
+| 1 | CRUD khóa tu (Giáo đoàn only) | Đã lập kế hoạch | [plan](../plans/2026-07-25-khoa-tu-retreats-crud-phase1.md) · [design](./2026-07-25-khoa-tu-retreats-crud-phase1-design.md) |
 | 2 | Đăng ký (tự đăng ký + đăng ký thay) | Chưa bắt đầu | — |
 | 3 | Xét duyệt cấp Giáo đoàn | Chưa bắt đầu | — |
 | 4 | Xuất danh sách & báo cáo (Giáo đoàn) | Chưa bắt đầu | — |
@@ -155,4 +155,4 @@ Detailed design: [2026-07-25-khoa-tu-retreats-crud-phase1-design.md](./2026-07-2
 
 ## Next step
 
-Invoke `writing-plans` for **Phase 1** (CRUD khóa tu Giáo đoàn) from [2026-07-25-khoa-tu-retreats-crud-phase1-design.md](./2026-07-25-khoa-tu-retreats-crud-phase1-design.md). Phase 0 is complete.
+Execute [Phase 1 plan](../plans/2026-07-25-khoa-tu-retreats-crud-phase1.md) (`subagent-driven-development` or `executing-plans`).
