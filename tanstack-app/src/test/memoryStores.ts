@@ -39,6 +39,41 @@ function appendPhoneIndex(
   phoneIndex.set(key, [...existingIds, member.id])
 }
 
+function templePhoneIndexId(orgUnitId: string, phone: string): string {
+  return `${orgUnitId}_${phone}`
+}
+
+function appendTemplePhoneIndex(
+  phoneIndex: Map<string, string[]>,
+  temple: Temple,
+) {
+  for (const phone of temple.managerPhones) {
+    const key = templePhoneIndexId(temple.orgUnitId, phone)
+    const existingIds = phoneIndex.get(key) ?? []
+    if (existingIds.includes(temple.id) || existingIds.length >= PHONE_INDEX_CAP) {
+      continue
+    }
+    phoneIndex.set(key, [...existingIds, temple.id])
+  }
+}
+
+function removeTempleFromPhoneIndex(
+  phoneIndex: Map<string, string[]>,
+  temple: Temple,
+) {
+  for (const phone of temple.managerPhones) {
+    const key = templePhoneIndexId(temple.orgUnitId, phone)
+    const existingIds = phoneIndex.get(key)
+    if (!existingIds) continue
+    const nextIds = existingIds.filter((id) => id !== temple.id)
+    if (nextIds.length === 0) {
+      phoneIndex.delete(key)
+    } else if (nextIds.length !== existingIds.length) {
+      phoneIndex.set(key, nextIds)
+    }
+  }
+}
+
 function removeFromPhoneIndex(
   phoneIndex: Map<string, string[]>,
   member: Member,
@@ -307,13 +342,20 @@ export function createMemoryTempleStore(
   seed: Temple[] = [],
 ): TempleStore & {
   temples: Map<string, Temple>
+  phoneIndex: Map<string, string[]>
 } {
   const temples = new Map(seed.map((temple) => [temple.id, temple]))
+  const phoneIndex = new Map<string, string[]>()
+  for (const temple of seed) {
+    appendTemplePhoneIndex(phoneIndex, temple)
+  }
 
   const store: TempleStore & {
     temples: Map<string, Temple>
+    phoneIndex: Map<string, string[]>
   } = {
     temples,
+    phoneIndex,
     async createOrUpdateDraft(input: CreateOrUpdateTempleDraftInput) {
       const now = '2026-07-19T00:00:00.000Z'
 
@@ -411,6 +453,14 @@ export function createMemoryTempleStore(
           (!input.status || temple.status === input.status),
         sortKey: (temple) => temple.updatedAt,
       })
+    },
+    async deleteMany(ids: string[]) {
+      for (const templeId of ids) {
+        const temple = temples.get(templeId)
+        if (!temple) continue
+        removeTempleFromPhoneIndex(phoneIndex, temple)
+        temples.delete(templeId)
+      }
     },
   }
 

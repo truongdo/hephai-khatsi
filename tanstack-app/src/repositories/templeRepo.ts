@@ -9,9 +9,11 @@ import {
   runTransaction,
   startAfter,
   where,
+  type DocumentReference,
   type DocumentSnapshot,
   type Firestore,
   type QueryConstraint,
+  type Transaction,
 } from 'firebase/firestore'
 import { DomainError } from '#/domain/errors'
 import type { Temple } from '#/domain/types'
@@ -56,6 +58,7 @@ export type TempleStore = {
   list(input: ListTemplesAdminInput): Promise<AdminListPage<Temple>>
   lock(templeId: string, lockedBy: string): Promise<Temple>
   unlock(templeId: string): Promise<Temple>
+  deleteMany(ids: string[]): Promise<void>
 }
 
 const PHONE_INDEX_CAP = 20
@@ -221,6 +224,60 @@ async function lock(templeId: string, lockedBy: string): Promise<Temple> {
   })
 }
 
+async function readTemplePhoneIndexForTransaction(
+  transaction: Transaction,
+  orgUnitId: string,
+  phone: string,
+) {
+  const ref = doc(
+    requireDb(),
+    COLLECTIONS.templeManagerPhoneIndex,
+    phoneIndexId(orgUnitId, phone),
+  )
+  const snap = await transaction.get(ref)
+  return { ref, snap }
+}
+
+function shrinkTemplePhoneIndex(
+  transaction: Transaction,
+  index: { ref: DocumentReference; snap: DocumentSnapshot } | null,
+  templeId: string,
+) {
+  if (!index?.snap.exists()) return
+  const existingIds = (index.snap.data()?.templeIds as string[] | undefined) ?? []
+  const nextIds = existingIds.filter((id) => id !== templeId)
+  if (nextIds.length === existingIds.length) return
+  if (nextIds.length === 0) {
+    transaction.delete(index.ref)
+  } else {
+    transaction.set(index.ref, { templeIds: nextIds })
+  }
+}
+
+async function deleteMany(ids: string[]): Promise<void> {
+  const db = requireDb()
+
+  for (const templeId of ids) {
+    await runTransaction(db, async (transaction) => {
+      const templeRef = doc(db, COLLECTIONS.temples, templeId)
+      const snap = await transaction.get(templeRef)
+      if (!snap.exists()) return
+
+      const temple = templeFromSnap(snap)
+      const phoneIndexes = await Promise.all(
+        temple.managerPhones.map((phone) =>
+          readTemplePhoneIndexForTransaction(transaction, temple.orgUnitId, phone),
+        ),
+      )
+
+      phoneIndexes.forEach((index) => {
+        shrinkTemplePhoneIndex(transaction, index, templeId)
+      })
+      transaction.delete(templeRef)
+    })
+  }
+}
+
 async function unlock(templeId: string): Promise<Temple> {
   const db = requireDb()
   const templeRef = doc(db, COLLECTIONS.temples, templeId)
@@ -254,4 +311,5 @@ export const templeRepo: TempleStore = {
   list,
   lock,
   unlock,
+  deleteMany,
 }
