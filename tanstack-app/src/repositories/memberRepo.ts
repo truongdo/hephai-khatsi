@@ -15,6 +15,7 @@ import {
   type QueryConstraint,
   type Transaction,
 } from 'firebase/firestore'
+import { deleteObject, ref } from 'firebase/storage'
 import { DomainError } from '#/domain/errors'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
 import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
@@ -22,6 +23,7 @@ import { normalizeVnPhone } from '#/domain/normalize'
 import type { Member, SanghaType } from '#/domain/types'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
+import { getClientStorage } from '#/firebase/storage'
 import type { AdminListPage, ListMembersAdminInput } from '#/repositories/adminListTypes'
 
 export type MemberProfilePatch = Partial<
@@ -69,12 +71,23 @@ export type MemberStore = {
   getById(memberId: string): Promise<Member | null>
   listByOrgSanghaAndPhone(input: MemberPhoneLookupInput): Promise<Member[]>
   list(input: ListMembersAdminInput): Promise<AdminListPage<Member>>
+  listByCurrentTempleIds(templeIds: string[]): Promise<Member[]>
+  deleteMany(ids: string[]): Promise<void>
   setPhotoPath(memberId: string, photoPath: string): Promise<Member>
   lock(memberId: string, lockedBy: string): Promise<Member>
   unlock(memberId: string): Promise<Member>
 }
 
 const PHONE_INDEX_CAP = 20
+const IN_QUERY_LIMIT = 30
+
+function chunk<T>(items: T[], size: number): T[][] {
+  const chunks: T[][] = []
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size))
+  }
+  return chunks
+}
 
 function requireDb(): Firestore {
   const db = getClientFirestore()
@@ -118,6 +131,22 @@ function writePhoneIndex(
     return
   }
   transaction.set(index.ref, { memberIds: [...existingIds, memberId] })
+}
+
+function shrinkPhoneIndex(
+  transaction: Transaction,
+  index: { ref: DocumentReference; snap: DocumentSnapshot } | null,
+  memberId: string,
+) {
+  if (!index?.snap.exists()) return
+  const existingIds = (index.snap.data()?.memberIds as string[] | undefined) ?? []
+  const nextIds = existingIds.filter((id) => id !== memberId)
+  if (nextIds.length === existingIds.length) return
+  if (nextIds.length === 0) {
+    transaction.delete(index.ref)
+  } else {
+    transaction.set(index.ref, { memberIds: nextIds })
+  }
 }
 
 // Member doc ids are deterministic ({orgUnitId}_{sanghaType}_{cccd}), which
@@ -317,6 +346,64 @@ async function list(input: ListMembersAdminInput): Promise<AdminListPage<Member>
   return { items, nextCursor }
 }
 
+async function listByCurrentTempleIds(templeIds: string[]): Promise<Member[]> {
+  if (templeIds.length === 0) return []
+  const db = requireDb()
+  const seen = new Set<string>()
+  const results: Member[] = []
+
+  for (const idChunk of chunk(templeIds, IN_QUERY_LIMIT)) {
+    const snap = await getDocs(
+      query(
+        collection(db, COLLECTIONS.members),
+        where('currentTempleId', 'in', idChunk),
+      ),
+    )
+    for (const docSnap of snap.docs) {
+      if (seen.has(docSnap.id)) continue
+      seen.add(docSnap.id)
+      results.push(memberFromSnap(docSnap))
+    }
+  }
+
+  return results
+}
+
+async function deleteMany(ids: string[]): Promise<void> {
+  const db = requireDb()
+  const storage = getClientStorage()
+
+  for (const memberId of ids) {
+    let photoPath: string | null = null
+
+    await runTransaction(db, async (transaction) => {
+      const memberRef = doc(db, COLLECTIONS.members, memberId)
+      const snap = await transaction.get(memberRef)
+      if (!snap.exists()) return
+
+      const member = memberFromSnap(snap)
+      photoPath = member.photoPath
+
+      const phoneIndex = await readPhoneIndexForTransaction(
+        transaction,
+        member.orgUnitId,
+        member.sanghaType,
+        member.dienThoai,
+      )
+      shrinkPhoneIndex(transaction, phoneIndex, memberId)
+      transaction.delete(memberRef)
+    })
+
+    if (photoPath && storage) {
+      try {
+        await deleteObject(ref(storage, photoPath))
+      } catch {
+        // Best-effort; Firestore delete already committed.
+      }
+    }
+  }
+}
+
 async function setPhotoPath(memberId: string, photoPath: string): Promise<Member> {
   const db = requireDb()
   const memberRef = doc(db, COLLECTIONS.members, memberId)
@@ -395,6 +482,8 @@ export const memberRepo: MemberStore = {
   getById,
   listByOrgSanghaAndPhone,
   list,
+  listByCurrentTempleIds,
+  deleteMany,
   setPhotoPath,
   lock,
   unlock,

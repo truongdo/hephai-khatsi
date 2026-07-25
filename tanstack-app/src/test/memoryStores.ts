@@ -39,6 +39,28 @@ function appendPhoneIndex(
   phoneIndex.set(key, [...existingIds, member.id])
 }
 
+function removeFromPhoneIndex(
+  phoneIndex: Map<string, string[]>,
+  member: Member,
+) {
+  if (!member.dienThoai) return
+  let phone: string
+  try {
+    phone = normalizeVnPhone(member.dienThoai)
+  } catch {
+    return
+  }
+  const key = memberPhoneIndexId(member.orgUnitId, member.sanghaType, phone)
+  const existingIds = phoneIndex.get(key)
+  if (!existingIds) return
+  const nextIds = existingIds.filter((id) => id !== member.id)
+  if (nextIds.length === 0) {
+    phoneIndex.delete(key)
+  } else if (nextIds.length !== existingIds.length) {
+    phoneIndex.set(key, nextIds)
+  }
+}
+
 function listInMemory<T extends { id: string }>(
   all: Iterable<T>,
   input: { limit?: number; cursor?: string },
@@ -255,6 +277,26 @@ export function createMemoryMemberStore(
           (!input.status || member.status === input.status),
         sortKey: (member) => member.updatedAt,
       })
+    },
+    async listByCurrentTempleIds(templeIds: string[]) {
+      if (templeIds.length === 0) return []
+      const templeIdSet = new Set(templeIds)
+      return [...members.values()].filter(
+        (member) =>
+          member.currentTempleId !== null &&
+          templeIdSet.has(member.currentTempleId),
+      )
+    },
+    async deleteMany(ids: string[]) {
+      for (const memberId of ids) {
+        const member = members.get(memberId)
+        if (!member) continue
+        removeFromPhoneIndex(phoneIndex, member)
+        index.delete(
+          memberCccdIndexId(member.orgUnitId, member.sanghaType, member.cccd),
+        )
+        members.delete(memberId)
+      }
     },
   }
 
