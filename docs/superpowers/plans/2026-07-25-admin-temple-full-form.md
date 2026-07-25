@@ -48,7 +48,7 @@
 ### Task 0: Branch from main + commit this plan
 
 **Files:**
-- Add: `docs/superpowers/plans/2026-07-25-admin-temple-full-form.md`
+- Add: `docs/superpowers/plans/2026-07-25-admin-temple-full-form.md` (already on `main` as of plan review — do not re-commit unless the file changed)
 
 **Interfaces:**
 - Consumes: `main` with spec `docs/superpowers/specs/2026-07-25-admin-temple-full-form-design.md`
@@ -66,9 +66,12 @@ git checkout -b feat/admin-temple-full-form
 
 If currently on a non-`main` branch with WIP: stop and ask the user (plan-execution rule).
 
-- [ ] **Step 2: Commit this plan (if not already committed)**
+- [ ] **Step 2: Commit this plan only if it is modified and uncommitted**
 
 ```bash
+git status
+# If docs/superpowers/plans/2026-07-25-admin-temple-full-form.md is already committed and clean: skip.
+# Otherwise:
 git add docs/superpowers/plans/2026-07-25-admin-temple-full-form.md
 git commit -m "$(cat <<'EOF'
 docs: plan for admin temple full form and photo
@@ -183,14 +186,23 @@ Expected: FAIL (no `photoPath` / `setPhotoPath` / locked update still throws).
    - On create: set `photoPath: input.patch.photoPath ?? null` (default null).
    - On update when `existing.status === 'locked'`:
      - If `!input.allowWhenLocked` → throw `RECORD_LOCKED` (unchanged for filler).
-     - If `allowWhenLocked` → allow write; **preserve** `status`, `lockedAt`, `lockedBy` (do not force `status: 'draft'`).
+     - If `allowWhenLocked` → allow write; **preserve** `status`, `lockedAt`, `lockedBy` (do **not** force `status: 'draft'`).
    - On update when draft: keep current behavior (`status: 'draft'`).
+   - On update: preserve existing `photoPath` unless `input.patch` includes `photoPath` (spread order: `...existing, ...patch`, then re-assert identity/lock fields).
 
-4. Add `setPhotoPath` to `TempleStore` / repo / memory — updates `photoPath` + `updatedAt`; **does not** reject locked; throws `NOT_FOUND` if missing.
+4. Normalize reads in `templeFromSnap` (and memory `getById` if needed):
 
-5. `saveAdminTemple`: pass `allowWhenLocked: true` into `createOrUpdateDraft`.
+```ts
+photoPath: (snap.data() as { photoPath?: string | null }).photoPath ?? null
+```
 
-6. Fix TypeScript fixtures across the app that construct `Temple` without `photoPath` (set `null`).
+Legacy docs without the field must surface as `null`, not `undefined`.
+
+5. Add `setPhotoPath` to `TempleStore` / repo / memory — updates `photoPath` + `updatedAt`; **does not** reject locked; throws `NOT_FOUND` if missing.
+
+6. `saveAdminTemple`: pass `allowWhenLocked: true` into `createOrUpdateDraft`.
+
+7. Fix TypeScript fixtures across the app that construct `Temple` without `photoPath` (set `null`), including `templeRepo.integration.test.ts` helpers if they build full `Temple` objects.
 
 - [ ] **Step 4: Run tests — expect PASS**
 
@@ -263,13 +275,18 @@ it('allows admin to update profile fields on a locked temple without unlocking',
 
 - [ ] **Step 2: Run rules test — expect FAIL** (or only the new admin profile assertion fails)
 
+Integration tests are **excluded** from default `vitest.config.ts`. Use the integration config:
+
 ```bash
-cd tanstack-app && pnpm exec vitest run src/firebase/firestoreRules.integration.test.ts -t "allows admin to update profile"
+cd tanstack-app && pnpm exec vitest run --config vitest.integration.config.ts \
+  src/firebase/firestoreRules.integration.test.ts -t "allows admin to update profile"
 ```
+
+(Requires Firestore emulator available the same way other rules tests do — `pnpm test:integration` / project docs.)
 
 - [ ] **Step 3: Update rules**
 
-In `match /temples/{templeId}` `allow update`, add admin locked profile branch:
+In `match /temples/{templeId}` `allow update`, replace the admin draft-only branch so admin may update while locked when lock fields stay put:
 
 ```
 allow update: if coreIdentityUnchanged() && (
@@ -279,14 +296,17 @@ allow update: if coreIdentityUnchanged() && (
 );
 ```
 
-Note: the second branch replaces `resource.data.status != 'locked' &&` for admin — admin may update whether draft or locked, as long as `lockFieldsUnchanged()` (status/lockedAt/lockedBy stay put). Non-admin still blocked when locked.
+Note: the second branch no longer requires `resource.data.status != 'locked'`. Admin may update draft **or** locked temples if `status` / `lockedAt` / `lockedBy` are unchanged. Non-admin still blocked when locked.
+
+Also update the existing test title/body currently named roughly `blocks updates once locked…`: keep anon-blocked + orgUnitId-blocked assertions; do **not** assert that admin profile updates fail when locked (that would contradict the new test).
 
 Add `photoPath: null` to `templeDraft()` helper.
 
 - [ ] **Step 4: Run rules tests — expect PASS**
 
 ```bash
-cd tanstack-app && pnpm exec vitest run src/firebase/firestoreRules.integration.test.ts
+cd tanstack-app && pnpm exec vitest run --config vitest.integration.config.ts \
+  src/firebase/firestoreRules.integration.test.ts
 ```
 
 - [ ] **Step 5: Commit**
@@ -351,12 +371,13 @@ export async function uploadTemplePhoto(
     bytes: Uint8Array
     contentType: string
     inviteToken?: string
+    /** Admin Firebase ID token — required for locked-temple uploads; sent as Bearer to the worker. */
     idToken?: string
   },
   templeStore?: TempleStore,
 ): Promise<{ photoPath: string }>
 
-// deleteTemples
+// deleteTemples — breaking signature change (call sites: TemplesListPage + tests)
 deleteTemples(input: { ids: string[]; idToken: string }, ...)
 ```
 
@@ -366,22 +387,37 @@ Auth rules for `POST /api/photos/temple-upload-url`:
 - Filler path: 403 if temple locked
 - No CCCD field
 
+Important: unlike current `uploadMemberPhoto` (which accepts `idToken` on the client helper but never threads it from the use-case), **temple must pass `idToken` through** `uploadTemplePhoto` → `requestTemplePhotoUploadUrl({ idToken })` → `Authorization: Bearer …`.
+
 - [ ] **Step 1: Write failing worker + use-case tests**
 
-Mirror `photosApi.test.ts` member cases for temple:
+Update `photosApi.test.ts` mocks:
+
+```ts
+vi.mock('./firestoreRest', () => ({
+  getMemberDocument,
+  getInviteOrgUnitId,
+  getTempleDocument,
+  inviteExists,
+}))
+```
+
+Mirror member cases for temple routes:
 - 401 without auth
 - 400 bad content type
 - 200 admin Bearer on locked temple
 - 403 filler invite on locked temple
-- 200 filler invite on draft when invite exists
-- 403 when invite missing
+- 200 filler invite on draft when `inviteExists` true
+- 403 when invite missing (`inviteExists` false)
 
 `uploadTemplePhoto.test.ts`:
 - happy path sets photoPath via store
-- filler (invite only) rejects locked
-- admin (`idToken` present) allows locked
+- filler (invite only, no idToken) rejects locked
+- admin (`idToken` present) allows locked and passes idToken into storage/client
 
-`deleteTemples.test.ts`: after successful delete, photo delete helper called per id (inject dependency like `deleteMembers`).
+`deleteTemples.test.ts`:
+- Update all call sites to pass `idToken: 'token'`
+- After successful delete, photo delete helper called per id (inject dependency like `deleteMembers`)
 
 - [ ] **Step 2: Run — expect FAIL**
 
@@ -396,11 +432,14 @@ cd tanstack-app && pnpm exec vitest run \
 
 1. `inviteExists` — fetch `invites/{id}`, return `doc != null` (do not require `orgUnitId`).
 2. `getTempleDocument` — parse `orgUnitId` + `status`.
-3. `templePhotoKey` + handle upload/delete routes in `photosApi.ts`.
-4. Client `requestTemplePhotoUploadUrl` / `deleteTemplePhotoObject`.
-5. `uploadTemplePhoto`: load temple; if locked && !idToken → `RECORD_LOCKED`; put via presign; `setPhotoPath`.
+3. `templePhotoKey` + handle `POST /api/photos/temple-upload-url` and `DELETE /api/photos/temple` in `photosApi.ts`.
+4. Client `requestTemplePhotoUploadUrl` / `deleteTemplePhotoObject` (Bearer when `idToken` set).
+5. `uploadTemplePhoto`:
+   - load temple; if missing → `NOT_FOUND`
+   - if `status === 'locked' && !input.idToken` → `RECORD_LOCKED`
+   - request upload URL with `inviteToken` and/or `idToken`; PUT bytes; `setPhotoPath`
 6. `deleteTemples`: require `idToken`; after `deleteMany`, `Promise.allSettled` photo deletes (mirror `deleteMembers`).
-7. `TemplesListPage`: `const { user } = useAuth()`, `idToken = await user!.getIdToken()`, pass into `deleteTemples`.
+7. `TemplesListPage`: `const { user } = useAuth()`, `idToken = await user!.getIdToken()`, pass into `deleteTemples`. Update list page tests to mock `useAuth` + expect `idToken` (same pattern as `MembersListPage.test.tsx`).
 
 - [ ] **Step 4: Run — expect PASS**
 
@@ -449,7 +488,8 @@ export function getTemplePhotoDownloadUrl(photoPath: string): string
 export type TemplePortraitFieldProps = {
   templeId?: string
   inviteToken?: string
-  idToken?: string
+  /** Async admin token provider — prefer this over a stale string prop. */
+  getIdToken?: () => Promise<string | undefined>
   photoPath: string | null
   disabled?: boolean
   pendingFile: File | null
@@ -469,9 +509,12 @@ i18n keys (vi):
 
 Reuse `filler_photo_choose`, `filler_photo_change`, `filler_photo_invalid_type`, `filler_photo_upload_error`.
 
+`getTemplePhotoDownloadUrl` must use `import.meta.env.VITE_PHOTOS_PUBLIC_BASE` exactly like `getMemberPhotoDownloadUrl`.
+
 - [ ] **Step 1: Write failing `TemplePortraitField` tests** (copy structure from `MemberPortraitField.test.tsx`)
   - no templeId → sets pending file, does not call upload
-  - with templeId → calls `uploadTemplePhoto` with inviteToken and/or idToken
+  - with templeId + inviteToken → calls `uploadTemplePhoto` with inviteToken
+  - with templeId + getIdToken → awaits token and passes `idToken`
   - reject non-image type
 
 - [ ] **Step 2: Run — expect FAIL**
@@ -482,11 +525,10 @@ cd tanstack-app && pnpm exec vitest run src/components/temple/TemplePortraitFiel
 
 - [ ] **Step 3: Implement URL helper + field + messages; run `pnpm paraglide`**
 
-Copy UI from `MemberPortraitField` (3:4 preview OK for temple, or use 4:3 if you prefer — keep 3:4 for parity unless design asks otherwise). Label: `m.filler_field_anh_tinh_xa()`.
-
-Call:
+Copy UI from `MemberPortraitField` (keep 3:4 preview for parity). Label: `m.filler_field_anh_tinh_xa()`.
 
 ```ts
+const idToken = (await getIdToken?.()) ?? undefined
 await uploadTemplePhoto({
   templeId,
   bytes,
@@ -528,7 +570,7 @@ EOF
 - Produces:
 
 ```ts
-export type TempleFormFieldsHandle = {
+export type TempleFormFieldsApi = {
   getDraft: () => TempleDraft
   getExtraManagerPhone: () => string
   getPhotoPath: () => string | null
@@ -544,11 +586,13 @@ export type TempleFormFieldsProps = {
   disabled?: boolean
   templeId?: string
   inviteToken?: string
-  idToken?: string
+  getIdToken?: () => Promise<string | undefined>
+  /** Parent assigns `apiRef.current = api` each render / in an effect — no forwardRef (unused in this codebase). */
+  apiRef: React.MutableRefObject<TempleFormFieldsApi | null>
 }
 ```
 
-Use `forwardRef` + `useImperativeHandle`. Own: draft, extraManagerPhone, photoPath, pendingPhoto, fieldErrors. Render all existing sections from `TempleEditorFormSections` + phones + `TemplePortraitField` (place portrait near identity / top of stack).
+Own state: draft, extraManagerPhone, photoPath, pendingPhoto, fieldErrors. Render all existing sections from `TempleEditorFormSections` + phones + `TemplePortraitField` (portrait near identity / top of stack).
 
 Map error codes → messages exactly as current `TempleEditorForm` helpers (`mapRequiredError`, etc.) — move those helpers into `TempleFormFields` or a tiny `templeFormErrors.ts` beside it.
 
@@ -564,21 +608,49 @@ cd tanstack-app && pnpm exec vitest run src/components/filler/TempleEditorForm.t
 
 - [ ] **Step 3: Extract + refactor `TempleEditorForm`**
 
-`TempleEditorForm` becomes:
-
 ```tsx
-const fieldsRef = useRef<TempleFormFieldsHandle>(null)
-// handleSave:
-const api = fieldsRef.current!
-const result = validateTempleRequiredFields({ ...api.getDraft() fields used by validator })
-if (!result.valid) { api.setFieldErrors(result.errors); return }
-api.clearFieldErrors()
-const saveResult = await saveMutation.mutateAsync() // build patch from api.getDraft() + phones
-// on created: upload pending photo if any, then onCreated
+const fieldsApiRef = useRef<TempleFormFieldsApi | null>(null)
+
+const handleSave = () => {
+  const api = fieldsApiRef.current
+  if (!api) return
+  const draft = api.getDraft()
+  const result = validateTempleRequiredFields({
+    danhHieu: draft.danhHieu,
+    nguoiKhaiSon: draft.nguoiKhaiSon,
+    namThanhLap: draft.namThanhLap,
+    diaChiCu: draft.diaChiCu,
+    diaChiMoi: draft.diaChiMoi,
+    truTriHienNay: draft.truTriHienNay,
+    truTriTienNhiem: draft.truTriTienNhiem,
+    tangSoHienTru: draft.tangSoHienTru,
+    soPhatTuQuyY: draft.soPhatTuQuyY,
+    soPhatTuThuongXuyen: draft.soPhatTuThuongXuyen,
+  })
+  if (!result.valid) {
+    api.setFieldErrors(result.errors)
+    return
+  }
+  api.clearFieldErrors()
+  const patch = buildTemplePatch(draft)
+  const explicitPhones = api.getExtraManagerPhone().trim()
+    ? [api.getExtraManagerPhone().trim()]
+    : []
+  void (async () => {
+    try {
+      const saveResult = await saveMutation.mutateAsync({ patch, explicitPhones })
+      // if created + pending photo → uploadTemplePhoto({ templeId, inviteToken: token, ... })
+      // then onCreated / success toast as today
+    } catch {
+      // onError handles
+    }
+  })()
+}
+
 return (
-  <FillerEditorShell ...>
+  <FillerEditorShell ... onSave={status === 'draft' ? handleSave : undefined}>
     <TempleFormFields
-      ref={fieldsRef}
+      apiRef={fieldsApiRef}
       initial={initial}
       disabled={disabled}
       templeId={templeId}
@@ -588,7 +660,7 @@ return (
 )
 ```
 
-`saveMutation.mutationFn` should read draft from ref at call time (or pass patch into mutate). Prefer building patch inside `handleSave` and using `mutationFn: (patch) => saveTempleDraft({..., patch})`.
+Wire `saveMutation` as `mutationFn: ({ patch, explicitPhones }) => saveTempleDraft({ token, orgUnitId, templeId, patch, explicitPhones })`.
 
 - [ ] **Step 4: Run filler tests — expect PASS**
 
@@ -618,50 +690,63 @@ EOF
 - Modify: `tanstack-app/src/components/admin/TempleFormPage.test.tsx`
 
 **Interfaces:**
-- Consumes: `TempleFormFields`, `saveAdminTemple`, `uploadTemplePhoto`, `validateTempleRequiredFields`, `useAuth` for `idToken`
+- Consumes: `TempleFormFields`, `saveAdminTemple`, `uploadTemplePhoto`, `validateTempleRequiredFields`, `useAuth` (`getIdToken`)
 - Behavior:
-  - Load temple → pass as `initial` to fields (key remount on `templeId`/`updatedAt` if needed)
+  - Load temple → pass as `initial` including `photoPath: temple.photoPath ?? null` (remount via `key={templeId}` / data identity if hydration races)
   - Org unit Select above fields (required on create; disabled on edit)
   - Invite meta text retained
-  - Buttons: **Lưu nháp** (`m.admin_temples_save_draft()`), **Hoàn thành** (`m.admin_temples_complete()`), Lock/Unlock
-  - Fields never `disabled` for admin (even when locked)
-  - Pass `idToken` into `TempleFormFields` for immediate photo upload
-  - Lưu nháp: no validate; Hoàn thành: validate then save
-  - After create (either button): navigate to detail; upload pending photo
+  - Buttons always available for admin (including when locked): **Lưu nháp**, **Hoàn thành**, Lock/Unlock
+  - Fields never `disabled` for admin (even when locked) — remove old `isReadOnly` / structured-address-readonly UX
+  - Pass `getIdToken={() => user!.getIdToken()}` into `TempleFormFields` for immediate photo upload
+  - Lưu nháp: skip `validateTempleRequiredFields` only — **still** subject to domain `PHONE_REQUIRED` / Firestore `managerPhones.size() > 0` on create
+  - Hoàn thành: validate then save; never call `lockTemple`
+  - After create (either button): navigate to detail; upload pending photo with `idToken`
   - Show save success/error; photo upload error uses `m.filler_photo_upload_error()`
 
 - [ ] **Step 1: Rewrite tests first**
 
-Replace short-form assertions with:
+**Delete** obsolete short-form tests that no longer apply:
+- `displays formatted structured address as read-only`
+- `omits structured diaChiMoi from admin save patch`
+- any click on `m.admin_temples_save()` (button removed)
+
+Add fixtures with `photoPath: null`. Mock `uploadTemplePhoto` and `useAuth` (`getIdToken`).
 
 ```ts
 it('renders full temple sections', async () => {
-  // mode edit with draftTemple including photoPath: null
+  templeFixture = draftTemple
+  renderForm({ mode: 'edit' })
   expect(await screen.findByText(m.filler_section_temple_identity())).toBeTruthy()
   expect(screen.getByText(m.filler_section_temple_address())).toBeTruthy()
   expect(screen.getByText(m.filler_field_anh_tinh_xa())).toBeTruthy()
 })
 
-it('Lưu nháp saves without required fields', async () => {
-  // create mode, select org unit, click Lưu nháp with empty draft
+it('Lưu nháp saves without temple required-field validation when a manager phone is present', async () => {
+  // create mode: select org unit, fill trụ trì phone (or manager phone) only,
+  // leave danh hiệu / addresses empty, click Lưu nháp
+  // Domain still requires ≥1 phone via buildManagerPhones — do NOT expect a save with zero phones.
   expect(saveAdminTempleMock).toHaveBeenCalled()
 })
 
 it('Hoàn thành does not save when required fields missing', async () => {
-  // create/edit empty → click Hoàn thành
+  // create: org unit + phone filled (so PHONE_REQUIRED is not the blocker),
+  // other required fields empty → click Hoàn thành
   expect(saveAdminTempleMock).not.toHaveBeenCalled()
   expect(screen.getAllByText(m.filler_error_field_required()).length).toBeGreaterThan(0)
 })
 
 it('keeps fields editable when locked', async () => {
-  templeFixture = lockedTemple // with photoPath: null
-  // danh hieu input should NOT be readOnly/disabled
-  const input = await screen.findByLabelText(m.filler_field_danh_hieu()) // use actual label from identity section
+  templeFixture = lockedTemple
+  renderForm({ mode: 'edit' })
+  const input = await screen.findByLabelText(m.filler_field_danh_hieu())
   expect(input).not.toBeDisabled()
+  expect(
+    screen.getByRole('button', { name: m.admin_temples_save_draft() }),
+  ).toBeTruthy()
 })
 ```
 
-Keep Lock/Unlock coverage. Mock `uploadTemplePhoto` and `useAuth` (`getIdToken`).
+Keep Lock/Unlock coverage (`shows unlock when locked`, etc.).
 
 - [ ] **Step 2: Run — expect FAIL**
 
@@ -671,21 +756,30 @@ cd tanstack-app && pnpm exec vitest run src/components/admin/TempleFormPage.test
 
 - [ ] **Step 3: Implement `TempleFormPage`**
 
-Remove the old four-field stack. Structure:
+Remove the old four-field stack and `admin_temples_save` single button. Structure:
 
 ```tsx
+const { user } = useAuth()
+const fieldsApiRef = useRef<TempleFormFieldsApi | null>(null)
+
 <Stack>
   <Group> title + back </Group>
   {loading / errors}
   {(create || temple.data) && (
     <Stack maw={760}>
       meta + org unit Select
-      <TempleFormFields ref={fieldsRef} ... disabled={false} idToken={...} templeId={templeId} />
+      <TempleFormFields
+        apiRef={fieldsApiRef}
+        initial={...}
+        disabled={false}
+        templeId={templeId}
+        getIdToken={async () => (user ? user.getIdToken() : undefined)}
+      />
       mutation errors / success
       <Group>
-        <Button onClick={saveDraft}>{m.admin_temples_save_draft()}</Button>
-        <Button onClick={complete}>{m.admin_temples_complete()}</Button>
-        {/* lock / unlock as today */}
+        <Button onClick={() => void saveDraft()}>{m.admin_temples_save_draft()}</Button>
+        <Button onClick={() => void complete()}>{m.admin_temples_complete()}</Button>
+        {/* lock / unlock as today — still show when locked/draft respectively */}
       </Group>
     </Stack>
   )}
@@ -696,7 +790,7 @@ Shared save helper:
 
 ```ts
 async function persist() {
-  const api = fieldsRef.current!
+  const api = fieldsApiRef.current!
   const draft = api.getDraft()
   const result = await saveAdminTemple({
     orgUnitId: orgUnitId!,
@@ -706,8 +800,41 @@ async function persist() {
       ? [api.getExtraManagerPhone().trim()]
       : [],
   })
-  // pending photo upload with idToken
+  const pending = api.getPendingPhoto()
+  if (pending && result.temple.id) {
+    const idToken = await user!.getIdToken()
+    const bytes = new Uint8Array(await pending.arrayBuffer())
+    try {
+      const uploaded = await uploadTemplePhoto({
+        templeId: result.temple.id,
+        bytes,
+        contentType: pending.type,
+        idToken,
+      })
+      api.setPhotoPath(uploaded.photoPath)
+      api.clearPendingPhoto()
+    } catch {
+      setPhotoError(m.filler_photo_upload_error())
+    }
+  }
   return result
+}
+
+async function saveDraft() {
+  // no validateTempleRequiredFields
+  await persist()
+}
+
+async function complete() {
+  const api = fieldsApiRef.current!
+  const draft = api.getDraft()
+  const result = validateTempleRequiredFields({ /* same field pick as Task 5 */ })
+  if (!result.valid) {
+    api.setFieldErrors(result.errors)
+    return
+  }
+  api.clearFieldErrors()
+  await persist()
 }
 ```
 
@@ -737,10 +864,10 @@ EOF
 
 **Files:** none new — fix any fallout
 
-- [ ] **Step 1: Run focused suites**
+- [ ] **Step 1: Run unit suites**
 
 ```bash
-cd tanstack-app && pnpm test -- \
+cd tanstack-app && pnpm exec vitest run \
   src/use-cases/saveAdminDraft.test.ts \
   src/use-cases/templeDraft.test.ts \
   src/use-cases/uploadTemplePhoto.test.ts \
@@ -752,13 +879,20 @@ cd tanstack-app && pnpm test -- \
   src/components/admin/TemplesListPage.test.tsx
 ```
 
-- [ ] **Step 2: Fix any TypeScript / fixture fallout from `photoPath`**
+- [ ] **Step 2: Run Firestore rules integration suite** (emulator required)
+
+```bash
+cd tanstack-app && pnpm exec vitest run --config vitest.integration.config.ts \
+  src/firebase/firestoreRules.integration.test.ts
+```
+
+- [ ] **Step 3: Fix any TypeScript / fixture fallout from `photoPath`**
 
 ```bash
 cd tanstack-app && pnpm exec tsc --noEmit
 ```
 
-- [ ] **Step 3: Commit fixes if any**
+- [ ] **Step 4: Commit fixes if any**
 
 ```bash
 git add -A
@@ -794,5 +928,8 @@ Skip empty commit if clean.
 - Filler `saveTempleDraft` must **not** pass `allowWhenLocked` (default false) so locked filler writes still fail.
 - When hydrating admin edit, include `photoPath: temple.photoPath ?? null` in `initial`.
 - Do not reuse `getInviteOrgUnitId` for temple filler photo auth — use `inviteExists`.
+- **Lưu nháp ≠ zero constraints:** it skips `validateTempleRequiredFields` only. Create/update still needs ≥1 manager phone (`buildManagerPhones` / Firestore `managerPhones.size() > 0` on create).
+- Full form replaces the old admin structured-address read-only workaround — `buildTemplePatch` writes `diaChiMoi` / `diaChiCu` from address drafts like filler.
+- Default Vitest config **excludes** `*.integration.test.ts`; rules tests must use `vitest.integration.config.ts`.
 - Deploy reminder (human): publish updated `firestore.rules` with the app release.
 )
