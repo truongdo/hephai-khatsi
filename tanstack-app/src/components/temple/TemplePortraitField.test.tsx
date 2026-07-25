@@ -151,4 +151,20 @@ describe('TemplePortraitField', () => {
     expect(onPendingFileChange).not.toHaveBeenCalled()
     expect(uploadTemplePhotoMock).not.toHaveBeenCalled()
   })
+
+  it('with templeId: upload failure calls onUploadError', async () => {
+    uploadTemplePhotoMock.mockRejectedValue(new Error('upload failed'))
+    const onUploadError = vi.fn()
+    renderField({
+      templeId: 't1',
+      inviteToken: 'invite-token',
+      onUploadError,
+    })
+    const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
+
+    await userEvent.upload(getFileInput(), file)
+
+    expect(onUploadError).toHaveBeenCalledOnce()
+    expect(onUploadError).toHaveBeenCalledWith(m.filler_photo_upload_error())
+  })
 })

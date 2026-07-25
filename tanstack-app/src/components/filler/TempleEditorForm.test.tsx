@@ -348,4 +348,19 @@ describe('TempleEditorForm', () => {
       screen.getByLabelText(new RegExp(`^${m.filler_field_danh_hieu()}`)),
     ).toBeDisabled()
   })
+
+  it('surfaces upload error on immediate portrait upload when editing', async () => {
+    const user = userEvent.setup()
+    uploadTemplePhotoMock.mockRejectedValue(new Error('upload failed'))
+    renderForm({
+      templeId: 't1',
+      initial: requiredTempleInitial({ id: 't1' }),
+    })
+    const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
+
+    await user.upload(getPortraitFileInput(), file)
+
+    expect(uploadTemplePhotoMock).toHaveBeenCalledOnce()
+    expect(screen.getByText(m.filler_photo_upload_error())).toBeTruthy()
+  })
 })

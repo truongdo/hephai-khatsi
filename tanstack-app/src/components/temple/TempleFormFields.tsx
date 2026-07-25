@@ -80,6 +80,7 @@ export type TempleFormFieldsProps = {
   templeId?: string
   inviteToken?: string
   getIdToken?: () => Promise<string | undefined>
+  onUploadError?: (message: string) => void
   apiRef: React.MutableRefObject<TempleFormFieldsApi | null>
 }
 
@@ -89,6 +90,7 @@ export function TempleFormFields({
   templeId,
   inviteToken,
   getIdToken,
+  onUploadError,
   apiRef,
 }: TempleFormFieldsProps) {
   const [draft, setDraft] = useState(() => emptyTempleDraft(initial))
@@ -123,6 +125,7 @@ export function TempleFormFields({
         pendingFile={pendingPhoto}
         onPendingFileChange={setPendingPhoto}
         onPhotoPathChange={setPhotoPath}
+        onUploadError={onUploadError}
       />
       <TempleIdentitySection
         danhHieu={draft.danhHieu}

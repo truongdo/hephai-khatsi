@@ -372,4 +372,18 @@ describe('TempleFormPage', () => {
     expect(lockTempleMock).not.toHaveBeenCalled()
     expect(navigateMock).not.toHaveBeenCalled()
   })
+
+  it('surfaces upload error on immediate portrait upload when editing', async () => {
+    const user = userEvent.setup()
+    templeFixture = completeDraftTemple()
+    uploadTemplePhotoMock.mockRejectedValue(new Error('upload failed'))
+    renderForm({ mode: 'edit' })
+    await screen.findByRole('button', { name: m.admin_temples_save_draft() })
+    const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
+
+    await user.upload(getPortraitFileInput(), file)
+
+    expect(uploadTemplePhotoMock).toHaveBeenCalledOnce()
+    expect(screen.getByText(m.filler_photo_upload_error())).toBeTruthy()
+  })
 })

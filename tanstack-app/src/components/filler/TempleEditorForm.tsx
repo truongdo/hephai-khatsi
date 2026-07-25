@@ -138,6 +138,7 @@ export function TempleEditorForm({
         disabled={disabled}
         templeId={templeId}
         inviteToken={token}
+        onUploadError={setSaveError}
       />
     </FillerEditorShell>
   )

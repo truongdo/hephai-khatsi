@@ -243,6 +243,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
             disabled={false}
             templeId={templeId}
             getIdToken={async () => (user ? user.getIdToken() : undefined)}
+            onUploadError={setPhotoError}
           />
 
           {mutationError && (

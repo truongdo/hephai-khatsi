@@ -361,6 +361,9 @@ describe('handlePhotosApi', () => {
     it('returns uploadUrl for admin bearer auth on locked temple', async () => {
       getTempleDocument.mockResolvedValue({ ...draftTemple, status: 'locked' })
       verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      createR2PresignedPutUrl.mockResolvedValue(
+        'https://acct.r2.cloudflarestorage.com/photos/temples/t1/photo.jpg?signed=1',
+      )
       const env = makeEnv()
       const { handlePhotosApi } = await import('./photosApi')
 
@@ -382,7 +385,7 @@ describe('handlePhotosApi', () => {
       expect(response.status).toBe(200)
       await expect(response.json()).resolves.toEqual({
         uploadUrl:
-          'https://acct.r2.cloudflarestorage.com/photos/members/m1/photo.jpg?signed=1',
+          'https://acct.r2.cloudflarestorage.com/photos/temples/t1/photo.jpg?signed=1',
         photoPath: 'temples/t1/photo.jpg',
       })
     })
