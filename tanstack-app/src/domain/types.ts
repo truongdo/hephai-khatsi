@@ -147,7 +147,7 @@ export type Temple = {
   banQuanTri?: Array<{ ten: string; vaiTro?: string }>
   tangSoHienTru?: {
     tyKheo?: number
-    tyKheoNi?: number
+    thucXoaMaNa?: number
     saDi?: number
     tapSu?: number
   }

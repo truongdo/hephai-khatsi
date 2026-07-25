@@ -206,7 +206,7 @@ export function TempleEditorForm({
           errors={{
             tangSoHienTru: {
               tyKheo: mapRequiredError(fieldErrors.tangSoHienTru?.tyKheo),
-              tyKheoNi: mapRequiredError(fieldErrors.tangSoHienTru?.tyKheoNi),
+              thucXoaMaNa: mapRequiredError(fieldErrors.tangSoHienTru?.thucXoaMaNa),
               saDi: mapRequiredError(fieldErrors.tangSoHienTru?.saDi),
               tapSu: mapRequiredError(fieldErrors.tangSoHienTru?.tapSu),
             },

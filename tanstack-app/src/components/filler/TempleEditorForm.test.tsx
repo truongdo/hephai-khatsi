@@ -60,7 +60,7 @@ function requiredTempleInitial(
       email: 'a@b.co',
     },
     truTriTienNhiem: [{ phapDanh: 'Thích B' }],
-    tangSoHienTru: { tyKheo: 0, tyKheoNi: 0, saDi: 0, tapSu: 0 },
+    tangSoHienTru: { tyKheo: 0, thucXoaMaNa: 0, saDi: 0, tapSu: 0 },
     soPhatTuQuyY: 0,
     soPhatTuThuongXuyen: 0,
     ...overrides,

@@ -28,7 +28,7 @@ function filledDraft(
       email: 'a@b.co',
     },
     truTriTienNhiem: [{ phapDanh: 'Thích B', thoiGian: '', ghiChu: '' }],
-    tangSoHienTru: { tyKheo: 0, tyKheoNi: 0, saDi: 0, tapSu: 0 },
+    tangSoHienTru: { tyKheo: 0, thucXoaMaNa: 0, saDi: 0, tapSu: 0 },
     soPhatTuQuyY: 0,
     soPhatTuThuongXuyen: 0,
     ...overrides,
@@ -45,7 +45,7 @@ describe('validateTempleRequiredFields', () => {
       diaChiMoi: { ...EMPTY_ADDRESS_DRAFT },
       truTriHienNay: { phapDanh: '', dienThoai: '', email: '' },
       truTriTienNhiem: [],
-      tangSoHienTru: { tyKheo: '', tyKheoNi: '', saDi: '', tapSu: '' },
+      tangSoHienTru: { tyKheo: '', thucXoaMaNa: '', saDi: '', tapSu: '' },
       soPhatTuQuyY: '',
       soPhatTuThuongXuyen: '',
     })
@@ -69,7 +69,7 @@ describe('validateTempleRequiredFields', () => {
     expect(result.errors.truTriTienNhiem).toBe('REQUIRED')
     expect(result.errors.tangSoHienTru).toEqual({
       tyKheo: 'REQUIRED',
-      tyKheoNi: 'REQUIRED',
+      thucXoaMaNa: 'REQUIRED',
       saDi: 'REQUIRED',
       tapSu: 'REQUIRED',
     })

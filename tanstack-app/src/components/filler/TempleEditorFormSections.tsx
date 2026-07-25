@@ -515,7 +515,7 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
   errors?: {
     tangSoHienTru?: {
       tyKheo?: string
-      tyKheoNi?: string
+      thucXoaMaNa?: string
       saDi?: string
       tapSu?: string
     }
@@ -546,20 +546,20 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
           min={0}
         />
         <NumberInput
-          label={m.filler_field_ty_kheo_ni()}
+          label={m.filler_field_thuc_xoa_ma_na()}
           placeholder={m.filler_ph_number()}
-          value={tangSoHienTru.tyKheoNi}
+          value={tangSoHienTru.thucXoaMaNa}
           onChange={(value) =>
             setDraft((current) => ({
               ...current,
               tangSoHienTru: {
                 ...current.tangSoHienTru,
-                tyKheoNi: numberInputValue(value),
+                thucXoaMaNa: numberInputValue(value),
               },
             }))
           }
           required
-          error={errors?.tangSoHienTru?.tyKheoNi}
+          error={errors?.tangSoHienTru?.thucXoaMaNa}
           disabled={disabled}
           min={0}
         />

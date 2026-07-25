@@ -21,7 +21,7 @@ export type TempleDraft = {
   banQuanTri: Array<{ ten: string; vaiTro: string }>
   tangSoHienTru: {
     tyKheo: NumericValue
-    tyKheoNi: NumericValue
+    thucXoaMaNa: NumericValue
     saDi: NumericValue
     tapSu: NumericValue
   }
@@ -105,7 +105,7 @@ export function emptyTempleDraft(
     ),
     tangSoHienTru: {
       tyKheo: numberOrBlank(initial.tangSoHienTru?.tyKheo),
-      tyKheoNi: numberOrBlank(initial.tangSoHienTru?.tyKheoNi),
+      thucXoaMaNa: numberOrBlank(initial.tangSoHienTru?.thucXoaMaNa),
       saDi: numberOrBlank(initial.tangSoHienTru?.saDi),
       tapSu: numberOrBlank(initial.tangSoHienTru?.tapSu),
     },
@@ -182,7 +182,7 @@ export function buildTemplePatch(draft: TempleDraft): TempleProfilePatch {
       })),
     tangSoHienTru: {
       tyKheo: numberOrUndefined(draft.tangSoHienTru.tyKheo),
-      tyKheoNi: numberOrUndefined(draft.tangSoHienTru.tyKheoNi),
+      thucXoaMaNa: numberOrUndefined(draft.tangSoHienTru.thucXoaMaNa),
       saDi: numberOrUndefined(draft.tangSoHienTru.saDi),
       tapSu: numberOrUndefined(draft.tangSoHienTru.tapSu),
     },
