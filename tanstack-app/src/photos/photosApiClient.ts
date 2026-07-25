@@ -77,3 +77,55 @@ export async function deleteMemberPhotoObject(input: {
     throw new Error(await readApiError(response))
   }
 }
+
+export async function requestTemplePhotoUploadUrl(input: {
+  templeId: string
+  contentType: string
+  inviteToken?: string
+  idToken?: string
+}): Promise<{ uploadUrl: string; photoPath: string }> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+  if (input.idToken) {
+    headers.Authorization = `Bearer ${input.idToken}`
+  }
+
+  const body: Record<string, string> = {
+    templeId: input.templeId,
+    contentType: input.contentType,
+  }
+  if (input.inviteToken) {
+    body.inviteToken = input.inviteToken
+  }
+
+  const response = await fetch('/api/photos/temple-upload-url', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
+  })
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response))
+  }
+
+  return (await response.json()) as { uploadUrl: string; photoPath: string }
+}
+
+export async function deleteTemplePhotoObject(input: {
+  templeId: string
+  idToken: string
+}): Promise<void> {
+  const response = await fetch('/api/photos/temple', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${input.idToken}`,
+    },
+    body: JSON.stringify({ templeId: input.templeId }),
+  })
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response))
+  }
+}

@@ -23,9 +23,18 @@ const templeItems = [
 ]
 
 const deleteTemplesMock = vi.fn()
+const getIdTokenMock = vi.fn(async () => 'admin-id-token')
 
 vi.mock('#/auth/useAdminClaim', () => ({
   useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid' }),
+}))
+
+vi.mock('#/auth/useAuth', () => ({
+  useAuth: () => ({
+    user: { getIdToken: getIdTokenMock },
+    loading: false,
+    signOut: vi.fn(),
+  }),
 }))
 
 vi.mock('#/use-cases/deleteTemples', () => ({
@@ -109,6 +118,8 @@ beforeAll(() => {
 beforeEach(() => {
   deleteTemplesMock.mockReset()
   deleteTemplesMock.mockResolvedValue({ ok: true })
+  getIdTokenMock.mockReset()
+  getIdTokenMock.mockResolvedValue('admin-id-token')
 })
 
 function renderList() {
@@ -153,7 +164,10 @@ describe('TemplesListPage', () => {
     await user.click(screen.getByRole('button', { name: 'Xóa' }))
     const dialog = await screen.findByRole('dialog')
     await user.click(within(dialog).getByRole('button', { name: 'Xóa' }))
-    expect(deleteTemplesMock).toHaveBeenCalledWith({ ids: ['t1'] })
+    expect(deleteTemplesMock).toHaveBeenCalledWith({
+      ids: ['t1'],
+      idToken: 'admin-id-token',
+    })
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['admin', 'temples'],
     })

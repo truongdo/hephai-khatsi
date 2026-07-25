@@ -1,4 +1,5 @@
 import type { Member } from '#/domain/types'
+import { deleteTemplePhotoObject } from '#/photos/photosApiClient'
 import { memberRepo, type MemberStore } from '#/repositories/memberRepo'
 import { templeRepo, type TempleStore } from '#/repositories/templeRepo'
 
@@ -17,8 +18,10 @@ function memberLabel(member: Member): string {
 }
 
 export async function deleteTemples(
-  input: { ids: string[] },
+  input: { ids: string[]; idToken: string },
   deps?: { templeStore?: TempleStore; memberStore?: MemberStore },
+  deletePhoto: (templeId: string) => Promise<void> = (id) =>
+    deleteTemplePhotoObject({ templeId: id, idToken: input.idToken }),
 ): Promise<DeleteTemplesResult> {
   if (input.ids.length === 0) {
     return { ok: true }
@@ -56,5 +59,6 @@ export async function deleteTemples(
   }
 
   await templeStore.deleteMany(input.ids)
+  await Promise.allSettled(input.ids.map((id) => deletePhoto(id)))
   return { ok: true }
 }

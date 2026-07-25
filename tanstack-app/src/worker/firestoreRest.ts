@@ -5,6 +5,12 @@ export type WorkerMember = {
   status: 'draft' | 'locked'
 }
 
+export type WorkerTemple = {
+  id: string
+  orgUnitId: string
+  status: 'draft' | 'locked'
+}
+
 type FirestoreValue = {
   stringValue?: string
 }
@@ -65,4 +71,32 @@ export async function getInviteOrgUnitId(
   const doc = await fetchFirestoreDocument(projectId, 'invites', inviteId)
   if (!doc) return null
   return parseStringField(doc, 'orgUnitId')
+}
+
+export async function getTempleDocument(
+  projectId: string,
+  templeId: string,
+): Promise<WorkerTemple | null> {
+  const doc = await fetchFirestoreDocument(projectId, 'temples', templeId)
+  if (!doc) return null
+
+  const orgUnitId = parseStringField(doc, 'orgUnitId')
+  const status = parseStringField(doc, 'status')
+  if (!orgUnitId || (status !== 'draft' && status !== 'locked')) {
+    return null
+  }
+
+  return {
+    id: templeId,
+    orgUnitId,
+    status,
+  }
+}
+
+export async function inviteExists(
+  projectId: string,
+  inviteId: string,
+): Promise<boolean> {
+  const doc = await fetchFirestoreDocument(projectId, 'invites', inviteId)
+  return doc !== null
 }

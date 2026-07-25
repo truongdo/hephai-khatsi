@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { Member, Temple } from '#/domain/types'
 import {
   createMemoryMemberStore,
@@ -46,7 +46,7 @@ describe('deleteTemples', () => {
     const memberStore = createMemoryMemberStore([])
 
     const result = await deleteTemples(
-      { ids: [] },
+      { ids: [], idToken: 'token' },
       { templeStore, memberStore },
     )
 
@@ -64,7 +64,7 @@ describe('deleteTemples', () => {
     ])
 
     const result = await deleteTemples(
-      { ids: ['t1', 't2'] },
+      { ids: ['t1', 't2'], idToken: 'token' },
       { templeStore, memberStore },
     )
 
@@ -95,7 +95,7 @@ describe('deleteTemples', () => {
     ])
 
     const result = await deleteTemples(
-      { ids: ['t1', 't2', 't3'] },
+      { ids: ['t1', 't2', 't3'], idToken: 'token' },
       { templeStore, memberStore },
     )
 
@@ -129,7 +129,7 @@ describe('deleteTemples', () => {
     ])
 
     const result = await deleteTemples(
-      { ids: ['t1'] },
+      { ids: ['t1'], idToken: 'token' },
       { templeStore, memberStore },
     )
 
@@ -148,7 +148,7 @@ describe('deleteTemples', () => {
     ])
 
     const result = await deleteTemples(
-      { ids: ['t1'] },
+      { ids: ['t1'], idToken: 'token' },
       { templeStore, memberStore },
     )
 
@@ -161,5 +161,42 @@ describe('deleteTemples', () => {
         },
       ],
     })
+  })
+
+  it('calls photo deleter for each temple id after successful delete', async () => {
+    const templeStore = createMemoryTempleStore([
+      temple({ id: 't1' }),
+      temple({ id: 't2' }),
+    ])
+    const memberStore = createMemoryMemberStore([])
+    const deletePhoto = vi.fn().mockResolvedValue(undefined)
+
+    const result = await deleteTemples(
+      { ids: ['t1', 't2'], idToken: 'admin-token' },
+      { templeStore, memberStore },
+      deletePhoto,
+    )
+
+    expect(result).toEqual({ ok: true })
+    expect(deletePhoto).toHaveBeenCalledTimes(2)
+    expect(deletePhoto).toHaveBeenCalledWith('t1')
+    expect(deletePhoto).toHaveBeenCalledWith('t2')
+  })
+
+  it('does not call photo deleter when delete is blocked', async () => {
+    const templeStore = createMemoryTempleStore([temple({ id: 't1' })])
+    const memberStore = createMemoryMemberStore([
+      member({ id: 'm1', currentTempleId: 't1' }),
+    ])
+    const deletePhoto = vi.fn().mockResolvedValue(undefined)
+
+    const result = await deleteTemples(
+      { ids: ['t1'], idToken: 'token' },
+      { templeStore, memberStore },
+      deletePhoto,
+    )
+
+    expect(result.ok).toBe(false)
+    expect(deletePhoto).not.toHaveBeenCalled()
   })
 })

@@ -13,6 +13,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
+import { useAuth } from '#/auth/useAuth'
 import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { emptyCell } from '#/components/admin/emptyCell'
@@ -44,6 +45,7 @@ const STATUS_OPTIONS: { value: RecordStatus; label: () => string }[] = [
 
 export function TemplesListPage() {
   const claim = useAdminClaim()
+  const { user } = useAuth()
   const queryClient = useQueryClient()
 
   const [orgUnitFilter, setOrgUnitFilter] = useState<string | null>(null)
@@ -97,7 +99,10 @@ export function TemplesListPage() {
   const selection = useAdminListSelection(itemIds)
 
   const deleteMutation = useMutation({
-    mutationFn: () => deleteTemples({ ids: [...selection.selectedIds] }),
+    mutationFn: async () => {
+      const idToken = await user!.getIdToken()
+      return deleteTemples({ ids: [...selection.selectedIds], idToken })
+    },
     onSuccess: (result) => {
       if (!result.ok) {
         setBlockers(result.blockers)

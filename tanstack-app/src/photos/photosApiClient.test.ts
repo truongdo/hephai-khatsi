@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   deleteMemberPhotoObject,
+  deleteTemplePhotoObject,
   putToPresignedUrl,
   requestMemberPhotoUploadUrl,
+  requestTemplePhotoUploadUrl,
 } from './photosApiClient'
 
 const fetchMock = vi.fn()
@@ -153,5 +155,85 @@ describe('deleteMemberPhotoObject', () => {
     await expect(
       deleteMemberPhotoObject({ memberId: 'm1', idToken: 'bad' }),
     ).rejects.toThrow(/Unauthorized/)
+  })
+})
+
+describe('requestTemplePhotoUploadUrl', () => {
+  it('POSTs to temple-upload-url with invite token', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        uploadUrl: 'https://r2.example/upload',
+        photoPath: 'temples/t1/photo.jpg',
+      }),
+    })
+
+    const result = await requestTemplePhotoUploadUrl({
+      templeId: 't1',
+      contentType: 'image/jpeg',
+      inviteToken: 'invite-token',
+    })
+
+    expect(result).toEqual({
+      uploadUrl: 'https://r2.example/upload',
+      photoPath: 'temples/t1/photo.jpg',
+    })
+    expect(fetchMock).toHaveBeenCalledWith('/api/photos/temple-upload-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        templeId: 't1',
+        contentType: 'image/jpeg',
+        inviteToken: 'invite-token',
+      }),
+    })
+  })
+
+  it('POSTs with Authorization when idToken is provided', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        uploadUrl: 'https://r2.example/upload',
+        photoPath: 'temples/t1/photo.jpg',
+      }),
+    })
+
+    await requestTemplePhotoUploadUrl({
+      templeId: 't1',
+      contentType: 'image/jpeg',
+      idToken: 'admin-token',
+    })
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/photos/temple-upload-url', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer admin-token',
+      },
+      body: JSON.stringify({
+        templeId: 't1',
+        contentType: 'image/jpeg',
+      }),
+    })
+  })
+})
+
+describe('deleteTemplePhotoObject', () => {
+  it('DELETEs temple photo with admin token', async () => {
+    fetchMock.mockResolvedValueOnce({ ok: true })
+
+    await deleteTemplePhotoObject({
+      templeId: 't1',
+      idToken: 'admin-token',
+    })
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/photos/temple', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer admin-token',
+      },
+      body: JSON.stringify({ templeId: 't1' }),
+    })
   })
 })

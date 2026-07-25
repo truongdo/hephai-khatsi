@@ -4,6 +4,10 @@ export function memberPhotoKey(memberId: string): string {
   return `members/${memberId}/photo.jpg`
 }
 
+export function templePhotoKey(templeId: string): string {
+  return `temples/${templeId}/photo.jpg`
+}
+
 export async function createR2PresignedPutUrl(input: {
   accountId: string
   accessKeyId: string
