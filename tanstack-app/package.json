@@ -12,7 +12,7 @@
     "preview": "pnpm run build && wrangler dev",
     "paraglide": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide --strategy baseLocale",
     "test": "pnpm run paraglide && vitest run",
-    "emulator": "firebase emulators:start --only firestore,storage,auth --config ../firebase.json",
+    "emulator": "firebase emulators:start --only firestore,auth --config ../firebase.json",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
