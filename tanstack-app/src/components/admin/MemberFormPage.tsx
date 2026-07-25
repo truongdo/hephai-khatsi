@@ -2,6 +2,7 @@ import {
   Button,
   Group,
   Loader,
+  Paper,
   Select,
   Stack,
   Text,
@@ -10,16 +11,25 @@ import {
 } from '@mantine/core'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
+import { useAuth } from '#/auth/useAuth'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
+import { FormStickyActions } from '#/components/FormStickyActions'
+import {
+  MemberFormFields,
+  type MemberFormFieldsApi,
+} from '#/components/filler/MemberFormFields'
+import { buildMemberPatch } from '#/components/filler/memberDraft'
+import { validateMemberRequiredFields } from '#/components/filler/memberRequiredValidation'
 import type { SanghaType } from '#/domain/types'
 import { adminKeys } from '#/query/adminKeys'
 import { memberQuery, orgUnitsQuery } from '#/query/adminQueries'
 import { lockMember } from '#/use-cases/lockMember'
 import { saveAdminMember } from '#/use-cases/saveAdminMember'
 import { unlockMember } from '#/use-cases/unlockMember'
+import { uploadMemberPhoto } from '#/use-cases/uploadMemberPhoto'
 
 type MemberFormPageProps = {
   mode: 'create' | 'edit'
@@ -32,7 +42,9 @@ const SANGHA_TYPE_OPTIONS: { value: SanghaType; label: () => string }[] = [
   { value: 'ni', label: () => m.admin_members_sangha_type_ni() },
 ]
 
-function listPath(sanghaType: SanghaType): '/admin/members/tang' | '/admin/members/ni' {
+function listPath(
+  sanghaType: SanghaType,
+): '/admin/members/tang' | '/admin/members/ni' {
   return sanghaType === 'tang' ? '/admin/members/tang' : '/admin/members/ni'
 }
 
@@ -42,15 +54,16 @@ export function MemberFormPage({
   sanghaType: initialSanghaType,
 }: MemberFormPageProps) {
   const claim = useAdminClaim()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const fieldsApiRef = useRef<MemberFormFieldsApi | null>(null)
 
   const [orgUnitId, setOrgUnitId] = useState<string | null>(null)
   const [sanghaType, setSanghaType] = useState<SanghaType>(initialSanghaType)
   const [cccd, setCccd] = useState('')
-  const [phapDanh, setPhapDanh] = useState('')
-  const [theDanh, setTheDanh] = useState('')
-  const [dienThoai, setDienThoai] = useState('')
+  const [photoError, setPhotoError] = useState<string | null>(null)
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
 
   const orgUnits = useQuery({
     ...orgUnitsQuery(),
@@ -67,9 +80,6 @@ export function MemberFormPage({
     setOrgUnitId(member.data.orgUnitId)
     setSanghaType(member.data.sanghaType)
     setCccd(member.data.cccd)
-    setPhapDanh(member.data.phapDanh ?? '')
-    setTheDanh(member.data.theDanh ?? '')
-    setDienThoai(member.data.dienThoai ?? '')
   }, [member.data])
 
   const orgUnitSelectData = useMemo(
@@ -91,25 +101,59 @@ export function MemberFormPage({
   )
 
   const isLocked = mode === 'edit' && member.data?.status === 'locked'
-  const isReadOnly = isLocked
   const effectiveSanghaType =
     mode === 'edit' ? (member.data?.sanghaType ?? sanghaType) : sanghaType
+  const resolvedCccd =
+    mode === 'edit' ? (member.data?.cccd ?? cccd) : cccd
+
+  async function persist() {
+    const api = fieldsApiRef.current
+    if (!api || !orgUnitId) throw new Error('Missing org unit')
+    if (mode === 'create' && !cccd.trim()) throw new Error('Missing CCCD')
+
+    const draft = api.getDraft()
+    const result = await saveAdminMember(
+      mode === 'edit' && memberId
+        ? {
+            memberId,
+            orgUnitId,
+            sanghaType: effectiveSanghaType,
+            patch: buildMemberPatch(draft),
+          }
+        : {
+            orgUnitId,
+            sanghaType,
+            cccd,
+            patch: buildMemberPatch(draft),
+          },
+    )
+
+    const pending = api.getPendingPhoto()
+    if (pending && result.member.id && user) {
+      const idToken = await user.getIdToken()
+      const bytes = new Uint8Array(await pending.arrayBuffer())
+      try {
+        const uploaded = await uploadMemberPhoto({
+          memberId: result.member.id,
+          cccd: resolvedCccd,
+          bytes,
+          contentType: pending.type,
+          idToken,
+        })
+        api.setPhotoPath(uploaded.photoPath)
+        api.clearPendingPhoto()
+      } catch {
+        setPhotoError(m.filler_photo_upload_error())
+      }
+    }
+
+    return result
+  }
 
   const saveMutation = useMutation({
-    mutationFn: async () => {
-      if (!orgUnitId) throw new Error('Missing org unit')
-      const patch = {
-        phapDanh: phapDanh || undefined,
-        theDanh: theDanh || undefined,
-        dienThoai: dienThoai || undefined,
-      }
-      return saveAdminMember(
-        mode === 'edit' && memberId
-          ? { memberId, orgUnitId, sanghaType: effectiveSanghaType, patch }
-          : { orgUnitId, sanghaType: effectiveSanghaType, cccd, patch },
-      )
-    },
+    mutationFn: persist,
     onSuccess: async (result) => {
+      setSaveSuccess(m.filler_save_success())
       await queryClient.invalidateQueries({
         queryKey: [...adminKeys.all, 'members'],
       })
@@ -123,6 +167,9 @@ export function MemberFormPage({
           queryKey: adminKeys.member(memberId),
         })
       }
+    },
+    onError: () => {
+      setSaveSuccess(null)
     },
   })
 
@@ -161,12 +208,53 @@ export function MemberFormPage({
     },
   })
 
+  const saveDraft = () => {
+    setPhotoError(null)
+    setSaveSuccess(null)
+    saveMutation.mutate()
+  }
+
+  const complete = () => {
+    const api = fieldsApiRef.current
+    if (!api) return
+
+    const draft = api.getDraft()
+    const result = validateMemberRequiredFields({
+      theDanh: draft.theDanh,
+      phapDanh: draft.phapDanh,
+      ngaySinh: draft.ngaySinh,
+      noiSinh: draft.noiSinh,
+      dienThoai: draft.dienThoai,
+      email: draft.email,
+      diaChiThuongTru: draft.diaChiThuongTru,
+      ngayXuatGia: draft.ngayXuatGia,
+      noiXuatGia: draft.noiXuatGia,
+      hienTuHoc: draft.hienTuHoc,
+      bonSu: draft.bonSu,
+    })
+    if (!result.valid) {
+      api.setFieldErrors(result.errors)
+      return
+    }
+    api.clearFieldErrors()
+    setPhotoError(null)
+    setSaveSuccess(null)
+    saveMutation.mutate()
+  }
+
   const mutationError =
     saveMutation.error?.message ??
     lockMutation.error?.message ??
     unlockMutation.error?.message
 
   const isLoading = mode === 'edit' && member.isPending
+  const canSaveCreate = !!orgUnitId && !!cccd.trim()
+  const saveDisabled = mode === 'create' ? !canSaveCreate : !orgUnitId
+
+  const formInitial =
+    mode === 'edit' && member.data
+      ? { ...member.data, photoPath: member.data.photoPath ?? null }
+      : {}
 
   return (
     <Stack>
@@ -190,98 +278,111 @@ export function MemberFormPage({
         <QueryErrorAlert error={member.error} />
       )}
       {(mode === 'create' || member.data) && !member.isError && (
-        <Stack maw={480}>
-          {mode === 'edit' && member.data && (
-            <Text size="sm" c="dimmed">
-              {member.data.inviteId
-                ? `${m.admin_members_invite_label()}: ${member.data.inviteId}`
-                : m.admin_members_created_by_admin()}
-            </Text>
-          )}
+        <Paper p="xl" radius="md" maw={760} w="100%">
+          <Stack gap="lg">
+            {mode === 'edit' && member.data && (
+              <Text size="sm" c="dimmed">
+                {member.data.inviteId
+                  ? `${m.admin_members_invite_label()}: ${member.data.inviteId}`
+                  : m.admin_members_created_by_admin()}
+              </Text>
+            )}
 
-          <Select
-            label={m.admin_members_form_org_unit()}
-            data={orgUnitSelectData}
-            value={orgUnitId}
-            onChange={setOrgUnitId}
-            searchable
-            required
-            disabled={mode === 'edit' || isReadOnly}
-          />
-          <Select
-            label={m.admin_members_form_sangha_type()}
-            data={sanghaTypeSelectData}
-            value={effectiveSanghaType}
-            onChange={(value) => setSanghaType(value as SanghaType)}
-            required
-            disabled={mode === 'edit' || isReadOnly}
-          />
-          {(mode === 'create' || member.data) && (
-            <TextInput
-              label={m.admin_members_form_cccd()}
-              value={cccd}
-              onChange={(event) => setCccd(event.currentTarget.value)}
-              required={mode === 'create'}
+            <Select
+              label={m.admin_members_form_org_unit()}
+              data={orgUnitSelectData}
+              value={orgUnitId}
+              onChange={setOrgUnitId}
+              searchable
+              required
               disabled={mode === 'edit'}
-              readOnly={isReadOnly}
             />
-          )}
-          <TextInput
-            label={m.admin_members_form_phap_danh()}
-            value={phapDanh}
-            onChange={(event) => setPhapDanh(event.currentTarget.value)}
-            readOnly={isReadOnly}
-          />
-          <TextInput
-            label={m.admin_members_form_the_danh()}
-            value={theDanh}
-            onChange={(event) => setTheDanh(event.currentTarget.value)}
-            readOnly={isReadOnly}
-          />
-          <TextInput
-            label={m.admin_members_form_dien_thoai()}
-            value={dienThoai}
-            onChange={(event) => setDienThoai(event.currentTarget.value)}
-            readOnly={isReadOnly}
-          />
+            <Select
+              label={m.admin_members_form_sangha_type()}
+              data={sanghaTypeSelectData}
+              value={effectiveSanghaType}
+              onChange={(value) => setSanghaType(value as SanghaType)}
+              required
+              disabled={mode === 'edit'}
+            />
+            {mode === 'create' && (
+              <TextInput
+                label={m.admin_members_form_cccd()}
+                value={cccd}
+                onChange={(event) => setCccd(event.currentTarget.value)}
+                required
+              />
+            )}
 
-          {mutationError && (
-            <Text c="red" size="sm" role="alert">
-              {mutationError}
-            </Text>
-          )}
+            <MemberFormFields
+              key={mode === 'edit' ? memberId : 'create'}
+              apiRef={fieldsApiRef}
+              initial={formInitial}
+              disabled={false}
+              memberId={memberId}
+              cccd={resolvedCccd}
+              sanghaType={effectiveSanghaType}
+              getIdToken={async () => (user ? user.getIdToken() : undefined)}
+              onUploadError={setPhotoError}
+            />
 
-          <Group>
-            {!isLocked && (
+            <FormStickyActions
+              status={
+                <>
+                  {mutationError && (
+                    <Text c="red" size="sm" role="alert">
+                      {mutationError}
+                    </Text>
+                  )}
+                  {photoError && (
+                    <Text c="red" size="sm" role="alert">
+                      {photoError}
+                    </Text>
+                  )}
+                  {saveSuccess && (
+                    <Text c="green" size="sm">
+                      {saveSuccess}
+                    </Text>
+                  )}
+                </>
+              }
+            >
               <Button
                 loading={saveMutation.isPending}
-                disabled={!orgUnitId || (mode === 'create' && !cccd)}
-                onClick={() => saveMutation.mutate()}
+                disabled={saveDisabled}
+                onClick={() => void saveDraft()}
               >
-                {m.admin_members_save()}
+                {m.admin_members_save_draft()}
               </Button>
-            )}
-            {mode === 'edit' && member.data?.status === 'draft' && (
               <Button
-                variant="outline"
-                color="red"
-                loading={lockMutation.isPending}
-                onClick={() => lockMutation.mutate()}
+                loading={saveMutation.isPending}
+                disabled={saveDisabled}
+                onClick={() => void complete()}
               >
-                {m.admin_members_lock()}
+                {m.admin_members_complete()}
               </Button>
-            )}
-            {isLocked && (
-              <Button
-                variant="outline"
-                loading={unlockMutation.isPending}
-                onClick={() => unlockMutation.mutate()}
-              >
-                {m.admin_members_unlock()}
-              </Button>
-            )}
-          </Group>
-        </Stack>
+              {mode === 'edit' && member.data?.status === 'draft' && (
+                <Button
+                  variant="outline"
+                  color="red"
+                  loading={lockMutation.isPending}
+                  onClick={() => lockMutation.mutate()}
+                >
+                  {m.admin_members_lock()}
+                </Button>
+              )}
+              {isLocked && (
+                <Button
+                  variant="outline"
+                  loading={unlockMutation.isPending}
+                  onClick={() => unlockMutation.mutate()}
+                >
+                  {m.admin_members_unlock()}
+                </Button>
+              )}
+            </FormStickyActions>
+          </Stack>
+        </Paper>
       )}
     </Stack>
   )

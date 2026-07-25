@@ -25,4 +25,10 @@ describe('getTemplePhotoDownloadUrl', () => {
       /VITE_PHOTOS_PUBLIC_BASE/,
     )
   })
+
+  it('appends cache bust query when provided', () => {
+    expect(getTemplePhotoDownloadUrl('temples/t1/photo.jpg', 1721900000000)).toBe(
+      'https://cdn.example.com/temples/t1/photo.jpg?v=1721900000000',
+    )
+  })
 })

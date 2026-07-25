@@ -185,6 +185,34 @@ describe('members', () => {
     )
   })
 
+  it('allows admin to update profile fields on a locked member without unlocking', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'members', memberId),
+        memberDraft({
+          status: 'locked',
+          lockedAt: '2026-01-02T00:00:00.000Z',
+          lockedBy: 'admin-uid',
+          photoPath: null,
+        }),
+      )
+    })
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertSucceeds(
+      updateDoc(doc(admin, 'members', memberId), {
+        phapDanh: 'Updated',
+        photoPath: 'members/gd-i_tang_012345678901/photo.jpg',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      }),
+    )
+    // still cannot change org unit
+    await assertFails(updateDoc(doc(admin, 'members', memberId), { orgUnitId: 'gd-ii' }))
+    // anon still blocked
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(updateDoc(doc(anon, 'members', memberId), { phapDanh: 'x' }))
+  })
+
   it('restricts listing to admins only', async () => {
     const env = await getTestEnv()
     await env.withSecurityRulesDisabled(async (ctx) => {

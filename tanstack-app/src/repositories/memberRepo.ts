@@ -64,14 +64,18 @@ export type MemberStore = {
   createOrUpdateDraft(
     input: CreateOrUpdateMemberDraftInput,
   ): Promise<{ member: Member; mode: 'created' | 'updated' }>
-  updateDraftById(memberId: string, patch: MemberProfilePatch): Promise<Member>
+  updateDraftById(
+    memberId: string,
+    patch: MemberProfilePatch,
+    options?: { allowWhenLocked?: boolean },
+  ): Promise<Member>
   getByCccd(input: MemberLookupInput): Promise<Member | null>
   getById(memberId: string): Promise<Member | null>
   listByOrgSanghaAndPhone(input: MemberPhoneLookupInput): Promise<Member[]>
   list(input: ListMembersAdminInput): Promise<AdminListPage<Member>>
   listByCurrentTempleIds(templeIds: string[]): Promise<Member[]>
   deleteMany(ids: string[]): Promise<void>
-  setPhotoPath(memberId: string, photoPath: string): Promise<Member>
+  setPhotoPath(memberId: string, photoPath: string | null): Promise<Member>
   lock(memberId: string, lockedBy: string): Promise<Member>
   unlock(memberId: string): Promise<Member>
 }
@@ -234,7 +238,11 @@ async function createOrUpdateDraft(
   })
 }
 
-async function updateDraftById(memberId: string, patch: MemberProfilePatch): Promise<Member> {
+async function updateDraftById(
+  memberId: string,
+  patch: MemberProfilePatch,
+  options?: { allowWhenLocked?: boolean },
+): Promise<Member> {
   const db = requireDb()
   const memberRef = doc(db, COLLECTIONS.members, memberId)
 
@@ -245,7 +253,7 @@ async function updateDraftById(memberId: string, patch: MemberProfilePatch): Pro
     }
 
     const existing = memberFromSnap(snap)
-    if (existing.status === 'locked') {
+    if (existing.status === 'locked' && !options?.allowWhenLocked) {
       throw new DomainError('RECORD_LOCKED', 'Member is locked')
     }
 
@@ -390,7 +398,7 @@ async function deleteMany(ids: string[]): Promise<void> {
   }
 }
 
-async function setPhotoPath(memberId: string, photoPath: string): Promise<Member> {
+async function setPhotoPath(memberId: string, photoPath: string | null): Promise<Member> {
   const db = requireDb()
   const memberRef = doc(db, COLLECTIONS.members, memberId)
 
@@ -401,9 +409,6 @@ async function setPhotoPath(memberId: string, photoPath: string): Promise<Member
     }
 
     const existing = memberFromSnap(snap)
-    if (existing.status === 'locked') {
-      throw new DomainError('RECORD_LOCKED', 'Member is locked')
-    }
 
     const now = new Date().toISOString()
     const member: Member = { ...existing, photoPath, updatedAt: now }

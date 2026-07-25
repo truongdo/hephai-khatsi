@@ -121,6 +121,7 @@ export function TempleFormFields({
         inviteToken={inviteToken}
         getIdToken={getIdToken}
         photoPath={photoPath}
+        photoUpdatedAt={initial.updatedAt ?? null}
         disabled={disabled}
         pendingFile={pendingPhoto}
         onPendingFileChange={setPendingPhoto}

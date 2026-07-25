@@ -62,15 +62,25 @@ export async function putToPresignedUrl(
 
 export async function deleteMemberPhotoObject(input: {
   memberId: string
-  idToken: string
+  cccd?: string
+  inviteToken?: string
+  idToken?: string
 }): Promise<void> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+  if (input.idToken) {
+    headers.Authorization = `Bearer ${input.idToken}`
+  }
+
+  const body: Record<string, string> = { memberId: input.memberId }
+  if (input.cccd) body.cccd = input.cccd
+  if (input.inviteToken) body.inviteToken = input.inviteToken
+
   const response = await fetch('/api/photos/member', {
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${input.idToken}`,
-    },
-    body: JSON.stringify({ memberId: input.memberId }),
+    headers,
+    body: JSON.stringify(body),
   })
 
   if (!response.ok) {
@@ -114,15 +124,23 @@ export async function requestTemplePhotoUploadUrl(input: {
 
 export async function deleteTemplePhotoObject(input: {
   templeId: string
-  idToken: string
+  inviteToken?: string
+  idToken?: string
 }): Promise<void> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+  if (input.idToken) {
+    headers.Authorization = `Bearer ${input.idToken}`
+  }
+
+  const body: Record<string, string> = { templeId: input.templeId }
+  if (input.inviteToken) body.inviteToken = input.inviteToken
+
   const response = await fetch('/api/photos/temple', {
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${input.idToken}`,
-    },
-    body: JSON.stringify({ templeId: input.templeId }),
+    headers,
+    body: JSON.stringify(body),
   })
 
   if (!response.ok) {

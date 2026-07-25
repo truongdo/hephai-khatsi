@@ -47,7 +47,7 @@ function templeStoreWith(temples: Temple[]): TempleStore & {
     async unlock() {
       throw new Error('not implemented')
     },
-    async setPhotoPath(templeId: string, photoPath: string) {
+    async setPhotoPath(templeId: string, photoPath: string | null) {
       const existing = map.get(templeId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Temple not found')
       const temple = {

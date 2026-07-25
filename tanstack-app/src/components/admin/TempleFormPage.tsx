@@ -15,6 +15,7 @@ import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { useAuth } from '#/auth/useAuth'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
+import { FormStickyActions } from '#/components/FormStickyActions'
 import { buildTemplePatch } from '#/components/filler/templeDraft'
 import { validateTempleRequiredFields } from '#/components/filler/templeRequiredValidation'
 import {
@@ -256,23 +257,27 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
               onUploadError={setPhotoError}
             />
 
-            {mutationError && (
-              <Text c="red" size="sm" role="alert">
-                {mutationError}
-              </Text>
-            )}
-            {photoError && (
-              <Text c="red" size="sm" role="alert">
-                {photoError}
-              </Text>
-            )}
-            {saveSuccess && (
-              <Text c="green" size="sm">
-                {saveSuccess}
-              </Text>
-            )}
-
-            <Group>
+            <FormStickyActions
+              status={
+                <>
+                  {mutationError && (
+                    <Text c="red" size="sm" role="alert">
+                      {mutationError}
+                    </Text>
+                  )}
+                  {photoError && (
+                    <Text c="red" size="sm" role="alert">
+                      {photoError}
+                    </Text>
+                  )}
+                  {saveSuccess && (
+                    <Text c="green" size="sm">
+                      {saveSuccess}
+                    </Text>
+                  )}
+                </>
+              }
+            >
               <Button
                 loading={saveMutation.isPending}
                 disabled={!orgUnitId}
@@ -306,7 +311,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
                   {m.admin_temples_unlock()}
                 </Button>
               )}
-            </Group>
+            </FormStickyActions>
           </Stack>
         </Paper>
       )}

@@ -1,5 +1,5 @@
 import { MantineProvider } from '@mantine/core'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { m } from '#/paraglide/messages'
 import { theme } from '../../theme'
@@ -79,15 +79,28 @@ describe('FillerEditorShell', () => {
   it('renders Save when draft and onSave provided', () => {
     renderShell({ onSave: () => {}, saveLabel: 'Lưu' })
     expect(screen.getByRole('button', { name: 'Lưu' })).toBeTruthy()
+    expect(screen.getByTestId('form-sticky-actions').style.position).toBe(
+      'fixed',
+    )
   })
 
   it('hides Save when status is view', () => {
     renderShell({ status: 'view', onSave: () => {}, saveLabel: 'Lưu' })
     expect(screen.queryByRole('button', { name: 'Lưu' })).toBeNull()
+    expect(screen.queryByTestId('form-sticky-actions')).toBeNull()
   })
 
   it('disables Save while pending', () => {
     renderShell({ onSave: () => {}, saveLabel: 'Lưu', savePending: true })
     expect(screen.getByRole('button', { name: 'Lưu' })).toBeDisabled()
+  })
+
+  it('keeps title sticky in header without Save button', () => {
+    renderShell({ onSave: () => {}, saveLabel: 'Lưu' })
+    const header = screen.getByTestId('filler-editor-header')
+    expect(header.style.position).toBe('sticky')
+    expect(
+      within(header).queryByRole('button', { name: 'Lưu' }),
+    ).toBeNull()
   })
 })

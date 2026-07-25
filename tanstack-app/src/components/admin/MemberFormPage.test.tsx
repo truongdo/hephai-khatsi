@@ -1,8 +1,14 @@
 import { MantineProvider } from '@mantine/core'
+import { DatesProvider } from '@mantine/dates'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
-import { beforeAll, describe, expect, it, vi } from 'vitest'
-import type { Member, RecordStatus } from '#/domain/types'
+import { cleanup, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { Member } from '#/domain/types'
+import { m } from '#/paraglide/messages'
+import { lockMember } from '#/use-cases/lockMember'
+import { saveAdminMember } from '#/use-cases/saveAdminMember'
+import { uploadMemberPhoto } from '#/use-cases/uploadMemberPhoto'
 import { theme } from '../../theme'
 import { MemberFormPage } from './MemberFormPage'
 
@@ -32,8 +38,42 @@ const lockedMember: Member = {
   lockedBy: 'admin-uid',
 }
 
+const completeAddress = {
+  cityCode: '01',
+  cityName: 'Hà Nội',
+  wardCode: '00013',
+  wardName: 'Hà Đông',
+} as const
+
+function completeDraftMember(): Member {
+  return {
+    ...draftMember,
+    theDanh: 'Nguyễn Văn A',
+    phapDanh: 'Minh Tâm',
+    ngaySinh: '1990-01-01',
+    ngayXuatGia: '2010-01-01',
+    dienThoai: '0901234567',
+    email: 'a@b.co',
+    hienTuHoc: 'Tịnh xá X',
+    bonSu: 'TT. Minh',
+    noiSinh: { ...completeAddress },
+    diaChiThuongTru: { ...completeAddress },
+    noiXuatGia: { ...completeAddress },
+  }
+}
+
+const getIdTokenMock = vi.fn(async () => 'admin-id-token')
+const navigateMock = vi.fn()
+
 vi.mock('#/auth/useAdminClaim', () => ({
   useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid' }),
+}))
+
+vi.mock('#/auth/useAuth', () => ({
+  useAuth: () => ({
+    user: { getIdToken: getIdTokenMock },
+    loading: false,
+  }),
 }))
 
 vi.mock('@tanstack/react-router', () => ({
@@ -49,15 +89,15 @@ vi.mock('@tanstack/react-router', () => ({
       {children}
     </a>
   ),
-  useNavigate: () => vi.fn(),
+  useNavigate: () => navigateMock,
 }))
 
-let memberQueryResult: Member = draftMember
+let memberFixture: Member = draftMember
 
 vi.mock('#/query/adminQueries', () => ({
   memberQuery: (id: string) => ({
     queryKey: ['admin', 'member', id],
-    queryFn: async () => memberQueryResult,
+    queryFn: async () => memberFixture,
     staleTime: 0,
   }),
   orgUnitsQuery: () => ({
@@ -86,6 +126,42 @@ vi.mock('#/use-cases/lockMember', () => ({
 vi.mock('#/use-cases/unlockMember', () => ({
   unlockMember: vi.fn(),
 }))
+vi.mock('#/use-cases/uploadMemberPhoto', () => ({
+  uploadMemberPhoto: vi.fn(async () => ({
+    photoPath: 'members/created-member/photo.jpg',
+  })),
+}))
+vi.mock('#/data/vietnam-locations', () => ({
+  cities: [
+    {
+      code: '01',
+      name: 'Hà Nội',
+      fullName: 'Thành phố Hà Nội',
+      slug: 'ha-noi',
+      type: 'city',
+    },
+  ],
+  getWards: vi.fn(async () => [
+    {
+      code: '00013',
+      name: 'Hà Đông',
+      fullName: 'Phường Hà Đông, Thành phố Hà Nội',
+      slug: 'ha-dong',
+      type: 'ward',
+    },
+  ]),
+}))
+
+const saveAdminMemberMock = vi.mocked(saveAdminMember)
+const lockMemberMock = vi.mocked(lockMember)
+const uploadMemberPhotoMock = vi.mocked(uploadMemberPhoto)
+
+function getPortraitFileInput(): HTMLInputElement {
+  const button = screen.getByRole('button', { name: m.filler_photo_choose() })
+  return button.parentElement?.querySelector(
+    'input[type="file"]',
+  ) as HTMLInputElement
+}
 
 beforeAll(() => {
   class ResizeObserverMock {
@@ -95,6 +171,8 @@ beforeAll(() => {
   }
   globalThis.ResizeObserver =
     ResizeObserverMock as unknown as typeof ResizeObserver
+
+  Element.prototype.scrollIntoView = vi.fn()
 
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
@@ -109,53 +187,204 @@ beforeAll(() => {
       dispatchEvent: () => false,
     }),
   })
+
+  URL.createObjectURL = vi.fn(() => 'blob:preview')
+  URL.revokeObjectURL = vi.fn()
 })
 
-function renderMemberForm({
-  mode,
-  member,
-  sanghaType = 'tang',
-}: {
-  mode: 'create' | 'edit'
-  member?: Partial<Member> & { cccd?: string; status?: RecordStatus }
-  sanghaType?: 'tang' | 'ni'
-}) {
-  if (mode === 'edit' && member) {
-    memberQueryResult = { ...draftMember, ...member }
-  } else if (mode === 'edit') {
-    memberQueryResult = lockedMember
-  }
+afterEach(() => {
+  cleanup()
+})
 
+beforeEach(() => {
+  memberFixture = lockedMember
+  saveAdminMemberMock.mockReset()
+  lockMemberMock.mockReset()
+  uploadMemberPhotoMock.mockReset()
+  navigateMock.mockReset()
+  getIdTokenMock.mockClear()
+  uploadMemberPhotoMock.mockResolvedValue({
+    photoPath: 'members/created-member/photo.jpg',
+  })
+  saveAdminMemberMock.mockResolvedValue({
+    member: { ...draftMember, id: 'created-member' },
+    mode: 'created',
+  } as never)
+})
+
+function renderForm({ mode }: { mode: 'create' | 'edit' }) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
+  queryClient.setQueryData(['admin', 'orgUnits'], [
+    {
+      id: 'gd-i',
+      code: 'I',
+      name: 'Giáo đoàn I',
+      kind: 'giao_doan',
+      order: 1,
+      allowsTang: true,
+      allowsNi: true,
+    },
+  ])
   return render(
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme} defaultColorScheme="light">
-        <MemberFormPage
-          mode={mode}
-          memberId={mode === 'edit' ? 'm1' : undefined}
-          sanghaType={sanghaType}
-        />
+        <DatesProvider settings={{ locale: 'vi', firstDayOfWeek: 1 }}>
+          <MemberFormPage
+            mode={mode}
+            memberId={mode === 'edit' ? 'm1' : undefined}
+            sanghaType="tang"
+          />
+        </DatesProvider>
       </MantineProvider>
     </QueryClientProvider>,
   )
 }
 
+async function selectOrgUnit(user: ReturnType<typeof userEvent.setup>) {
+  await screen.findByRole('button', { name: m.admin_members_save_draft() })
+  const select = await screen.findByRole('combobox', {
+    name: new RegExp(`^${m.admin_members_form_org_unit()}$`),
+  })
+  await user.click(select)
+  await user.keyboard('{ArrowDown}{Enter}')
+}
+
 describe('MemberFormPage', () => {
   it('shows unlock when locked', async () => {
-    renderMemberForm({ mode: 'edit' })
+    renderForm({ mode: 'edit' })
     expect(
       await screen.findByRole('button', { name: /mở khóa|unlock/i }),
     ).toBeTruthy()
   })
 
   it('does not allow editing cccd on existing member', async () => {
-    renderMemberForm({
-      mode: 'edit',
-      member: { cccd: '001099012345', status: 'draft' },
-    })
-    const cccd = (await screen.findByLabelText(/cccd/i)) as HTMLInputElement
+    memberFixture = draftMember
+    renderForm({ mode: 'edit' })
+    const cccd = (await screen.findByLabelText(m.filler_field_cccd())) as HTMLInputElement
     expect(cccd.disabled).toBe(true)
+  })
+
+  it('renders full member sections', async () => {
+    memberFixture = draftMember
+    renderForm({ mode: 'edit' })
+    expect(
+      await screen.findByRole('heading', { name: m.filler_section_identity() }),
+    ).toBeTruthy()
+    expect(screen.getByText(m.filler_section_contact())).toBeTruthy()
+    expect(screen.getByText(m.filler_field_anh_chan_dung())).toBeTruthy()
+  })
+
+  it('Lưu nháp saves without member required-field validation when org and CCCD are present', async () => {
+    const user = userEvent.setup()
+    renderForm({ mode: 'create' })
+    await selectOrgUnit(user)
+    await user.type(
+      screen.getByLabelText(new RegExp(`^${m.admin_members_form_cccd()}`)),
+      '001099012345',
+    )
+    await user.click(
+      screen.getByRole('button', { name: m.admin_members_save_draft() }),
+    )
+
+    await vi.waitFor(() => expect(saveAdminMemberMock).toHaveBeenCalled())
+    expect(saveAdminMemberMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        cccd: '001099012345',
+      }),
+    )
+  })
+
+  it('Hoàn thành does not save when required fields missing', async () => {
+    const user = userEvent.setup()
+    renderForm({ mode: 'create' })
+    await selectOrgUnit(user)
+    await user.type(
+      screen.getByLabelText(new RegExp(`^${m.admin_members_form_cccd()}`)),
+      '001099012345',
+    )
+    await user.click(
+      screen.getByRole('button', { name: m.admin_members_complete() }),
+    )
+
+    expect(saveAdminMemberMock).not.toHaveBeenCalled()
+    expect(
+      screen.getAllByText(m.filler_error_field_required()).length,
+    ).toBeGreaterThan(0)
+  })
+
+  it('keeps fields editable when locked and shows both save buttons', async () => {
+    memberFixture = lockedMember
+    renderForm({ mode: 'edit' })
+    const input = await screen.findByLabelText(
+      new RegExp(`^${m.filler_field_the_danh()}`),
+    )
+    expect(input).not.toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: m.admin_members_save_draft() }),
+    ).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: m.admin_members_complete() }),
+    ).toBeTruthy()
+  })
+
+  it('uploads pending portrait after successful create and navigates to edit', async () => {
+    const user = userEvent.setup()
+    let resolveUpload!: (value: { photoPath: string }) => void
+    const uploadPromise = new Promise<{ photoPath: string }>((resolve) => {
+      resolveUpload = resolve
+    })
+    uploadMemberPhotoMock.mockReturnValue(uploadPromise)
+    renderForm({ mode: 'create' })
+    await selectOrgUnit(user)
+    await user.type(
+      screen.getByLabelText(new RegExp(`^${m.admin_members_form_cccd()}`)),
+      '001099012345',
+    )
+    const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
+    await user.upload(getPortraitFileInput(), file)
+    await user.click(
+      screen.getByRole('button', { name: m.admin_members_save_draft() }),
+    )
+
+    await vi.waitFor(() => expect(saveAdminMemberMock).toHaveBeenCalled())
+    expect(uploadMemberPhotoMock).toHaveBeenCalledWith({
+      memberId: 'created-member',
+      cccd: '001099012345',
+      bytes: expect.any(Uint8Array),
+      contentType: 'image/jpeg',
+      idToken: 'admin-id-token',
+    })
+    expect(navigateMock).not.toHaveBeenCalled()
+
+    resolveUpload({ photoPath: 'members/created-member/photo.jpg' })
+    await vi.waitFor(() =>
+      expect(navigateMock).toHaveBeenCalledWith({
+        to: '/admin/members/$id',
+        params: { id: 'created-member' },
+      }),
+    )
+  })
+
+  it('Hoàn thành saves a fully-valid draft without locking', async () => {
+    const user = userEvent.setup()
+    memberFixture = completeDraftMember()
+    saveAdminMemberMock.mockResolvedValue({
+      member: { ...completeDraftMember(), id: 'm1' },
+      mode: 'updated',
+    } as never)
+    renderForm({ mode: 'edit' })
+
+    await screen.findByRole('button', { name: m.admin_members_complete() })
+    await user.click(
+      screen.getByRole('button', { name: m.admin_members_complete() }),
+    )
+
+    await vi.waitFor(() => expect(saveAdminMemberMock).toHaveBeenCalledOnce())
+    expect(lockMemberMock).not.toHaveBeenCalled()
+    expect(navigateMock).not.toHaveBeenCalled()
   })
 })

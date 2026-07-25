@@ -59,7 +59,7 @@ export type TempleStore = {
   list(input: ListTemplesAdminInput): Promise<AdminListPage<Temple>>
   lock(templeId: string, lockedBy: string): Promise<Temple>
   unlock(templeId: string): Promise<Temple>
-  setPhotoPath(templeId: string, photoPath: string): Promise<Temple>
+  setPhotoPath(templeId: string, photoPath: string | null): Promise<Temple>
   deleteMany(ids: string[]): Promise<void>
 }
 
@@ -292,7 +292,7 @@ async function deleteMany(ids: string[]): Promise<void> {
   }
 }
 
-async function setPhotoPath(templeId: string, photoPath: string): Promise<Temple> {
+async function setPhotoPath(templeId: string, photoPath: string | null): Promise<Temple> {
   const db = requireDb()
   const templeRef = doc(db, COLLECTIONS.temples, templeId)
 

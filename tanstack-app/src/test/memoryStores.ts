@@ -196,10 +196,14 @@ export function createMemoryMemberStore(
       appendPhoneIndex(phoneIndex, member)
       return { member, mode: 'created' as const }
     },
-    async updateDraftById(memberId: string, patch: MemberProfilePatch) {
+    async updateDraftById(
+      memberId: string,
+      patch: MemberProfilePatch,
+      options?: { allowWhenLocked?: boolean },
+    ) {
       const existing = members.get(memberId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
-      if (existing.status === 'locked') {
+      if (existing.status === 'locked' && !options?.allowWhenLocked) {
         throw new DomainError('RECORD_LOCKED', 'Member is locked')
       }
       const now = '2026-07-19T00:00:00.000Z'
@@ -261,12 +265,9 @@ export function createMemoryMemberStore(
           }
         })
     },
-    async setPhotoPath(memberId: string, photoPath: string) {
+    async setPhotoPath(memberId: string, photoPath: string | null) {
       const existing = members.get(memberId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
-      if (existing.status === 'locked') {
-        throw new DomainError('RECORD_LOCKED', 'Member is locked')
-      }
       const member = {
         ...existing,
         photoPath,
@@ -453,7 +454,7 @@ export function createMemoryTempleStore(
       temples.set(templeId, temple)
       return temple
     },
-    async setPhotoPath(templeId: string, photoPath: string) {
+    async setPhotoPath(templeId: string, photoPath: string | null) {
       const existing = temples.get(templeId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Temple not found')
       const temple: Temple = {

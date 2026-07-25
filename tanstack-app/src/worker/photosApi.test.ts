@@ -161,9 +161,10 @@ describe('handlePhotosApi', () => {
       expect(response.status).toBe(403)
     })
 
-    it('returns 403 when member is locked', async () => {
+    it('returns uploadUrl for admin bearer auth on locked member', async () => {
       getMemberDocument.mockResolvedValue({ ...draftMember, status: 'locked' })
       verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      const env = makeEnv()
       const { handlePhotosApi } = await import('./photosApi')
 
       const response = await handlePhotosApi(
@@ -177,6 +178,33 @@ describe('handlePhotosApi', () => {
             memberId: MEMBER_ID,
             cccd: '012345678901',
             contentType: 'image/jpeg',
+          }),
+        }),
+        env,
+      )
+
+      expect(response.status).toBe(200)
+      await expect(response.json()).resolves.toEqual({
+        uploadUrl:
+          'https://acct.r2.cloudflarestorage.com/photos/members/m1/photo.jpg?signed=1',
+        photoPath: 'members/m1/photo.jpg',
+      })
+    })
+
+    it('returns 403 for filler invite on locked member', async () => {
+      getMemberDocument.mockResolvedValue({ ...draftMember, status: 'locked' })
+      getInviteOrgUnitId.mockResolvedValue('gd-i')
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        new Request('https://example.com/api/photos/member-upload-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            memberId: MEMBER_ID,
+            cccd: '012345678901',
+            contentType: 'image/jpeg',
+            inviteToken: 'invite-1',
           }),
         }),
         makeEnv(),
@@ -312,6 +340,74 @@ describe('handlePhotosApi', () => {
       expect(response.status).toBe(200)
       await expect(response.json()).resolves.toEqual({ ok: true })
       expect(deleteFn).toHaveBeenCalledWith('members/m1/photo.jpg')
+    })
+
+    it('deletes for invite token when orgUnitId and cccd match', async () => {
+      getMemberDocument.mockResolvedValue(draftMember)
+      getInviteOrgUnitId.mockResolvedValue('gd-i')
+      const deleteFn = vi.fn(async () => undefined)
+      const env = makeEnv({
+        PHOTOS: { delete: deleteFn } as unknown as R2Bucket,
+      })
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        new Request('https://example.com/api/photos/member', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            memberId: MEMBER_ID,
+            cccd: '012345678901',
+            inviteToken: 'invite-token',
+          }),
+        }),
+        env,
+      )
+
+      expect(response.status).toBe(200)
+      expect(deleteFn).toHaveBeenCalledWith('members/m1/photo.jpg')
+    })
+
+    it('returns 403 for invite on locked member', async () => {
+      getMemberDocument.mockResolvedValue({ ...draftMember, status: 'locked' })
+      getInviteOrgUnitId.mockResolvedValue('gd-i')
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        new Request('https://example.com/api/photos/member', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            memberId: MEMBER_ID,
+            cccd: '012345678901',
+            inviteToken: 'invite-token',
+          }),
+        }),
+        makeEnv(),
+      )
+
+      expect(response.status).toBe(403)
+    })
+
+    it('returns 403 when invite cccd mismatches', async () => {
+      getMemberDocument.mockResolvedValue(draftMember)
+      getInviteOrgUnitId.mockResolvedValue('gd-i')
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        new Request('https://example.com/api/photos/member', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            memberId: MEMBER_ID,
+            cccd: '999999999999',
+            inviteToken: 'invite-token',
+          }),
+        }),
+        makeEnv(),
+      )
+
+      expect(response.status).toBe(403)
     })
   })
 
@@ -497,6 +593,51 @@ describe('handlePhotosApi', () => {
       expect(response.status).toBe(200)
       await expect(response.json()).resolves.toEqual({ ok: true })
       expect(deleteFn).toHaveBeenCalledWith('temples/t1/photo.jpg')
+    })
+
+    it('deletes for invite when inviteExists is true', async () => {
+      getTempleDocument.mockResolvedValue(draftTemple)
+      inviteExists.mockResolvedValue(true)
+      const deleteFn = vi.fn(async () => undefined)
+      const env = makeEnv({
+        PHOTOS: { delete: deleteFn } as unknown as R2Bucket,
+      })
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        new Request('https://example.com/api/photos/temple', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            templeId: TEMPLE_ID,
+            inviteToken: 'invite-1',
+          }),
+        }),
+        env,
+      )
+
+      expect(response.status).toBe(200)
+      expect(deleteFn).toHaveBeenCalledWith('temples/t1/photo.jpg')
+    })
+
+    it('returns 403 for invite on locked temple', async () => {
+      getTempleDocument.mockResolvedValue({ ...draftTemple, status: 'locked' })
+      inviteExists.mockResolvedValue(true)
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        new Request('https://example.com/api/photos/temple', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            templeId: TEMPLE_ID,
+            inviteToken: 'invite-1',
+          }),
+        }),
+        makeEnv(),
+      )
+
+      expect(response.status).toBe(403)
     })
   })
 })

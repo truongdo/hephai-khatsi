@@ -25,4 +25,21 @@ describe('getMemberPhotoDownloadUrl', () => {
       /VITE_PHOTOS_PUBLIC_BASE/,
     )
   })
+
+  it('appends cache bust query when provided', () => {
+    expect(
+      getMemberPhotoDownloadUrl('members/m1/photo.jpg', '2026-07-25T12:00:00.000Z'),
+    ).toBe(
+      'https://cdn.example.com/members/m1/photo.jpg?v=2026-07-25T12%3A00%3A00.000Z',
+    )
+  })
+
+  it('omits cache bust when null or empty', () => {
+    expect(getMemberPhotoDownloadUrl('members/m1/photo.jpg', null)).toBe(
+      'https://cdn.example.com/members/m1/photo.jpg',
+    )
+    expect(getMemberPhotoDownloadUrl('members/m1/photo.jpg', '')).toBe(
+      'https://cdn.example.com/members/m1/photo.jpg',
+    )
+  })
 })

@@ -13,6 +13,7 @@ export type StoragePort = {
     bytes: Uint8Array,
     contentType: string,
     inviteToken?: string,
+    idToken?: string,
   ): Promise<void>
 }
 
@@ -23,6 +24,8 @@ export type UploadMemberPhotoInput = {
   contentType: string
   // Required for the public invite-claim flow; omitted for admin uploads.
   inviteToken?: string
+  /** Admin Firebase ID token — required for locked-member uploads; sent as Bearer to the worker. */
+  idToken?: string
 }
 
 export type UploadMemberPhotoResult = {
@@ -30,12 +33,13 @@ export type UploadMemberPhotoResult = {
 }
 
 const clientStorage: StoragePort = {
-  async put(memberId, cccd, bytes, contentType, inviteToken) {
+  async put(memberId, cccd, bytes, contentType, inviteToken, idToken) {
     const { uploadUrl } = await requestMemberPhotoUploadUrl({
       memberId,
       cccd,
       contentType,
       inviteToken,
+      idToken,
     })
     await putToPresignedUrl(uploadUrl, bytes, contentType)
   },
@@ -61,7 +65,7 @@ export async function uploadMemberPhoto(
     throw new DomainError('FORBIDDEN', 'CCCD does not match member')
   }
 
-  if (member.status === 'locked') {
+  if (member.status === 'locked' && !input.idToken) {
     throw new DomainError('RECORD_LOCKED', 'Member is locked')
   }
 
@@ -72,6 +76,7 @@ export async function uploadMemberPhoto(
     input.bytes,
     input.contentType,
     input.inviteToken,
+    input.idToken,
   )
   await memberStore.setPhotoPath(input.memberId, photoPath)
 

@@ -76,7 +76,7 @@ service cloud.firestore {
 
       allow update: if coreIdentityUnchanged() && (
         (isAdmin() && isLockTransition() && request.resource.data.inviteId == resource.data.inviteId)
-        || (isAdmin() && resource.data.status != 'locked' && !isLockTransition()
+        || (isAdmin() && !isLockTransition()
             && lockFieldsUnchanged() && request.resource.data.inviteId == resource.data.inviteId)
         || (!isAdmin() && resource.data.status != 'locked'
             && lockFieldsUnchanged() && validInviteScope(request.resource.data))

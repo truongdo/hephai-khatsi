@@ -77,7 +77,41 @@ describe('saveAdminMember', () => {
     ).rejects.toMatchObject({ code: 'NOT_FOUND' })
   })
 
-  it('rejects update when member is locked', async () => {
+  it('updates a locked member via saveAdminMember and preserves locked status', async () => {
+    const store = createMemoryMemberStore([
+      {
+        id: 'm1',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        status: 'locked',
+        cccd: '001099012345',
+        inviteId: 'inv-1',
+        currentTempleId: null,
+        photoPath: null,
+        phapDanh: 'Old',
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: '2026-07-19T01:00:00.000Z',
+        lockedBy: 'admin-1',
+      },
+    ])
+    const { member, mode } = await saveAdminMember(
+      {
+        memberId: 'm1',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        patch: { phapDanh: 'New' },
+      },
+      store,
+    )
+    expect(mode).toBe('updated')
+    expect(member.phapDanh).toBe('New')
+    expect(member.status).toBe('locked')
+    expect(member.lockedBy).toBe('admin-1')
+    expect(member.inviteId).toBe('inv-1')
+  })
+
+  it('setPhotoPath works on locked members', async () => {
     const store = createMemoryMemberStore([
       {
         id: 'm1',
@@ -90,20 +124,34 @@ describe('saveAdminMember', () => {
         photoPath: null,
         createdAt: '2026-07-19T00:00:00.000Z',
         updatedAt: '2026-07-19T00:00:00.000Z',
-        lockedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: '2026-07-19T01:00:00.000Z',
+        lockedBy: 'admin-1',
+      },
+    ])
+    const updated = await store.setPhotoPath('m1', 'members/m1/photo.jpg')
+    expect(updated.photoPath).toBe('members/m1/photo.jpg')
+    expect(updated.status).toBe('locked')
+  })
+
+  it('updateDraftById rejects locked member without allowWhenLocked', async () => {
+    const store = createMemoryMemberStore([
+      {
+        id: 'm1',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        status: 'locked',
+        cccd: '001099012345',
+        inviteId: null,
+        currentTempleId: null,
+        photoPath: null,
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: '2026-07-19T01:00:00.000Z',
         lockedBy: 'admin-1',
       },
     ])
     await expect(
-      saveAdminMember(
-        {
-          memberId: 'm1',
-          orgUnitId: 'gd-i',
-          sanghaType: 'tang',
-          patch: { phapDanh: 'New' },
-        },
-        store,
-      ),
+      store.updateDraftById('m1', { phapDanh: 'New' }),
     ).rejects.toMatchObject({ code: 'RECORD_LOCKED' })
   })
 

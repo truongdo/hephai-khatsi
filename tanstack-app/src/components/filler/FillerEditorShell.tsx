@@ -1,5 +1,6 @@
 import { Alert, Badge, Box, Button, Group, Stack, Text, Title } from '@mantine/core'
 import type { ReactNode } from 'react'
+import { FormStickyActions } from '#/components/FormStickyActions'
 import { m } from '#/paraglide/messages'
 
 export type FillerEditorStatus = 'draft' | 'view'
@@ -34,6 +35,8 @@ export function FillerEditorShell({
   saveSuccess,
   saveError,
 }: FillerEditorShellProps) {
+  const showSave = status === 'draft' && onSave
+
   return (
     <Stack gap="lg">
       <Box
@@ -50,28 +53,33 @@ export function FillerEditorShell({
       >
         <Group justify="space-between" align="center" wrap="wrap" gap="sm">
           <Title order={2}>{title}</Title>
-          <Group gap="sm" align="center" wrap="wrap">
-            <Badge color={STATUS_COLOR[status]} variant="light" radius="sm">
-              {statusLabel(status)}
-            </Badge>
-            {status === 'draft' && onSave ? (
-              <Button
-                type="button"
-                onClick={onSave}
-                loading={savePending}
-                disabled={savePending}
-              >
-                {saveLabel ?? m.filler_save()}
-              </Button>
-            ) : null}
-          </Group>
+          <Badge color={STATUS_COLOR[status]} variant="light" radius="sm">
+            {statusLabel(status)}
+          </Badge>
         </Group>
       </Box>
-      {saveError ? <Alert color="red">{saveError}</Alert> : null}
-      {saveSuccess ? <Text c="teal">{saveSuccess}</Text> : null}
       {children ?? (
         <Text c="dimmed">{m.filler_editor_placeholder()}</Text>
       )}
+      {showSave ? (
+        <FormStickyActions
+          status={
+            <>
+              {saveError ? <Alert color="red">{saveError}</Alert> : null}
+              {saveSuccess ? <Text c="teal" size="sm">{saveSuccess}</Text> : null}
+            </>
+          }
+        >
+          <Button
+            type="button"
+            onClick={onSave}
+            loading={savePending}
+            disabled={savePending}
+          >
+            {saveLabel ?? m.filler_save()}
+          </Button>
+        </FormStickyActions>
+      ) : null}
     </Stack>
   )
 }

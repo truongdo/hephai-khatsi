@@ -1,7 +1,10 @@
-import { Box, Button, FileButton, Image, Stack, Text } from '@mantine/core'
+import { ActionIcon, Box, Button, FileButton, Image, Stack, Text } from '@mantine/core'
+import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { m } from '#/paraglide/messages'
+import { deleteTemplePhoto } from '#/use-cases/deleteTemplePhoto'
 import { uploadTemplePhoto } from '#/use-cases/uploadTemplePhoto'
+import { PhotoDeleteConfirmModal } from '../filler/PhotoDeleteConfirmModal'
 import { getTemplePhotoDownloadUrl } from './templePhotoUrl'
 
 const ACCEPTED_TYPES = new Set(['image/jpeg', 'image/png', 'image/jpg'])
@@ -16,10 +19,12 @@ export type TemplePortraitFieldProps = {
   /** Async admin token provider — prefer this over a stale string prop. */
   getIdToken?: () => Promise<string | undefined>
   photoPath: string | null
+  /** Firestore updatedAt — busts CDN/browser cache after replace. */
+  photoUpdatedAt?: string | null
   disabled?: boolean
   pendingFile: File | null
   onPendingFileChange: (file: File | null) => void
-  onPhotoPathChange: (photoPath: string) => void
+  onPhotoPathChange: (photoPath: string | null) => void
   onUploadError?: (message: string) => void
 }
 
@@ -28,6 +33,7 @@ export function TemplePortraitField({
   inviteToken,
   getIdToken,
   photoPath,
+  photoUpdatedAt = null,
   disabled = false,
   pendingFile,
   onPendingFileChange,
@@ -38,6 +44,13 @@ export function TemplePortraitField({
   const [objectUrl, setObjectUrl] = useState<string | null>(null)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
+  const [uploadBust, setUploadBust] = useState<string | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+
+  useEffect(() => {
+    setUploadBust(null)
+  }, [templeId])
 
   useEffect(() => {
     if (!pendingFile) {
@@ -57,11 +70,13 @@ export function TemplePortraitField({
     }
 
     try {
-      setDownloadUrl(getTemplePhotoDownloadUrl(photoPath))
+      setDownloadUrl(
+        getTemplePhotoDownloadUrl(photoPath, uploadBust ?? photoUpdatedAt),
+      )
     } catch {
       setDownloadUrl(null)
     }
-  }, [photoPath, pendingFile])
+  }, [photoPath, pendingFile, uploadBust, photoUpdatedAt])
 
   const previewUrl = objectUrl ?? downloadUrl
   const hasPhoto = Boolean(previewUrl)
@@ -88,6 +103,7 @@ export function TemplePortraitField({
           inviteToken,
           idToken,
         })
+        setUploadBust(String(Date.now()))
         onPhotoPathChange(result.photoPath)
       } catch {
         onUploadError?.(m.filler_photo_upload_error())
@@ -100,6 +116,35 @@ export function TemplePortraitField({
     onPendingFileChange(file)
   }
 
+  async function handleConfirmDelete() {
+    if (pendingFile) {
+      onPendingFileChange(null)
+      setConfirmOpen(false)
+      return
+    }
+
+    if (!templeId || !photoPath) {
+      setConfirmOpen(false)
+      return
+    }
+
+    setDeleting(true)
+    try {
+      const idToken = (await getIdToken?.()) ?? undefined
+      await deleteTemplePhoto({
+        templeId,
+        inviteToken,
+        idToken,
+      })
+      onPhotoPathChange(null)
+      setConfirmOpen(false)
+    } catch {
+      onUploadError?.(m.filler_photo_delete_error())
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   return (
     <Stack gap="xs" align="flex-start">
       <Text size="sm" fw={500}>
@@ -107,6 +152,7 @@ export function TemplePortraitField({
       </Text>
       <Box
         style={{
+          position: 'relative',
           width: '100%',
           maxWidth: 130,
           aspectRatio: '3 / 4',
@@ -128,12 +174,26 @@ export function TemplePortraitField({
             h="100%"
           />
         ) : null}
+        {hasPhoto && !disabled ? (
+          <ActionIcon
+            aria-label={m.filler_photo_delete()}
+            color="red"
+            variant="filled"
+            size="sm"
+            radius="xl"
+            disabled={uploading || deleting}
+            onClick={() => setConfirmOpen(true)}
+            style={{ position: 'absolute', top: 6, right: 6 }}
+          >
+            <Trash2 size={14} />
+          </ActionIcon>
+        ) : null}
       </Box>
       {!disabled ? (
         <FileButton
           onChange={handleFileSelected}
           accept="image/jpeg,image/png"
-          disabled={uploading}
+          disabled={uploading || deleting}
         >
           {(props) => (
             <Button {...props} variant="light" size="xs" loading={uploading}>
@@ -147,6 +207,16 @@ export function TemplePortraitField({
           {typeError}
         </Text>
       ) : null}
+      <PhotoDeleteConfirmModal
+        opened={confirmOpen}
+        loading={deleting}
+        onCancel={() => {
+          if (!deleting) setConfirmOpen(false)
+        }}
+        onConfirm={() => {
+          void handleConfirmDelete()
+        }}
+      />
     </Stack>
   )
 }

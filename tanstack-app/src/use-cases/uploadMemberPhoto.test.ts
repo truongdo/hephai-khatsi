@@ -8,13 +8,20 @@ import {
 } from './uploadMemberPhoto'
 
 function fakeStorage() {
-  const files = new Map<string, { bytes: Uint8Array; contentType: string }>()
+  const calls: Array<{
+    memberId: string
+    cccd: string
+    bytes: Uint8Array
+    contentType: string
+    inviteToken?: string
+    idToken?: string
+  }> = []
   const storage: StoragePort = {
-    async put(memberId, _cccd, bytes, contentType) {
-      files.set(`members/${memberId}/photo.jpg`, { bytes, contentType })
+    async put(memberId, cccd, bytes, contentType, inviteToken, idToken) {
+      calls.push({ memberId, cccd, bytes, contentType, inviteToken, idToken })
     },
   }
-  return { storage, files }
+  return { storage, calls }
 }
 
 function memberStoreWith(members: Member[]): MemberStore & {
@@ -44,12 +51,9 @@ function memberStoreWith(members: Member[]): MemberStore & {
     async getById(memberId: string) {
       return map.get(memberId) ?? null
     },
-    async setPhotoPath(memberId: string, photoPath: string) {
+    async setPhotoPath(memberId: string, photoPath: string | null) {
       const existing = map.get(memberId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
-      if (existing.status === 'locked') {
-        throw new DomainError('RECORD_LOCKED', 'Member is locked')
-      }
       const member = {
         ...existing,
         photoPath,
@@ -86,7 +90,7 @@ const draftMember: Member = {
 describe('uploadMemberPhoto', () => {
   it('uploads a draft member photo and updates photoPath', async () => {
     const store = memberStoreWith([draftMember])
-    const { storage, files } = fakeStorage()
+    const { storage, calls } = fakeStorage()
     const bytes = new Uint8Array([1, 2, 3])
 
     const result = await uploadMemberPhoto(
@@ -95,22 +99,29 @@ describe('uploadMemberPhoto', () => {
         cccd: '0123 456 78901',
         bytes,
         contentType: 'image/jpeg',
+        inviteToken: 'invite-1',
       },
       store,
       storage,
     )
 
     expect(result).toEqual({ photoPath: 'members/member-1/photo.jpg' })
-    expect(files.get('members/member-1/photo.jpg')).toEqual({
-      bytes,
-      contentType: 'image/jpeg',
-    })
+    expect(calls).toEqual([
+      {
+        memberId: 'member-1',
+        cccd: '012345678901',
+        bytes,
+        contentType: 'image/jpeg',
+        inviteToken: 'invite-1',
+        idToken: undefined,
+      },
+    ])
     expect(store.members.get('member-1')?.photoPath).toBe(
       'members/member-1/photo.jpg',
     )
   })
 
-  it('rejects photo upload for locked members', async () => {
+  it('rejects filler upload for locked members without idToken', async () => {
     const store = memberStoreWith([
       {
         ...draftMember,
@@ -128,11 +139,42 @@ describe('uploadMemberPhoto', () => {
           cccd: '012345678901',
           bytes: new Uint8Array([1]),
           contentType: 'image/jpeg',
+          inviteToken: 'invite-1',
         },
         store,
         storage,
       ),
     ).rejects.toMatchObject({ code: 'RECORD_LOCKED' })
+  })
+
+  it('allows admin upload for locked members and passes idToken to storage', async () => {
+    const store = memberStoreWith([
+      {
+        ...draftMember,
+        status: 'locked',
+        lockedAt: '2026-07-19T00:00:00.000Z',
+        lockedBy: 'admin-1',
+      },
+    ])
+    const { storage, calls } = fakeStorage()
+
+    const result = await uploadMemberPhoto(
+      {
+        memberId: 'member-1',
+        cccd: '012345678901',
+        bytes: new Uint8Array([1, 2]),
+        contentType: 'image/png',
+        idToken: 'admin-id-token',
+      },
+      store,
+      storage,
+    )
+
+    expect(result).toEqual({ photoPath: 'members/member-1/photo.jpg' })
+    expect(calls[0]?.idToken).toBe('admin-id-token')
+    expect(store.members.get('member-1')?.photoPath).toBe(
+      'members/member-1/photo.jpg',
+    )
   })
 
   it('rejects when CCCD does not match the member', async () => {

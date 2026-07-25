@@ -74,6 +74,7 @@ export async function saveAdminMember(
     const member = await memberStore.updateDraftById(
       input.memberId,
       sanitizePatch(input.patch),
+      { allowWhenLocked: true },
     )
     return { member, mode: 'updated' }
   }

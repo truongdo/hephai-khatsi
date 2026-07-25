@@ -21,6 +21,8 @@ type MemberUploadUrlBody = {
 
 type MemberDeleteBody = {
   memberId?: string
+  cccd?: string
+  inviteToken?: string
 }
 
 type TempleUploadUrlBody = {
@@ -31,6 +33,7 @@ type TempleUploadUrlBody = {
 
 type TempleDeleteBody = {
   templeId?: string
+  inviteToken?: string
 }
 
 function jsonError(message: string, status: number): Response {
@@ -51,38 +54,6 @@ function bearerToken(request: Request): string | null {
   return authHeader.slice('Bearer '.length)
 }
 
-async function requireAdmin(request: Request, env: Env): Promise<Response | null> {
-  const token = bearerToken(request)
-  if (!token) return jsonError('Unauthorized', 401)
-
-  const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
-  if (!admin) return jsonError('Unauthorized', 401)
-
-  return null
-}
-
-async function authorizeMemberUpload(
-  request: Request,
-  env: Env,
-  memberOrgUnitId: string,
-  inviteToken?: string,
-): Promise<Response | null> {
-  const token = bearerToken(request)
-  if (token) {
-    const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
-    if (!admin) return jsonError('Unauthorized', 401)
-    return null
-  }
-
-  if (!inviteToken) return jsonError('Unauthorized', 401)
-
-  const orgUnitId = await getInviteOrgUnitId(env.FIREBASE_PROJECT_ID, inviteToken)
-  if (!orgUnitId || orgUnitId !== memberOrgUnitId) {
-    return jsonError('Forbidden', 403)
-  }
-
-  return null
-}
 
 async function handleMemberUploadUrl(request: Request, env: Env): Promise<Response> {
   let body: MemberUploadUrlBody
@@ -102,16 +73,26 @@ async function handleMemberUploadUrl(request: Request, env: Env): Promise<Respon
 
   const member = await getMemberDocument(env.FIREBASE_PROJECT_ID, memberId)
   if (!member) return jsonError('Member not found', 404)
-  if (member.status === 'locked') return jsonError('Member is locked', 403)
   if (!cccdMatches(member.cccd, cccd)) return jsonError('CCCD mismatch', 403)
 
-  const authError = await authorizeMemberUpload(
-    request,
-    env,
-    member.orgUnitId,
-    inviteToken,
-  )
-  if (authError) return authError
+  let isAdmin = false
+  const token = bearerToken(request)
+  if (token) {
+    const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
+    if (!admin) return jsonError('Unauthorized', 401)
+    isAdmin = true
+  } else if (inviteToken) {
+    const orgUnitId = await getInviteOrgUnitId(env.FIREBASE_PROJECT_ID, inviteToken)
+    if (!orgUnitId || orgUnitId !== member.orgUnitId) {
+      return jsonError('Forbidden', 403)
+    }
+  } else {
+    return jsonError('Unauthorized', 401)
+  }
+
+  if (member.status === 'locked' && !isAdmin) {
+    return jsonError('Member is locked', 403)
+  }
 
   const photoPath = memberPhotoKey(memberId)
   const uploadUrl = await createR2PresignedPutUrl({
@@ -128,9 +109,6 @@ async function handleMemberUploadUrl(request: Request, env: Env): Promise<Respon
 }
 
 async function handleMemberDelete(request: Request, env: Env): Promise<Response> {
-  const authError = await requireAdmin(request, env)
-  if (authError) return authError
-
   let body: MemberDeleteBody
   try {
     body = (await request.json()) as MemberDeleteBody
@@ -138,8 +116,32 @@ async function handleMemberDelete(request: Request, env: Env): Promise<Response>
     return jsonError('Invalid JSON', 400)
   }
 
-  const { memberId } = body
+  const { memberId, cccd, inviteToken } = body
   if (!memberId) return jsonError('Missing memberId', 400)
+
+  const member = await getMemberDocument(env.FIREBASE_PROJECT_ID, memberId)
+  if (!member) return jsonError('Member not found', 404)
+
+  let isAdmin = false
+  const token = bearerToken(request)
+  if (token) {
+    const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
+    if (!admin) return jsonError('Unauthorized', 401)
+    isAdmin = true
+  } else if (inviteToken) {
+    if (!cccd) return jsonError('Missing required fields', 400)
+    if (!cccdMatches(member.cccd, cccd)) return jsonError('CCCD mismatch', 403)
+    const orgUnitId = await getInviteOrgUnitId(env.FIREBASE_PROJECT_ID, inviteToken)
+    if (!orgUnitId || orgUnitId !== member.orgUnitId) {
+      return jsonError('Forbidden', 403)
+    }
+  } else {
+    return jsonError('Unauthorized', 401)
+  }
+
+  if (member.status === 'locked' && !isAdmin) {
+    return jsonError('Member is locked', 403)
+  }
 
   await env.PHOTOS.delete(memberPhotoKey(memberId))
   return Response.json({ ok: true })
@@ -196,9 +198,6 @@ async function handleTempleUploadUrl(request: Request, env: Env): Promise<Respon
 }
 
 async function handleTempleDelete(request: Request, env: Env): Promise<Response> {
-  const authError = await requireAdmin(request, env)
-  if (authError) return authError
-
   let body: TempleDeleteBody
   try {
     body = (await request.json()) as TempleDeleteBody
@@ -206,8 +205,28 @@ async function handleTempleDelete(request: Request, env: Env): Promise<Response>
     return jsonError('Invalid JSON', 400)
   }
 
-  const { templeId } = body
+  const { templeId, inviteToken } = body
   if (!templeId) return jsonError('Missing templeId', 400)
+
+  const temple = await getTempleDocument(env.FIREBASE_PROJECT_ID, templeId)
+  if (!temple) return jsonError('Temple not found', 404)
+
+  let isAdmin = false
+  const token = bearerToken(request)
+  if (token) {
+    const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
+    if (!admin) return jsonError('Unauthorized', 401)
+    isAdmin = true
+  } else if (inviteToken) {
+    const exists = await inviteExists(env.FIREBASE_PROJECT_ID, inviteToken)
+    if (!exists) return jsonError('Forbidden', 403)
+  } else {
+    return jsonError('Unauthorized', 401)
+  }
+
+  if (temple.status === 'locked' && !isAdmin) {
+    return jsonError('Temple is locked', 403)
+  }
 
   await env.PHOTOS.delete(templePhotoKey(templeId))
   return Response.json({ ok: true })
