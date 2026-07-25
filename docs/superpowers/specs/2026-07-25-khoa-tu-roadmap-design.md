@@ -71,7 +71,7 @@ Attendance (phase 6) and certificate/QR (phase 7) fields are added to `retreatRe
 
 | Phase | Nội dung | Trạng thái | Plan |
 | --- | --- | --- | --- |
-| 0 | RBAC nhẹ (nền tảng) | Đã lập kế hoạch | [2026-07-25-khoa-tu-rbac-phase0.md](../plans/2026-07-25-khoa-tu-rbac-phase0.md) |
+| 0 | RBAC nhẹ (nền tảng) | Hoàn thành | [2026-07-25-khoa-tu-rbac-phase0.md](../plans/2026-07-25-khoa-tu-rbac-phase0.md) |
 | 1 | CRUD khóa tu (Giáo đoàn only) | Chưa bắt đầu | — |
 | 2 | Đăng ký (tự đăng ký + đăng ký thay) | Chưa bắt đầu | — |
 | 3 | Xét duyệt cấp Giáo đoàn | Chưa bắt đầu | — |
