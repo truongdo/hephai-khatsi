@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   Group,
   Select,
   Stack,
@@ -8,16 +9,24 @@ import {
   Title,
 } from '@mantine/core'
 import { Link } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
+import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { emptyCell } from '#/components/admin/emptyCell'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
+import { TempleDeleteBlockedModal } from '#/components/admin/TempleDeleteBlockedModal'
+import { useAdminListSelection } from '#/components/admin/useAdminListSelection'
 import type { RecordStatus, Temple } from '#/domain/types'
+import { adminKeys } from '#/query/adminKeys'
 import { templesQuery, orgUnitsQuery } from '#/query/adminQueries'
+import {
+  deleteTemples,
+  type TempleDeleteBlocker,
+} from '#/use-cases/deleteTemples'
 
 function statusLabel(status: RecordStatus): string {
   switch (status) {
@@ -35,6 +44,7 @@ const STATUS_OPTIONS: { value: RecordStatus; label: () => string }[] = [
 
 export function TemplesListPage() {
   const claim = useAdminClaim()
+  const queryClient = useQueryClient()
 
   const [orgUnitFilter, setOrgUnitFilter] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<RecordStatus | null>(null)
@@ -42,6 +52,9 @@ export function TemplesListPage() {
   const [allItems, setAllItems] = useState<Temple[]>([])
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const lastAppendedKeyRef = useRef<string | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [blockedOpen, setBlockedOpen] = useState(false)
+  const [blockers, setBlockers] = useState<TempleDeleteBlocker[]>([])
 
   const filterKey = `${orgUnitFilter ?? ''}:${statusFilter ?? ''}`
 
@@ -79,6 +92,30 @@ export function TemplesListPage() {
     }
     setNextCursor(temples.data.nextCursor)
   }, [temples.data, temples.dataUpdatedAt, cursor])
+
+  const itemIds = useMemo(() => allItems.map((temple) => temple.id), [allItems])
+  const selection = useAdminListSelection(itemIds)
+
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteTemples({ ids: [...selection.selectedIds] }),
+    onSuccess: (result) => {
+      if (!result.ok) {
+        setBlockers(result.blockers)
+        setBlockedOpen(true)
+        setConfirmOpen(false)
+        return
+      }
+      selection.clear()
+      setConfirmOpen(false)
+      setCursor(undefined)
+      setAllItems([])
+      setNextCursor(null)
+      lastAppendedKeyRef.current = null
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, 'temples'],
+      })
+    },
+  })
 
   const orgUnitSelectData = useMemo(
     () =>
@@ -129,6 +166,15 @@ export function TemplesListPage() {
         />
       </Group>
 
+      {selection.selectedCount > 0 && (
+        <Group>
+          <Text>{m.admin_bulk_selected({ count: selection.selectedCount })}</Text>
+          <Button color="red" onClick={() => setConfirmOpen(true)}>
+            {m.admin_bulk_delete()}
+          </Button>
+        </Group>
+      )}
+
       {temples.isError && temples.error && (
         <QueryErrorAlert error={temples.error} />
       )}
@@ -141,6 +187,16 @@ export function TemplesListPage() {
           >
             <Table.Thead>
               <Table.Tr>
+                <Table.Th w={40}>
+                  <Checkbox
+                    checked={selection.allLoadedSelected}
+                    indeterminate={selection.someSelected}
+                    onChange={selection.toggleAllLoaded}
+                    aria-label={m.admin_bulk_selected({
+                      count: selection.selectedCount,
+                    })}
+                  />
+                </Table.Th>
                 <Table.Th>{m.admin_temples_col_danh_hieu()}</Table.Th>
                 <Table.Th>{m.admin_temples_col_phone()}</Table.Th>
                 <Table.Th>{m.admin_temples_col_status()}</Table.Th>
@@ -150,6 +206,13 @@ export function TemplesListPage() {
             <Table.Tbody>
               {allItems.map((temple) => (
                 <Table.Tr key={temple.id}>
+                  <Table.Td>
+                    <Checkbox
+                      checked={selection.selectedIds.has(temple.id)}
+                      onChange={() => selection.toggle(temple.id)}
+                      aria-label={temple.danhHieu ?? temple.id}
+                    />
+                  </Table.Td>
                   <Table.Td>
                     <Text
                       component={Link}
@@ -186,6 +249,20 @@ export function TemplesListPage() {
           )}
         </>
       )}
+
+      <AdminConfirmDeleteModal
+        opened={confirmOpen}
+        count={selection.selectedCount}
+        loading={deleteMutation.isPending}
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={() => deleteMutation.mutate()}
+      />
+
+      <TempleDeleteBlockedModal
+        opened={blockedOpen}
+        blockers={blockers}
+        onClose={() => setBlockedOpen(false)}
+      />
     </Stack>
   )
 }
