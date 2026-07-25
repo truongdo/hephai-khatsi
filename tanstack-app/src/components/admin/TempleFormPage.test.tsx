@@ -5,7 +5,9 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AddressValue } from '#/domain/address'
 import { m } from '#/paraglide/messages'
+import { lockTemple } from '#/use-cases/lockTemple'
 import { saveAdminTemple } from '#/use-cases/saveAdminTemple'
+import { uploadTemplePhoto } from '#/use-cases/uploadTemplePhoto'
 import { theme } from '../../theme'
 import { TempleFormPage } from './TempleFormPage'
 
@@ -42,6 +44,7 @@ const draftTemple = {
 }
 
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
+const navigateMock = vi.fn()
 
 vi.mock('#/auth/useAdminClaim', () => ({
   useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid' }),
@@ -67,7 +70,7 @@ vi.mock('@tanstack/react-router', () => ({
       {children}
     </a>
   ),
-  useNavigate: () => vi.fn(),
+  useNavigate: () => navigateMock,
 }))
 
 let templeFixture: typeof lockedTemple | typeof draftTemple = lockedTemple
@@ -131,6 +134,35 @@ vi.mock('#/data/vietnam-locations', () => ({
 }))
 
 const saveAdminTempleMock = vi.mocked(saveAdminTemple)
+const lockTempleMock = vi.mocked(lockTemple)
+const uploadTemplePhotoMock = vi.mocked(uploadTemplePhoto)
+
+function getPortraitFileInput(): HTMLInputElement {
+  const button = screen.getByRole('button', { name: m.filler_photo_choose() })
+  return button.parentElement?.querySelector(
+    'input[type="file"]',
+  ) as HTMLInputElement
+}
+
+function completeDraftTemple() {
+  return {
+    ...draftTemple,
+    danhHieu: 'Tịnh xá Ngọc Viên',
+    nguoiKhaiSon: 'HT. Minh',
+    namThanhLap: '1954',
+    diaChiCu: structuredAddress,
+    diaChiMoi: structuredAddress,
+    truTriHienNay: {
+      phapDanh: 'Thích A',
+      dienThoai: '0901234567',
+      email: 'a@b.co',
+    },
+    truTriTienNhiem: [{ phapDanh: 'Thích B', thoiGian: '', ghiChu: '' }],
+    tangSoHienTru: { tyKheo: 0, thucXoaMaNa: 0, saDi: 0, tapSu: 0 },
+    soPhatTuQuyY: 0,
+    soPhatTuThuongXuyen: 0,
+  }
+}
 
 beforeAll(() => {
   class ResizeObserverMock {
@@ -167,7 +199,13 @@ beforeEach(() => {
   templeFixture = lockedTemple
   lockedTemple.diaChiMoi = '123 Đường A'
   saveAdminTempleMock.mockReset()
+  lockTempleMock.mockReset()
+  uploadTemplePhotoMock.mockReset()
+  navigateMock.mockReset()
   getIdTokenMock.mockClear()
+  uploadTemplePhotoMock.mockResolvedValue({
+    photoPath: 'temples/created-temple/photo.jpg',
+  })
   saveAdminTempleMock.mockResolvedValue({
     temple: { ...draftTemple, id: 'created-temple' },
     mode: 'created',
@@ -264,7 +302,7 @@ describe('TempleFormPage', () => {
     ).toBeGreaterThan(0)
   })
 
-  it('keeps fields editable when locked', async () => {
+  it('keeps fields editable when locked and shows both save buttons', async () => {
     templeFixture = lockedTemple
     renderForm({ mode: 'edit' })
     const input = await screen.findByLabelText(
@@ -274,5 +312,64 @@ describe('TempleFormPage', () => {
     expect(
       screen.getByRole('button', { name: m.admin_temples_save_draft() }),
     ).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: m.admin_temples_complete() }),
+    ).toBeTruthy()
+  })
+
+  it('uploads pending portrait after successful create and navigates to edit', async () => {
+    const user = userEvent.setup()
+    let resolveUpload!: (value: { photoPath: string }) => void
+    const uploadPromise = new Promise<{ photoPath: string }>((resolve) => {
+      resolveUpload = resolve
+    })
+    uploadTemplePhotoMock.mockReturnValue(uploadPromise)
+    renderForm({ mode: 'create' })
+    await selectOrgUnit(user)
+    await user.type(
+      screen.getByLabelText(m.filler_field_manager_phone()),
+      '0901234567',
+    )
+    const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
+    await user.upload(getPortraitFileInput(), file)
+    await user.click(
+      screen.getByRole('button', { name: m.admin_temples_save_draft() }),
+    )
+
+    await vi.waitFor(() => expect(saveAdminTempleMock).toHaveBeenCalled())
+    expect(uploadTemplePhotoMock).toHaveBeenCalledWith({
+      templeId: 'created-temple',
+      bytes: expect.any(Uint8Array),
+      contentType: 'image/jpeg',
+      idToken: 'admin-id-token',
+    })
+    expect(navigateMock).not.toHaveBeenCalled()
+
+    resolveUpload({ photoPath: 'temples/created-temple/photo.jpg' })
+    await vi.waitFor(() =>
+      expect(navigateMock).toHaveBeenCalledWith({
+        to: '/admin/temples/$id',
+        params: { id: 'created-temple' },
+      }),
+    )
+  })
+
+  it('Hoàn thành saves a fully-valid draft without locking', async () => {
+    const user = userEvent.setup()
+    templeFixture = completeDraftTemple()
+    saveAdminTempleMock.mockResolvedValue({
+      temple: { ...completeDraftTemple(), id: 't1' },
+      mode: 'updated',
+    } as never)
+    renderForm({ mode: 'edit' })
+
+    await screen.findByRole('button', { name: m.admin_temples_complete() })
+    await user.click(
+      screen.getByRole('button', { name: m.admin_temples_complete() }),
+    )
+
+    await vi.waitFor(() => expect(saveAdminTempleMock).toHaveBeenCalledOnce())
+    expect(lockTempleMock).not.toHaveBeenCalled()
+    expect(navigateMock).not.toHaveBeenCalled()
   })
 })
