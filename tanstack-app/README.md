@@ -70,15 +70,17 @@ pnpm test:e2e
 
 This project uses [Mantine](https://mantine.dev/) for UI components and theming (`@mantine/core` + `@mantine/hooks`).
 
-## Deploy to Firebase Hosting
+## Deploy (Cloudflare Worker + R2)
 
 ```bash
 pnpm deploy
 ```
 
-This builds the static app and runs `firebase deploy --only hosting,firestore:rules,storage:rules`
-against the monorepo-root `../firebase.json`. Client Firebase config (`VITE_FIREBASE_*`) lives in
-`.env` — see `.env.example`.
+This builds the SPA (`dist/`) and deploys via [Wrangler](https://developers.cloudflare.com/workers/wrangler/) to a Cloudflare Worker. Static assets are served through the `ASSETS` binding; member portrait storage uses the `PHOTOS` R2 bucket binding (`member-photos` in `wrangler.jsonc` — `bucket_name` must match the bucket created in the Cloudflare dashboard).
+
+Worker secrets/vars (`R2_*`, `FIREBASE_PROJECT_ID`, etc.) are configured in the Cloudflare dashboard or via `wrangler secret put` / `wrangler vars`. `GET /api/health` returns `{"ok":true}` for smoke checks.
+
+Firestore/Storage security rules still deploy separately from the monorepo root (`../firebase/`).
 
 ## Routing
 
