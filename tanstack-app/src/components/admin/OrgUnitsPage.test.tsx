@@ -6,7 +6,7 @@ import { theme } from '../../theme'
 import { OrgUnitsPage } from './OrgUnitsPage'
 
 vi.mock('#/auth/useAdminClaim', () => ({
-  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid' }),
+  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid', role: 'he_phai_admin', orgUnitId: null }),
 }))
 
 vi.mock('#/query/adminQueries', () => ({

@@ -66,7 +66,7 @@ const getIdTokenMock = vi.fn(async () => 'admin-id-token')
 const navigateMock = vi.fn()
 
 vi.mock('#/auth/useAdminClaim', () => ({
-  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid' }),
+  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid', role: 'he_phai_admin', orgUnitId: null }),
 }))
 
 vi.mock('#/auth/useAuth', () => ({

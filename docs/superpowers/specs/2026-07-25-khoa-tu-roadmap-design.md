@@ -63,6 +63,8 @@ Attendance (phase 6) and certificate/QR (phase 7) fields are added to `retreatRe
 
 `{ admin?: boolean, role?: 'he_phai_admin' | 'giao_doan_admin' | 'kiem_soat', orgUnitId?: string }`. `he_phai_admin` has no `orgUnitId` restriction; `giao_doan_admin` / `kiem_soat` are scoped to their `orgUnitId`.
 
+**Operational note (until Phase 1):** `firebase/firestore.rules` and `firebase/storage.rules` still gate solely on `admin == true` — they do not know about `role` yet. Until Phase 1 teaches the rules about `role`, any account provisioned with only `{ role: ..., orgUnitId: ... }` (no `admin: true`) will pass the client-side `useAdminClaim` check and land on `/admin`, but every Firestore/Storage read and write will be denied by rules. **Provision role claims alongside `admin: true`** (e.g. `{ admin: true, role: 'giao_doan_admin', orgUnitId: 'gd-i' }`) until Phase 1 ships rule support for `role`.
+
 ## Phases
 
 ### Trạng thái các phase
@@ -93,6 +95,8 @@ Cập nhật bảng này mỗi khi một phase có plan mới hoặc đổi tr�
 - `retreats` collection, repository, use-cases: `createRetreat`, `updateRetreat`, `listRetreats` (scoped: `giao_doan_admin` sees own `orgUnitId`; `he_phai_admin` sees all).
 - Admin UI: `/admin/retreats` (list), `/admin/retreats/new`, `/admin/retreats/$id` — reuse `AdminDataTable`, `AdminShell`, breadcrumbs patterns.
 - **Acceptance**: a `giao_doan_admin` can create/edit a khóa tu for their own org unit only; cannot see/edit other units' courses.
+- **Carried over from Phase 0 review:** `firebase/firestore.rules` and `firebase/storage.rules` must learn about the `role` claim (not just `admin == true`) — Phase 1 already touches rules for the new `retreats` collection, so extend `isAdmin()` (or equivalent) there rather than patching it separately.
+- **Carried over from Phase 0 review:** `useAdminClaim` / `RequireAuth` currently treat "has any recognized role" (including `kiem_soat`) as full admin-UI access. Before any `kiem_soat` claim is provisioned in production, split "recognized role" (lets you into `/admin` shell) from "may write retreats/members/temples" (a narrower capability check) — `kiem_soat` should only reach attendance marking (Phase 6), never member/temple CRUD.
 
 ### Phase 2 — Đăng ký
 

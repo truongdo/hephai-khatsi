@@ -26,7 +26,7 @@ const deleteTemplesMock = vi.fn()
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
 
 vi.mock('#/auth/useAdminClaim', () => ({
-  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid' }),
+  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid', role: 'he_phai_admin', orgUnitId: null }),
 }))
 
 vi.mock('#/auth/useAuth', () => ({

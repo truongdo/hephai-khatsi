@@ -27,6 +27,12 @@ describe('parseAuthClaims', () => {
     ).toEqual({ role: 'giao_doan_admin', orgUnitId: null })
   })
 
+  it('defaults orgUnitId to null when role is present but orgUnitId is an empty string', () => {
+    expect(
+      parseAuthClaims({ role: 'giao_doan_admin', orgUnitId: '' }),
+    ).toEqual({ role: 'giao_doan_admin', orgUnitId: null })
+  })
+
   it('falls back to he_phai_admin for the legacy admin:true claim', () => {
     expect(parseAuthClaims({ admin: true })).toEqual({
       role: 'he_phai_admin',
@@ -72,5 +78,11 @@ describe('canAccessOrgUnit', () => {
     expect(
       canAccessOrgUnit({ role: 'kiem_soat', orgUnitId: null }, 'gd-i'),
     ).toBe(false)
+  })
+
+  it('allows he_phai_admin even when its own claim carries a non-null orgUnitId', () => {
+    expect(
+      canAccessOrgUnit({ role: 'he_phai_admin', orgUnitId: 'gd-i' }, 'gd-ii'),
+    ).toBe(true)
   })
 })

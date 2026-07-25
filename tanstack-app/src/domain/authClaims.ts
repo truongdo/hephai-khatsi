@@ -24,7 +24,10 @@ export function parseAuthClaims(
   if (isAdminRole(claims.role)) {
     return {
       role: claims.role,
-      orgUnitId: typeof claims.orgUnitId === 'string' ? claims.orgUnitId : null,
+      orgUnitId:
+        typeof claims.orgUnitId === 'string' && claims.orgUnitId.length > 0
+          ? claims.orgUnitId
+          : null,
     }
   }
   if (claims.admin === true) {

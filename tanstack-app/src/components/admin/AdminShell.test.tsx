@@ -19,7 +19,7 @@ vi.mock('#/auth/useAuth', () => ({
 }))
 
 vi.mock('#/auth/useAdminClaim', () => ({
-  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid' }),
+  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid', role: 'he_phai_admin', orgUnitId: null }),
 }))
 
 vi.mock('#/use-cases/ensurePublicInvite', () => ({
