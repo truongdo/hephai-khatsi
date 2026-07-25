@@ -61,5 +61,6 @@ export async function saveAdminTemple(
     managerPhones,
     templeId: input.templeId,
     patch,
+    allowWhenLocked: true,
   })
 }

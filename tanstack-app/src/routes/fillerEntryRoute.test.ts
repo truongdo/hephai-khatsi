@@ -12,6 +12,7 @@ function temple(overrides: Partial<Temple>): Temple {
     status: 'draft',
     managerPhones: ['0901234567'],
     inviteId: 'public',
+    photoPath: null,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
     lockedAt: null,

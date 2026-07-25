@@ -42,6 +42,7 @@ export type CreateOrUpdateTempleDraftInput = {
   managerPhones: string[]
   templeId?: string
   patch: TempleProfilePatch
+  allowWhenLocked?: boolean
 }
 
 export type TemplePhoneLookupInput = {
@@ -58,6 +59,7 @@ export type TempleStore = {
   list(input: ListTemplesAdminInput): Promise<AdminListPage<Temple>>
   lock(templeId: string, lockedBy: string): Promise<Temple>
   unlock(templeId: string): Promise<Temple>
+  setPhotoPath(templeId: string, photoPath: string): Promise<Temple>
   deleteMany(ids: string[]): Promise<void>
 }
 
@@ -74,7 +76,14 @@ function phoneIndexId(orgUnitId: string, phone: string): string {
 }
 
 function templeFromSnap(snap: DocumentSnapshot): Temple {
-  return { id: snap.id, ...(snap.data() as Omit<Temple, 'id'>) }
+  const data = snap.data() as Omit<Temple, 'id' | 'photoPath'> & {
+    photoPath?: string | null
+  }
+  return {
+    id: snap.id,
+    ...data,
+    photoPath: data.photoPath ?? null,
+  }
 }
 
 function templeData(temple: Temple): Omit<Temple, 'id'> {
@@ -103,7 +112,7 @@ async function createOrUpdateDraft(
       if (existing.orgUnitId !== input.orgUnitId) {
         throw new DomainError('FORBIDDEN', 'Temple does not belong to this invite org unit')
       }
-      if (existing.status === 'locked') {
+      if (existing.status === 'locked' && !input.allowWhenLocked) {
         throw new DomainError('RECORD_LOCKED', 'Temple is locked')
       }
     }
@@ -121,13 +130,17 @@ async function createOrUpdateDraft(
           ...input.patch,
           id: existing.id,
           orgUnitId: existing.orgUnitId,
-          status: 'draft',
+          status: existing.status === 'locked' ? 'locked' : 'draft',
           managerPhones: input.managerPhones,
           // Re-validated (not frozen) per the current invite token on
           // non-admin (public flow) writes, matching the security rule's
           // re-check. Admin writes pass inviteId: null and preserve
           // whichever invite the record was originally created under.
           inviteId: input.inviteId ?? existing.inviteId,
+          photoPath:
+            'photoPath' in input.patch
+              ? (input.patch.photoPath ?? null)
+              : (existing.photoPath ?? null),
           createdAt: existing.createdAt,
           updatedAt: now,
           lockedAt: existing.lockedAt,
@@ -140,6 +153,7 @@ async function createOrUpdateDraft(
           status: 'draft',
           managerPhones: input.managerPhones,
           inviteId: input.inviteId,
+          photoPath: input.patch.photoPath ?? null,
           createdAt: now,
           updatedAt: now,
           lockedAt: null,
@@ -278,6 +292,27 @@ async function deleteMany(ids: string[]): Promise<void> {
   }
 }
 
+async function setPhotoPath(templeId: string, photoPath: string): Promise<Temple> {
+  const db = requireDb()
+  const templeRef = doc(db, COLLECTIONS.temples, templeId)
+
+  return runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(templeRef)
+    if (!snap.exists()) {
+      throw new DomainError('NOT_FOUND', 'Temple not found')
+    }
+
+    const now = new Date().toISOString()
+    const temple: Temple = {
+      ...templeFromSnap(snap),
+      photoPath,
+      updatedAt: now,
+    }
+    transaction.set(templeRef, templeData(temple))
+    return temple
+  })
+}
+
 async function unlock(templeId: string): Promise<Temple> {
   const db = requireDb()
   const templeRef = doc(db, COLLECTIONS.temples, templeId)
@@ -311,5 +346,6 @@ export const templeRepo: TempleStore = {
   list,
   lock,
   unlock,
+  setPhotoPath,
   deleteMany,
 }

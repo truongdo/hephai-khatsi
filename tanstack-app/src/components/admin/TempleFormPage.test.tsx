@@ -24,6 +24,7 @@ const lockedTemple = {
   managerPhones: ['0901234567'],
   status: 'locked' as const,
   inviteId: 'inv-1',
+  photoPath: null,
   diaChiMoi: '123 Đường A' as string | AddressValue,
   truTriHienNay: { dienThoai: '0901234567' },
   createdAt: '2026-07-19T10:00:00.000Z',

@@ -368,7 +368,7 @@ export function createMemoryTempleStore(
             'Temple does not belong to this invite org unit',
           )
         }
-        if (existing.status === 'locked') {
+        if (existing.status === 'locked' && !input.allowWhenLocked) {
           throw new DomainError('RECORD_LOCKED', 'Temple is locked')
         }
         const temple: Temple = {
@@ -376,12 +376,16 @@ export function createMemoryTempleStore(
           ...input.patch,
           id: existing.id,
           orgUnitId: existing.orgUnitId,
-          status: 'draft',
+          status: existing.status === 'locked' ? 'locked' : 'draft',
           managerPhones: input.managerPhones,
           // Re-validated per the current invite token on non-admin writes;
           // admin writes pass inviteId: null and preserve the original,
           // matching templeRepo.ts / firebase/firestore.rules.
           inviteId: input.inviteId ?? existing.inviteId,
+          photoPath:
+            'photoPath' in input.patch
+              ? (input.patch.photoPath ?? null)
+              : (existing.photoPath ?? null),
           createdAt: existing.createdAt,
           updatedAt: now,
           lockedAt: existing.lockedAt,
@@ -399,6 +403,7 @@ export function createMemoryTempleStore(
         status: 'draft',
         managerPhones: input.managerPhones,
         inviteId: input.inviteId,
+        photoPath: input.patch.photoPath ?? null,
         createdAt: now,
         updatedAt: now,
         lockedAt: null,
@@ -408,7 +413,9 @@ export function createMemoryTempleStore(
       return { temple, mode: 'created' as const }
     },
     async getById(templeId: string) {
-      return temples.get(templeId) ?? null
+      const temple = temples.get(templeId)
+      if (!temple) return null
+      return { ...temple, photoPath: temple.photoPath ?? null }
     },
     async listByOrgAndPhone(input: { orgUnitId: string; phone: string }) {
       return [...temples.values()].filter(
@@ -441,6 +448,17 @@ export function createMemoryTempleStore(
         status: 'draft',
         lockedAt: null,
         lockedBy: null,
+        updatedAt: '2026-07-19T00:00:00.000Z',
+      }
+      temples.set(templeId, temple)
+      return temple
+    },
+    async setPhotoPath(templeId: string, photoPath: string) {
+      const existing = temples.get(templeId)
+      if (!existing) throw new DomainError('NOT_FOUND', 'Temple not found')
+      const temple: Temple = {
+        ...existing,
+        photoPath,
         updatedAt: '2026-07-19T00:00:00.000Z',
       }
       temples.set(templeId, temple)

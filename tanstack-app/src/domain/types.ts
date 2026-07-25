@@ -130,6 +130,7 @@ export type Temple = {
   status: RecordStatus
   managerPhones: string[]
   inviteId: string | null
+  photoPath: string | null
   danhHieu?: string
   phanDoan?: string
   dacDiem?: string[]

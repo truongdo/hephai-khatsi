@@ -14,6 +14,7 @@ const templeItems = [
     managerPhones: ['0901234567'],
     status: 'draft' as const,
     inviteId: null,
+    photoPath: null,
     createdAt: '2026-07-19T10:00:00.000Z',
     updatedAt: '2026-07-19T10:00:00.000Z',
     lockedAt: null,

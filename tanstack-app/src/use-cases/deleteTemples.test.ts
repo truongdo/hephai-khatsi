@@ -31,6 +31,7 @@ function temple(overrides: Partial<Temple> & { id: string }): Temple {
     status: 'draft',
     managerPhones: [],
     inviteId: null,
+    photoPath: null,
     createdAt: '2026-07-19T00:00:00.000Z',
     updatedAt: '2026-07-19T00:00:00.000Z',
     lockedAt: null,

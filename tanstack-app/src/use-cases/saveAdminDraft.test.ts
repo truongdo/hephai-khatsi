@@ -224,6 +224,7 @@ describe('saveAdminTemple', () => {
         status: 'draft',
         managerPhones: ['0901234567'],
         inviteId: 'inv-1',
+        photoPath: null,
         danhHieu: 'Old',
         createdAt: '2026-07-19T00:00:00.000Z',
         updatedAt: '2026-07-19T00:00:00.000Z',
@@ -242,5 +243,56 @@ describe('saveAdminTemple', () => {
     expect(mode).toBe('updated')
     expect(temple.danhHieu).toBe('New')
     expect(temple.inviteId).toBe('inv-1')
+  })
+
+  it('updates a locked temple and preserves locked status', async () => {
+    const store = createMemoryTempleStore([
+      {
+        id: 't1',
+        orgUnitId: 'gd-i',
+        status: 'locked',
+        managerPhones: ['0901234567'],
+        inviteId: 'inv-1',
+        photoPath: null,
+        danhHieu: 'Old',
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: '2026-07-19T01:00:00.000Z',
+        lockedBy: 'admin-1',
+      },
+    ])
+    const { temple, mode } = await saveAdminTemple(
+      {
+        orgUnitId: 'gd-i',
+        templeId: 't1',
+        patch: { danhHieu: 'New' },
+      },
+      store,
+    )
+    expect(mode).toBe('updated')
+    expect(temple.danhHieu).toBe('New')
+    expect(temple.status).toBe('locked')
+    expect(temple.lockedBy).toBe('admin-1')
+    expect(temple.inviteId).toBe('inv-1')
+  })
+
+  it('setPhotoPath works on locked temples', async () => {
+    const store = createMemoryTempleStore([
+      {
+        id: 't1',
+        orgUnitId: 'gd-i',
+        status: 'locked',
+        managerPhones: ['0901234567'],
+        inviteId: null,
+        photoPath: null,
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: '2026-07-19T01:00:00.000Z',
+        lockedBy: 'admin-1',
+      },
+    ])
+    const updated = await store.setPhotoPath('t1', 'temples/t1/photo.jpg')
+    expect(updated.photoPath).toBe('temples/t1/photo.jpg')
+    expect(updated.status).toBe('locked')
   })
 })
