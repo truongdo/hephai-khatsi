@@ -32,6 +32,7 @@
     "@tanstack/react-router": "latest",
     "@tanstack/react-router-devtools": "latest",
     "@tanstack/router-plugin": "^1.132.0",
+    "aws4fetch": "^1.0.20",
     "dayjs": "^1.11.21",
     "firebase": "^12.16.0",
     "jose": "^6.2.4",
