@@ -6,11 +6,18 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import type { Temple } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { saveTempleDraft } from '#/use-cases/saveTempleDraft'
+import { uploadTemplePhoto } from '#/use-cases/uploadTemplePhoto'
 import { theme } from '../../theme'
 import { TempleEditorForm } from './TempleEditorForm'
 
 vi.mock('#/use-cases/saveTempleDraft', () => ({
   saveTempleDraft: vi.fn(),
+}))
+
+vi.mock('#/use-cases/uploadTemplePhoto', () => ({
+  uploadTemplePhoto: vi.fn(async () => ({
+    photoPath: 'temples/created-temple/photo.jpg',
+  })),
 }))
 
 vi.mock('#/data/vietnam-locations', () => ({
@@ -35,6 +42,14 @@ vi.mock('#/data/vietnam-locations', () => ({
 }))
 
 const saveTempleDraftMock = vi.mocked(saveTempleDraft)
+const uploadTemplePhotoMock = vi.mocked(uploadTemplePhoto)
+
+function getPortraitFileInput(): HTMLInputElement {
+  const button = screen.getByRole('button', { name: m.filler_photo_choose() })
+  return button.parentElement?.querySelector(
+    'input[type="file"]',
+  ) as HTMLInputElement
+}
 
 const completeAddress = {
   cityCode: '01',
@@ -89,6 +104,9 @@ beforeAll(() => {
       dispatchEvent: () => false,
     }),
   })
+
+  URL.createObjectURL = vi.fn(() => 'blob:preview')
+  URL.revokeObjectURL = vi.fn()
 })
 
 afterEach(() => {
@@ -97,6 +115,10 @@ afterEach(() => {
 
 beforeEach(() => {
   saveTempleDraftMock.mockReset()
+  uploadTemplePhotoMock.mockReset()
+  uploadTemplePhotoMock.mockResolvedValue({
+    photoPath: 'temples/created-temple/photo.jpg',
+  })
 })
 
 function renderForm(
@@ -206,6 +228,41 @@ describe('TempleEditorForm', () => {
       explicitPhones: ['0912345678'],
     })
     expect(onCreated).toHaveBeenCalledWith('created-temple')
+    expect(uploadTemplePhotoMock).not.toHaveBeenCalled()
+  })
+
+  it('uploads pending portrait after successful create', async () => {
+    const user = userEvent.setup()
+    let resolveUpload!: (value: { photoPath: string }) => void
+    const uploadPromise = new Promise<{ photoPath: string }>((resolve) => {
+      resolveUpload = resolve
+    })
+    uploadTemplePhotoMock.mockReturnValue(uploadPromise)
+    saveTempleDraftMock.mockResolvedValue({
+      temple: temple({ id: 'created-temple' }),
+      mode: 'created',
+    })
+    const { onCreated } = renderForm({
+      initial: requiredTempleInitial(),
+    })
+    const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
+
+    await user.upload(getPortraitFileInput(), file)
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+
+    expect(saveTempleDraftMock).toHaveBeenCalled()
+    expect(uploadTemplePhotoMock).toHaveBeenCalledWith({
+      templeId: 'created-temple',
+      bytes: expect.any(Uint8Array),
+      contentType: 'image/jpeg',
+      inviteToken: 'invite-token',
+    })
+    expect(onCreated).not.toHaveBeenCalled()
+
+    resolveUpload({ photoPath: 'temples/created-temple/photo.jpg' })
+    await vi.waitFor(() =>
+      expect(onCreated).toHaveBeenCalledWith('created-temple'),
+    )
   })
 
   it('blocks save when required temple fields are empty', async () => {
