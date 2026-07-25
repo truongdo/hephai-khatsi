@@ -6,7 +6,6 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import type { AddressValue } from '#/domain/address'
 import { m } from '#/paraglide/messages'
 import { saveAdminTemple } from '#/use-cases/saveAdminTemple'
-import { uploadTemplePhoto } from '#/use-cases/uploadTemplePhoto'
 import { theme } from '../../theme'
 import { TempleFormPage } from './TempleFormPage'
 
