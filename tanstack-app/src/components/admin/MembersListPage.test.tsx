@@ -1,6 +1,6 @@
 import { MantineProvider } from '@mantine/core'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { theme } from '../../theme'
@@ -143,6 +143,25 @@ describe('MembersListPage', () => {
     await user.click(checkboxes[1])
     expect(screen.getByText('Đã chọn 1')).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Xóa' })).toBeTruthy()
+  })
+
+  it('invalidates list and shows error when delete fails', async () => {
+    deleteMembersMock.mockRejectedValue(new Error('Delete failed'))
+    const user = userEvent.setup()
+    const { invalidateSpy } = renderList()
+    await screen.findByText('HT A')
+    const checkboxes = screen.getAllByRole('checkbox')
+    await user.click(checkboxes[1])
+    await user.click(screen.getByRole('button', { name: 'Xóa' }))
+    const dialog = await screen.findByRole('dialog')
+    await user.click(within(dialog).getByRole('button', { name: 'Xóa' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('Delete failed')
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: ['admin', 'members'],
+    })
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).toBeNull()
+    })
   })
 
   it('deletes selected members after confirm', async () => {

@@ -116,6 +116,12 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
         queryKey: [...adminKeys.all, 'members'],
       })
     },
+    onError: () => {
+      setConfirmOpen(false)
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, 'members'],
+      })
+    },
   })
 
   const orgUnitSelectData = useMemo(
@@ -178,6 +184,12 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
             {m.admin_bulk_delete()}
           </Button>
         </Group>
+      )}
+
+      {deleteMutation.error && (
+        <Text c="red" size="sm" role="alert">
+          {deleteMutation.error.message}
+        </Text>
       )}
 
       {members.isError && members.error && (

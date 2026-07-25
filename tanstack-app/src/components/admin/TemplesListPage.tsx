@@ -115,6 +115,12 @@ export function TemplesListPage() {
         queryKey: [...adminKeys.all, 'temples'],
       })
     },
+    onError: () => {
+      setConfirmOpen(false)
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, 'temples'],
+      })
+    },
   })
 
   const orgUnitSelectData = useMemo(
@@ -173,6 +179,12 @@ export function TemplesListPage() {
             {m.admin_bulk_delete()}
           </Button>
         </Group>
+      )}
+
+      {deleteMutation.error && (
+        <Text c="red" size="sm" role="alert">
+          {deleteMutation.error.message}
+        </Text>
       )}
 
       {temples.isError && temples.error && (

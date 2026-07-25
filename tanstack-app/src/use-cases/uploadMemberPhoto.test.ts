@@ -61,6 +61,10 @@ function memberStoreWith(members: Member[]): MemberStore & {
     async list() {
       return { items: [], nextCursor: null }
     },
+    async listByCurrentTempleIds() {
+      return []
+    },
+    async deleteMany() {},
   }
 }
 

@@ -1,6 +1,6 @@
 import { MantineProvider } from '@mantine/core'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { theme } from '../../theme'
@@ -157,6 +157,25 @@ describe('TemplesListPage', () => {
       queryKey: ['admin', 'temples'],
     })
     expect(screen.queryByText('Đã chọn 1')).toBeNull()
+  })
+
+  it('invalidates list and shows error when delete fails', async () => {
+    deleteTemplesMock.mockRejectedValue(new Error('Delete failed'))
+    const user = userEvent.setup()
+    const { invalidateSpy } = renderList()
+    await screen.findByText('TX A')
+    const checkboxes = screen.getAllByRole('checkbox')
+    await user.click(checkboxes[1])
+    await user.click(screen.getByRole('button', { name: 'Xóa' }))
+    const dialog = await screen.findByRole('dialog')
+    await user.click(within(dialog).getByRole('button', { name: 'Xóa' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('Delete failed')
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: ['admin', 'temples'],
+    })
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).toBeNull()
+    })
   })
 
   it('shows blocker modal when delete is blocked', async () => {
