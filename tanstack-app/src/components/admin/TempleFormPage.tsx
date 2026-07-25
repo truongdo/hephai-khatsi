@@ -1,4 +1,13 @@
-import { Button, Group, Loader, Select, Stack, Text, Title } from '@mantine/core'
+import {
+  Button,
+  Group,
+  Loader,
+  Paper,
+  Select,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -217,87 +226,89 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
         <QueryErrorAlert error={temple.error} />
       )}
       {(mode === 'create' || temple.data) && !temple.isError && (
-        <Stack maw={760}>
-          {mode === 'edit' && temple.data && (
-            <Text size="sm" c="dimmed">
-              {temple.data.inviteId
-                ? `${m.admin_temples_invite_label()}: ${temple.data.inviteId}`
-                : m.admin_temples_created_by_admin()}
-            </Text>
-          )}
-
-          <Select
-            label={m.admin_temples_form_org_unit()}
-            data={orgUnitSelectData}
-            value={orgUnitId}
-            onChange={setOrgUnitId}
-            searchable
-            required
-            disabled={mode === 'edit'}
-          />
-
-          <TempleFormFields
-            key={mode === 'edit' ? templeId : 'create'}
-            apiRef={fieldsApiRef}
-            initial={formInitial}
-            disabled={false}
-            templeId={templeId}
-            getIdToken={async () => (user ? user.getIdToken() : undefined)}
-            onUploadError={setPhotoError}
-          />
-
-          {mutationError && (
-            <Text c="red" size="sm" role="alert">
-              {mutationError}
-            </Text>
-          )}
-          {photoError && (
-            <Text c="red" size="sm" role="alert">
-              {photoError}
-            </Text>
-          )}
-          {saveSuccess && (
-            <Text c="green" size="sm">
-              {saveSuccess}
-            </Text>
-          )}
-
-          <Group>
-            <Button
-              loading={saveMutation.isPending}
-              disabled={!orgUnitId}
-              onClick={() => void saveDraft()}
-            >
-              {m.admin_temples_save_draft()}
-            </Button>
-            <Button
-              loading={saveMutation.isPending}
-              disabled={!orgUnitId}
-              onClick={() => void complete()}
-            >
-              {m.admin_temples_complete()}
-            </Button>
-            {mode === 'edit' && temple.data?.status === 'draft' && (
-              <Button
-                variant="outline"
-                color="red"
-                loading={lockMutation.isPending}
-                onClick={() => lockMutation.mutate()}
-              >
-                {m.admin_temples_lock()}
-              </Button>
+        <Paper p="xl" radius="md" maw={760} w="100%">
+          <Stack gap="lg">
+            {mode === 'edit' && temple.data && (
+              <Text size="sm" c="dimmed">
+                {temple.data.inviteId
+                  ? `${m.admin_temples_invite_label()}: ${temple.data.inviteId}`
+                  : m.admin_temples_created_by_admin()}
+              </Text>
             )}
-            {isLocked && (
-              <Button
-                variant="outline"
-                loading={unlockMutation.isPending}
-                onClick={() => unlockMutation.mutate()}
-              >
-                {m.admin_temples_unlock()}
-              </Button>
+
+            <Select
+              label={m.admin_temples_form_org_unit()}
+              data={orgUnitSelectData}
+              value={orgUnitId}
+              onChange={setOrgUnitId}
+              searchable
+              required
+              disabled={mode === 'edit'}
+            />
+
+            <TempleFormFields
+              key={mode === 'edit' ? templeId : 'create'}
+              apiRef={fieldsApiRef}
+              initial={formInitial}
+              disabled={false}
+              templeId={templeId}
+              getIdToken={async () => (user ? user.getIdToken() : undefined)}
+              onUploadError={setPhotoError}
+            />
+
+            {mutationError && (
+              <Text c="red" size="sm" role="alert">
+                {mutationError}
+              </Text>
             )}
-          </Group>
-        </Stack>
+            {photoError && (
+              <Text c="red" size="sm" role="alert">
+                {photoError}
+              </Text>
+            )}
+            {saveSuccess && (
+              <Text c="green" size="sm">
+                {saveSuccess}
+              </Text>
+            )}
+
+            <Group>
+              <Button
+                loading={saveMutation.isPending}
+                disabled={!orgUnitId}
+                onClick={() => void saveDraft()}
+              >
+                {m.admin_temples_save_draft()}
+              </Button>
+              <Button
+                loading={saveMutation.isPending}
+                disabled={!orgUnitId}
+                onClick={() => void complete()}
+              >
+                {m.admin_temples_complete()}
+              </Button>
+              {mode === 'edit' && temple.data?.status === 'draft' && (
+                <Button
+                  variant="outline"
+                  color="red"
+                  loading={lockMutation.isPending}
+                  onClick={() => lockMutation.mutate()}
+                >
+                  {m.admin_temples_lock()}
+                </Button>
+              )}
+              {isLocked && (
+                <Button
+                  variant="outline"
+                  loading={unlockMutation.isPending}
+                  onClick={() => unlockMutation.mutate()}
+                >
+                  {m.admin_temples_unlock()}
+                </Button>
+              )}
+            </Group>
+          </Stack>
+        </Paper>
       )}
     </Stack>
   )
