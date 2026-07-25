@@ -25,6 +25,7 @@ import '@fontsource/noto-serif/latin-600.css'
 import '@fontsource/noto-serif/latin-700.css'
 import '../styles.css'
 import { AuthProvider } from '#/auth/AuthProvider'
+import { RequireAuth } from '#/auth/RequireAuth'
 import { AppHeader } from '#/components/AppHeader'
 import { createAppQueryClient } from '#/query/queryClient'
 import { theme } from '../theme'
@@ -47,8 +48,10 @@ function RootComponent() {
       <DatesProvider settings={{ locale: 'vi', firstDayOfWeek: 1 }}>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            {showAppHeader ? <AppHeader /> : null}
-            <Outlet />
+            <RequireAuth>
+              {showAppHeader ? <AppHeader /> : null}
+              <Outlet />
+            </RequireAuth>
           </AuthProvider>
         </QueryClientProvider>
         <TanStackDevtools

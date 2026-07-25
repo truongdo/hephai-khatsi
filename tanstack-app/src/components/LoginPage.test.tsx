@@ -112,9 +112,13 @@ describe('LoginPage', () => {
     })
   })
 
-  it('navigates home when already signed in', async () => {
+  it('navigates home when already signed in as non-admin', async () => {
     renderLogin({
-      user: { uid: 'u1', email: 'a@b.c' },
+      user: {
+        uid: 'u1',
+        email: 'a@b.c',
+        getIdTokenResult: async () => ({ claims: {} }),
+      },
       loading: false,
     })
     await waitFor(() => {
@@ -122,9 +126,26 @@ describe('LoginPage', () => {
     })
   })
 
+  it('navigates to /admin when already signed in as admin', async () => {
+    renderLogin({
+      user: {
+        uid: 'admin-1',
+        email: 'admin@b.c',
+        getIdTokenResult: async () => ({ claims: { admin: true } }),
+      },
+      loading: false,
+    })
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith({ to: '/admin' })
+    })
+  })
+
   it('navigates to redirect path after Google sign-in', async () => {
     useSearchMock.mockReturnValue({ redirect: '/admin/temples' })
-    signInWithGoogle.mockResolvedValueOnce(undefined)
+    signInWithGoogle.mockResolvedValueOnce({
+      uid: 'u1',
+      getIdTokenResult: async () => ({ claims: { admin: true } }),
+    })
     const user = userEvent.setup()
     renderLogin()
     await user.click(
@@ -132,6 +153,21 @@ describe('LoginPage', () => {
     )
     await waitFor(() => {
       expect(navigateMock).toHaveBeenCalledWith({ to: '/admin/temples' })
+    })
+  })
+
+  it('navigates to /admin after Google sign-in when admin and no redirect', async () => {
+    signInWithGoogle.mockResolvedValueOnce({
+      uid: 'admin-1',
+      getIdTokenResult: async () => ({ claims: { admin: true } }),
+    })
+    const user = userEvent.setup()
+    renderLogin()
+    await user.click(
+      screen.getByRole('button', { name: m.auth_login_google() }),
+    )
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith({ to: '/admin' })
     })
   })
 })

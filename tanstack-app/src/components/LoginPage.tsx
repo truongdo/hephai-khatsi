@@ -12,8 +12,9 @@ import {
   Title,
 } from '@mantine/core'
 import { useNavigate } from '@tanstack/react-router'
+import type { User } from 'firebase/auth'
 import { m } from '#/paraglide/messages'
-import { safeRedirectPath } from '#/auth/safeRedirect'
+import { postLoginPath } from '#/auth/postLoginPath'
 import { useAuth } from '#/auth/useAuth'
 import { Route } from '#/routes/login'
 import { authErrorMessage } from '#/auth/authErrors'
@@ -32,8 +33,14 @@ export function LoginPage() {
   const [pending, setPending] = useState(false)
 
   useEffect(() => {
-    if (!loading && user) {
-      void navigate({ to: safeRedirectPath(redirect) })
+    if (loading || !user) return
+    let cancelled = false
+    void (async () => {
+      const to = await postLoginPath(user, redirect)
+      if (!cancelled) await navigate({ to })
+    })()
+    return () => {
+      cancelled = true
     }
   }, [loading, user, navigate, redirect])
 
@@ -45,12 +52,12 @@ export function LoginPage() {
     )
   }
 
-  async function run(action: () => Promise<unknown>) {
+  async function run(action: () => Promise<User>) {
     setError(null)
     setPending(true)
     try {
-      await action()
-      await navigate({ to: safeRedirectPath(redirect) })
+      const signedIn = await action()
+      await navigate({ to: await postLoginPath(signedIn, redirect) })
     } catch (err) {
       setError(authErrorMessage(err))
     } finally {

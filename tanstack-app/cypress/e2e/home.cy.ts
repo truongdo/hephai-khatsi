@@ -1,7 +1,7 @@
 describe('Home page', () => {
-  it('loads the Vietnamese welcome heading', () => {
+  it('sends anonymous users to login', () => {
     cy.visit('/')
-    cy.document().its('documentElement.lang').should('eq', 'vi')
-    cy.contains('h1', 'Hệ phái Khất Sĩ').should('be.visible')
+    cy.url().should('include', '/login')
+    cy.contains('h1', 'Đăng nhập').should('be.visible')
   })
 })
