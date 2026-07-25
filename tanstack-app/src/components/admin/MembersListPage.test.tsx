@@ -1,7 +1,8 @@
 import { MantineProvider } from '@mantine/core'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
-import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { theme } from '../../theme'
 import { MembersListPage } from './MembersListPage'
 
@@ -24,8 +25,14 @@ const memberItems = [
   },
 ]
 
+const deleteMembersMock = vi.fn()
+
 vi.mock('#/auth/useAdminClaim', () => ({
   useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid' }),
+}))
+
+vi.mock('#/use-cases/deleteMembers', () => ({
+  deleteMembers: (...args: unknown[]) => deleteMembersMock(...args),
 }))
 
 vi.mock('@tanstack/react-router', () => ({
@@ -100,17 +107,24 @@ beforeAll(() => {
   })
 })
 
+beforeEach(() => {
+  deleteMembersMock.mockReset()
+  deleteMembersMock.mockResolvedValue(undefined)
+})
+
 function renderList() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
-  return render(
+  const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+  const view = render(
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme} defaultColorScheme="light">
         <MembersListPage sanghaType="tang" />
       </MantineProvider>
     </QueryClientProvider>,
   )
+  return { ...view, queryClient, invalidateSpy }
 }
 
 describe('MembersListPage', () => {
@@ -119,5 +133,31 @@ describe('MembersListPage', () => {
     expect(await screen.findByText('HT A')).toBeTruthy()
     const link = screen.getByRole('link', { name: 'HT A' })
     expect(link.getAttribute('href')).toBe('/admin/members/m1')
+  })
+
+  it('shows bulk delete toolbar when a row is selected', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await screen.findByText('HT A')
+    const checkboxes = screen.getAllByRole('checkbox')
+    await user.click(checkboxes[1])
+    expect(screen.getByText('Đã chọn 1')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Xóa' })).toBeTruthy()
+  })
+
+  it('deletes selected members after confirm', async () => {
+    const user = userEvent.setup()
+    const { invalidateSpy } = renderList()
+    await screen.findByText('HT A')
+    const checkboxes = screen.getAllByRole('checkbox')
+    await user.click(checkboxes[1])
+    await user.click(screen.getByRole('button', { name: 'Xóa' }))
+    const dialog = await screen.findByRole('dialog')
+    await user.click(within(dialog).getByRole('button', { name: 'Xóa' }))
+    expect(deleteMembersMock).toHaveBeenCalledWith({ ids: ['m1'] })
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: ['admin', 'members'],
+    })
+    expect(screen.queryByText('Đã chọn 1')).toBeNull()
   })
 })

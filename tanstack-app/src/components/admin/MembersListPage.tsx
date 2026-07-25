@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   Group,
   Select,
   Stack,
@@ -8,16 +9,20 @@ import {
   Title,
 } from '@mantine/core'
 import { Link } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
+import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { emptyCell } from '#/components/admin/emptyCell'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
+import { useAdminListSelection } from '#/components/admin/useAdminListSelection'
 import type { Member, RecordStatus, SanghaType } from '#/domain/types'
+import { adminKeys } from '#/query/adminKeys'
 import { membersQuery, orgUnitsQuery } from '#/query/adminQueries'
+import { deleteMembers } from '#/use-cases/deleteMembers'
 
 type MembersListPageProps = {
   sanghaType: SanghaType
@@ -47,6 +52,7 @@ function listTitle(sanghaType: SanghaType): string {
 
 export function MembersListPage({ sanghaType }: MembersListPageProps) {
   const claim = useAdminClaim()
+  const queryClient = useQueryClient()
 
   const [orgUnitFilter, setOrgUnitFilter] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<RecordStatus | null>(null)
@@ -54,6 +60,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
   const [allItems, setAllItems] = useState<Member[]>([])
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const lastAppendedKeyRef = useRef<string | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   const filterKey = `${sanghaType}:${orgUnitFilter ?? ''}:${statusFilter ?? ''}`
 
@@ -92,6 +99,24 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     }
     setNextCursor(members.data.nextCursor)
   }, [members.data, members.dataUpdatedAt, cursor])
+
+  const itemIds = useMemo(() => allItems.map((member) => member.id), [allItems])
+  const selection = useAdminListSelection(itemIds)
+
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteMembers({ ids: [...selection.selectedIds] }),
+    onSuccess: () => {
+      selection.clear()
+      setConfirmOpen(false)
+      setCursor(undefined)
+      setAllItems([])
+      setNextCursor(null)
+      lastAppendedKeyRef.current = null
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, 'members'],
+      })
+    },
+  })
 
   const orgUnitSelectData = useMemo(
     () =>
@@ -146,6 +171,15 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
         />
       </Group>
 
+      {selection.selectedCount > 0 && (
+        <Group>
+          <Text>{m.admin_bulk_selected({ count: selection.selectedCount })}</Text>
+          <Button color="red" onClick={() => setConfirmOpen(true)}>
+            {m.admin_bulk_delete()}
+          </Button>
+        </Group>
+      )}
+
       {members.isError && members.error && (
         <QueryErrorAlert error={members.error} />
       )}
@@ -158,6 +192,16 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
           >
             <Table.Thead>
               <Table.Tr>
+                <Table.Th w={40}>
+                  <Checkbox
+                    checked={selection.allLoadedSelected}
+                    indeterminate={selection.someSelected}
+                    onChange={selection.toggleAllLoaded}
+                    aria-label={m.admin_bulk_selected({
+                      count: selection.selectedCount,
+                    })}
+                  />
+                </Table.Th>
                 <Table.Th>{m.admin_members_col_phap_danh()}</Table.Th>
                 <Table.Th>{m.admin_members_col_the_danh()}</Table.Th>
                 <Table.Th>{m.admin_members_col_cccd()}</Table.Th>
@@ -168,6 +212,13 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
             <Table.Tbody>
               {allItems.map((member) => (
                 <Table.Tr key={member.id}>
+                  <Table.Td>
+                    <Checkbox
+                      checked={selection.selectedIds.has(member.id)}
+                      onChange={() => selection.toggle(member.id)}
+                      aria-label={memberDisplayName(member)}
+                    />
+                  </Table.Td>
                   <Table.Td>
                     <Text
                       component={Link}
@@ -205,6 +256,14 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
           )}
         </>
       )}
+
+      <AdminConfirmDeleteModal
+        opened={confirmOpen}
+        count={selection.selectedCount}
+        loading={deleteMutation.isPending}
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={() => deleteMutation.mutate()}
+      />
     </Stack>
   )
 }
