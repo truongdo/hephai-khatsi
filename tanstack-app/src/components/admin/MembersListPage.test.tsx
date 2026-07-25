@@ -26,9 +26,18 @@ const memberItems = [
 ]
 
 const deleteMembersMock = vi.fn()
+const getIdTokenMock = vi.fn(async () => 'admin-id-token')
 
 vi.mock('#/auth/useAdminClaim', () => ({
   useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid' }),
+}))
+
+vi.mock('#/auth/useAuth', () => ({
+  useAuth: () => ({
+    user: { getIdToken: getIdTokenMock },
+    loading: false,
+    signOut: vi.fn(),
+  }),
 }))
 
 vi.mock('#/use-cases/deleteMembers', () => ({
@@ -110,6 +119,8 @@ beforeAll(() => {
 beforeEach(() => {
   deleteMembersMock.mockReset()
   deleteMembersMock.mockResolvedValue(undefined)
+  getIdTokenMock.mockReset()
+  getIdTokenMock.mockResolvedValue('admin-id-token')
 })
 
 function renderList() {
@@ -173,7 +184,10 @@ describe('MembersListPage', () => {
     await user.click(screen.getByRole('button', { name: 'Xóa' }))
     const dialog = await screen.findByRole('dialog')
     await user.click(within(dialog).getByRole('button', { name: 'Xóa' }))
-    expect(deleteMembersMock).toHaveBeenCalledWith({ ids: ['m1'] })
+    expect(deleteMembersMock).toHaveBeenCalledWith({
+      ids: ['m1'],
+      idToken: 'admin-id-token',
+    })
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['admin', 'members'],
     })

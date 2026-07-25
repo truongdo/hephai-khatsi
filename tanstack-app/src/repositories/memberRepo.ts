@@ -15,7 +15,6 @@ import {
   type QueryConstraint,
   type Transaction,
 } from 'firebase/firestore'
-import { deleteObject, ref } from 'firebase/storage'
 import { DomainError } from '#/domain/errors'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
 import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
@@ -23,7 +22,6 @@ import { normalizeVnPhone } from '#/domain/normalize'
 import type { Member, SanghaType } from '#/domain/types'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
-import { getClientStorage } from '#/firebase/storage'
 import type { AdminListPage, ListMembersAdminInput } from '#/repositories/adminListTypes'
 
 export type MemberProfilePatch = Partial<
@@ -371,18 +369,14 @@ async function listByCurrentTempleIds(templeIds: string[]): Promise<Member[]> {
 
 async function deleteMany(ids: string[]): Promise<void> {
   const db = requireDb()
-  const storage = getClientStorage()
 
   for (const memberId of ids) {
-    let photoPath: string | null = null
-
     await runTransaction(db, async (transaction) => {
       const memberRef = doc(db, COLLECTIONS.members, memberId)
       const snap = await transaction.get(memberRef)
       if (!snap.exists()) return
 
       const member = memberFromSnap(snap)
-      photoPath = member.photoPath
 
       const phoneIndex = await readPhoneIndexForTransaction(
         transaction,
@@ -393,14 +387,6 @@ async function deleteMany(ids: string[]): Promise<void> {
       shrinkPhoneIndex(transaction, phoneIndex, memberId)
       transaction.delete(memberRef)
     })
-
-    if (photoPath && storage) {
-      try {
-        await deleteObject(ref(storage, photoPath))
-      } catch {
-        // Best-effort; Firestore delete already committed.
-      }
-    }
   }
 }
 

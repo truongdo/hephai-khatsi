@@ -1,8 +1,12 @@
 import { memberRepo, type MemberStore } from '#/repositories/memberRepo'
+import { deleteMemberPhotoObject } from '#/photos/photosApiClient'
 
 export async function deleteMembers(
-  input: { ids: string[] },
+  input: { ids: string[]; idToken: string },
   memberStore: MemberStore = memberRepo,
+  deletePhoto: (memberId: string) => Promise<void> = (id) =>
+    deleteMemberPhotoObject({ memberId: id, idToken: input.idToken }),
 ): Promise<void> {
   await memberStore.deleteMany(input.ids)
+  await Promise.allSettled(input.ids.map((id) => deletePhoto(id)))
 }

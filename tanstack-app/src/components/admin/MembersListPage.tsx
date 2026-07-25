@@ -13,6 +13,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
+import { useAuth } from '#/auth/useAuth'
 import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { emptyCell } from '#/components/admin/emptyCell'
@@ -52,6 +53,7 @@ function listTitle(sanghaType: SanghaType): string {
 
 export function MembersListPage({ sanghaType }: MembersListPageProps) {
   const claim = useAdminClaim()
+  const { user } = useAuth()
   const queryClient = useQueryClient()
 
   const [orgUnitFilter, setOrgUnitFilter] = useState<string | null>(null)
@@ -104,7 +106,10 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
   const selection = useAdminListSelection(itemIds)
 
   const deleteMutation = useMutation({
-    mutationFn: () => deleteMembers({ ids: [...selection.selectedIds] }),
+    mutationFn: async () => {
+      const idToken = await user!.getIdToken()
+      await deleteMembers({ ids: [...selection.selectedIds], idToken })
+    },
     onSuccess: () => {
       selection.clear()
       setConfirmOpen(false)

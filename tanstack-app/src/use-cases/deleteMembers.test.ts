@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { Member } from '#/domain/types'
 import { createMemoryMemberStore } from '#/test/memoryStores'
 import { deleteMembers } from './deleteMembers'
@@ -29,7 +29,7 @@ describe('deleteMembers', () => {
       member({ id: 'm2' }),
     ])
 
-    await deleteMembers({ ids: ['m1'] }, store)
+    await deleteMembers({ ids: ['m1'], idToken: 'token' }, store)
 
     expect(await store.getById('m1')).toBeNull()
     expect(await store.getById('m2')).not.toBeNull()
@@ -42,10 +42,37 @@ describe('deleteMembers', () => {
       member({ id: 'm3' }),
     ])
 
-    await deleteMembers({ ids: ['m1', 'm3'] }, store)
+    await deleteMembers({ ids: ['m1', 'm3'], idToken: 'token' }, store)
 
     expect(await store.getById('m1')).toBeNull()
     expect(await store.getById('m2')).not.toBeNull()
     expect(await store.getById('m3')).toBeNull()
+  })
+
+  it('calls photo deleter for each member id after store delete', async () => {
+    const store = createMemoryMemberStore([member({ id: 'm1' }), member({ id: 'm2' })])
+    const deletePhoto = vi.fn().mockResolvedValue(undefined)
+
+    await deleteMembers(
+      { ids: ['m1', 'm2'], idToken: 'admin-token' },
+      store,
+      deletePhoto,
+    )
+
+    expect(deletePhoto).toHaveBeenCalledTimes(2)
+    expect(deletePhoto).toHaveBeenCalledWith('m1')
+    expect(deletePhoto).toHaveBeenCalledWith('m2')
+  })
+
+  it('does not throw when photo delete fails (best-effort)', async () => {
+    const store = createMemoryMemberStore([member({ id: 'm1' })])
+    const deletePhoto = vi.fn().mockRejectedValue(new Error('R2 delete failed'))
+
+    await expect(
+      deleteMembers({ ids: ['m1'], idToken: 'token' }, store, deletePhoto),
+    ).resolves.toBeUndefined()
+
+    expect(await store.getById('m1')).toBeNull()
+    expect(deletePhoto).toHaveBeenCalledWith('m1')
   })
 })
