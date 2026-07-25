@@ -82,7 +82,7 @@ service cloud.firestore {
             && lockFieldsUnchanged() && validInviteScope(request.resource.data))
       );
 
-      allow delete: if false;
+      allow delete: if isAdmin();
     }
 
     // --- temples: ids stay random (a phone can map to several temples, so
@@ -130,7 +130,7 @@ service cloud.firestore {
         || (!isAdmin() && resource.data.status != 'locked' && lockFieldsUnchanged() && validInviteScope(request.resource.data))
       );
 
-      allow delete: if false;
+      allow delete: if isAdmin();
     }
 
     // --- templeManagerPhoneIndex: secondary lookup index, {orgUnitId}_{phone}
@@ -145,8 +145,11 @@ service cloud.firestore {
       allow list: if isAdmin();
       allow create, update: if request.resource.data.templeIds is list
         && request.resource.data.templeIds.size() <= 20
-        && request.resource.data.templeIds.size() >= (resource == null ? 0 : resource.data.templeIds.size());
-      allow delete: if false;
+        && (
+          isAdmin()
+          || request.resource.data.templeIds.size() >= (resource == null ? 0 : resource.data.templeIds.size())
+        );
+      allow delete: if isAdmin();
     }
 
     match /memberPhoneIndex/{indexId} {
@@ -154,8 +157,11 @@ service cloud.firestore {
       allow list: if isAdmin();
       allow create, update: if request.resource.data.memberIds is list
         && request.resource.data.memberIds.size() <= 20
-        && request.resource.data.memberIds.size() >= (resource == null ? 0 : resource.data.memberIds.size());
-      allow delete: if false;
+        && (
+          isAdmin()
+          || request.resource.data.memberIds.size() >= (resource == null ? 0 : resource.data.memberIds.size())
+        );
+      allow delete: if isAdmin();
     }
   }
 }

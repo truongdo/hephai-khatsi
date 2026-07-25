@@ -25,6 +25,8 @@ service firebase.storage {
             && firestore.get(/databases/(default)/documents/invites/$(request.resource.metadata.inviteToken)).data.orgUnitId == memberDoc(memberId).orgUnitId
           )
         );
+
+      allow delete: if isAdmin();
     }
   }
 }

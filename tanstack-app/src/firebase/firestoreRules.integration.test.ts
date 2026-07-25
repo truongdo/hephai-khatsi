@@ -7,6 +7,7 @@ import {
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing'
 import {
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -193,6 +194,18 @@ describe('members', () => {
     const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
     await assertSucceeds(getDocs(fsCollection(admin, 'members')))
   })
+
+  it('allows admin delete but denies unauthenticated delete', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'members', memberId), memberDraft())
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(deleteDoc(doc(anon, 'members', memberId)))
+
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertSucceeds(deleteDoc(doc(admin, 'members', memberId)))
+  })
 })
 
 describe('temples', () => {
@@ -231,6 +244,18 @@ describe('temples', () => {
     const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
     await assertFails(updateDoc(doc(admin, 'temples', 'temple-1'), { orgUnitId: 'gd-ii' }))
   })
+
+  it('allows admin delete but denies unauthenticated delete', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'temples', 'temple-1'), templeDraft())
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(deleteDoc(doc(anon, 'temples', 'temple-1')))
+
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertSucceeds(deleteDoc(doc(admin, 'temples', 'temple-1')))
+  })
 })
 
 describe('templeManagerPhoneIndex', () => {
@@ -241,6 +266,21 @@ describe('templeManagerPhoneIndex', () => {
     await assertSucceeds(getDoc(doc(anon, 'templeManagerPhoneIndex', 'gd-i_0912345678')))
     await assertFails(getDocs(fsCollection(anon, 'templeManagerPhoneIndex')))
     await assertFails(updateDoc(doc(anon, 'templeManagerPhoneIndex', 'gd-i_0912345678'), { templeIds: [] }))
+  })
+
+  it('allows admin to shrink or delete index docs; anon cannot shrink or delete', async () => {
+    const env = await getTestEnv()
+    const indexId = 'gd-i_0912345678'
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'templeManagerPhoneIndex', indexId), { templeIds: ['temple-1', 'temple-2'] })
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(updateDoc(doc(anon, 'templeManagerPhoneIndex', indexId), { templeIds: ['temple-1'] }))
+    await assertFails(deleteDoc(doc(anon, 'templeManagerPhoneIndex', indexId)))
+
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertSucceeds(updateDoc(doc(admin, 'templeManagerPhoneIndex', indexId), { templeIds: ['temple-1'] }))
+    await assertSucceeds(deleteDoc(doc(admin, 'templeManagerPhoneIndex', indexId)))
   })
 })
 
@@ -260,6 +300,21 @@ describe('memberPhoneIndex', () => {
         memberIds: [],
       }),
     )
+  })
+
+  it('allows admin to shrink or delete index docs; anon cannot shrink or delete', async () => {
+    const env = await getTestEnv()
+    const indexId = 'gd-i_tang_0912345678'
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'memberPhoneIndex', indexId), { memberIds: ['member-1', 'member-2'] })
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(updateDoc(doc(anon, 'memberPhoneIndex', indexId), { memberIds: ['member-1'] }))
+    await assertFails(deleteDoc(doc(anon, 'memberPhoneIndex', indexId)))
+
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertSucceeds(updateDoc(doc(admin, 'memberPhoneIndex', indexId), { memberIds: ['member-1'] }))
+    await assertSucceeds(deleteDoc(doc(admin, 'memberPhoneIndex', indexId)))
   })
 })
 
