@@ -246,6 +246,34 @@ describe('temples', () => {
     await assertFails(updateDoc(doc(admin, 'temples', 'temple-1'), { orgUnitId: 'gd-ii' }))
   })
 
+  it('allows admin to update profile fields on a locked temple without unlocking', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'temples', 'temple-1'),
+        templeDraft({
+          status: 'locked',
+          lockedAt: '2026-01-02T00:00:00.000Z',
+          lockedBy: 'admin-uid',
+          photoPath: null,
+        }),
+      )
+    })
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertSucceeds(
+      updateDoc(doc(admin, 'temples', 'temple-1'), {
+        danhHieu: 'Updated',
+        photoPath: 'temples/temple-1/photo.jpg',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      }),
+    )
+    // still cannot change org unit
+    await assertFails(updateDoc(doc(admin, 'temples', 'temple-1'), { orgUnitId: 'gd-ii' }))
+    // anon still blocked
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(updateDoc(doc(anon, 'temples', 'temple-1'), { danhHieu: 'x' }))
+  })
+
   it('allows admin delete but denies unauthenticated delete', async () => {
     const env = await getTestEnv()
     await env.withSecurityRulesDisabled(async (ctx) => {
