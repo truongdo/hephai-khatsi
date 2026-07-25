@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
+import { parseAuthClaims, type AdminRole } from '#/domain/authClaims'
 import { useAuth } from '#/auth/useAuth'
 
 export type AdminClaimState =
   | { status: 'loading' }
   | { status: 'signed_out' }
   | { status: 'denied' }
-  | { status: 'admin'; uid: string }
+  | { status: 'admin'; uid: string; role: AdminRole; orgUnitId: string | null }
 
 export function useAdminClaim(): AdminClaimState {
   const { user, loading } = useAuth()
@@ -30,11 +31,9 @@ export function useAdminClaim(): AdminClaimState {
       try {
         const result = await user.getIdTokenResult(true)
         if (cancelled) return
-        if (result.claims.admin === true) {
-          setState({
-            status: 'admin',
-            uid: user.uid,
-          })
+        const claims = parseAuthClaims(result.claims)
+        if (claims) {
+          setState({ status: 'admin', uid: user.uid, ...claims })
         } else {
           setState({ status: 'denied' })
         }
