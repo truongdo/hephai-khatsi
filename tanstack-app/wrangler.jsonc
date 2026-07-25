@@ -16,5 +16,10 @@
       "bucket_name": "member-photos",
       "preview_bucket_name": "member-photos-preview"
     }
-  ]
+  ],
+  "vars": {
+    "R2_ACCOUNT_ID": "f263bbfd7be32d7002a58899a8dbd30b",
+    "R2_BUCKET_NAME": "member-photos",
+    "FIREBASE_PROJECT_ID": "hephaikhatsi-82658"
+  }
 }

@@ -82,20 +82,12 @@ Portraits upload to R2 via presigned PUT URLs from `/api/photos/*`; the client d
 
 1. Create R2 bucket **`member-photos`** (optional preview bucket **`member-photos-preview`** — names must match `wrangler.jsonc`).
 2. Enable a **public development URL** (`*.r2.dev`) or attach a **custom domain** for the bucket; set the base (no trailing slash) as `VITE_PHOTOS_PUBLIC_BASE` in `.env` / deploy env.
-3. Create an **R2 API token** with Object Read & Write scoped to the bucket. Set secrets on the Worker:
+3. Create an **R2 API token** with Object Read & Write scoped to the bucket. Non-secret vars (`R2_ACCOUNT_ID`, `R2_BUCKET_NAME`, `FIREBASE_PROJECT_ID`) live in `wrangler.jsonc` under `vars` (already set for this project). Put **secrets** with Wrangler from `tanstack-app` (use `pnpm exec` — Wrangler is a local dep, not a global CLI):
 
    ```bash
    cd tanstack-app
-   wrangler secret put R2_ACCESS_KEY_ID
-   wrangler secret put R2_SECRET_ACCESS_KEY
-   ```
-
-   Set non-secret vars (dashboard or CLI):
-
-   ```bash
-   wrangler vars put R2_ACCOUNT_ID "<cloudflare-account-id>"
-   wrangler vars put R2_BUCKET_NAME "member-photos"
-   wrangler vars put FIREBASE_PROJECT_ID "<firebase-project-id>"
+   pnpm exec wrangler secret put R2_ACCESS_KEY_ID
+   pnpm exec wrangler secret put R2_SECRET_ACCESS_KEY
    ```
 
 4. Deploy: `pnpm deploy` builds the SPA (`dist/`) and publishes the Worker + Assets via Wrangler.
@@ -112,13 +104,10 @@ Terminal A — Worker (needs R2 binding + secrets in `.dev.vars`, gitignored):
 
 ```bash
 cd tanstack-app
-# .dev.vars example:
-# R2_ACCOUNT_ID=...
+# .dev.vars example (secrets; plain vars come from wrangler.jsonc in prod):
 # R2_ACCESS_KEY_ID=...
 # R2_SECRET_ACCESS_KEY=...
-# R2_BUCKET_NAME=member-photos
-# FIREBASE_PROJECT_ID=hephaikhatsi-82658
-wrangler dev
+pnpm exec wrangler dev
 ```
 
 Terminal B — Vite dev server:
