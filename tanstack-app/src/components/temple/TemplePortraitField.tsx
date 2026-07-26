@@ -154,8 +154,8 @@ export function TemplePortraitField({
         style={{
           position: 'relative',
           width: '100%',
-          maxWidth: 130,
-          aspectRatio: '3 / 4',
+          maxWidth: 240,
+          aspectRatio: '4 / 3',
           borderRadius: 'var(--mantine-radius-sm)',
           border: '1px dashed var(--line)',
           overflow: 'hidden',
