@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { canAccessOrgUnit, parseAuthClaims } from './authClaims'
+import {
+  canAccessOrgUnit,
+  canManageDirectory,
+  canManageRetreats,
+  parseAuthClaims,
+} from './authClaims'
 
 describe('parseAuthClaims', () => {
   it('returns he_phai_admin with null orgUnitId when role is he_phai_admin', () => {
@@ -84,5 +89,25 @@ describe('canAccessOrgUnit', () => {
     expect(
       canAccessOrgUnit({ role: 'he_phai_admin', orgUnitId: 'gd-i' }, 'gd-ii'),
     ).toBe(true)
+  })
+})
+
+describe('canManageDirectory / canManageRetreats', () => {
+  it('allows he_phai_admin', () => {
+    const c = { role: 'he_phai_admin' as const, orgUnitId: null }
+    expect(canManageDirectory(c)).toBe(true)
+    expect(canManageRetreats(c)).toBe(true)
+  })
+
+  it('allows giao_doan_admin', () => {
+    const c = { role: 'giao_doan_admin' as const, orgUnitId: 'gd-i' }
+    expect(canManageDirectory(c)).toBe(true)
+    expect(canManageRetreats(c)).toBe(true)
+  })
+
+  it('denies kiem_soat', () => {
+    const c = { role: 'kiem_soat' as const, orgUnitId: 'gd-i' }
+    expect(canManageDirectory(c)).toBe(false)
+    expect(canManageRetreats(c)).toBe(false)
   })
 })

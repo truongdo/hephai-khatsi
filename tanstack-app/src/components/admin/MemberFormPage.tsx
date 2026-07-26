@@ -15,6 +15,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { useAuth } from '#/auth/useAuth'
+import { AdminDenied } from '#/components/admin/AdminDenied'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { FormStickyActions } from '#/components/FormStickyActions'
 import {
@@ -24,6 +25,7 @@ import {
 import { buildMemberPatch } from '#/components/filler/memberDraft'
 import { validateMemberRequiredFields } from '#/components/filler/memberRequiredValidation'
 import type { SanghaType } from '#/domain/types'
+import { canManageDirectory } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
 import { memberQuery, orgUnitsQuery } from '#/query/adminQueries'
 import { lockMember } from '#/use-cases/lockMember'
@@ -59,6 +61,10 @@ export function MemberFormPage({
   const queryClient = useQueryClient()
   const fieldsApiRef = useRef<MemberFormFieldsApi | null>(null)
 
+  const manageDirectory =
+    claim.status === 'admin' &&
+    canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
+
   const [orgUnitId, setOrgUnitId] = useState<string | null>(null)
   const [sanghaType, setSanghaType] = useState<SanghaType>(initialSanghaType)
   const [cccd, setCccd] = useState('')
@@ -67,12 +73,12 @@ export function MemberFormPage({
 
   const orgUnits = useQuery({
     ...orgUnitsQuery(),
-    enabled: claim.status === 'admin',
+    enabled: manageDirectory,
   })
 
   const member = useQuery({
     ...memberQuery(memberId ?? ''),
-    enabled: claim.status === 'admin' && mode === 'edit' && !!memberId,
+    enabled: manageDirectory && mode === 'edit' && !!memberId,
   })
 
   useEffect(() => {
@@ -255,6 +261,10 @@ export function MemberFormPage({
     mode === 'edit' && member.data
       ? { ...member.data, photoPath: member.data.photoPath ?? null }
       : {}
+
+  if (claim.status === 'admin' && !manageDirectory) {
+    return <AdminDenied />
+  }
 
   return (
     <Stack>

@@ -13,25 +13,73 @@ import {
   Text,
 } from '@mantine/core'
 import { Link, useRouterState } from '@tanstack/react-router'
-import { Home, List, LogOut } from 'lucide-react'
+import { CalendarDays, Home, List, LogOut } from 'lucide-react'
 import { m } from '#/paraglide/messages'
+import { useAdminClaim } from '#/auth/useAdminClaim'
 import { useAuth } from '#/auth/useAuth'
+import { canManageDirectory, canManageRetreats } from '#/domain/authClaims'
 import { DharmaWheel } from '#/components/icons/DharmaWheel'
 import { AdminCopyFormLinkButton } from './AdminCopyFormLinkButton'
 import { AdminNotificationsButton } from './AdminNotificationsButton'
 import { buildAdminBreadcrumbs } from './adminBreadcrumbs'
 
-const navItems = [
-  { label: () => m.admin_nav_temples(), to: '/admin/temples', icon: Home },
-  { label: () => m.admin_nav_tang(), to: '/admin/members/tang', icon: DharmaWheel },
-  { label: () => m.admin_nav_ni(), to: '/admin/members/ni', icon: DharmaWheel },
-  { label: () => m.admin_nav_org_units(), to: '/admin/org-units', icon: List },
-] as const
+type NavCapability = 'directory' | 'retreats'
+
+const allNavItems: {
+  label: () => string
+  to: string
+  icon: typeof Home
+  capability: NavCapability
+}[] = [
+  {
+    label: () => m.admin_nav_temples(),
+    to: '/admin/temples',
+    icon: Home,
+    capability: 'directory',
+  },
+  {
+    label: () => m.admin_nav_tang(),
+    to: '/admin/members/tang',
+    icon: DharmaWheel,
+    capability: 'directory',
+  },
+  {
+    label: () => m.admin_nav_ni(),
+    to: '/admin/members/ni',
+    icon: DharmaWheel,
+    capability: 'directory',
+  },
+  {
+    label: () => m.admin_nav_org_units(),
+    to: '/admin/org-units',
+    icon: List,
+    capability: 'directory',
+  },
+  {
+    label: () => m.admin_nav_retreats(),
+    to: '/admin/retreats',
+    icon: CalendarDays,
+    capability: 'retreats',
+  },
+]
 
 export function AdminShell({ children }: { children: ReactNode }) {
+  const claim = useAdminClaim()
   const { signOut } = useAuth()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const crumbs = buildAdminBreadcrumbs(pathname)
+
+  const claims =
+    claim.status === 'admin'
+      ? { role: claim.role, orgUnitId: claim.orgUnitId }
+      : null
+
+  const navItems = allNavItems.filter((item) => {
+    if (!claims) return false
+    if (item.capability === 'directory') return canManageDirectory(claims)
+    if (item.capability === 'retreats') return canManageRetreats(claims)
+    return false
+  })
 
   return (
     <AppShell

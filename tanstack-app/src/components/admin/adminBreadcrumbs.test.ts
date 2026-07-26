@@ -61,6 +61,29 @@ describe('buildAdminBreadcrumbs', () => {
     ])
   })
 
+  it('builds retreats list trail', () => {
+    expect(buildAdminBreadcrumbs('/admin/retreats')).toEqual([
+      { title: m.admin_title(), href: '/admin' },
+      { title: m.admin_nav_retreats() },
+    ])
+  })
+
+  it('builds retreat create trail', () => {
+    expect(buildAdminBreadcrumbs('/admin/retreats/new')).toEqual([
+      { title: m.admin_title(), href: '/admin' },
+      { title: m.admin_nav_retreats(), href: '/admin/retreats' },
+      { title: m.admin_retreats_form_title_create() },
+    ])
+  })
+
+  it('builds retreat detail trail', () => {
+    expect(buildAdminBreadcrumbs('/admin/retreats/abc123')).toEqual([
+      { title: m.admin_title(), href: '/admin' },
+      { title: m.admin_nav_retreats(), href: '/admin/retreats' },
+      { title: m.admin_retreats_form_title_edit() },
+    ])
+  })
+
   it('falls back for unknown segment', () => {
     expect(buildAdminBreadcrumbs('/admin/unknown-thing')).toEqual([
       { title: m.admin_title(), href: '/admin' },

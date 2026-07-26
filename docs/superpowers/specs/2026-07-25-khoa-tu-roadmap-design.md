@@ -63,7 +63,7 @@ Attendance (phase 6) and certificate/QR (phase 7) fields are added to `retreatRe
 
 `{ admin?: boolean, role?: 'he_phai_admin' | 'giao_doan_admin' | 'kiem_soat', orgUnitId?: string }`. `he_phai_admin` has no `orgUnitId` restriction; `giao_doan_admin` / `kiem_soat` are scoped to their `orgUnitId`.
 
-**Operational note (until Phase 1):** `firebase/firestore.rules` and `firebase/storage.rules` still gate solely on `admin == true` — they do not know about `role` yet. Until Phase 1 teaches the rules about `role`, any account provisioned with only `{ role: ..., orgUnitId: ... }` (no `admin: true`) will pass the client-side `useAdminClaim` check and land on `/admin`, but every Firestore/Storage read and write will be denied by rules. **Provision role claims alongside `admin: true`** (e.g. `{ admin: true, role: 'giao_doan_admin', orgUnitId: 'gd-i' }`) until Phase 1 ships rule support for `role`.
+**Operational note:** Since Phase 1, `firebase/firestore.rules` enforce `role` and `orgUnitId` for retreat and directory access; `admin: true` still maps to `he_phai_admin` for backward compatibility. Provision accounts with `role` (+ `orgUnitId` where scoped). Including `admin: true` alongside role claims remains optional and harmless for existing tooling.
 
 ## Phases
 
@@ -72,7 +72,7 @@ Attendance (phase 6) and certificate/QR (phase 7) fields are added to `retreatRe
 | Phase | Nội dung | Trạng thái | Plan |
 | --- | --- | --- | --- |
 | 0 | RBAC nhẹ (nền tảng) | Hoàn thành | [2026-07-25-khoa-tu-rbac-phase0.md](../plans/2026-07-25-khoa-tu-rbac-phase0.md) |
-| 1 | CRUD khóa tu (Giáo đoàn only) | Đã lập kế hoạch | [plan](../plans/2026-07-25-khoa-tu-retreats-crud-phase1.md) · [design](./2026-07-25-khoa-tu-retreats-crud-phase1-design.md) |
+| 1 | CRUD khóa tu (Giáo đoàn only) | Hoàn thành | [2026-07-25-khoa-tu-retreats-crud-phase1.md](../plans/2026-07-25-khoa-tu-retreats-crud-phase1.md) |
 | 2 | Đăng ký (tự đăng ký + đăng ký thay) | Chưa bắt đầu | — |
 | 3 | Xét duyệt cấp Giáo đoàn | Chưa bắt đầu | — |
 | 4 | Xuất danh sách & báo cáo (Giáo đoàn) | Chưa bắt đầu | — |
@@ -155,4 +155,4 @@ Detailed design: [2026-07-25-khoa-tu-retreats-crud-phase1-design.md](./2026-07-2
 
 ## Next step
 
-Execute [Phase 1 plan](../plans/2026-07-25-khoa-tu-retreats-crud-phase1.md) (`subagent-driven-development` or `executing-plans`).
+Phase 1 code is on branch `feat/khoa-tu-retreats-phase1`: human smoke test, merge to `main`, deploy rules/indexes, then start Phase 2 design/plan (`writing-plans` for đăng ký).

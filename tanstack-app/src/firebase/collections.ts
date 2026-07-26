@@ -5,4 +5,5 @@ export const COLLECTIONS = {
   members: 'members',
   templeManagerPhoneIndex: 'templeManagerPhoneIndex',
   memberPhoneIndex: 'memberPhoneIndex',
+  retreats: 'retreats',
 } as const

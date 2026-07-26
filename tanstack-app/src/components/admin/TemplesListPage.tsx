@@ -14,6 +14,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { useAuth } from '#/auth/useAuth'
+import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { emptyCell } from '#/components/admin/emptyCell'
@@ -22,6 +23,7 @@ import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
 import { TempleDeleteBlockedModal } from '#/components/admin/TempleDeleteBlockedModal'
 import { useAdminListSelection } from '#/components/admin/useAdminListSelection'
 import type { RecordStatus, Temple } from '#/domain/types'
+import { canManageDirectory } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
 import { templesQuery, orgUnitsQuery } from '#/query/adminQueries'
 import {
@@ -48,6 +50,10 @@ export function TemplesListPage() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
 
+  const manageDirectory =
+    claim.status === 'admin' &&
+    canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
+
   const [orgUnitFilter, setOrgUnitFilter] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<RecordStatus | null>(null)
   const [cursor, setCursor] = useState<string | undefined>(undefined)
@@ -69,7 +75,7 @@ export function TemplesListPage() {
 
   const orgUnits = useQuery({
     ...orgUnitsQuery(),
-    enabled: claim.status === 'admin',
+    enabled: manageDirectory,
   })
 
   const temples = useQuery({
@@ -78,7 +84,7 @@ export function TemplesListPage() {
       status: statusFilter ?? undefined,
       cursor,
     }),
-    enabled: claim.status === 'admin',
+    enabled: manageDirectory,
     staleTime: 5 * 60_000,
   })
 
@@ -147,6 +153,10 @@ export function TemplesListPage() {
   )
 
   const isLoading = temples.isPending && allItems.length === 0
+
+  if (claim.status === 'admin' && !manageDirectory) {
+    return <AdminDenied />
+  }
 
   return (
     <Stack>

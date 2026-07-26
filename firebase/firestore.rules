@@ -1,14 +1,43 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isAdmin() {
+    function isLegacyAdmin() {
       return request.auth != null && request.auth.token.admin == true;
+    }
+
+    function role() {
+      return request.auth != null ? request.auth.token.role : null;
+    }
+
+    function isHePhaiAdmin() {
+      return isLegacyAdmin() || role() == 'he_phai_admin';
+    }
+
+    function isGiaoDoanAdmin() {
+      return role() == 'giao_doan_admin';
+    }
+
+    function isKiemSoat() {
+      return role() == 'kiem_soat';
+    }
+
+    function isStaff() {
+      return isHePhaiAdmin() || isGiaoDoanAdmin() || isKiemSoat() || isLegacyAdmin();
+    }
+
+    function canWriteDirectory() {
+      return isHePhaiAdmin() || isGiaoDoanAdmin() || isLegacyAdmin();
+    }
+
+    function retreatOrgOk(orgUnitId) {
+      return isHePhaiAdmin() || isLegacyAdmin()
+        || (isGiaoDoanAdmin() && request.auth.token.orgUnitId == orgUnitId);
     }
 
     // --- orgUnits: public read, admin write (unchanged) ---
     match /orgUnits/{id} {
       allow get, list: if true;
-      allow write: if isAdmin();
+      allow write: if canWriteDirectory();
     }
 
     // --- invites: there is exactly one invite for the whole app (fixed doc
@@ -18,8 +47,8 @@ service cloud.firestore {
     // id/token for a single get(); listing (enumeration) stays admin-only. ---
     match /invites/{id} {
       allow get: if true;
-      allow list: if isAdmin();
-      allow create: if isAdmin()
+      allow list: if canWriteDirectory();
+      allow create: if canWriteDirectory()
         && id == request.resource.data.token
         && request.resource.data.token is string
         && request.resource.data.createdAt is string
@@ -63,7 +92,7 @@ service cloud.firestore {
       }
 
       allow get: if true;
-      allow list: if isAdmin();
+      allow list: if canWriteDirectory();
 
       allow create: if memberId == (request.resource.data.orgUnitId + '_' + request.resource.data.sanghaType + '_' + request.resource.data.cccd)
         && request.resource.data.status == 'draft'
@@ -71,18 +100,18 @@ service cloud.firestore {
         && request.resource.data.lockedBy == null
         && request.resource.data.createdAt is string
         && request.resource.data.updatedAt is string
-        && ((isAdmin() && request.resource.data.inviteId == null)
-            || (!isAdmin() && validInviteScope(request.resource.data)));
+        && ((canWriteDirectory() && request.resource.data.inviteId == null)
+            || (!isStaff() && validInviteScope(request.resource.data)));
 
       allow update: if coreIdentityUnchanged() && (
-        (isAdmin() && isLockTransition() && request.resource.data.inviteId == resource.data.inviteId)
-        || (isAdmin() && !isLockTransition()
+        (canWriteDirectory() && isLockTransition() && request.resource.data.inviteId == resource.data.inviteId)
+        || (canWriteDirectory() && !isLockTransition()
             && lockFieldsUnchanged() && request.resource.data.inviteId == resource.data.inviteId)
-        || (!isAdmin() && resource.data.status != 'locked'
+        || (!isStaff() && resource.data.status != 'locked'
             && lockFieldsUnchanged() && validInviteScope(request.resource.data))
       );
 
-      allow delete: if isAdmin();
+      allow delete: if canWriteDirectory();
     }
 
     // --- temples: ids stay random (a phone can map to several temples, so
@@ -112,7 +141,7 @@ service cloud.firestore {
       }
 
       allow get: if true;
-      allow list: if isAdmin();
+      allow list: if canWriteDirectory();
 
       allow create: if request.resource.data.status == 'draft'
         && request.resource.data.lockedAt == null
@@ -121,16 +150,16 @@ service cloud.firestore {
         && request.resource.data.managerPhones.size() > 0
         && request.resource.data.createdAt is string
         && request.resource.data.updatedAt is string
-        && ((isAdmin() && request.resource.data.inviteId == null)
-            || (!isAdmin() && validInviteScope(request.resource.data)));
+        && ((canWriteDirectory() && request.resource.data.inviteId == null)
+            || (!isStaff() && validInviteScope(request.resource.data)));
 
       allow update: if coreIdentityUnchanged() && (
-        (isAdmin() && isLockTransition())
-        || (isAdmin() && !isLockTransition() && lockFieldsUnchanged())
-        || (!isAdmin() && resource.data.status != 'locked' && lockFieldsUnchanged() && validInviteScope(request.resource.data))
+        (canWriteDirectory() && isLockTransition())
+        || (canWriteDirectory() && !isLockTransition() && lockFieldsUnchanged())
+        || (!isStaff() && resource.data.status != 'locked' && lockFieldsUnchanged() && validInviteScope(request.resource.data))
       );
 
-      allow delete: if isAdmin();
+      allow delete: if canWriteDirectory();
     }
 
     // --- templeManagerPhoneIndex: secondary lookup index, {orgUnitId}_{phone}
@@ -142,26 +171,67 @@ service cloud.firestore {
     // could already get() directly (get is public), not leak anything new. ---
     match /templeManagerPhoneIndex/{indexId} {
       allow get: if true;
-      allow list: if isAdmin();
+      allow list: if canWriteDirectory();
       allow create, update: if request.resource.data.templeIds is list
         && request.resource.data.templeIds.size() <= 20
         && (
-          isAdmin()
+          canWriteDirectory()
           || request.resource.data.templeIds.size() >= (resource == null ? 0 : resource.data.templeIds.size())
         );
-      allow delete: if isAdmin();
+      allow delete: if canWriteDirectory();
     }
 
     match /memberPhoneIndex/{indexId} {
       allow get: if true;
-      allow list: if isAdmin();
+      allow list: if canWriteDirectory();
       allow create, update: if request.resource.data.memberIds is list
         && request.resource.data.memberIds.size() <= 20
         && (
-          isAdmin()
+          canWriteDirectory()
           || request.resource.data.memberIds.size() >= (resource == null ? 0 : resource.data.memberIds.size())
         );
-      allow delete: if isAdmin();
+      allow delete: if canWriteDirectory();
+    }
+
+    match /retreats/{id} {
+      function retreatStatusUnchanged() {
+        return request.resource.data.status == resource.data.status;
+      }
+
+      function isRetreatStatusTransition() {
+        return request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'updatedAt']);
+      }
+
+      function validRetreatStatusTransition() {
+        return (resource.data.status == 'draft' && request.resource.data.status == 'open')
+          || (resource.data.status == 'closed' && request.resource.data.status == 'open')
+          || (resource.data.status == 'open' && request.resource.data.status == 'closed');
+      }
+
+      allow get: if canWriteDirectory() && retreatOrgOk(resource.data.orgUnitId);
+      allow list: if canWriteDirectory() && (
+        isHePhaiAdmin() || retreatOrgOk(resource.data.orgUnitId)
+      );
+      allow create: if canWriteDirectory()
+        && request.resource.data.type == 'giao_doan'
+        && request.resource.data.status == 'draft'
+        && retreatOrgOk(request.resource.data.orgUnitId)
+        && request.resource.data.orgUnitId is string
+        && request.resource.data.createdBy == request.auth.uid;
+      allow update: if canWriteDirectory()
+        && retreatOrgOk(resource.data.orgUnitId)
+        && request.resource.data.type == resource.data.type
+        && request.resource.data.orgUnitId == resource.data.orgUnitId
+        && request.resource.data.createdBy == resource.data.createdBy
+        && request.resource.data.createdAt == resource.data.createdAt
+        && (
+          retreatStatusUnchanged()
+          || (isRetreatStatusTransition() && validRetreatStatusTransition())
+        );
+      allow delete: if canWriteDirectory()
+        && retreatOrgOk(resource.data.orgUnitId)
+        && resource.data.status == 'draft';
     }
   }
 }

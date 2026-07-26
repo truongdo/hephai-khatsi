@@ -14,12 +14,16 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminOrgUnitsRouteImport } from './routes/admin/org-units'
+import { Route as AdminRetreatsRouteImport } from './routes/admin/retreats'
 import { Route as AdminTemplesRouteImport } from './routes/admin/temples'
 import { Route as FTokenRouteImport } from './routes/f.$token'
 import { Route as AdminMembersIdRouteImport } from './routes/admin/members.$id'
 import { Route as AdminMembersNewRouteImport } from './routes/admin/members.new'
 import { Route as AdminMembersNiRouteImport } from './routes/admin/members.ni'
 import { Route as AdminMembersTangRouteImport } from './routes/admin/members.tang'
+import { Route as AdminRetreatsIndexRouteImport } from './routes/admin/retreats.index'
+import { Route as AdminRetreatsIdRouteImport } from './routes/admin/retreats.$id'
+import { Route as AdminRetreatsNewRouteImport } from './routes/admin/retreats.new'
 import { Route as AdminTemplesIndexRouteImport } from './routes/admin/temples.index'
 import { Route as AdminTemplesIdRouteImport } from './routes/admin/temples.$id'
 import { Route as AdminTemplesNewRouteImport } from './routes/admin/temples.new'
@@ -56,6 +60,11 @@ const AdminOrgUnitsRoute = AdminOrgUnitsRouteImport.update({
   path: '/org-units',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminRetreatsRoute = AdminRetreatsRouteImport.update({
+  id: '/retreats',
+  path: '/retreats',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminTemplesRoute = AdminTemplesRouteImport.update({
   id: '/temples',
   path: '/temples',
@@ -85,6 +94,21 @@ const AdminMembersTangRoute = AdminMembersTangRouteImport.update({
   id: '/members/tang',
   path: '/members/tang',
   getParentRoute: () => AdminRoute,
+} as any)
+const AdminRetreatsIndexRoute = AdminRetreatsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRetreatsRoute,
+} as any)
+const AdminRetreatsIdRoute = AdminRetreatsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminRetreatsRoute,
+} as any)
+const AdminRetreatsNewRoute = AdminRetreatsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminRetreatsRoute,
 } as any)
 const AdminTemplesIndexRoute = AdminTemplesIndexRouteImport.update({
   id: '/',
@@ -144,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
   '/admin/org-units': typeof AdminOrgUnitsRoute
+  '/admin/retreats': typeof AdminRetreatsRouteWithChildren
   '/admin/temples': typeof AdminTemplesRouteWithChildren
   '/f/$token': typeof FTokenRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -151,8 +176,11 @@ export interface FileRoutesByFullPath {
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/members/ni': typeof AdminMembersNiRoute
   '/admin/members/tang': typeof AdminMembersTangRoute
+  '/admin/retreats/$id': typeof AdminRetreatsIdRoute
+  '/admin/retreats/new': typeof AdminRetreatsNewRoute
   '/admin/temples/$id': typeof AdminTemplesIdRoute
   '/admin/temples/new': typeof AdminTemplesNewRoute
+  '/admin/retreats/': typeof AdminRetreatsIndexRoute
   '/admin/temples/': typeof AdminTemplesIndexRoute
   '/f/$token/': typeof FTokenIndexRoute
   '/f/$token/edit/member': typeof FTokenEditMemberRouteWithChildren
@@ -171,8 +199,11 @@ export interface FileRoutesByTo {
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/members/ni': typeof AdminMembersNiRoute
   '/admin/members/tang': typeof AdminMembersTangRoute
+  '/admin/retreats/$id': typeof AdminRetreatsIdRoute
+  '/admin/retreats/new': typeof AdminRetreatsNewRoute
   '/admin/temples/$id': typeof AdminTemplesIdRoute
   '/admin/temples/new': typeof AdminTemplesNewRoute
+  '/admin/retreats': typeof AdminRetreatsIndexRoute
   '/admin/temples': typeof AdminTemplesIndexRoute
   '/f/$token': typeof FTokenIndexRoute
   '/f/$token/edit/member/$memberId': typeof FTokenEditMemberMemberIdRoute
@@ -186,6 +217,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
   '/admin/org-units': typeof AdminOrgUnitsRoute
+  '/admin/retreats': typeof AdminRetreatsRouteWithChildren
   '/admin/temples': typeof AdminTemplesRouteWithChildren
   '/f/$token': typeof FTokenRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -193,8 +225,11 @@ export interface FileRoutesById {
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/members/ni': typeof AdminMembersNiRoute
   '/admin/members/tang': typeof AdminMembersTangRoute
+  '/admin/retreats/$id': typeof AdminRetreatsIdRoute
+  '/admin/retreats/new': typeof AdminRetreatsNewRoute
   '/admin/temples/$id': typeof AdminTemplesIdRoute
   '/admin/temples/new': typeof AdminTemplesNewRoute
+  '/admin/retreats/': typeof AdminRetreatsIndexRoute
   '/admin/temples/': typeof AdminTemplesIndexRoute
   '/f/$token/': typeof FTokenIndexRoute
   '/f/$token/edit/member': typeof FTokenEditMemberRouteWithChildren
@@ -211,6 +246,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/login'
     | '/admin/org-units'
+    | '/admin/retreats'
     | '/admin/temples'
     | '/f/$token'
     | '/admin/'
@@ -218,8 +254,11 @@ export interface FileRouteTypes {
     | '/admin/members/new'
     | '/admin/members/ni'
     | '/admin/members/tang'
+    | '/admin/retreats/$id'
+    | '/admin/retreats/new'
     | '/admin/temples/$id'
     | '/admin/temples/new'
+    | '/admin/retreats/'
     | '/admin/temples/'
     | '/f/$token/'
     | '/f/$token/edit/member'
@@ -238,8 +277,11 @@ export interface FileRouteTypes {
     | '/admin/members/new'
     | '/admin/members/ni'
     | '/admin/members/tang'
+    | '/admin/retreats/$id'
+    | '/admin/retreats/new'
     | '/admin/temples/$id'
     | '/admin/temples/new'
+    | '/admin/retreats'
     | '/admin/temples'
     | '/f/$token'
     | '/f/$token/edit/member/$memberId'
@@ -252,6 +294,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/login'
     | '/admin/org-units'
+    | '/admin/retreats'
     | '/admin/temples'
     | '/f/$token'
     | '/admin/'
@@ -259,8 +302,11 @@ export interface FileRouteTypes {
     | '/admin/members/new'
     | '/admin/members/ni'
     | '/admin/members/tang'
+    | '/admin/retreats/$id'
+    | '/admin/retreats/new'
     | '/admin/temples/$id'
     | '/admin/temples/new'
+    | '/admin/retreats/'
     | '/admin/temples/'
     | '/f/$token/'
     | '/f/$token/edit/member'
@@ -315,6 +361,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrgUnitsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/retreats': {
+      id: '/admin/retreats'
+      path: '/retreats'
+      fullPath: '/admin/retreats'
+      preLoaderRoute: typeof AdminRetreatsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/temples': {
       id: '/admin/temples'
       path: '/temples'
@@ -356,6 +409,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/members/tang'
       preLoaderRoute: typeof AdminMembersTangRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/admin/retreats/': {
+      id: '/admin/retreats/'
+      path: '/'
+      fullPath: '/admin/retreats/'
+      preLoaderRoute: typeof AdminRetreatsIndexRouteImport
+      parentRoute: typeof AdminRetreatsRoute
+    }
+    '/admin/retreats/$id': {
+      id: '/admin/retreats/$id'
+      path: '/$id'
+      fullPath: '/admin/retreats/$id'
+      preLoaderRoute: typeof AdminRetreatsIdRouteImport
+      parentRoute: typeof AdminRetreatsRoute
+    }
+    '/admin/retreats/new': {
+      id: '/admin/retreats/new'
+      path: '/new'
+      fullPath: '/admin/retreats/new'
+      preLoaderRoute: typeof AdminRetreatsNewRouteImport
+      parentRoute: typeof AdminRetreatsRoute
     }
     '/admin/temples/': {
       id: '/admin/temples/'
@@ -430,6 +504,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRetreatsRouteChildren {
+  AdminRetreatsIdRoute: typeof AdminRetreatsIdRoute
+  AdminRetreatsNewRoute: typeof AdminRetreatsNewRoute
+  AdminRetreatsIndexRoute: typeof AdminRetreatsIndexRoute
+}
+
+const AdminRetreatsRouteChildren: AdminRetreatsRouteChildren = {
+  AdminRetreatsIdRoute: AdminRetreatsIdRoute,
+  AdminRetreatsNewRoute: AdminRetreatsNewRoute,
+  AdminRetreatsIndexRoute: AdminRetreatsIndexRoute,
+}
+
+const AdminRetreatsRouteWithChildren = AdminRetreatsRoute._addFileChildren(
+  AdminRetreatsRouteChildren,
+)
+
 interface AdminTemplesRouteChildren {
   AdminTemplesIdRoute: typeof AdminTemplesIdRoute
   AdminTemplesNewRoute: typeof AdminTemplesNewRoute
@@ -448,6 +538,7 @@ const AdminTemplesRouteWithChildren = AdminTemplesRoute._addFileChildren(
 
 interface AdminRouteChildren {
   AdminOrgUnitsRoute: typeof AdminOrgUnitsRoute
+  AdminRetreatsRoute: typeof AdminRetreatsRouteWithChildren
   AdminTemplesRoute: typeof AdminTemplesRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
   AdminMembersIdRoute: typeof AdminMembersIdRoute
@@ -458,6 +549,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminOrgUnitsRoute: AdminOrgUnitsRoute,
+  AdminRetreatsRoute: AdminRetreatsRouteWithChildren,
   AdminTemplesRoute: AdminTemplesRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
   AdminMembersIdRoute: AdminMembersIdRoute,

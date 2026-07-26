@@ -12,8 +12,10 @@ import {
   getDoc,
   getDocs,
   collection as fsCollection,
+  query,
   setDoc,
   updateDoc,
+  where,
 } from 'firebase/firestore'
 import { afterAll, beforeEach, describe, it } from 'vitest'
 
@@ -148,6 +150,15 @@ describe('members', () => {
     const env = await getTestEnv()
     const anon = env.unauthenticatedContext().firestore()
     await assertFails(setDoc(doc(anon, 'members', memberId), memberDraft({ inviteId: 'does-not-exist' })))
+  })
+
+  it('rejects kiem_soat create even with a valid invite', async () => {
+    const env = await getTestEnv()
+    const ks = env.authenticatedContext('ks', {
+      role: 'kiem_soat',
+      orgUnitId: 'gd-i',
+    }).firestore()
+    await assertFails(setDoc(doc(ks, 'members', memberId), memberDraft()))
   })
 
   it('lets the public flow read and update a draft, but not change status/lock fields', async () => {
@@ -381,5 +392,142 @@ describe('memberCccdIndex (retired collection)', () => {
     const anon = env.unauthenticatedContext().firestore()
     await assertFails(setDoc(doc(anon, 'memberCccdIndex', 'anything'), { a: 1 }))
     await assertFails(getDoc(doc(anon, 'memberCccdIndex', 'anything')))
+  })
+})
+
+function retreatDraft(overrides: Record<string, unknown> = {}) {
+  return {
+    type: 'giao_doan',
+    orgUnitId: 'gd-i',
+    name: 'Khoa',
+    diaDiem: 'TX',
+    noiDung: 'n',
+    doiTuongThamDu: 't',
+    thoiGianBatDau: '2026-08-01T00:00:00.000Z',
+    thoiGianKetThuc: '2026-08-07T00:00:00.000Z',
+    dangKyMoTu: '2026-07-01T00:00:00.000Z',
+    dangKyDongLuc: '2026-07-20T00:00:00.000Z',
+    extraFields: [],
+    quyenDangKy: 'both',
+    status: 'draft',
+    createdBy: 'gd-admin',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+    ...overrides,
+  }
+}
+
+async function seedRetreatsAcrossOrgs(env: RulesTestEnvironment) {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const db = ctx.firestore()
+    await setDoc(doc(db, 'orgUnits/gd-ii'), {
+      code: 'gd-ii',
+      name: 'Giáo đoàn II',
+      kind: 'giao_doan',
+      order: 2,
+      allowsTang: true,
+      allowsNi: true,
+    })
+    await setDoc(doc(db, 'retreats/r-gd-i'), retreatDraft({ orgUnitId: 'gd-i', createdBy: 'admin-uid' }))
+    await setDoc(
+      doc(db, 'retreats/r-gd-ii'),
+      retreatDraft({ orgUnitId: 'gd-ii', name: 'Other org', createdBy: 'admin-uid' }),
+    )
+    await setDoc(
+      doc(db, 'retreats/r-open'),
+      retreatDraft({
+        orgUnitId: 'gd-i',
+        status: 'open',
+        createdBy: 'admin-uid',
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+}
+
+describe('retreats + role claims', () => {
+  it('giao_doan_admin can create/get in own org, not other org', async () => {
+    const env = await getTestEnv()
+    await seedRetreatsAcrossOrgs(env)
+    const gd = env.authenticatedContext('gd-admin', {
+      role: 'giao_doan_admin',
+      orgUnitId: 'gd-i',
+    }).firestore()
+    await assertSucceeds(setDoc(doc(gd, 'retreats/r1'), retreatDraft({ createdBy: 'gd-admin' })))
+    await assertSucceeds(getDoc(doc(gd, 'retreats/r-gd-i')))
+    await assertFails(getDoc(doc(gd, 'retreats/r-gd-ii')))
+    await assertFails(
+      setDoc(doc(gd, 'retreats/r2'), retreatDraft({ orgUnitId: 'gd-ii', createdBy: 'gd-admin' })),
+    )
+  })
+
+  it('giao_doan_admin list requires orgUnitId filter matching claim', async () => {
+    const env = await getTestEnv()
+    await seedRetreatsAcrossOrgs(env)
+    const gd = env.authenticatedContext('gd-admin', {
+      role: 'giao_doan_admin',
+      orgUnitId: 'gd-i',
+    }).firestore()
+    await assertFails(getDocs(fsCollection(gd, 'retreats')))
+    await assertSucceeds(
+      getDocs(query(fsCollection(gd, 'retreats'), where('orgUnitId', '==', 'gd-i'))),
+    )
+  })
+
+  it('kiem_soat cannot read or write retreats or orgUnits', async () => {
+    const env = await getTestEnv()
+    await seedRetreatsAcrossOrgs(env)
+    const ks = env.authenticatedContext('ks', {
+      role: 'kiem_soat',
+      orgUnitId: 'gd-i',
+    }).firestore()
+    await assertFails(getDoc(doc(ks, 'retreats/r-gd-i')))
+    await assertFails(getDocs(fsCollection(ks, 'retreats')))
+    await assertFails(
+      getDocs(query(fsCollection(ks, 'retreats'), where('orgUnitId', '==', 'gd-i'))),
+    )
+    await assertFails(setDoc(doc(ks, 'retreats/r1'), retreatDraft({ createdBy: 'ks' })))
+    await assertFails(
+      setDoc(doc(ks, 'orgUnits/gd-x'), {
+        code: 'gd-x',
+        name: 'x',
+        kind: 'giao_doan',
+        order: 9,
+        allowsTang: true,
+        allowsNi: true,
+      }),
+    )
+  })
+
+  it('rejects invalid retreat status transitions at the rules layer', async () => {
+    const env = await getTestEnv()
+    await seedRetreatsAcrossOrgs(env)
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertFails(
+      updateDoc(doc(admin, 'retreats/r-open'), {
+        status: 'draft',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      }),
+    )
+    await assertSucceeds(
+      updateDoc(doc(admin, 'retreats/r-open'), {
+        status: 'closed',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      }),
+    )
+    await assertSucceeds(
+      updateDoc(doc(admin, 'retreats/r-open'), {
+        name: 'Updated name',
+        updatedAt: '2026-01-04T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('legacy admin:true can still write orgUnits and retreats', async () => {
+    const env = await getTestEnv()
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertSucceeds(
+      setDoc(doc(admin, 'retreats/r3'), retreatDraft({ createdBy: 'admin-uid' })),
+    )
   })
 })

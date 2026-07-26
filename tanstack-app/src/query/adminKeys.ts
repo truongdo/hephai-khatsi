@@ -1,5 +1,6 @@
 import type {
   ListMembersAdminInput,
+  ListRetreatsAdminInput,
   ListTemplesAdminInput,
 } from '#/repositories/adminListTypes'
 
@@ -12,4 +13,7 @@ export const adminKeys = {
   members: (filters: ListMembersAdminInput) =>
     [...adminKeys.all, 'members', filters] as const,
   member: (id: string) => [...adminKeys.all, 'member', id] as const,
+  retreats: (filters: ListRetreatsAdminInput) =>
+    [...adminKeys.all, 'retreats', filters] as const,
+  retreat: (id: string) => [...adminKeys.all, 'retreat', id] as const,
 }

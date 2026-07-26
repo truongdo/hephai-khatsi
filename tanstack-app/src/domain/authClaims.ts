@@ -43,3 +43,11 @@ export function canAccessOrgUnit(
   if (claims.role === 'he_phai_admin') return true
   return claims.orgUnitId === orgUnitId
 }
+
+export function canManageDirectory(claims: AuthClaims): boolean {
+  return claims.role === 'he_phai_admin' || claims.role === 'giao_doan_admin'
+}
+
+export function canManageRetreats(claims: AuthClaims): boolean {
+  return canManageDirectory(claims)
+}

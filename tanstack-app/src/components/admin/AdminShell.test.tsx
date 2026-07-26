@@ -7,19 +7,20 @@ import {
 } from '@tanstack/react-router'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { m } from '#/paraglide/messages'
 import { theme } from '../../theme'
 import { AdminShell } from './AdminShell'
 
 const signOutMock = vi.fn()
+const useAdminClaimMock = vi.fn()
 
 vi.mock('#/auth/useAuth', () => ({
   useAuth: () => ({ signOut: signOutMock }),
 }))
 
 vi.mock('#/auth/useAdminClaim', () => ({
-  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid', role: 'he_phai_admin', orgUnitId: null }),
+  useAdminClaim: () => useAdminClaimMock(),
 }))
 
 vi.mock('#/use-cases/ensurePublicInvite', () => ({
@@ -73,6 +74,45 @@ function renderShell(initialPath = '/admin/temples') {
 }
 
 describe('AdminShell', () => {
+  beforeEach(() => {
+    useAdminClaimMock.mockReturnValue({
+      status: 'admin',
+      uid: 'admin-uid',
+      role: 'he_phai_admin',
+      orgUnitId: null,
+    })
+  })
+
+  it('hides directory nav for kiem_soat', async () => {
+    useAdminClaimMock.mockReturnValue({
+      status: 'admin',
+      uid: 'ks-uid',
+      role: 'kiem_soat',
+      orgUnitId: null,
+    })
+    renderShell()
+    const nav = await screen.findByRole('navigation')
+    expect(within(nav).queryByText(m.admin_nav_temples())).toBeNull()
+    expect(within(nav).queryByText(m.admin_nav_tang())).toBeNull()
+    expect(within(nav).queryByText(m.admin_nav_ni())).toBeNull()
+    expect(within(nav).queryByText(m.admin_nav_org_units())).toBeNull()
+  })
+
+  it('shows directory nav for giao_doan_admin', async () => {
+    useAdminClaimMock.mockReturnValue({
+      status: 'admin',
+      uid: 'gd-uid',
+      role: 'giao_doan_admin',
+      orgUnitId: 'gd-i',
+    })
+    renderShell()
+    const nav = await screen.findByRole('navigation')
+    expect(within(nav).getByText(m.admin_nav_temples())).toBeTruthy()
+    expect(within(nav).getByText(m.admin_nav_tang())).toBeTruthy()
+    expect(within(nav).getByText(m.admin_nav_ni())).toBeTruthy()
+    expect(within(nav).getByText(m.admin_nav_org_units())).toBeTruthy()
+  })
+
   it('renders nav link text from Paraglide', async () => {
     renderShell()
     const nav = await screen.findByRole('navigation')

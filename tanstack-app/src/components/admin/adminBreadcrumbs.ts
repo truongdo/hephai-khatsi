@@ -40,6 +40,21 @@ export function buildAdminBreadcrumbs(pathname: string): AdminBreadcrumb[] {
     ]
   }
 
+  if (section === 'retreats') {
+    if (rest.length === 0) {
+      return [rootCrumb(), { title: m.admin_nav_retreats() }]
+    }
+    const leaf =
+      rest[0] === 'new'
+        ? m.admin_retreats_form_title_create()
+        : m.admin_retreats_form_title_edit()
+    return [
+      rootCrumb(),
+      { title: m.admin_nav_retreats(), href: '/admin/retreats' },
+      { title: leaf },
+    ]
+  }
+
   if (section === 'members') {
     if (rest[0] === 'tang') {
       return [rootCrumb(), { title: m.admin_nav_tang() }]

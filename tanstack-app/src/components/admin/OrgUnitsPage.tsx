@@ -2,9 +2,11 @@ import { Stack, Table, Title } from '@mantine/core'
 import { useQuery } from '@tanstack/react-query'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
+import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import type { OrgUnitKind } from '#/domain/types'
+import { canManageDirectory } from '#/domain/authClaims'
 import { orgUnitsQuery } from '#/query/adminQueries'
 
 function orgUnitKindLabel(kind: OrgUnitKind): string {
@@ -18,10 +20,19 @@ function orgUnitKindLabel(kind: OrgUnitKind): string {
 
 export function OrgUnitsPage() {
   const claim = useAdminClaim()
+
+  const manageDirectory =
+    claim.status === 'admin' &&
+    canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
+
   const { data, isPending, isError, error } = useQuery({
     ...orgUnitsQuery(),
-    enabled: claim.status === 'admin',
+    enabled: manageDirectory,
   })
+
+  if (claim.status === 'admin' && !manageDirectory) {
+    return <AdminDenied />
+  }
 
   return (
     <Stack>

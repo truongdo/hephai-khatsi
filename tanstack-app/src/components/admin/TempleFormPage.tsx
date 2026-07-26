@@ -14,9 +14,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { useAuth } from '#/auth/useAuth'
+import { AdminDenied } from '#/components/admin/AdminDenied'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { FormStickyActions } from '#/components/FormStickyActions'
 import { buildTemplePatch } from '#/components/filler/templeDraft'
+import { canManageDirectory } from '#/domain/authClaims'
 import { validateTempleRequiredFields } from '#/components/filler/templeRequiredValidation'
 import {
   TempleFormFields,
@@ -41,18 +43,22 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
   const queryClient = useQueryClient()
   const fieldsApiRef = useRef<TempleFormFieldsApi | null>(null)
 
+  const manageDirectory =
+    claim.status === 'admin' &&
+    canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
+
   const [orgUnitId, setOrgUnitId] = useState<string | null>(null)
   const [photoError, setPhotoError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
 
   const orgUnits = useQuery({
     ...orgUnitsQuery(),
-    enabled: claim.status === 'admin',
+    enabled: manageDirectory,
   })
 
   const temple = useQuery({
     ...templeQuery(templeId ?? ''),
-    enabled: claim.status === 'admin' && mode === 'edit' && !!templeId,
+    enabled: manageDirectory && mode === 'edit' && !!templeId,
   })
 
   useEffect(() => {
@@ -208,6 +214,10 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
     mode === 'edit' && temple.data
       ? { ...temple.data, photoPath: temple.data.photoPath ?? null }
       : {}
+
+  if (claim.status === 'admin' && !manageDirectory) {
+    return <AdminDenied />
+  }
 
   return (
     <Stack>

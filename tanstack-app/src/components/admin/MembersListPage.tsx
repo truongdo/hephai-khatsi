@@ -14,6 +14,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { useAuth } from '#/auth/useAuth'
+import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { emptyCell } from '#/components/admin/emptyCell'
@@ -21,6 +22,7 @@ import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
 import { useAdminListSelection } from '#/components/admin/useAdminListSelection'
 import type { Member, RecordStatus, SanghaType } from '#/domain/types'
+import { canManageDirectory } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
 import { membersQuery, orgUnitsQuery } from '#/query/adminQueries'
 import { deleteMembers } from '#/use-cases/deleteMembers'
@@ -56,6 +58,10 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
   const { user } = useAuth()
   const queryClient = useQueryClient()
 
+  const manageDirectory =
+    claim.status === 'admin' &&
+    canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
+
   const [orgUnitFilter, setOrgUnitFilter] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<RecordStatus | null>(null)
   const [cursor, setCursor] = useState<string | undefined>(undefined)
@@ -75,7 +81,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
 
   const orgUnits = useQuery({
     ...orgUnitsQuery(),
-    enabled: claim.status === 'admin',
+    enabled: manageDirectory,
   })
 
   const members = useQuery({
@@ -85,7 +91,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
       status: statusFilter ?? undefined,
       cursor,
     }),
-    enabled: claim.status === 'admin',
+    enabled: manageDirectory,
     staleTime: 5 * 60_000,
   })
 
@@ -148,6 +154,10 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
   )
 
   const isLoading = members.isPending && allItems.length === 0
+
+  if (claim.status === 'admin' && !manageDirectory) {
+    return <AdminDenied />
+  }
 
   return (
     <Stack>

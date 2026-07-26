@@ -1,3 +1,4 @@
+import type { RetreatStatus } from '#/domain/retreat'
 import type { Member, RecordStatus, SanghaType, Temple } from '#/domain/types'
 
 export type AdminListPage<T> = {
@@ -8,6 +9,13 @@ export type AdminListPage<T> = {
 export type ListTemplesAdminInput = {
   orgUnitId?: string
   status?: RecordStatus
+  limit?: number
+  cursor?: string
+}
+
+export type ListRetreatsAdminInput = {
+  orgUnitId?: string
+  status?: RetreatStatus
   limit?: number
   cursor?: string
 }
