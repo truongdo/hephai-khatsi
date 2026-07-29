@@ -41,8 +41,12 @@ function requireText(value: string): 'REQUIRED' | undefined {
 
 function mapAddress(
   draft: AddressDraft,
+  options?: { cityOnly?: boolean },
 ): { city?: 'REQUIRED'; ward?: 'REQUIRED' } | undefined {
-  const result = validateAddressDraft(draft, { required: true })
+  const result = validateAddressDraft(draft, {
+    required: true,
+    cityOnly: options?.cityOnly,
+  })
   if (result.valid) return undefined
   return result.errors
 }
@@ -72,7 +76,7 @@ export function validateMemberRequiredFields(draft: MemberRequiredDraft): {
   if (!emailTrimmed) errors.email = 'REQUIRED'
   else if (!isBasicEmail(emailTrimmed)) errors.email = 'INVALID'
 
-  const noiSinh = mapAddress(draft.noiSinh)
+  const noiSinh = mapAddress(draft.noiSinh, { cityOnly: true })
   if (noiSinh) errors.noiSinh = noiSinh
   const diaChiThuongTru = mapAddress(draft.diaChiThuongTru)
   if (diaChiThuongTru) errors.diaChiThuongTru = diaChiThuongTru

@@ -13,6 +13,7 @@ export type VietnamAddressFieldsProps = {
   errors?: { city?: string; ward?: string }
   linePlaceholder?: string
   required?: boolean
+  cityOnly?: boolean
 }
 
 type LocationFields = Omit<AddressDraft, 'line'>
@@ -133,6 +134,7 @@ export const VietnamAddressFields = memo(function VietnamAddressFields({
   errors,
   linePlaceholder,
   required,
+  cityOnly,
 }: VietnamAddressFieldsProps) {
   const valueRef = useRef(value)
   valueRef.current = value
@@ -142,6 +144,42 @@ export const VietnamAddressFields = memo(function VietnamAddressFields({
   const onLocationChange = useCallback((location: LocationFields) => {
     onChangeRef.current({ ...location, line: valueRef.current.line })
   }, [])
+
+  const cityOptions = useMemo(
+    () =>
+      cities.map((city) => ({
+        value: city.code,
+        label: city.fullName,
+      })),
+    [],
+  )
+
+  if (cityOnly) {
+    return (
+      <Stack gap="sm" aria-label={label}>
+        <Select
+          label={m.filler_field_city()}
+          placeholder={m.filler_ph_city()}
+          data={cityOptions}
+          value={value.cityCode || null}
+          onChange={(nextCityCode) => {
+            const city = cities.find((item) => item.code === nextCityCode)
+            onChange({
+              cityCode: nextCityCode ?? '',
+              cityName: city?.name ?? '',
+              wardCode: '',
+              wardName: '',
+              line: '',
+            })
+          }}
+          searchable
+          disabled={disabled}
+          required={required}
+          error={errors?.city}
+        />
+      </Stack>
+    )
+  }
 
   return (
     <Stack gap="sm" aria-label={label}>

@@ -33,20 +33,24 @@ export function isAddressBlank(draft: AddressDraft): boolean {
 
 export function validateAddressDraft(
   draft: AddressDraft,
-  options?: { required?: boolean },
+  options?: { required?: boolean; cityOnly?: boolean },
 ): AddressValidationResult {
+  const cityOnly = options?.cityOnly === true
+
   if (isAddressBlank(draft)) {
     if (options?.required) {
       return {
         valid: false,
-        errors: { city: 'REQUIRED', ward: 'REQUIRED' },
+        errors: cityOnly
+          ? { city: 'REQUIRED' }
+          : { city: 'REQUIRED', ward: 'REQUIRED' },
       }
     }
     return { valid: true, errors: {} }
   }
   const errors: AddressValidationResult['errors'] = {}
   if (!draft.cityCode) errors.city = 'REQUIRED'
-  if (!draft.wardCode) errors.ward = 'REQUIRED'
+  if (!cityOnly && !draft.wardCode) errors.ward = 'REQUIRED'
   return { valid: Object.keys(errors).length === 0, errors }
 }
 
@@ -68,7 +72,17 @@ export function hydrateAddress(
 
 export function addressDraftToValue(
   draft: AddressDraft,
+  options?: { cityOnly?: boolean },
 ): AddressValue | undefined {
+  if (options?.cityOnly) {
+    if (!draft.cityCode) return undefined
+    return {
+      cityCode: draft.cityCode,
+      cityName: draft.cityName,
+      wardCode: '',
+      wardName: '',
+    }
+  }
   if (!validateAddressDraft(draft).valid) return undefined
   if (isAddressBlank(draft)) return undefined
   const line = draft.line.trim()

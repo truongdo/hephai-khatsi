@@ -210,4 +210,17 @@ describe('VietnamAddressFields', () => {
       screen.getByRole('textbox', { name: m.filler_field_address_line() }),
     ).not.toBeRequired()
   })
+
+  it('hides ward and line when cityOnly', () => {
+    renderFields({ cityOnly: true })
+    expect(
+      screen.getByRole('combobox', { name: m.filler_field_city() }),
+    ).toBeTruthy()
+    expect(
+      screen.queryByRole('combobox', { name: m.filler_field_ward() }),
+    ).toBeNull()
+    expect(
+      screen.queryByRole('textbox', { name: m.filler_field_address_line() }),
+    ).toBeNull()
+  })
 })

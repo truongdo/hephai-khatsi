@@ -404,6 +404,7 @@ export function MemberFormFields({
             onChange={onNoiSinhChange}
             disabled={disabled}
             required
+            cityOnly
             errors={mapAddressErrors(fieldErrors.noiSinh)}
           />
         </Stack>

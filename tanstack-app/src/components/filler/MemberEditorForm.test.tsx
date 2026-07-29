@@ -394,13 +394,22 @@ describe('MemberEditorForm', () => {
     ).toBeTruthy()
   })
 
-  it('hydrates legacy noiSinh string into line field', () => {
+  it('hydrates legacy noiSinh string without showing line field in city-only UI', () => {
     renderForm({
       initial: {
         noiSinh: 'Cũ nơi sinh' as unknown as Member['noiSinh'],
       },
     })
-    expect(screen.getByDisplayValue('Cũ nơi sinh')).toBeTruthy()
+    const noiSinh = screen.getByLabelText(m.filler_field_noi_sinh())
+    expect(
+      within(noiSinh).getByRole('combobox', { name: m.filler_field_city() }),
+    ).toBeTruthy()
+    expect(
+      within(noiSinh).queryByRole('textbox', {
+        name: m.filler_field_address_line(),
+      }),
+    ).toBeNull()
+    expect(screen.queryByDisplayValue('Cũ nơi sinh')).toBeNull()
   })
 
   it('blocks save when required core fields are empty', async () => {

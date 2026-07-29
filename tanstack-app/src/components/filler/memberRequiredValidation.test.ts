@@ -66,7 +66,6 @@ describe('validateMemberRequiredFields', () => {
     expect(result.errors.email).toBe('REQUIRED')
     expect(result.errors.noiSinh).toEqual({
       city: 'REQUIRED',
-      ward: 'REQUIRED',
     })
     expect(result.errors.diaChiThuongTru).toEqual({
       city: 'REQUIRED',
@@ -87,5 +86,19 @@ describe('validateMemberRequiredFields', () => {
       valid: true,
       errors: {},
     })
+  })
+
+  it('accepts noiSinh with city only', () => {
+    expect(
+      validateMemberRequiredFields(
+        filledDraft({
+          noiSinh: {
+            ...EMPTY_ADDRESS_DRAFT,
+            cityCode: '01',
+            cityName: 'Hà Nội',
+          },
+        }),
+      ),
+    ).toEqual({ valid: true, errors: {} })
   })
 })

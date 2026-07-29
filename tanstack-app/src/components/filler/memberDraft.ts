@@ -288,7 +288,7 @@ export function buildMemberPatch(draft: MemberDraft): MemberProfilePatch {
     theDanh: textOrUndefined(draft.theDanh),
     phapDanh: textOrUndefined(draft.phapDanh),
     ngaySinh: textOrUndefined(draft.ngaySinh),
-    noiSinh: addressDraftToValue(draft.noiSinh),
+    noiSinh: addressDraftToValue(draft.noiSinh, { cityOnly: true }),
     nguyenQuan: textOrUndefined(draft.nguyenQuan),
     cccdMeta: {
       ngayCap: textOrUndefined(draft.cccdMeta.ngayCap),

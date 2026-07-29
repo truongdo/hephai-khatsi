@@ -152,6 +152,78 @@ describe('validateAddressDraft', () => {
   })
 })
 
+describe('validateAddressDraft cityOnly', () => {
+  it('rejects blank when required with city error only', () => {
+    expect(
+      validateAddressDraft(EMPTY_ADDRESS_DRAFT, {
+        required: true,
+        cityOnly: true,
+      }),
+    ).toEqual({
+      valid: false,
+      errors: { city: 'REQUIRED' },
+    })
+  })
+
+  it('accepts city without ward when cityOnly', () => {
+    expect(
+      validateAddressDraft(
+        {
+          ...EMPTY_ADDRESS_DRAFT,
+          cityCode: '01',
+          cityName: 'Hà Nội',
+        },
+        { required: true, cityOnly: true },
+      ),
+    ).toEqual({ valid: true, errors: {} })
+  })
+
+  it('ignores ward requirement when cityOnly even if line set', () => {
+    expect(
+      validateAddressDraft(
+        {
+          ...EMPTY_ADDRESS_DRAFT,
+          cityCode: '01',
+          cityName: 'Hà Nội',
+          line: '15 Ngõ 4',
+        },
+        { cityOnly: true },
+      ),
+    ).toEqual({ valid: true, errors: {} })
+  })
+})
+
+describe('addressDraftToValue cityOnly', () => {
+  it('emits city with empty ward and omits line', () => {
+    expect(
+      addressDraftToValue(
+        {
+          cityCode: '01',
+          cityName: 'Hà Nội',
+          wardCode: '00013',
+          wardName: 'Hà Đông',
+          line: '15 Ngõ 4',
+        },
+        { cityOnly: true },
+      ),
+    ).toEqual({
+      cityCode: '01',
+      cityName: 'Hà Nội',
+      wardCode: '',
+      wardName: '',
+    })
+  })
+
+  it('returns undefined when city missing in cityOnly mode', () => {
+    expect(
+      addressDraftToValue(
+        { ...EMPTY_ADDRESS_DRAFT, wardCode: '00013', wardName: 'Hà Đông' },
+        { cityOnly: true },
+      ),
+    ).toBeUndefined()
+  })
+})
+
 describe('formatAddressDisplay', () => {
   it('formats structured value', () => {
     expect(
