@@ -214,13 +214,26 @@ describe('VietnamAddressFields', () => {
   it('hides ward and line when cityOnly', () => {
     renderFields({ cityOnly: true })
     expect(
-      screen.getByRole('combobox', { name: m.filler_field_city() }),
+      screen.getByRole('combobox', { name: 'Địa chỉ cũ' }),
     ).toBeTruthy()
+    expect(
+      screen.queryByRole('combobox', { name: m.filler_field_city() }),
+    ).toBeNull()
     expect(
       screen.queryByRole('combobox', { name: m.filler_field_ward() }),
     ).toBeNull()
     expect(
       screen.queryByRole('textbox', { name: m.filler_field_address_line() }),
+    ).toBeNull()
+  })
+
+  it('uses custom label for city select when cityOnly', () => {
+    renderFields({ cityOnly: true, label: m.filler_field_noi_sinh() })
+    expect(
+      screen.getByRole('combobox', { name: m.filler_field_noi_sinh() }),
+    ).toBeTruthy()
+    expect(
+      screen.queryByRole('combobox', { name: m.filler_field_city() }),
     ).toBeNull()
   })
 })

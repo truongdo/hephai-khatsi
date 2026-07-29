@@ -343,6 +343,15 @@ export function MemberFormFields({
             required
             error={mapRequiredError(fieldErrors.ngaySinh)}
           />
+          <VietnamAddressFields
+            label={m.filler_field_noi_sinh()}
+            value={draft.noiSinh}
+            onChange={onNoiSinhChange}
+            disabled={disabled}
+            required
+            cityOnly
+            errors={mapAddressErrors(fieldErrors.noiSinh)}
+          />
           <TextInput
             label={m.filler_field_cccd()}
             placeholder={m.filler_ph_cccd()}
@@ -419,18 +428,6 @@ export function MemberFormFields({
             disabled={disabled}
           />
         </SimpleGrid>
-        <Stack gap="xs">
-          <Text fw={600}>{m.filler_field_noi_sinh()}</Text>
-          <VietnamAddressFields
-            label={m.filler_field_noi_sinh()}
-            value={draft.noiSinh}
-            onChange={onNoiSinhChange}
-            disabled={disabled}
-            required
-            cityOnly
-            errors={mapAddressErrors(fieldErrors.noiSinh)}
-          />
-        </Stack>
       </FormSection>
     ),
     [

@@ -487,15 +487,9 @@ describe('MemberEditorForm', () => {
         noiSinh: 'Cũ nơi sinh' as unknown as Member['noiSinh'],
       },
     })
-    const noiSinh = screen.getByLabelText(m.filler_field_noi_sinh())
     expect(
-      within(noiSinh).getByRole('combobox', { name: m.filler_field_city() }),
+      screen.getByRole('combobox', { name: m.filler_field_noi_sinh() }),
     ).toBeTruthy()
-    expect(
-      within(noiSinh).queryByRole('textbox', {
-        name: m.filler_field_address_line(),
-      }),
-    ).toBeNull()
     expect(screen.queryByDisplayValue('Cũ nơi sinh')).toBeNull()
   })
 

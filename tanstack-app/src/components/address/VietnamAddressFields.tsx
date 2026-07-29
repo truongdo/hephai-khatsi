@@ -156,28 +156,26 @@ export const VietnamAddressFields = memo(function VietnamAddressFields({
 
   if (cityOnly) {
     return (
-      <Stack gap="sm" aria-label={label}>
-        <Select
-          label={m.filler_field_city()}
-          placeholder={m.filler_ph_city()}
-          data={cityOptions}
-          value={value.cityCode || null}
-          onChange={(nextCityCode) => {
-            const city = cities.find((item) => item.code === nextCityCode)
-            onChange({
-              cityCode: nextCityCode ?? '',
-              cityName: city?.name ?? '',
-              wardCode: '',
-              wardName: '',
-              line: '',
-            })
-          }}
-          searchable
-          disabled={disabled}
-          required={required}
-          error={errors?.city}
-        />
-      </Stack>
+      <Select
+        label={label ?? m.filler_field_city()}
+        placeholder={m.filler_ph_city()}
+        data={cityOptions}
+        value={value.cityCode || null}
+        onChange={(nextCityCode) => {
+          const city = cities.find((item) => item.code === nextCityCode)
+          onChange({
+            cityCode: nextCityCode ?? '',
+            cityName: city?.name ?? '',
+            wardCode: '',
+            wardName: '',
+            line: '',
+          })
+        }}
+        searchable
+        disabled={disabled}
+        required={required}
+        error={errors?.city}
+      />
     )
   }
 
