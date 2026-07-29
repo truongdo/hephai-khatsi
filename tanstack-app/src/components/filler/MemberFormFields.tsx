@@ -343,14 +343,18 @@ export function MemberFormFields({
             required
             error={mapRequiredError(fieldErrors.ngaySinh)}
           />
-          {memberId ? (
-            <TextInput
-              label={m.filler_field_cccd()}
-              placeholder={m.filler_ph_cccd()}
-              value={cccd}
-              disabled
-            />
-          ) : null}
+          <TextInput
+            label={m.filler_field_cccd()}
+            placeholder={m.filler_ph_cccd()}
+            value={cccd}
+            onChange={
+              onCccdChange
+                ? (event) => onCccdChange(event.currentTarget.value)
+                : undefined
+            }
+            disabled={disabled || !onCccdChange}
+            required={!!onCccdChange}
+          />
           <TextInput
             label={m.filler_field_nguyen_quan()}
             placeholder={m.filler_ph_nguyen_quan()}
@@ -438,8 +442,8 @@ export function MemberFormFields({
       draft.cccdMeta,
       draft.cntn,
       draft.danToc,
-      
-      
+      cccd,
+      onCccdChange,
       disabled,
       onNoiSinhChange,
       fieldErrors.theDanh,
@@ -1193,16 +1197,6 @@ export function MemberFormFields({
         onPhotoPathChange={setPhotoPath}
         onUploadError={onUploadError}
       />
-      {!memberId && onCccdChange ? (
-        <TextInput
-          label={m.filler_field_cccd()}
-          placeholder={m.filler_ph_cccd()}
-          value={cccd}
-          onChange={(event) => onCccdChange(event.currentTarget.value)}
-          disabled={disabled}
-          required
-        />
-      ) : null}
       {identitySection}
       {contactSection}
       {restSections}
