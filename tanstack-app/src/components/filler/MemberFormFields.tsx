@@ -353,6 +353,24 @@ export function MemberFormFields({
             errors={mapAddressErrors(fieldErrors.noiSinh)}
           />
           <TextInput
+            label={m.filler_field_nguyen_quan()}
+            placeholder={m.filler_ph_nguyen_quan()}
+            value={draft.nguyenQuan}
+            onChange={(event) =>
+              updateDraft('nguyenQuan', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+          <TextInput
+            label={m.filler_field_dan_toc()}
+            placeholder={m.filler_ph_dan_toc()}
+            value={draft.danToc}
+            onChange={(event) =>
+              updateDraft('danToc', event.currentTarget.value)
+            }
+            disabled={disabled}
+          />
+          <TextInput
             label={m.filler_field_cccd()}
             placeholder={m.filler_ph_cccd()}
             value={cccd}
@@ -363,15 +381,6 @@ export function MemberFormFields({
             }
             disabled={disabled || !onCccdChange}
             required={!!onCccdChange}
-          />
-          <TextInput
-            label={m.filler_field_nguyen_quan()}
-            placeholder={m.filler_ph_nguyen_quan()}
-            value={draft.nguyenQuan}
-            onChange={(event) =>
-              updateDraft('nguyenQuan', event.currentTarget.value)
-            }
-            disabled={disabled}
           />
           <DateInput
             label={m.filler_field_cccd_ngay_cap()}
@@ -415,15 +424,6 @@ export function MemberFormFields({
             value={draft.cntn.noiCap}
             onChange={(event) =>
               updateNested('cntn', 'noiCap', event.currentTarget.value)
-            }
-            disabled={disabled}
-          />
-          <TextInput
-            label={m.filler_field_dan_toc()}
-            placeholder={m.filler_ph_dan_toc()}
-            value={draft.danToc}
-            onChange={(event) =>
-              updateDraft('danToc', event.currentTarget.value)
             }
             disabled={disabled}
           />
