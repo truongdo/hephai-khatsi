@@ -1,5 +1,12 @@
-import { Box, Group, Stack } from '@mantine/core'
-import type { ReactNode } from 'react'
+import { Box, CloseButton, Group, Stack } from '@mantine/core'
+import {
+  Children,
+  Fragment,
+  isValidElement,
+  useState,
+  type ReactNode,
+} from 'react'
+import { m } from '#/paraglide/messages'
 
 export type FormStickyActionsProps = {
   children: ReactNode
@@ -7,11 +14,51 @@ export type FormStickyActionsProps = {
   status?: ReactNode
 }
 
+function flattenStatus(node: ReactNode): ReactNode[] {
+  return Children.toArray(node).flatMap((child) => {
+    if (isValidElement(child) && child.type === Fragment) {
+      return flattenStatus(
+        (child.props as { children?: ReactNode }).children,
+      )
+    }
+    return [child]
+  })
+}
+
+function statusSignature(node: ReactNode | undefined): string {
+  if (node == null || node === false) return ''
+  return flattenStatus(node)
+    .map((child) => {
+      if (typeof child === 'string' || typeof child === 'number') {
+        return String(child)
+      }
+      if (isValidElement(child)) {
+        return statusSignature(
+          (child.props as { children?: ReactNode }).children,
+        )
+      }
+      return ''
+    })
+    .filter(Boolean)
+    .join('|')
+}
+
 /**
  * Viewport-fixed bottom action strip for long forms.
  * Renders a spacer so the last form fields stay scrollable above the bar.
  */
 export function FormStickyActions({ children, status }: FormStickyActionsProps) {
+  const signature = statusSignature(status)
+  const [dismissedSignature, setDismissedSignature] = useState<string | null>(
+    null,
+  )
+
+  if (signature === '' && dismissedSignature !== null) {
+    setDismissedSignature(null)
+  }
+
+  const showStatus = signature !== '' && signature !== dismissedSignature
+
   return (
     <>
       <Box
@@ -41,7 +88,22 @@ export function FormStickyActions({ children, status }: FormStickyActionsProps) 
         }}
       >
         <Stack gap="xs" maw={760} w="100%" mx="auto">
-          {status}
+          {showStatus ? (
+            <Group
+              justify="space-between"
+              align="flex-start"
+              wrap="nowrap"
+              gap="xs"
+              data-testid="form-sticky-actions-status"
+            >
+              <Box style={{ flex: 1, minWidth: 0 }}>{status}</Box>
+              <CloseButton
+                size="sm"
+                aria-label={m.form_status_dismiss()}
+                onClick={() => setDismissedSignature(signature)}
+              />
+            </Group>
+          ) : null}
           <Group gap="sm" wrap="wrap">
             {children}
           </Group>

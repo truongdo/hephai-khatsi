@@ -4,7 +4,6 @@ import type { Env } from './env'
 import type { WorkerMember, WorkerTemple } from './firestoreRest'
 
 const getMemberDocument = vi.fn()
-const getInviteOrgUnitId = vi.fn()
 const getTempleDocument = vi.fn()
 const inviteExists = vi.fn()
 const verifyFirebaseAdminToken = vi.fn()
@@ -12,7 +11,6 @@ const createR2PresignedPutUrl = vi.fn()
 
 vi.mock('./firestoreRest', () => ({
   getMemberDocument,
-  getInviteOrgUnitId,
   getTempleDocument,
   inviteExists,
 }))
@@ -193,7 +191,7 @@ describe('handlePhotosApi', () => {
 
     it('returns 403 for filler invite on locked member', async () => {
       getMemberDocument.mockResolvedValue({ ...draftMember, status: 'locked' })
-      getInviteOrgUnitId.mockResolvedValue('gd-i')
+      inviteExists.mockResolvedValue(true)
       const { handlePhotosApi } = await import('./photosApi')
 
       const response = await handlePhotosApi(
@@ -252,9 +250,9 @@ describe('handlePhotosApi', () => {
       })
     })
 
-    it('returns uploadUrl for invite token auth when orgUnitId matches', async () => {
+    it('returns uploadUrl for invite token auth when invite exists', async () => {
       getMemberDocument.mockResolvedValue(draftMember)
-      getInviteOrgUnitId.mockResolvedValue('gd-i')
+      inviteExists.mockResolvedValue(true)
       const { handlePhotosApi } = await import('./photosApi')
 
       const response = await handlePhotosApi(
@@ -265,7 +263,7 @@ describe('handlePhotosApi', () => {
             memberId: MEMBER_ID,
             cccd: '012345678901',
             contentType: 'image/png',
-            inviteToken: 'invite-1',
+            inviteToken: 'public',
           }),
         }),
         makeEnv(),
@@ -276,11 +274,12 @@ describe('handlePhotosApi', () => {
         photoPath: 'members/m1/photo.jpg',
       })
       expect(verifyFirebaseAdminToken).not.toHaveBeenCalled()
+      expect(inviteExists).toHaveBeenCalledWith(PROJECT_ID, 'public')
     })
 
-    it('returns 403 when invite orgUnitId does not match member', async () => {
+    it('returns 403 when invite does not exist', async () => {
       getMemberDocument.mockResolvedValue(draftMember)
-      getInviteOrgUnitId.mockResolvedValue('other-unit')
+      inviteExists.mockResolvedValue(false)
       const { handlePhotosApi } = await import('./photosApi')
 
       const response = await handlePhotosApi(
@@ -342,9 +341,9 @@ describe('handlePhotosApi', () => {
       expect(deleteFn).toHaveBeenCalledWith('members/m1/photo.jpg')
     })
 
-    it('deletes for invite token when orgUnitId and cccd match', async () => {
+    it('deletes for invite token when invite exists and cccd matches', async () => {
       getMemberDocument.mockResolvedValue(draftMember)
-      getInviteOrgUnitId.mockResolvedValue('gd-i')
+      inviteExists.mockResolvedValue(true)
       const deleteFn = vi.fn(async () => undefined)
       const env = makeEnv({
         PHOTOS: { delete: deleteFn } as unknown as R2Bucket,
@@ -370,7 +369,7 @@ describe('handlePhotosApi', () => {
 
     it('returns 403 for invite on locked member', async () => {
       getMemberDocument.mockResolvedValue({ ...draftMember, status: 'locked' })
-      getInviteOrgUnitId.mockResolvedValue('gd-i')
+      inviteExists.mockResolvedValue(true)
       const { handlePhotosApi } = await import('./photosApi')
 
       const response = await handlePhotosApi(
@@ -391,7 +390,7 @@ describe('handlePhotosApi', () => {
 
     it('returns 403 when invite cccd mismatches', async () => {
       getMemberDocument.mockResolvedValue(draftMember)
-      getInviteOrgUnitId.mockResolvedValue('gd-i')
+      inviteExists.mockResolvedValue(true)
       const { handlePhotosApi } = await import('./photosApi')
 
       const response = await handlePhotosApi(

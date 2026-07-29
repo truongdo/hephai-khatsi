@@ -62,6 +62,17 @@ function memberStoreWith(members: Member[]): MemberStore & {
       map.set(memberId, member)
       return member
     },
+    async setDocumentPaths(memberId: string, documents) {
+      const existing = map.get(memberId)
+      if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
+      const member = {
+        ...existing,
+        documents,
+        updatedAt: '2026-07-19T00:00:00.000Z',
+      }
+      map.set(memberId, member)
+      return member
+    },
     async list() {
       return { items: [], nextCursor: null }
     },

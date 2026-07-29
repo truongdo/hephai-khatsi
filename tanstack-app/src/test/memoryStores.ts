@@ -2,6 +2,16 @@ import { DomainError } from '#/domain/errors'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
 import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
 import { normalizeVnPhone } from '#/domain/normalize'
+import type { MemberDocuments } from '#/domain/memberDocumentTypes'
+import {
+  mergeDocumentPath,
+  pathFieldForSide,
+  pathsFromTypeFiles,
+  removeDocumentSide,
+  removeDocumentType,
+  type DocumentSide,
+  type DocumentTypeId,
+} from '#/domain/memberDocumentTypes'
 import type { Member, SanghaType, Temple } from '#/domain/types'
 import type {
   AdminListPage,
@@ -275,6 +285,66 @@ export function createMemoryMemberStore(
       }
       members.set(memberId, member)
       return member
+    },
+    async setDocumentPaths(memberId: string, documents: MemberDocuments) {
+      const existing = members.get(memberId)
+      if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
+      const member = {
+        ...existing,
+        documents,
+        updatedAt: '2026-07-19T00:00:00.000Z',
+      }
+      members.set(memberId, member)
+      return member
+    },
+    async mergeDocumentSide(
+      memberId: string,
+      typeId: DocumentTypeId,
+      side: DocumentSide,
+      filePath: string,
+    ) {
+      const existing = members.get(memberId)
+      if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
+      const current = existing.documents ?? {}
+      const pathField = pathFieldForSide(side)
+      const previousPath = current[typeId]?.[pathField]
+      const documents = mergeDocumentPath(current, typeId, side, filePath)
+      const member = {
+        ...existing,
+        documents,
+        updatedAt: '2026-07-19T00:00:00.000Z',
+      }
+      members.set(memberId, member)
+      return { member, previousPath }
+    },
+    async removeDocumentPaths(
+      memberId: string,
+      typeId: DocumentTypeId,
+      side?: DocumentSide,
+    ) {
+      const existing = members.get(memberId)
+      if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
+      const current = existing.documents ?? {}
+      const typeFiles = current[typeId]
+      const removedPaths = side
+        ? (() => {
+            const pathField = pathFieldForSide(side)
+            const path = typeFiles?.[pathField]
+            return path ? [path] : []
+          })()
+        : typeFiles
+          ? pathsFromTypeFiles(typeFiles)
+          : []
+      const documents = side
+        ? removeDocumentSide(current, typeId, side)
+        : removeDocumentType(current, typeId)
+      const member = {
+        ...existing,
+        documents,
+        updatedAt: '2026-07-19T00:00:00.000Z',
+      }
+      members.set(memberId, member)
+      return { member, removedPaths }
     },
     async lock(memberId: string, lockedBy: string) {
       const existing = members.get(memberId)

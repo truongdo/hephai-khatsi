@@ -1,4 +1,5 @@
 import type { AddressValue } from './address'
+import type { MemberDocuments } from './memberDocumentTypes'
 
 export type OrgUnitKind = 'giao_doan' | 'ni_gioi'
 export type SanghaType = 'tang' | 'ni'
@@ -118,6 +119,7 @@ export type Member = {
     }>
   }
   nguyenVong?: string
+  documents?: MemberDocuments
   createdAt: string
   updatedAt: string
   lockedAt: string | null

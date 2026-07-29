@@ -11,7 +11,9 @@ import type { Member } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { saveMemberDraft } from '#/use-cases/saveMemberDraft'
 import { uploadMemberPhoto } from '#/use-cases/uploadMemberPhoto'
+import { uploadMemberDocument } from '#/use-cases/uploadMemberDocument'
 import { theme } from '../../theme'
+import { documentTypeLabel } from './memberDocumentLabels'
 import { MemberEditorForm } from './MemberEditorForm'
 
 dayjs.extend(customParseFormat)
@@ -24,6 +26,15 @@ vi.mock('#/use-cases/saveMemberDraft', () => ({
 vi.mock('#/use-cases/uploadMemberPhoto', () => ({
   uploadMemberPhoto: vi.fn(async () => ({
     photoPath: 'members/created-member/photo.jpg',
+  })),
+}))
+
+vi.mock('#/use-cases/uploadMemberDocument', () => ({
+  uploadMemberDocument: vi.fn(async () => ({
+    filePath: 'members/created-member/docs/diep_sa_di/file.pdf',
+    documents: {
+      diep_sa_di: { filePath: 'members/created-member/docs/diep_sa_di/file.pdf' },
+    },
   })),
 }))
 
@@ -81,12 +92,30 @@ vi.mock('#/data/vietnam-locations', () => ({
 
 const saveMemberDraftMock = vi.mocked(saveMemberDraft)
 const uploadMemberPhotoMock = vi.mocked(uploadMemberPhoto)
+const uploadMemberDocumentMock = vi.mocked(uploadMemberDocument)
 
 function getPortraitFileInput(): HTMLInputElement {
   const button = screen.getByRole('button', { name: m.filler_photo_choose() })
   return button.parentElement?.querySelector(
     'input[type="file"]',
   ) as HTMLInputElement
+}
+
+async function pickPendingDocType(
+  user: ReturnType<typeof userEvent.setup>,
+) {
+  const select = screen.getByRole('combobox', {
+    name: m.filler_doc_select_label(),
+  })
+  await user.click(select)
+  await user.click(await screen.findByText(documentTypeLabel('diep_sa_di')))
+}
+
+function getDocumentFileInput(): HTMLInputElement {
+  const inputs = Array.from(
+    document.querySelectorAll('input[type="file"]'),
+  ) as HTMLInputElement[]
+  return inputs.find((input) => input !== getPortraitFileInput())!
 }
 
 beforeAll(() => {
@@ -119,8 +148,15 @@ beforeAll(() => {
 beforeEach(() => {
   saveMemberDraftMock.mockReset()
   uploadMemberPhotoMock.mockReset()
+  uploadMemberDocumentMock.mockReset()
   uploadMemberPhotoMock.mockResolvedValue({
     photoPath: 'members/created-member/photo.jpg',
+  })
+  uploadMemberDocumentMock.mockResolvedValue({
+    filePath: 'members/created-member/docs/diep_sa_di/file.pdf',
+    documents: {
+      diep_sa_di: { filePath: 'members/created-member/docs/diep_sa_di/file.pdf' },
+    },
   })
 })
 
@@ -334,6 +370,57 @@ describe('MemberEditorForm', () => {
     expect(onCreated).not.toHaveBeenCalled()
 
     resolveUpload({ photoPath: 'members/created-member/photo.jpg' })
+    await vi.waitFor(() =>
+      expect(onCreated).toHaveBeenCalledWith('created-member'),
+    )
+  })
+
+  it('uploads pending document after successful create', async () => {
+    const user = userEvent.setup()
+    let resolveUpload!: (value: {
+      filePath: string
+      documents: { diep_sa_di: { filePath: string } }
+    }) => void
+    const uploadPromise = new Promise<{
+      filePath: string
+      documents: { diep_sa_di: { filePath: string } }
+    }>((resolve) => {
+      resolveUpload = resolve
+    })
+    uploadMemberDocumentMock.mockReturnValue(uploadPromise)
+    saveMemberDraftMock.mockResolvedValue({
+      member: member({ id: 'created-member', phapDanh: 'Minh Tâm' }),
+      mode: 'created',
+    })
+    const { onCreated } = renderForm({
+      cccd: '012345678901',
+      initial: requiredCoreInitial,
+    })
+    const file = new File(['pdf'], 'doc.pdf', { type: 'application/pdf' })
+
+    await pickPendingDocType(user)
+    await user.upload(getDocumentFileInput(), file)
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+
+    expect(saveMemberDraftMock).toHaveBeenCalled()
+    expect(uploadMemberDocumentMock).toHaveBeenCalledWith({
+      memberId: 'created-member',
+      cccd: '012345678901',
+      typeId: 'diep_sa_di',
+      side: 'file',
+      bytes: expect.any(Uint8Array),
+      contentType: 'application/pdf',
+      inviteToken: 'invite-token',
+      current: {},
+    })
+    expect(onCreated).not.toHaveBeenCalled()
+
+    resolveUpload({
+      filePath: 'members/created-member/docs/diep_sa_di/file.pdf',
+      documents: {
+        diep_sa_di: { filePath: 'members/created-member/docs/diep_sa_di/file.pdf' },
+      },
+    })
     await vi.waitFor(() =>
       expect(onCreated).toHaveBeenCalledWith('created-member'),
     )

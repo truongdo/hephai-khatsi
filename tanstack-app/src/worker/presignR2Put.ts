@@ -8,6 +8,15 @@ export function templePhotoKey(templeId: string): string {
   return `temples/${templeId}/photo.jpg`
 }
 
+export function memberDocumentKey(
+  memberId: string,
+  typeId: string,
+  side: string,
+  ext: string,
+): string {
+  return `members/${memberId}/docs/${typeId}/${side}.${ext}`
+}
+
 export async function createR2PresignedPutUrl(input: {
   accountId: string
   accessKeyId: string

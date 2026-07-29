@@ -1,4 +1,5 @@
 import type { Env } from './worker/env'
+import { handleDocsApi } from './worker/docsApi'
 import { handlePhotosApi } from './worker/photosApi'
 
 export default {
@@ -9,6 +10,9 @@ export default {
     }
     if (url.pathname.startsWith('/api/photos')) {
       return handlePhotosApi(request, env)
+    }
+    if (url.pathname.startsWith('/api/docs')) {
+      return handleDocsApi(request, env)
     }
     if (url.pathname.startsWith('/api/')) {
       return new Response('Not found', { status: 404 })

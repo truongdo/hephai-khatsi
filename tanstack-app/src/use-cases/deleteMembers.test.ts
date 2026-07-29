@@ -67,12 +67,53 @@ describe('deleteMembers', () => {
   it('does not throw when photo delete fails (best-effort)', async () => {
     const store = createMemoryMemberStore([member({ id: 'm1' })])
     const deletePhoto = vi.fn().mockRejectedValue(new Error('R2 delete failed'))
+    const deleteDocsPrefix = vi.fn().mockResolvedValue(undefined)
 
     await expect(
-      deleteMembers({ ids: ['m1'], idToken: 'token' }, store, deletePhoto),
+      deleteMembers(
+        { ids: ['m1'], idToken: 'token' },
+        store,
+        deletePhoto,
+        deleteDocsPrefix,
+      ),
     ).resolves.toBeUndefined()
 
     expect(await store.getById('m1')).toBeNull()
     expect(deletePhoto).toHaveBeenCalledWith('m1')
+  })
+
+  it('calls docs prefix deleter for each member id after store delete', async () => {
+    const store = createMemoryMemberStore([member({ id: 'm1' }), member({ id: 'm2' })])
+    const deletePhoto = vi.fn().mockResolvedValue(undefined)
+    const deleteDocsPrefix = vi.fn().mockResolvedValue(undefined)
+
+    await deleteMembers(
+      { ids: ['m1', 'm2'], idToken: 'admin-token' },
+      store,
+      deletePhoto,
+      deleteDocsPrefix,
+    )
+
+    expect(deleteDocsPrefix).toHaveBeenCalledTimes(2)
+    expect(deleteDocsPrefix).toHaveBeenCalledWith('m1')
+    expect(deleteDocsPrefix).toHaveBeenCalledWith('m2')
+  })
+
+  it('does not throw when docs prefix delete fails (best-effort)', async () => {
+    const store = createMemoryMemberStore([member({ id: 'm1' })])
+    const deletePhoto = vi.fn().mockResolvedValue(undefined)
+    const deleteDocsPrefix = vi.fn().mockRejectedValue(new Error('R2 prefix delete failed'))
+
+    await expect(
+      deleteMembers(
+        { ids: ['m1'], idToken: 'token' },
+        store,
+        deletePhoto,
+        deleteDocsPrefix,
+      ),
+    ).resolves.toBeUndefined()
+
+    expect(await store.getById('m1')).toBeNull()
+    expect(deleteDocsPrefix).toHaveBeenCalledWith('m1')
   })
 })

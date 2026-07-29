@@ -9,7 +9,9 @@ import { m } from '#/paraglide/messages'
 import { lockMember } from '#/use-cases/lockMember'
 import { saveAdminMember } from '#/use-cases/saveAdminMember'
 import { uploadMemberPhoto } from '#/use-cases/uploadMemberPhoto'
+import { uploadMemberDocument } from '#/use-cases/uploadMemberDocument'
 import { theme } from '../../theme'
+import { documentTypeLabel } from '../filler/memberDocumentLabels'
 import { MemberFormPage } from './MemberFormPage'
 
 const draftMember: Member = {
@@ -131,6 +133,14 @@ vi.mock('#/use-cases/uploadMemberPhoto', () => ({
     photoPath: 'members/created-member/photo.jpg',
   })),
 }))
+vi.mock('#/use-cases/uploadMemberDocument', () => ({
+  uploadMemberDocument: vi.fn(async () => ({
+    filePath: 'members/created-member/docs/diep_sa_di/file.pdf',
+    documents: {
+      diep_sa_di: { filePath: 'members/created-member/docs/diep_sa_di/file.pdf' },
+    },
+  })),
+}))
 vi.mock('#/data/vietnam-locations', () => ({
   cities: [
     {
@@ -155,12 +165,30 @@ vi.mock('#/data/vietnam-locations', () => ({
 const saveAdminMemberMock = vi.mocked(saveAdminMember)
 const lockMemberMock = vi.mocked(lockMember)
 const uploadMemberPhotoMock = vi.mocked(uploadMemberPhoto)
+const uploadMemberDocumentMock = vi.mocked(uploadMemberDocument)
 
 function getPortraitFileInput(): HTMLInputElement {
   const button = screen.getByRole('button', { name: m.filler_photo_choose() })
   return button.parentElement?.querySelector(
     'input[type="file"]',
   ) as HTMLInputElement
+}
+
+async function pickPendingDocType(
+  user: ReturnType<typeof userEvent.setup>,
+) {
+  const select = screen.getByRole('combobox', {
+    name: m.filler_doc_select_label(),
+  })
+  await user.click(select)
+  await user.click(await screen.findByText(documentTypeLabel('diep_sa_di')))
+}
+
+function getDocumentFileInput(): HTMLInputElement {
+  const inputs = Array.from(
+    document.querySelectorAll('input[type="file"]'),
+  ) as HTMLInputElement[]
+  return inputs.find((input) => input !== getPortraitFileInput())!
 }
 
 beforeAll(() => {
@@ -201,10 +229,17 @@ beforeEach(() => {
   saveAdminMemberMock.mockReset()
   lockMemberMock.mockReset()
   uploadMemberPhotoMock.mockReset()
+  uploadMemberDocumentMock.mockReset()
   navigateMock.mockReset()
   getIdTokenMock.mockClear()
   uploadMemberPhotoMock.mockResolvedValue({
     photoPath: 'members/created-member/photo.jpg',
+  })
+  uploadMemberDocumentMock.mockResolvedValue({
+    filePath: 'members/created-member/docs/diep_sa_di/file.pdf',
+    documents: {
+      diep_sa_di: { filePath: 'members/created-member/docs/diep_sa_di/file.pdf' },
+    },
   })
   saveAdminMemberMock.mockResolvedValue({
     member: { ...draftMember, id: 'created-member' },
@@ -361,6 +396,59 @@ describe('MemberFormPage', () => {
     expect(navigateMock).not.toHaveBeenCalled()
 
     resolveUpload({ photoPath: 'members/created-member/photo.jpg' })
+    await vi.waitFor(() =>
+      expect(navigateMock).toHaveBeenCalledWith({
+        to: '/admin/members/$id',
+        params: { id: 'created-member' },
+      }),
+    )
+  })
+
+  it('uploads pending document after successful create and navigates to edit', async () => {
+    const user = userEvent.setup()
+    let resolveUpload!: (value: {
+      filePath: string
+      documents: { diep_sa_di: { filePath: string } }
+    }) => void
+    const uploadPromise = new Promise<{
+      filePath: string
+      documents: { diep_sa_di: { filePath: string } }
+    }>((resolve) => {
+      resolveUpload = resolve
+    })
+    uploadMemberDocumentMock.mockReturnValue(uploadPromise)
+    renderForm({ mode: 'create' })
+    await selectOrgUnit(user)
+    await user.type(
+      screen.getByLabelText(new RegExp(`^${m.admin_members_form_cccd()}`)),
+      '001099012345',
+    )
+    const file = new File(['pdf'], 'doc.pdf', { type: 'application/pdf' })
+    await pickPendingDocType(user)
+    await user.upload(getDocumentFileInput(), file)
+    await user.click(
+      screen.getByRole('button', { name: m.admin_members_save_draft() }),
+    )
+
+    await vi.waitFor(() => expect(saveAdminMemberMock).toHaveBeenCalled())
+    expect(uploadMemberDocumentMock).toHaveBeenCalledWith({
+      memberId: 'created-member',
+      cccd: '001099012345',
+      typeId: 'diep_sa_di',
+      side: 'file',
+      bytes: expect.any(Uint8Array),
+      contentType: 'application/pdf',
+      idToken: 'admin-id-token',
+      current: {},
+    })
+    expect(navigateMock).not.toHaveBeenCalled()
+
+    resolveUpload({
+      filePath: 'members/created-member/docs/diep_sa_di/file.pdf',
+      documents: {
+        diep_sa_di: { filePath: 'members/created-member/docs/diep_sa_di/file.pdf' },
+      },
+    })
     await vi.waitFor(() =>
       expect(navigateMock).toHaveBeenCalledWith({
         to: '/admin/members/$id',

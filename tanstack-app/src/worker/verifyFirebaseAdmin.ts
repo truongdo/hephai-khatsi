@@ -21,7 +21,16 @@ export async function verifyFirebaseAdminToken(
       issuer: `https://securetoken.google.com/${projectId}`,
       audience: projectId,
     })
-    if (payload.admin !== true) return null
+    if (payload.admin === true) {
+      // legacy claim
+    } else if (
+      payload.role === 'he_phai_admin' ||
+      payload.role === 'giao_doan_admin'
+    ) {
+      // RBAC directory roles (no legacy admin:true required)
+    } else {
+      return null
+    }
     if (typeof payload.sub !== 'string') return null
     return { uid: payload.sub }
   } catch {

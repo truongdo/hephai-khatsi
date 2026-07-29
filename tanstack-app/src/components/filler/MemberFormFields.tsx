@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useCallback, useMemo, useState } from 'react'
 import { VietnamAddressFields } from '#/components/address/VietnamAddressFields'
 import type { AddressDraft } from '#/domain/address'
+import type { MemberDocuments } from '#/domain/memberDocumentTypes'
 import type { Member, SanghaType } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { fillerOrgUnitsQuery } from '#/query/fillerQueries'
@@ -32,6 +33,10 @@ import {
   type MemberDraft,
   type NumericValue,
 } from './memberDraft'
+import {
+  MemberDocumentsField,
+  type PendingDocumentFiles,
+} from './MemberDocumentsField'
 import { MemberPortraitField } from './MemberPortraitField'
 import type { MemberRequiredFieldErrors } from './memberRequiredValidation'
 import { PreceptFields } from './PreceptFields'
@@ -95,6 +100,10 @@ export type MemberFormFieldsApi = {
   getPendingPhoto: () => File | null
   setPhotoPath: (path: string | null) => void
   clearPendingPhoto: () => void
+  getDocuments: () => MemberDocuments
+  setDocuments: (docs: MemberDocuments) => void
+  getPendingDocuments: () => PendingDocumentFiles
+  clearPendingDocuments: () => void
   setFieldErrors: (errors: MemberRequiredFieldErrors) => void
   clearFieldErrors: () => void
 }
@@ -129,6 +138,12 @@ export function MemberFormFields({
     initial.photoPath ?? null,
   )
   const [pendingPhoto, setPendingPhoto] = useState<File | null>(null)
+  const [documents, setDocuments] = useState<MemberDocuments>(
+    initial.documents ?? {},
+  )
+  const [pendingDocuments, setPendingDocuments] = useState<PendingDocumentFiles>(
+    {},
+  )
   const [fieldErrors, setFieldErrors] = useState<MemberRequiredFieldErrors>({})
   const ranks = useMemo(() => rankOptions(sanghaType), [sanghaType])
   const orgUnitsQuery = useQuery(fillerOrgUnitsQuery())
@@ -146,6 +161,10 @@ export function MemberFormFields({
     getPendingPhoto: () => pendingPhoto,
     setPhotoPath,
     clearPendingPhoto: () => setPendingPhoto(null),
+    getDocuments: () => documents,
+    setDocuments,
+    getPendingDocuments: () => pendingDocuments,
+    clearPendingDocuments: () => setPendingDocuments({}),
     setFieldErrors,
     clearFieldErrors: () => setFieldErrors({}),
   }
@@ -1126,9 +1145,36 @@ export function MemberFormFields({
             minRows={4}
           />
         </FormSection>
+
+        <FormSection title={m.filler_section_giay_to()}>
+          <MemberDocumentsField
+            memberId={memberId}
+            cccd={cccd}
+            inviteToken={inviteToken}
+            getIdToken={getIdToken}
+            documents={documents}
+            onDocumentsChange={setDocuments}
+            pendingFiles={pendingDocuments}
+            onPendingFilesChange={setPendingDocuments}
+            disabled={disabled}
+            onUploadError={onUploadError}
+          />
+        </FormSection>
       </>
     ),
-    [draft.khoaTu, draft.giaDinh, draft.nguyenVong, disabled],
+    [
+      draft.khoaTu,
+      draft.giaDinh,
+      draft.nguyenVong,
+      disabled,
+      memberId,
+      cccd,
+      inviteToken,
+      getIdToken,
+      documents,
+      pendingDocuments,
+      onUploadError,
+    ],
   )
 
 

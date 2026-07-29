@@ -55,6 +55,30 @@ describe('verifyFirebaseAdminToken', () => {
     expect(result).toEqual({ uid: UID })
   })
 
+  it('returns uid when role is he_phai_admin without legacy admin claim', async () => {
+    mockJwksFetch()
+    const token = await signToken({ role: 'he_phai_admin' })
+    const { verifyFirebaseAdminToken } = await import('./verifyFirebaseAdmin')
+    const result = await verifyFirebaseAdminToken(token, PROJECT_ID)
+    expect(result).toEqual({ uid: UID })
+  })
+
+  it('returns uid when role is giao_doan_admin', async () => {
+    mockJwksFetch()
+    const token = await signToken({ role: 'giao_doan_admin', orgUnitId: 'gd-i' })
+    const { verifyFirebaseAdminToken } = await import('./verifyFirebaseAdmin')
+    const result = await verifyFirebaseAdminToken(token, PROJECT_ID)
+    expect(result).toEqual({ uid: UID })
+  })
+
+  it('returns null when role is kiem_soat', async () => {
+    mockJwksFetch()
+    const token = await signToken({ role: 'kiem_soat' })
+    const { verifyFirebaseAdminToken } = await import('./verifyFirebaseAdmin')
+    const result = await verifyFirebaseAdminToken(token, PROJECT_ID)
+    expect(result).toBeNull()
+  })
+
   it('returns null when admin claim is false', async () => {
     mockJwksFetch()
     const token = await signToken({ admin: false })

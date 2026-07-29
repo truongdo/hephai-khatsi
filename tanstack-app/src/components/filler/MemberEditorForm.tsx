@@ -5,6 +5,8 @@ import { m } from '#/paraglide/messages'
 import { fillerKeys } from '#/query/fillerKeys'
 import { saveMemberDraft } from '#/use-cases/saveMemberDraft'
 import { uploadMemberPhoto } from '#/use-cases/uploadMemberPhoto'
+import { uploadMemberDocument } from '#/use-cases/uploadMemberDocument'
+import type { DocumentSide, DocumentTypeId } from '#/domain/memberDocumentTypes'
 import {
   FillerEditorShell,
   type FillerEditorStatus,
@@ -112,6 +114,35 @@ export function MemberEditorForm({
             setSaveError(m.filler_photo_upload_error())
           }
         }
+
+        const pendingDocs = api.getPendingDocuments()
+        if (Object.keys(pendingDocs).length > 0) {
+          try {
+            for (const typeId of Object.keys(pendingDocs) as DocumentTypeId[]) {
+              const sides = pendingDocs[typeId] ?? {}
+              for (const side of Object.keys(sides) as DocumentSide[]) {
+                const file = sides[side]
+                if (!file) continue
+                const bytes = new Uint8Array(await file.arrayBuffer())
+                const uploadResult = await uploadMemberDocument({
+                  memberId: saveResult.member.id,
+                  cccd: resolvedCccd,
+                  typeId,
+                  side,
+                  bytes,
+                  contentType: file.type,
+                  inviteToken: token,
+                  current: api.getDocuments(),
+                })
+                api.setDocuments(uploadResult.documents)
+              }
+            }
+            api.clearPendingDocuments()
+          } catch {
+            setSaveError(m.filler_doc_upload_error())
+          }
+        }
+
         onCreated(saveResult.member.id)
         return
       }

@@ -19,6 +19,16 @@ import { DomainError } from '#/domain/errors'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
 import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
 import { normalizeVnPhone } from '#/domain/normalize'
+import type { MemberDocuments } from '#/domain/memberDocumentTypes'
+import {
+  mergeDocumentPath,
+  pathFieldForSide,
+  pathsFromTypeFiles,
+  removeDocumentSide,
+  removeDocumentType,
+  type DocumentSide,
+  type DocumentTypeId,
+} from '#/domain/memberDocumentTypes'
 import type { Member, SanghaType } from '#/domain/types'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
@@ -76,6 +86,18 @@ export type MemberStore = {
   listByCurrentTempleIds(templeIds: string[]): Promise<Member[]>
   deleteMany(ids: string[]): Promise<void>
   setPhotoPath(memberId: string, photoPath: string | null): Promise<Member>
+  setDocumentPaths(memberId: string, documents: MemberDocuments): Promise<Member>
+  mergeDocumentSide(
+    memberId: string,
+    typeId: DocumentTypeId,
+    side: DocumentSide,
+    filePath: string,
+  ): Promise<{ member: Member; previousPath?: string }>
+  removeDocumentPaths(
+    memberId: string,
+    typeId: DocumentTypeId,
+    side?: DocumentSide,
+  ): Promise<{ member: Member; removedPaths: string[] }>
   lock(memberId: string, lockedBy: string): Promise<Member>
   unlock(memberId: string): Promise<Member>
 }
@@ -417,6 +439,94 @@ async function setPhotoPath(memberId: string, photoPath: string | null): Promise
   })
 }
 
+async function setDocumentPaths(
+  memberId: string,
+  documents: MemberDocuments,
+): Promise<Member> {
+  const db = requireDb()
+  const memberRef = doc(db, COLLECTIONS.members, memberId)
+
+  return runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(memberRef)
+    if (!snap.exists()) {
+      throw new DomainError('NOT_FOUND', 'Member not found')
+    }
+
+    const existing = memberFromSnap(snap)
+
+    const now = new Date().toISOString()
+    const member: Member = { ...existing, documents, updatedAt: now }
+    transaction.set(memberRef, memberData(member))
+    return member
+  })
+}
+
+async function mergeDocumentSide(
+  memberId: string,
+  typeId: DocumentTypeId,
+  side: DocumentSide,
+  filePath: string,
+): Promise<{ member: Member; previousPath?: string }> {
+  const db = requireDb()
+  const memberRef = doc(db, COLLECTIONS.members, memberId)
+  const pathField = pathFieldForSide(side)
+
+  return runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(memberRef)
+    if (!snap.exists()) {
+      throw new DomainError('NOT_FOUND', 'Member not found')
+    }
+
+    const existing = memberFromSnap(snap)
+    const current = existing.documents ?? {}
+    const previousPath = current[typeId]?.[pathField]
+    const documents = mergeDocumentPath(current, typeId, side, filePath)
+
+    const now = new Date().toISOString()
+    const member: Member = { ...existing, documents, updatedAt: now }
+    transaction.set(memberRef, memberData(member))
+    return { member, previousPath }
+  })
+}
+
+async function removeDocumentPaths(
+  memberId: string,
+  typeId: DocumentTypeId,
+  side?: DocumentSide,
+): Promise<{ member: Member; removedPaths: string[] }> {
+  const db = requireDb()
+  const memberRef = doc(db, COLLECTIONS.members, memberId)
+
+  return runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(memberRef)
+    if (!snap.exists()) {
+      throw new DomainError('NOT_FOUND', 'Member not found')
+    }
+
+    const existing = memberFromSnap(snap)
+    const current = existing.documents ?? {}
+    const typeFiles = current[typeId]
+    const removedPaths = side
+      ? (() => {
+          const pathField = pathFieldForSide(side)
+          const path = typeFiles?.[pathField]
+          return path ? [path] : []
+        })()
+      : typeFiles
+        ? pathsFromTypeFiles(typeFiles)
+        : []
+
+    const documents = side
+      ? removeDocumentSide(current, typeId, side)
+      : removeDocumentType(current, typeId)
+
+    const now = new Date().toISOString()
+    const member: Member = { ...existing, documents, updatedAt: now }
+    transaction.set(memberRef, memberData(member))
+    return { member, removedPaths }
+  })
+}
+
 async function lock(memberId: string, lockedBy: string): Promise<Member> {
   const db = requireDb()
   const memberRef = doc(db, COLLECTIONS.members, memberId)
@@ -476,6 +586,9 @@ export const memberRepo: MemberStore = {
   listByCurrentTempleIds,
   deleteMany,
   setPhotoPath,
+  setDocumentPaths,
+  mergeDocumentSide,
+  removeDocumentPaths,
   lock,
   unlock,
 }

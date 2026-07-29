@@ -1,7 +1,6 @@
 import { normalizeCccd } from '#/domain/normalize'
 import type { Env } from './env'
 import {
-  getInviteOrgUnitId,
   getMemberDocument,
   getTempleDocument,
   inviteExists,
@@ -82,10 +81,9 @@ async function handleMemberUploadUrl(request: Request, env: Env): Promise<Respon
     if (!admin) return jsonError('Unauthorized', 401)
     isAdmin = true
   } else if (inviteToken) {
-    const orgUnitId = await getInviteOrgUnitId(env.FIREBASE_PROJECT_ID, inviteToken)
-    if (!orgUnitId || orgUnitId !== member.orgUnitId) {
-      return jsonError('Forbidden', 403)
-    }
+    // Global invite has no orgUnitId — existence only (same as temple photo auth).
+    const exists = await inviteExists(env.FIREBASE_PROJECT_ID, inviteToken)
+    if (!exists) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)
   }
@@ -131,10 +129,8 @@ async function handleMemberDelete(request: Request, env: Env): Promise<Response>
   } else if (inviteToken) {
     if (!cccd) return jsonError('Missing required fields', 400)
     if (!cccdMatches(member.cccd, cccd)) return jsonError('CCCD mismatch', 403)
-    const orgUnitId = await getInviteOrgUnitId(env.FIREBASE_PROJECT_ID, inviteToken)
-    if (!orgUnitId || orgUnitId !== member.orgUnitId) {
-      return jsonError('Forbidden', 403)
-    }
+    const exists = await inviteExists(env.FIREBASE_PROJECT_ID, inviteToken)
+    if (!exists) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)
   }
