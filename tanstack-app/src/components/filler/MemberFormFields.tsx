@@ -584,18 +584,23 @@ export function MemberFormFields({
               required
               error={mapRequiredError(fieldErrors.ngayXuatGia)}
             />
-            <TextInput
-              label={m.filler_field_hien_tu_hoc()}
-              description={m.filler_desc_hien_tu_hoc()}
-              placeholder={m.filler_ph_hien_tu_hoc()}
-              value={draft.hienTuHoc}
-              onChange={(event) =>
-                updateDraft('hienTuHoc', event.currentTarget.value)
-              }
-              disabled={disabled}
-              required
-              error={mapRequiredError(fieldErrors.hienTuHoc)}
-            />
+            <Stack gap="xs">
+              <Stack gap={2}>
+                <Text fw={600}>{m.filler_field_noi_xuat_gia()}</Text>
+                <Text size="xs" c="dimmed">
+                  {m.filler_desc_noi_xuat_gia()}
+                </Text>
+              </Stack>
+              <VietnamAddressFields
+                label={m.filler_field_noi_xuat_gia()}
+                value={draft.noiXuatGia}
+                onChange={onNoiXuatGiaChange}
+                disabled={disabled}
+                required
+                linePlaceholder={m.filler_ph_noi_xuat_gia_line()}
+                errors={mapAddressErrors(fieldErrors.noiXuatGia)}
+              />
+            </Stack>
             <TextInput
               label={m.filler_field_bon_su()}
               description={m.filler_desc_bon_su()}
@@ -647,23 +652,18 @@ export function MemberFormFields({
               min={0}
             />
           </SimpleGrid>
-          <Stack gap="xs">
-            <Stack gap={2}>
-              <Text fw={600}>{m.filler_field_noi_xuat_gia()}</Text>
-              <Text size="xs" c="dimmed">
-                {m.filler_desc_noi_xuat_gia()}
-              </Text>
-            </Stack>
-            <VietnamAddressFields
-              label={m.filler_field_noi_xuat_gia()}
-              value={draft.noiXuatGia}
-              onChange={onNoiXuatGiaChange}
-              disabled={disabled}
-              required
-              linePlaceholder={m.filler_ph_noi_xuat_gia_line()}
-              errors={mapAddressErrors(fieldErrors.noiXuatGia)}
-            />
-          </Stack>
+          <TextInput
+            label={m.filler_field_hien_tu_hoc()}
+            description={m.filler_desc_hien_tu_hoc()}
+            placeholder={m.filler_ph_hien_tu_hoc()}
+            value={draft.hienTuHoc}
+            onChange={(event) =>
+              updateDraft('hienTuHoc', event.currentTarget.value)
+            }
+            disabled={disabled}
+            required
+            error={mapRequiredError(fieldErrors.hienTuHoc)}
+          />
         </FormSection>
 
         <FormSection title={m.filler_section_gioi()}>
