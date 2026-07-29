@@ -1,4 +1,3 @@
-import { Stack, TextInput } from '@mantine/core'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 import type { Member, SanghaType } from '#/domain/types'
@@ -134,31 +133,20 @@ export function MemberEditorForm({
       saveError={saveError}
       saveSuccess={saveSuccess}
     >
-      <Stack gap="xl" maw={760}>
-        {isCreate ? (
-          <TextInput
-            label={m.filler_field_cccd()}
-            placeholder={m.filler_ph_cccd()}
-            value={cccdDraft}
-            disabled={disabled}
-            onChange={(event) => setCccdDraft(event.currentTarget.value)}
-            required
-          />
-        ) : null}
-        <MemberFormFields
-          apiRef={fieldsApiRef}
-          initial={{
-            ...initial,
-            dienThoai: initial.dienThoai ?? seedPhone,
-          }}
-          disabled={disabled}
-          memberId={memberId}
-          cccd={resolvedCccd}
-          sanghaType={sanghaType}
-          inviteToken={token}
-          onUploadError={setSaveError}
-        />
-      </Stack>
+      <MemberFormFields
+        apiRef={fieldsApiRef}
+        initial={{
+          ...initial,
+          dienThoai: initial.dienThoai ?? seedPhone,
+        }}
+        disabled={disabled}
+        memberId={memberId}
+        cccd={resolvedCccd}
+        onCccdChange={isCreate ? setCccdDraft : undefined}
+        sanghaType={sanghaType}
+        inviteToken={token}
+        onUploadError={setSaveError}
+      />
     </FillerEditorShell>
   )
 }

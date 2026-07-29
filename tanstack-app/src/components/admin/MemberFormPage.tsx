@@ -6,7 +6,6 @@ import {
   Select,
   Stack,
   Text,
-  TextInput,
   Title,
 } from '@mantine/core'
 import { Link, useNavigate } from '@tanstack/react-router'
@@ -315,15 +314,6 @@ export function MemberFormPage({
               required
               disabled={mode === 'edit'}
             />
-            {mode === 'create' && (
-              <TextInput
-                label={m.admin_members_form_cccd()}
-                value={cccd}
-                onChange={(event) => setCccd(event.currentTarget.value)}
-                required
-              />
-            )}
-
             <MemberFormFields
               key={mode === 'edit' ? memberId : 'create'}
               apiRef={fieldsApiRef}
@@ -331,6 +321,11 @@ export function MemberFormPage({
               disabled={false}
               memberId={memberId}
               cccd={resolvedCccd}
+              onCccdChange={
+                mode === 'create'
+                  ? (value) => setCccd(value)
+                  : undefined
+              }
               sanghaType={effectiveSanghaType}
               getIdToken={async () => (user ? user.getIdToken() : undefined)}
               onUploadError={setPhotoError}

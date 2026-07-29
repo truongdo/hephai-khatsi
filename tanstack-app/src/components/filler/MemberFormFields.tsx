@@ -104,6 +104,7 @@ export type MemberFormFieldsProps = {
   disabled?: boolean
   memberId?: string
   cccd: string
+  onCccdChange?: (value: string) => void
   sanghaType: SanghaType
   inviteToken?: string
   getIdToken?: () => Promise<string | undefined>
@@ -116,6 +117,7 @@ export function MemberFormFields({
   disabled = false,
   memberId,
   cccd,
+  onCccdChange,
   sanghaType,
   inviteToken,
   getIdToken,
@@ -1144,6 +1146,16 @@ export function MemberFormFields({
         onPhotoPathChange={setPhotoPath}
         onUploadError={onUploadError}
       />
+      {!memberId && onCccdChange ? (
+        <TextInput
+          label={m.filler_field_cccd()}
+          placeholder={m.filler_ph_cccd()}
+          value={cccd}
+          onChange={(event) => onCccdChange(event.currentTarget.value)}
+          disabled={disabled}
+          required
+        />
+      ) : null}
       {identitySection}
       {contactSection}
       {restSections}
