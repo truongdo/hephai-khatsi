@@ -20,7 +20,7 @@ function filledDraft(
     danhHieu: 'Tịnh xá Ngọc Viên',
     nguoiKhaiSon: 'HT. Minh',
     namThanhLap: '1954',
-    diaChiCu: completeAddress,
+    diaChiCu: '123 Đường Láng',
     diaChiMoi: completeAddress,
     truTriHienNay: {
       phapDanh: 'Thích A',
@@ -41,7 +41,7 @@ describe('validateTempleRequiredFields', () => {
       danhHieu: '',
       nguoiKhaiSon: '  ',
       namThanhLap: '',
-      diaChiCu: { ...EMPTY_ADDRESS_DRAFT },
+      diaChiCu: '',
       diaChiMoi: { ...EMPTY_ADDRESS_DRAFT },
       truTriHienNay: { phapDanh: '', dienThoai: '', email: '' },
       truTriTienNhiem: [],
@@ -53,10 +53,7 @@ describe('validateTempleRequiredFields', () => {
     expect(result.errors.danhHieu).toBe('REQUIRED')
     expect(result.errors.nguoiKhaiSon).toBe('REQUIRED')
     expect(result.errors.namThanhLap).toBe('REQUIRED')
-    expect(result.errors.diaChiCu).toEqual({
-      city: 'REQUIRED',
-      ward: 'REQUIRED',
-    })
+    expect(result.errors.diaChiCu).toBe('REQUIRED')
     expect(result.errors.diaChiMoi).toEqual({
       city: 'REQUIRED',
       ward: 'REQUIRED',

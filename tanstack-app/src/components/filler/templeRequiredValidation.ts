@@ -7,7 +7,7 @@ export type TempleRequiredDraft = {
   danhHieu: string
   nguoiKhaiSon: string
   namThanhLap: string
-  diaChiCu: AddressDraft
+  diaChiCu: string
   diaChiMoi: AddressDraft
   truTriHienNay: { phapDanh: string; dienThoai: string; email: string }
   truTriTienNhiem: Array<{ phapDanh: string; thoiGian: string; ghiChu: string }>
@@ -25,7 +25,7 @@ export type TempleRequiredFieldErrors = {
   danhHieu?: 'REQUIRED'
   nguoiKhaiSon?: 'REQUIRED'
   namThanhLap?: 'REQUIRED'
-  diaChiCu?: { city?: 'REQUIRED'; ward?: 'REQUIRED' }
+  diaChiCu?: 'REQUIRED'
   diaChiMoi?: { city?: 'REQUIRED'; ward?: 'REQUIRED' }
   truTriHienNay?: {
     phapDanh?: 'REQUIRED'
@@ -72,7 +72,7 @@ export function validateTempleRequiredFields(draft: TempleRequiredDraft): {
   const namThanhLap = requireText(draft.namThanhLap)
   if (namThanhLap) errors.namThanhLap = namThanhLap
 
-  const diaChiCu = mapAddress(draft.diaChiCu)
+  const diaChiCu = requireText(draft.diaChiCu)
   if (diaChiCu) errors.diaChiCu = diaChiCu
   const diaChiMoi = mapAddress(draft.diaChiMoi)
   if (diaChiMoi) errors.diaChiMoi = diaChiMoi

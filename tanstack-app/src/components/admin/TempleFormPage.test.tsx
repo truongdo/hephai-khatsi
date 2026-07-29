@@ -150,7 +150,7 @@ function completeDraftTemple() {
     danhHieu: 'Tịnh xá Ngọc Viên',
     nguoiKhaiSon: 'HT. Minh',
     namThanhLap: '1954',
-    diaChiCu: structuredAddress,
+    diaChiCu: '123 Đường Láng',
     diaChiMoi: structuredAddress,
     truTriHienNay: {
       phapDanh: 'Thích A',

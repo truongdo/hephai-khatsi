@@ -2,6 +2,7 @@ import {
   addressDraftToValue,
   hydrateAddress,
   type AddressDraft,
+  type AddressValue,
 } from '#/domain/address'
 import type { Temple } from '#/domain/types'
 import type { TempleProfilePatch } from '#/repositories/templeRepo'
@@ -14,7 +15,7 @@ export type TempleDraft = {
   nguoiKhaiSon: string
   namThanhLap: string
   tinChuHienCung: string
-  diaChiCu: AddressDraft
+  diaChiCu: string
   diaChiMoi: AddressDraft
   truTriHienNay: { phapDanh: string; dienThoai: string; email: string }
   truTriTienNhiem: Array<{ phapDanh: string; thoiGian: string; ghiChu: string }>
@@ -61,6 +62,13 @@ function textOrUndefined(value: string): string | undefined {
   return trimmed ? trimmed : undefined
 }
 
+/** Free-text Địa chỉ cũ: keep legacy strings; structured AddressValue → blank. */
+export function hydrateDiaChiCu(
+  value: string | AddressValue | undefined,
+): string {
+  return typeof value === 'string' ? value : ''
+}
+
 function hasText(values: string[]): boolean {
   return values.some((value) => value.trim().length > 0)
 }
@@ -81,7 +89,7 @@ export function emptyTempleDraft(
     nguoiKhaiSon: initial.nguoiKhaiSon ?? '',
     namThanhLap: initial.namThanhLap ?? '',
     tinChuHienCung: initial.tinChuHienCung ?? '',
-    diaChiCu: hydrateAddress(initial.diaChiCu),
+    diaChiCu: hydrateDiaChiCu(initial.diaChiCu),
     diaChiMoi: hydrateAddress(initial.diaChiMoi),
     truTriHienNay: {
       phapDanh: initial.truTriHienNay?.phapDanh ?? '',
@@ -160,7 +168,7 @@ export function buildTemplePatch(draft: TempleDraft): TempleProfilePatch {
     nguoiKhaiSon: textOrUndefined(draft.nguoiKhaiSon),
     namThanhLap: textOrUndefined(draft.namThanhLap),
     tinChuHienCung: textOrUndefined(draft.tinChuHienCung),
-    diaChiCu: addressDraftToValue(draft.diaChiCu),
+    diaChiCu: textOrUndefined(draft.diaChiCu),
     diaChiMoi: addressDraftToValue(draft.diaChiMoi),
     truTriHienNay: {
       phapDanh: textOrUndefined(draft.truTriHienNay.phapDanh),

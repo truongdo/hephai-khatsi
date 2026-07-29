@@ -67,7 +67,7 @@ function requiredTempleInitial(
     danhHieu: 'Tịnh xá Ngọc Viên',
     nguoiKhaiSon: 'HT. Minh',
     namThanhLap: '1954',
-    diaChiCu: completeAddress,
+    diaChiCu: '123 Đường Láng',
     diaChiMoi: completeAddress,
     truTriHienNay: {
       phapDanh: 'Thích A',
@@ -275,24 +275,18 @@ describe('TempleEditorForm', () => {
     ).toBeGreaterThan(0)
   })
 
-  it('blocks save when address line is set without city and ward', async () => {
+  it('blocks save when diaChiCu is blank', async () => {
     const user = userEvent.setup()
     renderForm({
       initial: requiredTempleInitial({
-        diaChiCu: {
-          cityCode: '',
-          cityName: '',
-          wardCode: '',
-          wardName: '',
-          line: '15 Ngõ 4',
-        } as unknown as Temple['diaChiCu'],
+        diaChiCu: '   ',
       }),
     })
 
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
 
     expect(saveTempleDraftMock).not.toHaveBeenCalled()
-    expect(screen.getByText(m.filler_address_city_required())).toBeTruthy()
+    expect(screen.getByText(m.filler_error_field_required())).toBeTruthy()
   })
 
   it('saves structured diaChiMoi from hydrated address', async () => {
@@ -330,14 +324,51 @@ describe('TempleEditorForm', () => {
     )
   })
 
-  it('hydrates legacy string address into line field', () => {
+  it('hydrates legacy string diaChiCu into the text input', () => {
     renderForm({
       initial: {
         seedPhone: '0901234567',
-        diaChiCu: '123 Đường Láng' as unknown as Temple['diaChiCu'],
+        diaChiCu: '123 Đường Láng',
       },
     })
     expect(screen.getByDisplayValue('123 Đường Láng')).toBeTruthy()
+  })
+
+  it('clears structured diaChiCu on hydrate so user re-enters', () => {
+    renderForm({
+      initial: {
+        seedPhone: '0901234567',
+        diaChiCu: completeAddress,
+      },
+    })
+    expect(
+      (
+        screen.getByLabelText(
+          new RegExp(`^${m.filler_field_dia_chi_cu()}`),
+        ) as HTMLInputElement
+      ).value,
+    ).toBe('')
+  })
+
+  it('saves diaChiCu as a trimmed string', async () => {
+    const user = userEvent.setup()
+    saveTempleDraftMock.mockResolvedValue({
+      temple: temple({ id: 'created-temple' }),
+      mode: 'created',
+    })
+    renderForm({
+      initial: requiredTempleInitial({ diaChiCu: '  123 Đường Láng  ' }),
+    })
+
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+
+    expect(saveTempleDraftMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        patch: expect.objectContaining({
+          diaChiCu: '123 Đường Láng',
+        }),
+      }),
+    )
   })
 
   it('hides Save and disables fields when status is view', () => {

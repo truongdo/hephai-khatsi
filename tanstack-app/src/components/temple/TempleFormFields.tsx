@@ -147,7 +147,7 @@ export function TempleFormFields({
         diaChiMoi={draft.diaChiMoi}
         setDraft={setDraft}
         errors={{
-          diaChiCu: mapAddressCodeErrors(fieldErrors.diaChiCu),
+          diaChiCu: mapRequiredError(fieldErrors.diaChiCu),
           diaChiMoi: mapAddressCodeErrors(fieldErrors.diaChiMoi),
         }}
         disabled={disabled}

@@ -163,20 +163,15 @@ export const TempleAddressSection = memo(function TempleAddressSection({
   errors,
   disabled,
 }: {
-  diaChiCu: AddressDraft
+  diaChiCu: string
   diaChiMoi: AddressDraft
   setDraft: SetDraft
   errors: {
-    diaChiCu?: AddressFieldErrors
+    diaChiCu?: string
     diaChiMoi?: AddressFieldErrors
   }
   disabled: boolean
 }) {
-  const onDiaChiCu = useCallback(
-    (value: AddressDraft) =>
-      setDraft((current) => ({ ...current, diaChiCu: value })),
-    [setDraft],
-  )
   const onDiaChiMoi = useCallback(
     (value: AddressDraft) =>
       setDraft((current) => ({ ...current, diaChiMoi: value })),
@@ -186,17 +181,18 @@ export const TempleAddressSection = memo(function TempleAddressSection({
   return (
     <FormSection title={m.filler_section_temple_address()}>
       <Stack gap="lg">
-        <Stack gap="xs">
-          <Text fw={600}>{m.filler_field_dia_chi_cu()}</Text>
-          <VietnamAddressFields
-            label={m.filler_field_dia_chi_cu()}
-            value={diaChiCu}
-            onChange={onDiaChiCu}
-            disabled={disabled}
-            required
-            errors={errors.diaChiCu}
-          />
-        </Stack>
+        <TextInput
+          label={m.filler_field_dia_chi_cu()}
+          placeholder={m.filler_ph_dia_chi_cu()}
+          value={diaChiCu}
+          onChange={(event) => {
+            const value = event.currentTarget.value
+            setDraft((current) => ({ ...current, diaChiCu: value }))
+          }}
+          required
+          error={errors.diaChiCu}
+          disabled={disabled}
+        />
         <Stack gap="xs">
           <Text fw={600}>{m.filler_field_dia_chi_moi()}</Text>
           <VietnamAddressFields
