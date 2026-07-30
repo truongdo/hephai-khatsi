@@ -28,7 +28,7 @@ export type MemberEditorFormProps = {
   memberId?: string
   initial?: Partial<Member>
   status: FillerEditorStatus
-  onCreated: (memberId: string) => void
+  onCreated: (memberId: string) => void | Promise<void>
 }
 
 export function MemberEditorForm({
@@ -50,6 +50,7 @@ export function MemberEditorForm({
   const resolvedCccd = isCreate ? cccdDraft : (cccd ?? '')
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
+  const [postSavePending, setPostSavePending] = useState(false)
   const disabled = status === 'view'
 
   const saveMutation = useMutation({
@@ -93,10 +94,13 @@ export function MemberEditorForm({
 
     const patch = buildMemberPatch(draft)
 
+    setPostSavePending(true)
     try {
       const saveResult = await saveMutation.mutateAsync(patch)
       setSaveError(null)
       if (saveResult.mode === 'created') {
+        setSaveSuccess(m.filler_save_success())
+        let createdMember = saveResult.member
         const pendingPhoto = api.getPendingPhoto()
         if (pendingPhoto) {
           try {
@@ -110,6 +114,7 @@ export function MemberEditorForm({
             })
             api.setPhotoPath(uploadResult.photoPath)
             api.clearPendingPhoto()
+            createdMember = { ...createdMember, photoPath: uploadResult.photoPath }
           } catch {
             setSaveError(m.filler_photo_upload_error())
           }
@@ -135,6 +140,10 @@ export function MemberEditorForm({
                   current: api.getDocuments(),
                 })
                 api.setDocuments(uploadResult.documents)
+                createdMember = {
+                  ...createdMember,
+                  documents: uploadResult.documents,
+                }
               }
             }
             api.clearPendingDocuments()
@@ -143,7 +152,12 @@ export function MemberEditorForm({
           }
         }
 
-        onCreated(saveResult.member.id)
+        setSaveSuccess(m.filler_save_redirecting())
+        queryClient.setQueryData(
+          fillerKeys.member(createdMember.id),
+          createdMember,
+        )
+        await onCreated(createdMember.id)
         return
       }
       setSaveSuccess(m.filler_save_success())
@@ -152,6 +166,8 @@ export function MemberEditorForm({
       })
     } catch {
       // onError handles save failure
+    } finally {
+      setPostSavePending(false)
     }
   }
 
@@ -160,7 +176,7 @@ export function MemberEditorForm({
       title={title}
       status={status}
       onSave={status === 'draft' ? handleSave : undefined}
-      savePending={saveMutation.isPending}
+      savePending={saveMutation.isPending || postSavePending}
       saveError={saveError}
       saveSuccess={saveSuccess}
     >

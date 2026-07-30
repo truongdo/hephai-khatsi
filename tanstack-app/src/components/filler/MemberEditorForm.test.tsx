@@ -337,6 +337,7 @@ describe('MemberEditorForm', () => {
     })
     expect(onCreated).toHaveBeenCalledWith('created-member')
     expect(uploadMemberPhotoMock).not.toHaveBeenCalled()
+    expect(screen.getByText(m.filler_save_redirecting())).toBeTruthy()
   })
 
   it('uploads pending portrait after successful create', async () => {
@@ -368,11 +369,14 @@ describe('MemberEditorForm', () => {
       inviteToken: 'invite-token',
     })
     expect(onCreated).not.toHaveBeenCalled()
+    expect(screen.getByText(m.filler_save_success())).toBeTruthy()
+    expect(screen.getByRole('button', { name: m.filler_save() })).toBeDisabled()
 
     resolveUpload({ photoPath: 'members/created-member/photo.jpg' })
     await vi.waitFor(() =>
       expect(onCreated).toHaveBeenCalledWith('created-member'),
     )
+    expect(screen.getByText(m.filler_save_redirecting())).toBeTruthy()
   })
 
   it('uploads pending document after successful create', async () => {

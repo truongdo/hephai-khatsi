@@ -229,6 +229,35 @@ describe('TempleEditorForm', () => {
     })
     expect(onCreated).toHaveBeenCalledWith('created-temple')
     expect(uploadTemplePhotoMock).not.toHaveBeenCalled()
+    expect(screen.getByText(m.filler_save_redirecting())).toBeTruthy()
+  })
+
+  it('keeps save pending and shows success while waiting to redirect', async () => {
+    const user = userEvent.setup()
+    let resolveCreated!: () => void
+    const createdPromise = new Promise<void>((resolve) => {
+      resolveCreated = resolve
+    })
+    saveTempleDraftMock.mockResolvedValue({
+      temple: temple({ id: 'created-temple' }),
+      mode: 'created',
+    })
+    renderForm({
+      initial: requiredTempleInitial(),
+      onCreated: () => createdPromise,
+    })
+
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+
+    await vi.waitFor(() =>
+      expect(screen.getByText(m.filler_save_redirecting())).toBeTruthy(),
+    )
+    expect(screen.getByRole('button', { name: m.filler_save() })).toBeDisabled()
+
+    resolveCreated()
+    await vi.waitFor(() =>
+      expect(screen.getByRole('button', { name: m.filler_save() })).not.toBeDisabled(),
+    )
   })
 
   it('uploads pending portrait after successful create', async () => {
@@ -258,11 +287,14 @@ describe('TempleEditorForm', () => {
       inviteToken: 'invite-token',
     })
     expect(onCreated).not.toHaveBeenCalled()
+    expect(screen.getByText(m.filler_save_success())).toBeTruthy()
+    expect(screen.getByRole('button', { name: m.filler_save() })).toBeDisabled()
 
     resolveUpload({ photoPath: 'temples/created-temple/photo.jpg' })
     await vi.waitFor(() =>
       expect(onCreated).toHaveBeenCalledWith('created-temple'),
     )
+    expect(screen.getByText(m.filler_save_redirecting())).toBeTruthy()
   })
 
   it('blocks save when required temple fields are empty', async () => {

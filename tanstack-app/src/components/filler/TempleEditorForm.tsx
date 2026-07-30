@@ -24,7 +24,7 @@ export type TempleEditorFormProps = {
   templeId?: string
   initial: Partial<Temple> & { seedPhone?: string }
   status: FillerEditorStatus
-  onCreated: (templeId: string) => void
+  onCreated: (templeId: string) => void | Promise<void>
 }
 
 export function TempleEditorForm({
@@ -40,6 +40,7 @@ export function TempleEditorForm({
   const fieldsApiRef = useRef<TempleFormFieldsApi | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
+  const [postSavePending, setPostSavePending] = useState(false)
   const disabled = status === 'view'
 
   const saveMutation = useMutation({
@@ -91,10 +92,13 @@ export function TempleEditorForm({
       ? [api.getExtraManagerPhone().trim()]
       : []
 
+    setPostSavePending(true)
     try {
       const saveResult = await saveMutation.mutateAsync({ patch, explicitPhones })
       setSaveError(null)
       if (saveResult.mode === 'created') {
+        setSaveSuccess(m.filler_save_success())
+        let createdTemple = saveResult.temple
         const pendingPhoto = api.getPendingPhoto()
         if (pendingPhoto) {
           try {
@@ -107,11 +111,17 @@ export function TempleEditorForm({
             })
             api.setPhotoPath(uploadResult.photoPath)
             api.clearPendingPhoto()
+            createdTemple = { ...createdTemple, photoPath: uploadResult.photoPath }
           } catch {
             setSaveError(m.filler_photo_upload_error())
           }
         }
-        onCreated(saveResult.temple.id)
+        setSaveSuccess(m.filler_save_redirecting())
+        queryClient.setQueryData(
+          fillerKeys.temple(createdTemple.id),
+          createdTemple,
+        )
+        await onCreated(createdTemple.id)
         return
       }
       setSaveSuccess(m.filler_save_success())
@@ -120,6 +130,8 @@ export function TempleEditorForm({
       })
     } catch {
       // onError handles save failure
+    } finally {
+      setPostSavePending(false)
     }
   }
 
@@ -128,7 +140,7 @@ export function TempleEditorForm({
       title={title}
       status={status}
       onSave={status === 'draft' ? handleSave : undefined}
-      savePending={saveMutation.isPending}
+      savePending={saveMutation.isPending || postSavePending}
       saveError={saveError}
       saveSuccess={saveSuccess}
     >

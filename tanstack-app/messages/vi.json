@@ -175,6 +175,7 @@
   "filler_error_generic": "Có lỗi xảy ra. Vui lòng thử lại.",
   "filler_save": "Lưu",
   "filler_save_success": "Đã lưu bản nháp.",
+  "filler_save_redirecting": "Đã lưu bản nháp. Đang chuyển sang trang chỉnh sửa…",
   "filler_save_error": "Không lưu được. Vui lòng thử lại.",
   "filler_add_row": "Thêm",
   "filler_remove_row": "Xóa",

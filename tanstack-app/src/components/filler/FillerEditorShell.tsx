@@ -66,7 +66,11 @@ export function FillerEditorShell({
           status={
             <>
               {saveError ? <Alert color="red">{saveError}</Alert> : null}
-              {saveSuccess ? <Text c="teal" size="sm">{saveSuccess}</Text> : null}
+              {saveSuccess ? (
+                <Alert color="teal" variant="light">
+                  {saveSuccess}
+                </Alert>
+              ) : null}
             </>
           }
         >
