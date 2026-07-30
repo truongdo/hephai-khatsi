@@ -25,6 +25,10 @@ function publicInvite(): Invite {
     token: TOKEN,
     createdAt: '2026-07-19T00:00:00.000Z',
     createdBy: 'integration-test',
+    kind: 'filler',
+    retreatId: null,
+    orgUnitId: null,
+    disabled: false,
   }
 }
 

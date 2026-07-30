@@ -289,9 +289,21 @@ export function RetreatFormPage({ mode, retreatId }: RetreatFormPageProps) {
             ? m.admin_retreats_form_title_create()
             : m.admin_retreats_form_title_edit()}
         </Title>
-        <Button component={Link} to="/admin/retreats" variant="subtle">
-          {m.admin_retreats_back()}
-        </Button>
+        <Group gap="sm">
+          {mode === 'edit' && retreatId && (
+            <Button
+              component={Link}
+              to="/admin/retreats/$id/registrations"
+              params={{ id: retreatId }}
+              variant="light"
+            >
+              {m.admin_retreat_registrations_link()}
+            </Button>
+          )}
+          <Button component={Link} to="/admin/retreats" variant="subtle">
+            {m.admin_retreats_back()}
+          </Button>
+        </Group>
       </Group>
 
       {isLoading && <Loader aria-label="loading" />}

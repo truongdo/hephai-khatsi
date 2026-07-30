@@ -7,8 +7,9 @@ import { getInviteByToken } from './getInviteByToken'
 export type ResumeMemberByPhoneInput = {
   token: string
   orgUnitId: string
-  sanghaType: SanghaType
   phone: string
+  /** When omitted, search both tang and ni indexes. */
+  sanghaType?: SanghaType
 }
 
 export async function resumeMemberByPhone(
@@ -18,11 +19,29 @@ export async function resumeMemberByPhone(
 ): Promise<{ members: Array<{ member: Member; access: 'edit' | 'view' }> }> {
   const phone = normalizeVnPhone(input.phone)
   await getInviteByToken(input.token, inviteStore)
-  const members = await memberStore.listByOrgSanghaAndPhone({
-    orgUnitId: input.orgUnitId,
-    sanghaType: input.sanghaType,
-    phone,
-  })
+
+  let members: Member[]
+  if (input.sanghaType) {
+    members = await memberStore.listByOrgSanghaAndPhone({
+      orgUnitId: input.orgUnitId,
+      sanghaType: input.sanghaType,
+      phone,
+    })
+  } else {
+    const [tang, ni] = await Promise.all([
+      memberStore.listByOrgSanghaAndPhone({
+        orgUnitId: input.orgUnitId,
+        sanghaType: 'tang',
+        phone,
+      }),
+      memberStore.listByOrgSanghaAndPhone({
+        orgUnitId: input.orgUnitId,
+        sanghaType: 'ni',
+        phone,
+      }),
+    ])
+    members = [...tang, ...ni]
+  }
 
   return {
     members: members.map((member) => ({

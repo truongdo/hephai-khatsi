@@ -24,6 +24,10 @@ function invite(token: string): Invite {
     token,
     createdAt: '2026-07-19T00:00:00.000Z',
     createdBy: 'admin-1',
+    kind: 'filler',
+    retreatId: null,
+    orgUnitId: null,
+    disabled: false,
   }
 }
 

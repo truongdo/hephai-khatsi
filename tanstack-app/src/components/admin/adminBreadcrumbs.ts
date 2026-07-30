@@ -44,10 +44,25 @@ export function buildAdminBreadcrumbs(pathname: string): AdminBreadcrumb[] {
     if (rest.length === 0) {
       return [rootCrumb(), { title: m.admin_nav_retreats() }]
     }
-    const leaf =
-      rest[0] === 'new'
-        ? m.admin_retreats_form_title_create()
-        : m.admin_retreats_form_title_edit()
+    if (rest[0] === 'new') {
+      return [
+        rootCrumb(),
+        { title: m.admin_nav_retreats(), href: '/admin/retreats' },
+        { title: m.admin_retreats_form_title_create() },
+      ]
+    }
+    if (rest[1] === 'registrations' && rest[0]) {
+      return [
+        rootCrumb(),
+        { title: m.admin_nav_retreats(), href: '/admin/retreats' },
+        {
+          title: m.admin_retreats_form_title_edit(),
+          href: `/admin/retreats/${rest[0]}`,
+        },
+        { title: m.admin_retreat_registrations_title_loading() },
+      ]
+    }
+    const leaf = m.admin_retreats_form_title_edit()
     return [
       rootCrumb(),
       { title: m.admin_nav_retreats(), href: '/admin/retreats' },

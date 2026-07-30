@@ -52,7 +52,17 @@ service cloud.firestore {
         && id == request.resource.data.token
         && request.resource.data.token is string
         && request.resource.data.createdAt is string
-        && request.resource.data.createdBy == request.auth.uid;
+        && request.resource.data.createdBy == request.auth.uid
+        && (
+          !('kind' in request.resource.data)
+          || request.resource.data.kind == 'filler'
+          || (
+            request.resource.data.kind == 'retreat_registration'
+            && request.resource.data.retreatId is string
+            && request.resource.data.orgUnitId is string
+            && id == ('retreat_' + request.resource.data.retreatId)
+          )
+        );
       allow update, delete: if false;
     }
 
@@ -101,14 +111,16 @@ service cloud.firestore {
         && request.resource.data.createdAt is string
         && request.resource.data.updatedAt is string
         && ((canWriteDirectory() && request.resource.data.inviteId == null)
-            || (!isStaff() && validInviteScope(request.resource.data)));
+            || (validInviteScope(request.resource.data) && !isKiemSoat()));
 
       allow update: if coreIdentityUnchanged() && (
         (canWriteDirectory() && isLockTransition() && request.resource.data.inviteId == resource.data.inviteId)
         || (canWriteDirectory() && !isLockTransition()
             && lockFieldsUnchanged() && request.resource.data.inviteId == resource.data.inviteId)
-        || (!isStaff() && resource.data.status != 'locked'
-            && lockFieldsUnchanged() && validInviteScope(request.resource.data))
+        || (resource.data.status != 'locked'
+            && lockFieldsUnchanged()
+            && validInviteScope(request.resource.data)
+            && !isKiemSoat())
       );
 
       allow delete: if canWriteDirectory();
@@ -209,7 +221,7 @@ service cloud.firestore {
           || (resource.data.status == 'open' && request.resource.data.status == 'closed');
       }
 
-      allow get: if canWriteDirectory() && retreatOrgOk(resource.data.orgUnitId);
+      allow get: if true;
       allow list: if canWriteDirectory() && (
         isHePhaiAdmin() || retreatOrgOk(resource.data.orgUnitId)
       );
@@ -232,6 +244,42 @@ service cloud.firestore {
       allow delete: if canWriteDirectory()
         && retreatOrgOk(resource.data.orgUnitId)
         && resource.data.status == 'draft';
+    }
+
+    match /retreatRegistrations/{id} {
+      function registrationIdOk(data) {
+        return id == (data.retreatId + '_' + data.memberId);
+      }
+
+      function registrationCreateShape(data) {
+        return data.status == 'pending'
+          && data.approvedBy == null
+          && data.approvedAt == null
+          && registrationIdOk(data);
+      }
+
+      // Public get-by-id (same bearer model as members): needed so the
+      // client can duplicate-check before create. List stays staff-scoped.
+      allow get: if true;
+      allow list: if canWriteDirectory()
+        && retreatOrgOk(resource.data.orgUnitId);
+
+      // Self: any caller (incl. signed-in staff testing /r) may create with
+      // registeredVia self. Proxy: directory writers only, scoped by org.
+      allow create: if registrationCreateShape(request.resource.data) && (
+        (
+          request.resource.data.registeredVia == 'self'
+          && request.resource.data.registeredBy == null
+        )
+        || (
+          canWriteDirectory()
+          && retreatOrgOk(request.resource.data.orgUnitId)
+          && request.resource.data.registeredVia == 'proxy'
+          && request.resource.data.registeredBy == request.auth.uid
+        )
+      );
+
+      allow update, delete: if false;
     }
   }
 }

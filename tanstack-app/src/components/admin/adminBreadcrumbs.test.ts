@@ -84,6 +84,18 @@ describe('buildAdminBreadcrumbs', () => {
     ])
   })
 
+  it('builds retreat registrations trail', () => {
+    expect(buildAdminBreadcrumbs('/admin/retreats/abc123/registrations')).toEqual([
+      { title: m.admin_title(), href: '/admin' },
+      { title: m.admin_nav_retreats(), href: '/admin/retreats' },
+      {
+        title: m.admin_retreats_form_title_edit(),
+        href: '/admin/retreats/abc123',
+      },
+      { title: m.admin_retreat_registrations_title_loading() },
+    ])
+  })
+
   it('falls back for unknown segment', () => {
     expect(buildAdminBreadcrumbs('/admin/unknown-thing')).toEqual([
       { title: m.admin_title(), href: '/admin' },

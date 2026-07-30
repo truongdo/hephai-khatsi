@@ -25,6 +25,10 @@ const PUBLIC_INVITE: Invite = {
   token: 'public',
   createdAt: '2026-07-19T00:00:00.000Z',
   createdBy: 'admin-1',
+  kind: 'filler',
+  retreatId: null,
+  orgUnitId: null,
+  disabled: false,
 }
 
 describe('member draft save, resume, and lock', () => {

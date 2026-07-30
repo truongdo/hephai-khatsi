@@ -4,6 +4,7 @@ import type { Retreat } from '#/domain/retreat'
 import type { Member, Temple } from '#/domain/types'
 import { memberRepo } from '#/repositories/memberRepo'
 import { listOrgUnits } from '#/repositories/orgUnitRepo'
+import { retreatRegistrationRepo } from '#/repositories/retreatRegistrationRepo'
 import { retreatRepo } from '#/repositories/retreatRepo'
 import { templeRepo } from '#/repositories/templeRepo'
 import type {
@@ -78,6 +79,14 @@ export function retreatQuery(id: string) {
       if (!retreat) throw new DomainError('NOT_FOUND', 'Retreat not found')
       return retreat
     },
+    retry: 3,
+  })
+}
+
+export function retreatRegistrationsQuery(retreatId: string) {
+  return queryOptions({
+    queryKey: adminKeys.retreatRegistrations(retreatId),
+    queryFn: () => retreatRegistrationRepo.listByRetreat({ retreatId }),
     retry: 3,
   })
 }

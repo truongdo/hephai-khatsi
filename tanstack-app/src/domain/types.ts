@@ -20,11 +20,17 @@ export type OrgUnit = {
 // it only gates access to the public registration form; it no longer scopes
 // which org unit or record type a visitor can create (the visitor picks
 // those themselves in the form).
+export type InviteKind = 'filler' | 'retreat_registration'
+
 export type Invite = {
   id: string
   token: string
   createdAt: string
   createdBy: string
+  kind: InviteKind
+  retreatId: string | null
+  orgUnitId: string | null
+  disabled: boolean
 }
 
 export type PreceptRecord = {

@@ -71,5 +71,9 @@ function RootComponent() {
 }
 
 export function shouldShowAppHeader(pathname: string): boolean {
-  return !pathname.startsWith('/admin') && !pathname.startsWith('/f/')
+  return (
+    !pathname.startsWith('/admin') &&
+    !pathname.startsWith('/f/') &&
+    !pathname.startsWith('/r/')
+  )
 }

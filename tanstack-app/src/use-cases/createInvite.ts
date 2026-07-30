@@ -14,6 +14,10 @@ export async function createInvite(
     token: PUBLIC_INVITE_ID,
     createdBy: input.createdBy,
     createdAt: new Date().toISOString(),
+    kind: 'filler',
+    retreatId: null,
+    orgUnitId: null,
+    disabled: false,
   }
   await store.create(invite)
   return invite

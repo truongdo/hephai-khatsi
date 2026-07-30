@@ -5,7 +5,11 @@ import { useAuth } from '#/auth/useAuth'
 
 /** Paths that do not require a signed-in Firebase user. */
 export function isPublicAuthPath(pathname: string): boolean {
-  return pathname === '/login' || pathname.startsWith('/f/')
+  return (
+    pathname === '/login' ||
+    pathname.startsWith('/f/') ||
+    pathname.startsWith('/r/')
+  )
 }
 
 export function RequireAuth({ children }: { children: ReactNode }) {

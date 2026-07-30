@@ -153,6 +153,23 @@
         { "fieldPath": "status", "order": "ASCENDING" },
         { "fieldPath": "updatedAt", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "retreatRegistrations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "retreatId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "retreatRegistrations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "retreatId", "order": "ASCENDING" },
+        { "fieldPath": "orgUnitId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

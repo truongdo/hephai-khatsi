@@ -16,4 +16,6 @@ export const adminKeys = {
   retreats: (filters: ListRetreatsAdminInput) =>
     [...adminKeys.all, 'retreats', filters] as const,
   retreat: (id: string) => [...adminKeys.all, 'retreat', id] as const,
+  retreatRegistrations: (retreatId: string) =>
+    [...adminKeys.all, 'retreatRegistrations', retreatId] as const,
 }

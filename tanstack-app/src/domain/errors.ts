@@ -10,6 +10,7 @@ export type DomainErrorCode =
   | 'UNAUTHORIZED'
   | 'INVALID_INPUT'
   | 'INVALID_STATUS'
+  | 'ALREADY_EXISTS'
 
 export class DomainError extends Error {
   readonly code: DomainErrorCode

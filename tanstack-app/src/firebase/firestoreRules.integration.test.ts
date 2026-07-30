@@ -446,7 +446,7 @@ async function seedRetreatsAcrossOrgs(env: RulesTestEnvironment) {
 }
 
 describe('retreats + role claims', () => {
-  it('giao_doan_admin can create/get in own org, not other org', async () => {
+  it('giao_doan_admin can create/get in own org; get by id is public, write to other org denied', async () => {
     const env = await getTestEnv()
     await seedRetreatsAcrossOrgs(env)
     const gd = env.authenticatedContext('gd-admin', {
@@ -455,10 +455,17 @@ describe('retreats + role claims', () => {
     }).firestore()
     await assertSucceeds(setDoc(doc(gd, 'retreats/r1'), retreatDraft({ createdBy: 'gd-admin' })))
     await assertSucceeds(getDoc(doc(gd, 'retreats/r-gd-i')))
-    await assertFails(getDoc(doc(gd, 'retreats/r-gd-ii')))
+    await assertSucceeds(getDoc(doc(gd, 'retreats/r-gd-ii')))
     await assertFails(
       setDoc(doc(gd, 'retreats/r2'), retreatDraft({ orgUnitId: 'gd-ii', createdBy: 'gd-admin' })),
     )
+  })
+
+  it('anonymous user can get a retreat by id', async () => {
+    const env = await getTestEnv()
+    await seedRetreatsAcrossOrgs(env)
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(getDoc(doc(anon, 'retreats/r-open')))
   })
 
   it('giao_doan_admin list requires orgUnitId filter matching claim', async () => {
@@ -474,14 +481,14 @@ describe('retreats + role claims', () => {
     )
   })
 
-  it('kiem_soat cannot read or write retreats or orgUnits', async () => {
+  it('kiem_soat can get retreat by id but cannot list or write retreats or orgUnits', async () => {
     const env = await getTestEnv()
     await seedRetreatsAcrossOrgs(env)
     const ks = env.authenticatedContext('ks', {
       role: 'kiem_soat',
       orgUnitId: 'gd-i',
     }).firestore()
-    await assertFails(getDoc(doc(ks, 'retreats/r-gd-i')))
+    await assertSucceeds(getDoc(doc(ks, 'retreats/r-gd-i')))
     await assertFails(getDocs(fsCollection(ks, 'retreats')))
     await assertFails(
       getDocs(query(fsCollection(ks, 'retreats'), where('orgUnitId', '==', 'gd-i'))),
@@ -528,6 +535,161 @@ describe('retreats + role claims', () => {
     const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
     await assertSucceeds(
       setDoc(doc(admin, 'retreats/r3'), retreatDraft({ createdBy: 'admin-uid' })),
+    )
+  })
+})
+
+const RETREAT_ID = 'r-open'
+const MEMBER_ID = 'gd-i_tang_012345678901'
+const REGISTRATION_ID = `${RETREAT_ID}_${MEMBER_ID}`
+
+function registrationDraft(overrides: Record<string, unknown> = {}) {
+  return {
+    retreatId: RETREAT_ID,
+    memberId: MEMBER_ID,
+    orgUnitId: 'gd-i',
+    registeredVia: 'self',
+    registeredBy: null,
+    extraAnswers: {},
+    status: 'pending',
+    approvedBy: null,
+    approvedAt: null,
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+    ...overrides,
+  }
+}
+
+async function seedRegistrationsAcrossOrgs(env: RulesTestEnvironment) {
+  await seedRetreatsAcrossOrgs(env)
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const db = ctx.firestore()
+    await setDoc(
+      doc(db, 'retreatRegistrations', REGISTRATION_ID),
+      registrationDraft(),
+    )
+    await setDoc(
+      doc(db, 'retreatRegistrations', `r-gd-ii_${MEMBER_ID}`),
+      registrationDraft({
+        retreatId: 'r-gd-ii',
+        orgUnitId: 'gd-ii',
+      }),
+    )
+  })
+}
+
+describe('invites retreat_registration', () => {
+  it('allows admin to create a retreat registration invite', async () => {
+    const env = await getTestEnv()
+    await seedRetreatsAcrossOrgs(env)
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertSucceeds(
+      setDoc(doc(admin, 'invites', 'retreat_r-open'), {
+        token: 'retreat_r-open',
+        createdAt: '2026-01-01T00:00:00.000Z',
+        createdBy: 'admin-uid',
+        kind: 'retreat_registration',
+        retreatId: 'r-open',
+        orgUnitId: 'gd-i',
+      }),
+    )
+  })
+})
+
+describe('retreatRegistrations', () => {
+  it('allows anonymous self registration with pending shape', async () => {
+    const env = await getTestEnv()
+    await seedRetreatsAcrossOrgs(env)
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(
+      setDoc(doc(anon, 'retreatRegistrations', REGISTRATION_ID), registrationDraft()),
+    )
+  })
+
+  it('allows anonymous getById (duplicate check before create)', async () => {
+    const env = await getTestEnv()
+    await seedRegistrationsAcrossOrgs(env)
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(getDoc(doc(anon, 'retreatRegistrations', REGISTRATION_ID)))
+    await assertSucceeds(
+      getDoc(doc(anon, 'retreatRegistrations', `${RETREAT_ID}_missing_member`)),
+    )
+  })
+
+  it('allows signed-in staff to create self registration (public /r while logged in)', async () => {
+    const env = await getTestEnv()
+    await seedRetreatsAcrossOrgs(env)
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    const id = `${RETREAT_ID}_gd-i_tang_self_staff`
+    await assertSucceeds(
+      setDoc(
+        doc(admin, 'retreatRegistrations', id),
+        registrationDraft({
+          memberId: 'gd-i_tang_self_staff',
+          registeredVia: 'self',
+          registeredBy: null,
+        }),
+      ),
+    )
+  })
+
+  it('denies anonymous list', async () => {
+    const env = await getTestEnv()
+    await seedRegistrationsAcrossOrgs(env)
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(getDocs(fsCollection(anon, 'retreatRegistrations')))
+  })
+
+  it('giao_doan_admin list own org succeeds; public get allows cross-org doc by id', async () => {
+    const env = await getTestEnv()
+    await seedRegistrationsAcrossOrgs(env)
+    const gd = env.authenticatedContext('gd-admin', {
+      role: 'giao_doan_admin',
+      orgUnitId: 'gd-i',
+    }).firestore()
+    await assertSucceeds(
+      getDocs(
+        query(
+          fsCollection(gd, 'retreatRegistrations'),
+          where('retreatId', '==', RETREAT_ID),
+          where('orgUnitId', '==', 'gd-i'),
+        ),
+      ),
+    )
+    await assertSucceeds(getDoc(doc(gd, 'retreatRegistrations', `r-gd-ii_${MEMBER_ID}`)))
+  })
+
+  it('denies staff update of registration status', async () => {
+    const env = await getTestEnv()
+    await seedRegistrationsAcrossOrgs(env)
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertFails(
+      updateDoc(doc(admin, 'retreatRegistrations', REGISTRATION_ID), {
+        status: 'approved',
+        approvedBy: 'admin-uid',
+        approvedAt: '2026-01-02T00:00:00.000Z',
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('allows giao_doan_admin proxy create in own org', async () => {
+    const env = await getTestEnv()
+    await seedRetreatsAcrossOrgs(env)
+    const gd = env.authenticatedContext('gd-admin', {
+      role: 'giao_doan_admin',
+      orgUnitId: 'gd-i',
+    }).firestore()
+    const proxyId = `${RETREAT_ID}_gd-i_tang_099999999999`
+    await assertSucceeds(
+      setDoc(
+        doc(gd, 'retreatRegistrations', proxyId),
+        registrationDraft({
+          memberId: 'gd-i_tang_099999999999',
+          registeredVia: 'proxy',
+          registeredBy: 'gd-admin',
+        }),
+      ),
     )
   })
 })

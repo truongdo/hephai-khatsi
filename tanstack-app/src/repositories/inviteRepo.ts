@@ -1,4 +1,5 @@
 import { doc, getDoc, setDoc, type Firestore } from 'firebase/firestore'
+import { parseInvite } from '#/domain/invite'
 import type { Invite } from '#/domain/types'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
@@ -27,7 +28,7 @@ async function create(invite: Invite): Promise<void> {
 async function getByToken(token: string): Promise<Invite | null> {
   const snap = await getDoc(doc(requireDb(), COLLECTIONS.invites, token))
   if (!snap.exists()) return null
-  return { id: snap.id, ...(snap.data() as Omit<Invite, 'id'>) }
+  return parseInvite(snap.id, snap.data() as Record<string, unknown>)
 }
 
 export const inviteRepo: InviteStore = { create, getByToken }
