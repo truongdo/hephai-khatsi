@@ -73,7 +73,7 @@ Attendance (phase 6) and certificate/QR (phase 7) fields are added to `retreatRe
 | --- | --- | --- | --- |
 | 0 | RBAC nhẹ (nền tảng) | Hoàn thành | [2026-07-25-khoa-tu-rbac-phase0.md](../plans/2026-07-25-khoa-tu-rbac-phase0.md) |
 | 1 | CRUD khóa tu (Giáo đoàn only) | Hoàn thành (đã merge `main`; form lịch date-only GMT+7) | [2026-07-25-khoa-tu-retreats-crud-phase1.md](../plans/2026-07-25-khoa-tu-retreats-crud-phase1.md) |
-| 2 | Đăng ký (tự đăng ký + đăng ký thay) | Đã có design (chờ plan) | Design: [2026-07-30-khoa-tu-registration-phase2-design.md](./2026-07-30-khoa-tu-registration-phase2-design.md) |
+| 2 | Đăng ký (tự đăng ký + đăng ký thay) | Đã lập kế hoạch | [2026-07-30-khoa-tu-registration-phase2.md](../plans/2026-07-30-khoa-tu-registration-phase2.md) · Design: [2026-07-30-khoa-tu-registration-phase2-design.md](./2026-07-30-khoa-tu-registration-phase2-design.md) |
 | 3 | Xét duyệt cấp Giáo đoàn | Chưa bắt đầu | — |
 | 4 | Xuất danh sách & báo cáo (Giáo đoàn) | Chưa bắt đầu | — |
 | 5 | Khóa tu Hệ phái (7 bước, tổng hợp) | Chưa bắt đầu | — |
@@ -155,6 +155,8 @@ Detailed design: [2026-07-25-khoa-tu-retreats-crud-phase1-design.md](./2026-07-2
 
 ## Next step
 
-Phases 0–1 are on `main`. Phase 2 design is approved: [2026-07-30-khoa-tu-registration-phase2-design.md](./2026-07-30-khoa-tu-registration-phase2-design.md).
+Phases 0–1 are on `main`. Phase 2 design + plan are ready:
+- Design: [2026-07-30-khoa-tu-registration-phase2-design.md](./2026-07-30-khoa-tu-registration-phase2-design.md)
+- Plan: [2026-07-30-khoa-tu-registration-phase2.md](../plans/2026-07-30-khoa-tu-registration-phase2.md)
 
-**Now:** `writing-plans` → implement Phase 2 registration. Deploy Firestore rules/indexes for retreats (and new registration indexes) before opening registration to real users.
+**Now:** implement Phase 2 on `feat/khoa-tu-registration-phase2` from `main` (subagent-driven or inline execution). Deploy Firestore rules/indexes before production registration.
