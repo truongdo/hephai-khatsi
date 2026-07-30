@@ -49,6 +49,8 @@ const retreat = {
   updatedAt: '2026-07-19T10:00:00.000Z',
 }
 
+const getRegistrationMock = vi.fn<() => Promise<unknown>>(async () => null)
+
 const createRegistrationMock = vi.fn(async () => ({
   id: 'r1_m1',
   retreatId: 'r1',
@@ -62,6 +64,12 @@ const createRegistrationMock = vi.fn(async () => ({
   approvedAt: null,
   createdAt: '2026-07-20T00:00:00.000Z',
   updatedAt: '2026-07-20T00:00:00.000Z',
+}))
+
+vi.mock('#/repositories/retreatRegistrationRepo', () => ({
+  retreatRegistrationRepo: {
+    getById: (...args: unknown[]) => getRegistrationMock(...args),
+  },
 }))
 
 vi.mock('#/use-cases/createRetreatRegistration', () => ({
@@ -94,6 +102,8 @@ beforeAll(() => {
 
 beforeEach(() => {
   createRegistrationMock.mockClear()
+  getRegistrationMock.mockReset()
+  getRegistrationMock.mockResolvedValue(null)
 })
 
 function renderConfirm() {
@@ -110,10 +120,10 @@ function renderConfirm() {
 }
 
 describe('RetreatRegistrationConfirm', () => {
-  it('shows read-only member summary and extra fields', () => {
+  it('shows read-only member summary and extra fields', async () => {
     renderConfirm()
     expect(
-      screen.getByRole('heading', { name: m.registration_confirm_title() }),
+      await screen.findByRole('heading', { name: m.registration_confirm_title() }),
     ).toBeTruthy()
     expect(screen.getByText('Pháp A · Thế A')).toBeTruthy()
     expect(screen.getByText('0901234567')).toBeTruthy()
@@ -127,7 +137,10 @@ describe('RetreatRegistrationConfirm', () => {
     const user = userEvent.setup()
     renderConfirm()
 
-    await user.type(screen.getByRole('textbox', { name: /Ghi chú/ }), 'hello')
+    await user.type(
+      await screen.findByRole('textbox', { name: /Ghi chú/ }),
+      'hello',
+    )
     await user.click(screen.getByRole('button', { name: m.registration_submit() }))
 
     await waitFor(() => {
@@ -142,5 +155,69 @@ describe('RetreatRegistrationConfirm', () => {
     })
 
     expect(await screen.findByText(m.registration_success_title())).toBeTruthy()
+  })
+
+  it('shows approved status when registration already exists', async () => {
+    getRegistrationMock.mockResolvedValue({
+      id: 'r1_m1',
+      retreatId: 'r1',
+      memberId: 'm1',
+      orgUnitId: 'gd-i',
+      registeredVia: 'self',
+      registeredBy: null,
+      extraAnswers: { note: 'hello' },
+      status: 'approved',
+      rejectionReason: null,
+      approvedBy: 'admin-1',
+      approvedAt: '2026-07-21T00:00:00.000Z',
+      createdAt: '2026-07-20T00:00:00.000Z',
+      updatedAt: '2026-07-21T00:00:00.000Z',
+    })
+
+    renderConfirm()
+
+    expect(
+      await screen.findByRole('heading', {
+        name: m.registration_status_approved_title(),
+      }),
+    ).toBeTruthy()
+    expect(
+      screen.queryByRole('button', { name: m.registration_submit() }),
+    ).toBeNull()
+  })
+
+  it('shows error alert when registration lookup fails', async () => {
+    getRegistrationMock.mockRejectedValue(new Error('network'))
+
+    renderConfirm()
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      m.registration_error_generic(),
+    )
+    expect(
+      screen.queryByRole('button', { name: m.registration_submit() }),
+    ).toBeNull()
+    expect(
+      screen.queryByRole('heading', { name: m.registration_confirm_title() }),
+    ).toBeNull()
+  })
+
+  it('shows gate instead of form when no registration and retreat closed', async () => {
+    const closedRetreat = { ...retreat, status: 'closed' as const }
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+    render(
+      <QueryClientProvider client={client}>
+        <MantineProvider theme={theme} defaultColorScheme="light">
+          <RetreatRegistrationConfirm retreat={closedRetreat} member={member} />
+        </MantineProvider>
+      </QueryClientProvider>,
+    )
+
+    expect(await screen.findByText(m.registration_gate_closed())).toBeTruthy()
+    expect(
+      screen.queryByRole('button', { name: m.registration_submit() }),
+    ).toBeNull()
   })
 })

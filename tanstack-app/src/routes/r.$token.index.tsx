@@ -4,6 +4,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { RetreatRegistrationEntry } from '#/components/registration/RetreatRegistrationEntry'
 import { useRegistrationRouteContext } from '#/components/registration/registrationRouteContext'
+import { getRetreatSelfRegistrationGate } from '#/domain/retreatRegistrationGate'
 import { m } from '#/paraglide/messages'
 import { fillerOrgUnitsQuery } from '#/query/fillerQueries'
 import { resumeMemberByPhone } from '#/use-cases/resumeMemberByPhone'
@@ -19,11 +20,14 @@ function RegistrationEntryRoute() {
   const [error, setError] = useState<string | null>(null)
   const [lastSearchPhone, setLastSearchPhone] = useState<string | null>(null)
   const [memberMatches, setMemberMatches] = useState<Array<{ id: string; label: string }>>([])
+  const [newMemberBlocked, setNewMemberBlocked] = useState(false)
 
   const orgUnitName =
     orgUnitsQuery.data?.find((unit) => unit.id === invite.orgUnitId)?.name ??
     invite.orgUnitId ??
     ''
+
+  const gateCode = getRetreatSelfRegistrationGate(retreat)
 
   const resumeMutation = useMutation({
     mutationFn: async (payload: { phone: string }) => {
@@ -36,16 +40,21 @@ function RegistrationEntryRoute() {
     onMutate: () => {
       setError(null)
       setMemberMatches([])
+      setNewMemberBlocked(false)
     },
     onSuccess: (result, payload) => {
       const matches = result.members
       setLastSearchPhone(payload.phone)
 
       if (matches.length === 0) {
+        if (gateCode) {
+          setNewMemberBlocked(true)
+          return
+        }
         void navigate({
-          to: '/r/$token/member/new',
-          params: { token },
-          search: { phone: payload.phone },
+            to: '/r/$token/member/new',
+            params: { token },
+            search: { phone: payload.phone },
         })
         return
       }
@@ -82,6 +91,8 @@ function RegistrationEntryRoute() {
     <RetreatRegistrationEntry
       retreatName={retreat.name}
       orgUnitName={orgUnitName}
+      gateCode={gateCode}
+      newMemberBlocked={newMemberBlocked}
       pending={resumeMutation.isPending}
       memberMatches={memberMatches}
       error={error}

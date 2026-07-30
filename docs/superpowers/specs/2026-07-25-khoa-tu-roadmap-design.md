@@ -74,7 +74,7 @@ Attendance (phase 6) and certificate/QR (phase 7) fields are added to `retreatRe
 | 0 | RBAC nhẹ (nền tảng) | Hoàn thành | [2026-07-25-khoa-tu-rbac-phase0.md](../plans/2026-07-25-khoa-tu-rbac-phase0.md) |
 | 1 | CRUD khóa tu (Giáo đoàn only) | Hoàn thành (đã merge `main`; form lịch date-only GMT+7) | [2026-07-25-khoa-tu-retreats-crud-phase1.md](../plans/2026-07-25-khoa-tu-retreats-crud-phase1.md) |
 | 2 | Đăng ký (tự đăng ký + đăng ký thay) | Hoàn thành (đã merge `main`; smoke thủ công xong 2026-07-30) | [2026-07-30-khoa-tu-registration-phase2.md](../plans/2026-07-30-khoa-tu-registration-phase2.md) · Design: [2026-07-30-khoa-tu-registration-phase2-design.md](./2026-07-30-khoa-tu-registration-phase2-design.md) |
-| 3 | Xét duyệt cấp Giáo đoàn | Đã lập kế hoạch | [2026-07-30-khoa-tu-approval-phase3.md](../plans/2026-07-30-khoa-tu-approval-phase3.md) · Design: [2026-07-30-khoa-tu-approval-phase3-design.md](./2026-07-30-khoa-tu-approval-phase3-design.md) |
+| 3 | Xét duyệt cấp Giáo đoàn | Đang thực hiện (code xong trên `feat/khoa-tu-approval-phase3`; chờ smoke thủ công) | [2026-07-30-khoa-tu-approval-phase3.md](../plans/2026-07-30-khoa-tu-approval-phase3.md) · Design: [2026-07-30-khoa-tu-approval-phase3-design.md](./2026-07-30-khoa-tu-approval-phase3-design.md) |
 | 4 | Xuất danh sách & báo cáo (Giáo đoàn) | Chưa bắt đầu | — |
 | 5 | Khóa tu Hệ phái (7 bước, tổng hợp) | Chưa bắt đầu | — |
 | 6 | Điểm danh (thủ công) | Chưa bắt đầu | — |
@@ -159,4 +159,12 @@ Phases 0–2 are on `main`. Phase 2 manual smoke verified 2026-07-30 (self new/e
 
 Ensure production has deployed `firestore.rules` + `firestore.indexes.json` before relying on registration in prod.
 
-**Phase 3:** design + plan ready — [2026-07-30-khoa-tu-approval-phase3-design.md](./2026-07-30-khoa-tu-approval-phase3-design.md) · [2026-07-30-khoa-tu-approval-phase3.md](../plans/2026-07-30-khoa-tu-approval-phase3.md). Implement on `feat/khoa-tu-approval-phase3` from `main`.
+**Phase 3:** Tasks 1–7 implemented on `feat/khoa-tu-approval-phase3` — [plan](../plans/2026-07-30-khoa-tu-approval-phase3.md) · [design](./2026-07-30-khoa-tu-approval-phase3-design.md). Merge to `main` after human smoke passes; then mark Phase 3 **Hoàn thành** in the table above.
+
+Manual smoke checklist (do not automate):
+
+1. Pending row → approve → badge shows approved; self `/r` shows approved
+2. Pending → reject with reason → self sees reason
+3. Bulk approve two pending registrations
+4. Approve still works after close retreat
+5. Cannot re-register same member

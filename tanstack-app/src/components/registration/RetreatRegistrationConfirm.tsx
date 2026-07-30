@@ -1,11 +1,16 @@
-import { Alert, Button, Stack, Text, TextInput, Title } from '@mantine/core'
-import { useMutation } from '@tanstack/react-query'
+import { Alert, Button, Center, Loader, Stack, Text, TextInput, Title } from '@mantine/core'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { isDomainError } from '#/domain/errors'
+import { getRetreatSelfRegistrationGate } from '#/domain/retreatRegistrationGate'
+import { retreatRegistrationId } from '#/domain/retreatRegistration'
 import type { Retreat } from '#/domain/retreat'
 import type { Member } from '#/domain/types'
 import { m } from '#/paraglide/messages'
+import { publicRegistrationQuery } from '#/query/registrationQueries'
 import { createRetreatRegistration } from '#/use-cases/createRetreatRegistration'
+import { RetreatRegistrationGateAlert } from './RetreatRegistrationGateAlert'
+import { RetreatRegistrationStatus } from './RetreatRegistrationStatus'
 
 export type RetreatRegistrationConfirmProps = {
   retreat: Retreat
@@ -39,6 +44,9 @@ export function RetreatRegistrationConfirm({
   retreat,
   member,
 }: RetreatRegistrationConfirmProps) {
+  const registrationId = retreatRegistrationId(retreat.id, member.id)
+  const registrationQuery = useQuery(publicRegistrationQuery(registrationId))
+
   const [extraAnswers, setExtraAnswers] = useState<Record<string, string>>({})
   const [submitted, setSubmitted] = useState(false)
 
@@ -64,6 +72,37 @@ export function RetreatRegistrationConfirm({
       setSubmitted(true)
     },
   })
+
+  if (registrationQuery.isPending) {
+    return (
+      <Center p="xl">
+        <Loader aria-label="loading" />
+      </Center>
+    )
+  }
+
+  if (registrationQuery.isError) {
+    return (
+      <Alert color="red" role="alert">
+        {m.registration_error_generic()}
+      </Alert>
+    )
+  }
+
+  if (registrationQuery.data) {
+    return (
+      <RetreatRegistrationStatus
+        registration={registrationQuery.data}
+        member={member}
+      />
+    )
+  }
+
+  const gateCode = getRetreatSelfRegistrationGate(retreat)
+
+  if (gateCode) {
+    return <RetreatRegistrationGateAlert gateCode={gateCode} />
+  }
 
   if (submitted) {
     return (

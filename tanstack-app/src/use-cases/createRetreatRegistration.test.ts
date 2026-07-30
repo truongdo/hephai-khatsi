@@ -76,6 +76,9 @@ function memoryRegistrationStore(
     async listByRetreat() {
       return { items: [], nextCursor: null }
     },
+    async updateReview() {
+      // not used in create tests
+    },
   }
 }
 
@@ -125,6 +128,7 @@ describe('createRetreatRegistration', () => {
       registeredBy: null,
       extraAnswers: {},
       status: 'pending',
+      rejectionReason: null,
       approvedBy: null,
       approvedAt: null,
       createdAt: NOW,
@@ -164,6 +168,7 @@ describe('createRetreatRegistration', () => {
       registeredBy: 'admin-1',
       extraAnswers: { room: 'A1' },
       status: 'pending',
+      rejectionReason: null,
       approvedBy: null,
       approvedAt: null,
     })
@@ -262,6 +267,7 @@ describe('createRetreatRegistration', () => {
           registeredBy: null,
           extraAnswers: {},
           status: 'pending',
+          rejectionReason: null,
           approvedBy: null,
           approvedAt: null,
           createdAt: NOW,

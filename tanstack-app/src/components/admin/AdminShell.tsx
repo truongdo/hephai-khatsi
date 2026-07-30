@@ -101,9 +101,17 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                overflow: 'hidden',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
               }}
             >
-              <DharmaWheel size={22} color="var(--saffron-light)" />
+              <img
+                src="/mylogo.svg"
+                alt=""
+                width={36}
+                height={36}
+                style={{ objectFit: 'contain', display: 'block' }}
+              />
             </Box>
             <div>
               <Text

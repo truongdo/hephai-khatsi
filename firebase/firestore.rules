@@ -255,7 +255,39 @@ service cloud.firestore {
         return data.status == 'pending'
           && data.approvedBy == null
           && data.approvedAt == null
+          && data.rejectionReason == null
           && registrationIdOk(data);
+      }
+
+      function registrationReviewKeysOnly() {
+        return request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'approvedBy', 'approvedAt', 'rejectionReason', 'updatedAt']);
+      }
+
+      function registrationImmutableOk() {
+        return request.resource.data.retreatId == resource.data.retreatId
+          && request.resource.data.memberId == resource.data.memberId
+          && request.resource.data.orgUnitId == resource.data.orgUnitId
+          && request.resource.data.registeredVia == resource.data.registeredVia
+          && request.resource.data.registeredBy == resource.data.registeredBy
+          && request.resource.data.extraAnswers == resource.data.extraAnswers
+          && request.resource.data.createdAt == resource.data.createdAt
+          && registrationIdOk(request.resource.data);
+      }
+
+      function validRegistrationReview() {
+        return resource.data.status == 'pending'
+          && (request.resource.data.status == 'approved' || request.resource.data.status == 'rejected')
+          && request.resource.data.approvedBy == request.auth.uid
+          && request.resource.data.approvedAt is string
+          && request.resource.data.updatedAt is string
+          && (
+            (request.resource.data.status == 'approved' && request.resource.data.rejectionReason == null)
+            || (request.resource.data.status == 'rejected'
+                && (request.resource.data.rejectionReason == null
+                    || (request.resource.data.rejectionReason is string
+                        && request.resource.data.rejectionReason.size() > 0)))
+          );
       }
 
       // Public get-by-id (same bearer model as members): needed so the
@@ -279,7 +311,12 @@ service cloud.firestore {
         )
       );
 
-      allow update, delete: if false;
+      allow update: if canWriteDirectory()
+        && retreatOrgOk(resource.data.orgUnitId)
+        && registrationReviewKeysOnly()
+        && registrationImmutableOk()
+        && validRegistrationReview();
+      allow delete: if false;
     }
   }
 }

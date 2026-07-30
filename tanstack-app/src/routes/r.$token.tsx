@@ -99,13 +99,11 @@ function RegistrationLayoutRoute() {
   return (
     <FillerPageFrame>
       <RetreatRegistrationGateAlert gateCode={gateCode} />
-      {gateCode ? null : (
-        <RegistrationRouteProvider
-          value={{ token, invite, retreat: retreatQuery.data }}
-        >
-          <Outlet />
-        </RegistrationRouteProvider>
-      )}
+      <RegistrationRouteProvider
+        value={{ token, invite, retreat: retreatQuery.data }}
+      >
+        <Outlet />
+      </RegistrationRouteProvider>
     </FillerPageFrame>
   )
 }

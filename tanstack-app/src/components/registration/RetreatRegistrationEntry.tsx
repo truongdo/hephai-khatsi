@@ -10,11 +10,15 @@ import {
 import { useState, type FormEvent } from 'react'
 import { isDomainError } from '#/domain/errors'
 import { normalizeVnPhone } from '#/domain/normalize'
+import type { RetreatSelfRegistrationGateCode } from '#/domain/retreatRegistrationGate'
 import { m } from '#/paraglide/messages'
+import { RetreatRegistrationGateAlert } from './RetreatRegistrationGateAlert'
 
 export type RetreatRegistrationEntryProps = {
   retreatName: string
   orgUnitName: string
+  gateCode?: RetreatSelfRegistrationGateCode | null
+  newMemberBlocked?: boolean
   pending?: boolean
   memberMatches?: Array<{ id: string; label: string }>
   error?: string | null
@@ -39,6 +43,8 @@ function phoneFieldError(code: string): string {
 export function RetreatRegistrationEntry({
   retreatName,
   orgUnitName,
+  gateCode = null,
+  newMemberBlocked = false,
   pending = false,
   memberMatches,
   error = null,
@@ -98,6 +104,10 @@ export function RetreatRegistrationEntry({
           {m.filler_continue()}
         </Button>
 
+        {newMemberBlocked && gateCode ? (
+          <RetreatRegistrationGateAlert gateCode={gateCode} />
+        ) : null}
+
         {memberMatches && memberMatches.length > 0 ? (
           <Stack gap="sm">
             <Text fw={600}>{m.filler_identity_pick_member()}</Text>
@@ -113,9 +123,13 @@ export function RetreatRegistrationEntry({
               ))}
             </Group>
             {onCreateMember ? (
-              <Button variant="default" onClick={onCreateMember}>
-                {m.filler_identity_create_member()}
-              </Button>
+              gateCode ? (
+                <RetreatRegistrationGateAlert gateCode={gateCode} />
+              ) : (
+                <Button variant="default" onClick={onCreateMember}>
+                  {m.filler_identity_create_member()}
+                </Button>
+              )
             ) : null}
           </Stack>
         ) : null}

@@ -9,6 +9,7 @@ import {
   setDoc,
   startAfter,
   where,
+  writeBatch,
   type DocumentSnapshot,
   type Firestore,
   type QueryConstraint,
@@ -18,6 +19,14 @@ import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
 import type { AdminListPage } from '#/repositories/adminListTypes'
 
+export type RegistrationReviewPatch = {
+  status: 'approved' | 'rejected'
+  approvedBy: string
+  approvedAt: string
+  rejectionReason: string | null
+  updatedAt: string
+}
+
 export type RetreatRegistrationStore = {
   create(reg: RetreatRegistration): Promise<void>
   getById(id: string): Promise<RetreatRegistration | null>
@@ -26,6 +35,7 @@ export type RetreatRegistrationStore = {
     limit?: number
     cursor?: string
   }): Promise<AdminListPage<RetreatRegistration>>
+  updateReview(ids: string[], patch: RegistrationReviewPatch): Promise<void>
 }
 
 function requireDb(): Firestore {
@@ -77,8 +87,25 @@ async function listByRetreat(input: {
   return { items, nextCursor }
 }
 
+async function updateReview(
+  ids: string[],
+  patch: RegistrationReviewPatch,
+): Promise<void> {
+  const db = requireDb()
+  const chunkSize = 450
+  for (let i = 0; i < ids.length; i += chunkSize) {
+    const chunk = ids.slice(i, i + chunkSize)
+    const batch = writeBatch(db)
+    for (const id of chunk) {
+      batch.update(doc(db, COLLECTIONS.retreatRegistrations, id), { ...patch })
+    }
+    await batch.commit()
+  }
+}
+
 export const retreatRegistrationRepo: RetreatRegistrationStore = {
   create,
   getById,
   listByRetreat,
+  updateReview,
 }

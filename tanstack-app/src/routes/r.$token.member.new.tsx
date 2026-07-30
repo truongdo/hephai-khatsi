@@ -2,7 +2,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Group, Radio, Stack, Text } from '@mantine/core'
 import { useState } from 'react'
 import { MemberEditorForm } from '#/components/filler/MemberEditorForm'
+import { RetreatRegistrationGateAlert } from '#/components/registration/RetreatRegistrationGateAlert'
 import { useRegistrationRouteContext } from '#/components/registration/registrationRouteContext'
+import { getRetreatSelfRegistrationGate } from '#/domain/retreatRegistrationGate'
 import type { SanghaType } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 
@@ -14,10 +16,15 @@ export const Route = createFileRoute('/r/$token/member/new')({
 })
 
 function RegistrationMemberNewRoute() {
-  const { token, invite } = useRegistrationRouteContext()
+  const { token, invite, retreat } = useRegistrationRouteContext()
   const { phone } = Route.useSearch()
   const navigate = Route.useNavigate()
   const [sanghaType, setSanghaType] = useState<SanghaType | ''>('')
+  const gateCode = getRetreatSelfRegistrationGate(retreat)
+
+  if (gateCode) {
+    return <RetreatRegistrationGateAlert gateCode={gateCode} />
+  }
 
   return (
     <Stack gap="lg">

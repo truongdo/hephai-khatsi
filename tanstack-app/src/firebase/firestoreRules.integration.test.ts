@@ -554,6 +554,7 @@ function registrationDraft(overrides: Record<string, unknown> = {}) {
     status: 'pending',
     approvedBy: null,
     approvedAt: null,
+    rejectionReason: null,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
     ...overrides,
@@ -659,15 +660,150 @@ describe('retreatRegistrations', () => {
     await assertSucceeds(getDoc(doc(gd, 'retreatRegistrations', `r-gd-ii_${MEMBER_ID}`)))
   })
 
-  it('denies staff update of registration status', async () => {
+  it('allows he_phai_admin to approve own-org registration', async () => {
+    const env = await getTestEnv()
+    await seedRegistrationsAcrossOrgs(env)
+    const hp = env.authenticatedContext('hp-admin', { role: 'he_phai_admin' }).firestore()
+    await assertSucceeds(
+      updateDoc(doc(hp, 'retreatRegistrations', REGISTRATION_ID), {
+        status: 'approved',
+        approvedBy: 'hp-admin',
+        approvedAt: '2026-01-02T00:00:00.000Z',
+        rejectionReason: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('allows giao_doan_admin to approve and reject own-org registration', async () => {
+    const env = await getTestEnv()
+    await seedRegistrationsAcrossOrgs(env)
+    const gd = env.authenticatedContext('gd-admin', {
+      role: 'giao_doan_admin',
+      orgUnitId: 'gd-i',
+    }).firestore()
+
+    const approveId = `${RETREAT_ID}_gd-i_tang_approve`
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'retreatRegistrations', approveId),
+        registrationDraft({ memberId: 'gd-i_tang_approve' }),
+      )
+    })
+    await assertSucceeds(
+      updateDoc(doc(gd, 'retreatRegistrations', approveId), {
+        status: 'approved',
+        approvedBy: 'gd-admin',
+        approvedAt: '2026-01-02T00:00:00.000Z',
+        rejectionReason: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+
+    const rejectNoReasonId = `${RETREAT_ID}_gd-i_tang_reject_no_reason`
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'retreatRegistrations', rejectNoReasonId),
+        registrationDraft({ memberId: 'gd-i_tang_reject_no_reason' }),
+      )
+    })
+    await assertSucceeds(
+      updateDoc(doc(gd, 'retreatRegistrations', rejectNoReasonId), {
+        status: 'rejected',
+        approvedBy: 'gd-admin',
+        approvedAt: '2026-01-02T00:00:00.000Z',
+        rejectionReason: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+
+    const rejectWithReasonId = `${RETREAT_ID}_gd-i_tang_reject_with_reason`
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'retreatRegistrations', rejectWithReasonId),
+        registrationDraft({ memberId: 'gd-i_tang_reject_with_reason' }),
+      )
+    })
+    await assertSucceeds(
+      updateDoc(doc(gd, 'retreatRegistrations', rejectWithReasonId), {
+        status: 'rejected',
+        approvedBy: 'gd-admin',
+        approvedAt: '2026-01-02T00:00:00.000Z',
+        rejectionReason: 'Không đủ điều kiện',
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('denies anonymous update of registration status', async () => {
+    const env = await getTestEnv()
+    await seedRegistrationsAcrossOrgs(env)
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      updateDoc(doc(anon, 'retreatRegistrations', REGISTRATION_ID), {
+        status: 'approved',
+        approvedBy: 'anon',
+        approvedAt: '2026-01-02T00:00:00.000Z',
+        rejectionReason: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('denies giao_doan_admin cross-org registration update', async () => {
+    const env = await getTestEnv()
+    await seedRegistrationsAcrossOrgs(env)
+    const gd = env.authenticatedContext('gd-admin', {
+      role: 'giao_doan_admin',
+      orgUnitId: 'gd-i',
+    }).firestore()
+    await assertFails(
+      updateDoc(doc(gd, 'retreatRegistrations', `r-gd-ii_${MEMBER_ID}`), {
+        status: 'approved',
+        approvedBy: 'gd-admin',
+        approvedAt: '2026-01-02T00:00:00.000Z',
+        rejectionReason: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('denies update when registration is already approved', async () => {
+    const env = await getTestEnv()
+    await seedRegistrationsAcrossOrgs(env)
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'retreatRegistrations', REGISTRATION_ID),
+        registrationDraft({
+          status: 'approved',
+          approvedBy: 'admin-uid',
+          approvedAt: '2026-01-02T00:00:00.000Z',
+        }),
+      )
+    })
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertFails(
+      updateDoc(doc(admin, 'retreatRegistrations', REGISTRATION_ID), {
+        status: 'rejected',
+        approvedBy: 'admin-uid',
+        approvedAt: '2026-01-03T00:00:00.000Z',
+        rejectionReason: 'Too late',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('denies changing memberId alongside status review', async () => {
     const env = await getTestEnv()
     await seedRegistrationsAcrossOrgs(env)
     const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
     await assertFails(
       updateDoc(doc(admin, 'retreatRegistrations', REGISTRATION_ID), {
         status: 'approved',
+        memberId: 'gd-i_tang_different',
         approvedBy: 'admin-uid',
         approvedAt: '2026-01-02T00:00:00.000Z',
+        rejectionReason: null,
         updatedAt: '2026-01-02T00:00:00.000Z',
       }),
     )

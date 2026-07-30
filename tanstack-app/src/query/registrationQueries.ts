@@ -1,5 +1,6 @@
 import { queryOptions } from '@tanstack/react-query'
 import { DomainError } from '#/domain/errors'
+import { retreatRegistrationRepo } from '#/repositories/retreatRegistrationRepo'
 import { retreatRepo } from '#/repositories/retreatRepo'
 import { getInviteByToken } from '#/use-cases/getInviteByToken'
 import { registrationKeys } from './registrationKeys'
@@ -23,6 +24,15 @@ export function publicRetreatQuery(retreatId: string) {
       }
       return retreat
     },
+    staleTime: 5 * 60_000,
+    retry: false,
+  })
+}
+
+export function publicRegistrationQuery(id: string) {
+  return queryOptions({
+    queryKey: registrationKeys.registration(id),
+    queryFn: () => retreatRegistrationRepo.getById(id),
     staleTime: 5 * 60_000,
     retry: false,
   })

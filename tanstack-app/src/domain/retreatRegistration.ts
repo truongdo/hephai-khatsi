@@ -14,6 +14,7 @@ export type RetreatRegistration = {
   registeredBy: string | null
   extraAnswers: Record<string, string>
   status: RegistrationStatus
+  rejectionReason: string | null
   approvedBy: string | null
   approvedAt: string | null
   createdAt: string
@@ -62,5 +63,19 @@ export function assertMemberOrgMatches(
 ): void {
   if (memberOrgUnitId !== retreatOrgUnitId) {
     throw new DomainError('FORBIDDEN', 'Member org unit does not match retreat org unit')
+  }
+}
+
+export function normalizeRejectionReason(
+  raw: string | null | undefined,
+): string | null {
+  if (raw == null) return null
+  const trimmed = raw.trim()
+  return trimmed.length > 0 ? trimmed : null
+}
+
+export function assertRegistrationPending(status: RegistrationStatus): void {
+  if (status !== 'pending') {
+    throw new DomainError('INVALID_STATUS', 'Registration is not pending')
   }
 }

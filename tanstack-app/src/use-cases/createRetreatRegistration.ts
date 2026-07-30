@@ -95,6 +95,7 @@ export async function createRetreatRegistration(
     registeredBy: input.registeredBy,
     extraAnswers: input.extraAnswers,
     status: 'pending',
+    rejectionReason: null,
     approvedBy: null,
     approvedAt: null,
     createdAt: nowIso,

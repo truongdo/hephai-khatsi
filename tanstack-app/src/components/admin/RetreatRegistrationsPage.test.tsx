@@ -1,8 +1,10 @@
 import { MantineProvider } from '@mantine/core'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { m } from '#/paraglide/messages'
+import type { RetreatRegistration } from '#/domain/retreatRegistration'
 import { theme } from '../../theme'
 import { RetreatRegistrationsPage } from './RetreatRegistrationsPage'
 
@@ -26,6 +28,10 @@ const retreat = {
   updatedAt: '2026-07-19T10:00:00.000Z',
 }
 
+const reviewRetreatRegistrationsMock = vi.fn()
+
+const registrationItems: RetreatRegistration[] = []
+
 const ensureInviteMock = vi.fn(async () => ({
   id: 'retreat_r1',
   token: 'retreat_r1',
@@ -39,6 +45,11 @@ const ensureInviteMock = vi.fn(async () => ({
 
 vi.mock('#/use-cases/ensureRetreatRegistrationInvite', () => ({
   ensureRetreatRegistrationInvite: (...args: unknown[]) => ensureInviteMock(...args),
+}))
+
+vi.mock('#/use-cases/reviewRetreatRegistrations', () => ({
+  reviewRetreatRegistrations: (...args: unknown[]) =>
+    reviewRetreatRegistrationsMock(...args),
 }))
 
 vi.mock('#/auth/useAdminClaim', () => ({
@@ -79,7 +90,10 @@ vi.mock('#/query/adminQueries', () => ({
   }),
   retreatRegistrationsQuery: (retreatId: string) => ({
     queryKey: ['admin', 'retreatRegistrations', retreatId],
-    queryFn: async () => ({ items: [], nextCursor: null }),
+    queryFn: async () => ({
+      items: registrationItems,
+      nextCursor: null,
+    }),
     staleTime: 0,
   }),
   memberQuery: (id: string) => ({
@@ -117,8 +131,30 @@ beforeAll(() => {
   })
 })
 
+function makeRegistration(
+  overrides: Partial<RetreatRegistration> & Pick<RetreatRegistration, 'id' | 'status'>,
+): RetreatRegistration {
+  return {
+    retreatId: 'r1',
+    memberId: 'm1',
+    orgUnitId: 'gd-i',
+    registeredVia: 'self',
+    registeredBy: null,
+    extraAnswers: {},
+    rejectionReason: null,
+    approvedBy: null,
+    approvedAt: null,
+    createdAt: '2026-07-20T10:00:00.000Z',
+    updatedAt: '2026-07-20T10:00:00.000Z',
+    ...overrides,
+  }
+}
+
 beforeEach(() => {
   ensureInviteMock.mockClear()
+  reviewRetreatRegistrationsMock.mockReset()
+  reviewRetreatRegistrationsMock.mockResolvedValue(undefined)
+  registrationItems.length = 0
 })
 
 function renderPage() {
@@ -146,5 +182,40 @@ describe('RetreatRegistrationsPage', () => {
     expect(
       screen.getByRole('button', { name: m.admin_retreat_registrations_proxy_search() }),
     ).toBeTruthy()
+  })
+
+  it('shows approve and reject when a pending row is selected', async () => {
+    registrationItems.push(
+      makeRegistration({ id: 'reg-pending', status: 'pending', memberId: 'm1' }),
+    )
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByText(m.admin_retreat_registrations_status_pending())
+    expect(
+      screen.getAllByRole('button', { name: m.admin_retreat_registrations_approve() }),
+    ).toHaveLength(1)
+    const checkboxes = screen.getAllByRole('checkbox')
+    await user.click(checkboxes[1]!)
+    expect(screen.getByText(m.admin_bulk_selected({ count: 1 }))).toBeTruthy()
+    expect(
+      screen.getAllByRole('button', { name: m.admin_retreat_registrations_approve() }),
+    ).toHaveLength(2)
+    expect(
+      screen.getAllByRole('button', { name: m.admin_retreat_registrations_reject() }),
+    ).toHaveLength(2)
+  })
+
+  it('does not show row review actions for approved registrations', async () => {
+    registrationItems.push(
+      makeRegistration({ id: 'reg-approved', status: 'approved', memberId: 'm2' }),
+    )
+    renderPage()
+    await screen.findByText(m.admin_retreat_registrations_status_approved())
+    expect(
+      screen.queryByRole('button', { name: m.admin_retreat_registrations_approve() }),
+    ).toBeNull()
+    expect(
+      screen.queryByRole('button', { name: m.admin_retreat_registrations_reject() }),
+    ).toBeNull()
   })
 })

@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest'
 import type { RetreatRegistration } from '#/domain/retreatRegistration'
 import { retreatRegistrationId } from '#/domain/retreatRegistration'
 import type { AdminListPage } from '#/repositories/adminListTypes'
-import type { RetreatRegistrationStore } from './retreatRegistrationRepo'
+import type {
+  RegistrationReviewPatch,
+  RetreatRegistrationStore,
+} from './retreatRegistrationRepo'
 
 function sampleRegistration(
   overrides: Partial<RetreatRegistration> & Pick<RetreatRegistration, 'retreatId' | 'memberId'>,
@@ -18,6 +21,7 @@ function sampleRegistration(
     registeredBy: overrides.registeredBy ?? null,
     extraAnswers: overrides.extraAnswers ?? {},
     status: overrides.status ?? 'pending',
+    rejectionReason: overrides.rejectionReason ?? null,
     approvedBy: overrides.approvedBy ?? null,
     approvedAt: overrides.approvedAt ?? null,
     createdAt: now,
@@ -60,6 +64,13 @@ function createMemoryRetreatRegistrationStore(): RetreatRegistrationStore & {
     },
     async listByRetreat(input) {
       return listByRetreatInMemory(registrations.values(), input)
+    },
+    async updateReview(ids: string[], patch: RegistrationReviewPatch) {
+      for (const id of ids) {
+        const existing = registrations.get(id)
+        if (!existing) throw new Error(`Missing registration ${id}`)
+        registrations.set(id, { ...existing, ...patch })
+      }
     },
   }
 }
@@ -132,5 +143,28 @@ describe('RetreatRegistrationStore memory contract', () => {
     })
     expect(page2.items.map((r) => r.id)).toEqual([r2.id])
     expect(page2.nextCursor).toBeNull()
+  })
+
+  it('updateReview patches status fields for each id', async () => {
+    const store = createMemoryRetreatRegistrationStore()
+    const a = sampleRegistration({ retreatId: 'r1', memberId: 'm1' })
+    const b = sampleRegistration({ retreatId: 'r1', memberId: 'm2' })
+    await store.create(a)
+    await store.create(b)
+
+    await store.updateReview([a.id, b.id], {
+      status: 'rejected',
+      approvedBy: 'admin-1',
+      approvedAt: '2026-07-30T12:00:00.000Z',
+      rejectionReason: 'đủ chỉ tiêu',
+      updatedAt: '2026-07-30T12:00:00.000Z',
+    })
+
+    expect(await store.getById(a.id)).toMatchObject({
+      status: 'rejected',
+      approvedBy: 'admin-1',
+      rejectionReason: 'đủ chỉ tiêu',
+    })
+    expect(await store.getById(b.id)).toMatchObject({ status: 'rejected' })
   })
 })

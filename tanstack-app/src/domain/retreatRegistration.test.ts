@@ -4,6 +4,8 @@ import {
   assertMemberOrgMatches,
   assertQuyenAllows,
   assertRegistrationOpen,
+  assertRegistrationPending,
+  normalizeRejectionReason,
   retreatRegistrationId,
   validateExtraAnswers,
 } from './retreatRegistration'
@@ -57,5 +59,24 @@ describe('validateExtraAnswers', () => {
 describe('retreatRegistrationId', () => {
   it('joins retreat and member ids', () => {
     expect(retreatRegistrationId('r1', 'gd-i_tang_001')).toBe('r1_gd-i_tang_001')
+  })
+})
+
+describe('normalizeRejectionReason', () => {
+  it('trims and maps empty to null', () => {
+    expect(normalizeRejectionReason('  lý do  ')).toBe('lý do')
+    expect(normalizeRejectionReason('   ')).toBeNull()
+    expect(normalizeRejectionReason(null)).toBeNull()
+    expect(normalizeRejectionReason(undefined)).toBeNull()
+  })
+})
+
+describe('assertRegistrationPending', () => {
+  it('allows pending', () => {
+    expect(() => assertRegistrationPending('pending')).not.toThrow()
+  })
+  it('rejects approved and rejected', () => {
+    expect(() => assertRegistrationPending('approved')).toThrow(DomainError)
+    expect(() => assertRegistrationPending('rejected')).toThrow(DomainError)
   })
 })
