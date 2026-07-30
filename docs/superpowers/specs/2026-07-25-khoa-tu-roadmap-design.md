@@ -72,8 +72,8 @@ Attendance (phase 6) and certificate/QR (phase 7) fields are added to `retreatRe
 | Phase | Nội dung | Trạng thái | Plan |
 | --- | --- | --- | --- |
 | 0 | RBAC nhẹ (nền tảng) | Hoàn thành | [2026-07-25-khoa-tu-rbac-phase0.md](../plans/2026-07-25-khoa-tu-rbac-phase0.md) |
-| 1 | CRUD khóa tu (Giáo đoàn only) | Hoàn thành | [2026-07-25-khoa-tu-retreats-crud-phase1.md](../plans/2026-07-25-khoa-tu-retreats-crud-phase1.md) |
-| 2 | Đăng ký (tự đăng ký + đăng ký thay) | Chưa bắt đầu | — |
+| 1 | CRUD khóa tu (Giáo đoàn only) | Hoàn thành (đã merge `main`; form lịch date-only GMT+7) | [2026-07-25-khoa-tu-retreats-crud-phase1.md](../plans/2026-07-25-khoa-tu-retreats-crud-phase1.md) |
+| 2 | Đăng ký (tự đăng ký + đăng ký thay) | Đã có design (chờ plan) | Design: [2026-07-30-khoa-tu-registration-phase2-design.md](./2026-07-30-khoa-tu-registration-phase2-design.md) |
 | 3 | Xét duyệt cấp Giáo đoàn | Chưa bắt đầu | — |
 | 4 | Xuất danh sách & báo cáo (Giáo đoàn) | Chưa bắt đầu | — |
 | 5 | Khóa tu Hệ phái (7 bước, tổng hợp) | Chưa bắt đầu | — |
@@ -155,4 +155,6 @@ Detailed design: [2026-07-25-khoa-tu-retreats-crud-phase1-design.md](./2026-07-2
 
 ## Next step
 
-Phase 1 code is on branch `feat/khoa-tu-retreats-phase1`: human smoke test, merge to `main`, deploy rules/indexes, then start Phase 2 design/plan (`writing-plans` for đăng ký).
+Phases 0–1 are on `main`. Phase 2 design is approved: [2026-07-30-khoa-tu-registration-phase2-design.md](./2026-07-30-khoa-tu-registration-phase2-design.md).
+
+**Now:** `writing-plans` → implement Phase 2 registration. Deploy Firestore rules/indexes for retreats (and new registration indexes) before opening registration to real users.
