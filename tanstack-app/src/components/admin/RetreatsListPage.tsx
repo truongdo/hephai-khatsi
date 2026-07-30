@@ -19,6 +19,7 @@ import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { emptyCell } from '#/components/admin/emptyCell'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { canManageRetreats } from '#/domain/authClaims'
+import { isoToGmt7Date } from '#/domain/gmt7Date'
 import type { Retreat, RetreatStatus } from '#/domain/retreat'
 import { adminKeys } from '#/query/adminKeys'
 import { orgUnitsQuery, retreatsQuery } from '#/query/adminQueries'
@@ -47,10 +48,15 @@ function statusLabel(status: RetreatStatus): string {
   }
 }
 
+function formatGmt7Date(iso: string): string {
+  const ymd = isoToGmt7Date(iso)
+  if (!ymd) return ''
+  const [year, month, day] = ymd.split('-')
+  return `${day}/${month}/${year}`
+}
+
 function formatDateRange(start: string, end: string): string {
-  const startLabel = new Date(start).toLocaleString('vi-VN')
-  const endLabel = new Date(end).toLocaleString('vi-VN')
-  return `${startLabel} – ${endLabel}`
+  return `${formatGmt7Date(start)} – ${formatGmt7Date(end)}`
 }
 
 export function RetreatsListPage() {

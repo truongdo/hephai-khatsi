@@ -27,6 +27,7 @@ import type {
   RetreatExtraField,
   RetreatWritableFields,
 } from '#/domain/retreat'
+import { gmt7DateToIso, isoToGmt7Date } from '#/domain/gmt7Date'
 import { adminKeys } from '#/query/adminKeys'
 import { orgUnitsQuery, retreatQuery } from '#/query/adminQueries'
 import { closeRetreat } from '#/use-cases/closeRetreat'
@@ -65,20 +66,6 @@ function emptyFields(): RetreatWritableFields {
     extraFields: [],
     quyenDangKy: 'both',
   }
-}
-
-function isoToLocalInput(value: string): string {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return ''
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
-}
-
-function localInputToIso(value: string): string {
-  if (!value) return ''
-  const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? '' : date.toISOString()
 }
 
 function fieldsFromRetreat(
@@ -365,40 +352,52 @@ export function RetreatFormPage({ mode, retreatId }: RetreatFormPageProps) {
 
             <TextInput
               label={m.admin_retreats_form_thoi_gian_bat_dau()}
-              type="datetime-local"
-              value={isoToLocalInput(fields.thoiGianBatDau)}
+              type="date"
+              value={isoToGmt7Date(fields.thoiGianBatDau)}
               onChange={(event) =>
-                updateField('thoiGianBatDau', localInputToIso(event.currentTarget.value))
+                updateField(
+                  'thoiGianBatDau',
+                  gmt7DateToIso(event.currentTarget.value, 'start'),
+                )
               }
               required
             />
 
             <TextInput
               label={m.admin_retreats_form_thoi_gian_ket_thuc()}
-              type="datetime-local"
-              value={isoToLocalInput(fields.thoiGianKetThuc)}
+              type="date"
+              value={isoToGmt7Date(fields.thoiGianKetThuc)}
               onChange={(event) =>
-                updateField('thoiGianKetThuc', localInputToIso(event.currentTarget.value))
+                updateField(
+                  'thoiGianKetThuc',
+                  gmt7DateToIso(event.currentTarget.value, 'end'),
+                )
               }
               required
             />
 
             <TextInput
               label={m.admin_retreats_form_dang_ky_mo_tu()}
-              type="datetime-local"
-              value={isoToLocalInput(fields.dangKyMoTu)}
+              type="date"
+              value={isoToGmt7Date(fields.dangKyMoTu)}
               onChange={(event) =>
-                updateField('dangKyMoTu', localInputToIso(event.currentTarget.value))
+                updateField(
+                  'dangKyMoTu',
+                  gmt7DateToIso(event.currentTarget.value, 'start'),
+                )
               }
               required
             />
 
             <TextInput
               label={m.admin_retreats_form_dang_ky_dong_luc()}
-              type="datetime-local"
-              value={isoToLocalInput(fields.dangKyDongLuc)}
+              type="date"
+              value={isoToGmt7Date(fields.dangKyDongLuc)}
               onChange={(event) =>
-                updateField('dangKyDongLuc', localInputToIso(event.currentTarget.value))
+                updateField(
+                  'dangKyDongLuc',
+                  gmt7DateToIso(event.currentTarget.value, 'end'),
+                )
               }
               required
             />

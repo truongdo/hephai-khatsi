@@ -162,6 +162,16 @@ describe('RetreatsListPage', () => {
     expect(detailLink.getAttribute('href')).toBe('/admin/retreats/r1')
   })
 
+  it('shows schedule columns as GMT+7 dates without time', async () => {
+    renderList()
+    await screen.findByText('Khóa tu mùa hè')
+    // 2026-08-01T08:00Z → 15:00 +07 → 01/08/2026; 2026-08-10T18:00Z → 01:00 +07 next day
+    expect(screen.getAllByText('01/08/2026 – 11/08/2026').length).toBeGreaterThan(0)
+    // 2026-07-01T00:00Z → 07:00 +07; 2026-07-31T23:59Z → 06:59 +07 on 01/08
+    expect(screen.getAllByText('01/07/2026 – 01/08/2026').length).toBeGreaterThan(0)
+    expect(screen.queryByText(/\d{1,2}:\d{2}/)).toBeNull()
+  })
+
   it('scopes list query to giao doan org unit', async () => {
     renderList()
     await screen.findByText('Khóa tu mùa hè')

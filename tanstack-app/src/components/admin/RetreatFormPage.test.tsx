@@ -192,4 +192,46 @@ describe('RetreatFormPage', () => {
       expect.objectContaining({ retreatId: 'r1' }),
     )
   })
+
+  it('shows schedule fields as GMT+7 dates and normalizes on save', async () => {
+    const user = userEvent.setup()
+    retreatFixture = {
+      ...baseRetreat,
+      thoiGianBatDau: '2026-07-31T17:00:00.000Z', // 2026-08-01 00:00 +07
+      thoiGianKetThuc: '2026-08-10T16:59:59.000Z', // 2026-08-10 23:59:59 +07
+      dangKyMoTu: '2026-06-30T17:00:00.000Z', // 2026-07-01 00:00 +07
+      dangKyDongLuc: '2026-07-31T16:59:59.000Z', // 2026-07-31 23:59:59 +07
+    }
+    renderForm({ mode: 'edit' })
+    expect(await screen.findByDisplayValue('2026-08-01')).toBeTruthy()
+    expect(screen.getByDisplayValue('2026-08-10')).toBeTruthy()
+    expect(screen.getByDisplayValue('2026-07-01')).toBeTruthy()
+    expect(screen.getByDisplayValue('2026-07-31')).toBeTruthy()
+    expect(
+      screen.getByLabelText(new RegExp(m.admin_retreats_form_thoi_gian_bat_dau())),
+    ).toHaveValue('2026-08-01')
+    expect(
+      screen.getByLabelText(new RegExp(m.admin_retreats_form_thoi_gian_ket_thuc())),
+    ).toHaveValue('2026-08-10')
+    expect(
+      screen.getByLabelText(new RegExp(m.admin_retreats_form_dang_ky_mo_tu())),
+    ).toHaveValue('2026-07-01')
+    expect(
+      screen.getByLabelText(new RegExp(m.admin_retreats_form_dang_ky_dong_luc())),
+    ).toHaveValue('2026-07-31')
+
+    await user.click(screen.getByRole('button', { name: m.admin_retreats_save() }))
+    await vi.waitFor(() => expect(updateRetreatMock).toHaveBeenCalled())
+    expect(updateRetreatMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        fields: expect.objectContaining({
+          thoiGianBatDau: '2026-07-31T17:00:00.000Z',
+          thoiGianKetThuc: '2026-08-10T16:59:59.000Z',
+          dangKyMoTu: '2026-06-30T17:00:00.000Z',
+          dangKyDongLuc: '2026-07-31T16:59:59.000Z',
+        }),
+      }),
+    )
+  })
 })
