@@ -32,7 +32,11 @@ import {
 import type { Member, SanghaType } from '#/domain/types'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
-import type { AdminListPage, ListMembersAdminInput } from '#/repositories/adminListTypes'
+import type {
+  AdminListPage,
+  ListMembersAdminInput,
+  ListMembersExportInput,
+} from '#/repositories/adminListTypes'
 
 export type MemberProfilePatch = Partial<
   Omit<
@@ -83,6 +87,7 @@ export type MemberStore = {
   getById(memberId: string): Promise<Member | null>
   listByOrgSanghaAndPhone(input: MemberPhoneLookupInput): Promise<Member[]>
   list(input: ListMembersAdminInput): Promise<AdminListPage<Member>>
+  listAllForExport(input: ListMembersExportInput): Promise<Member[]>
   listByCurrentTempleIds(templeIds: string[]): Promise<Member[]>
   deleteMany(ids: string[]): Promise<void>
   setPhotoPath(memberId: string, photoPath: string | null): Promise<Member>
@@ -374,6 +379,26 @@ async function list(input: ListMembersAdminInput): Promise<AdminListPage<Member>
   return { items, nextCursor }
 }
 
+const EXPORT_PAGE_SIZE = 100
+
+async function listAllForExport(input: ListMembersExportInput): Promise<Member[]> {
+  const all: Member[] = []
+  let cursor: string | undefined
+  for (;;) {
+    const page = await list({
+      sanghaType: input.sanghaType,
+      orgUnitId: input.orgUnitId,
+      status: input.status,
+      limit: EXPORT_PAGE_SIZE,
+      cursor,
+    })
+    all.push(...page.items)
+    if (!page.nextCursor) break
+    cursor = page.nextCursor
+  }
+  return all
+}
+
 async function listByCurrentTempleIds(templeIds: string[]): Promise<Member[]> {
   if (templeIds.length === 0) return []
   const db = requireDb()
@@ -583,6 +608,7 @@ export const memberRepo: MemberStore = {
   getById,
   listByOrgSanghaAndPhone,
   list,
+  listAllForExport,
   listByCurrentTempleIds,
   deleteMany,
   setPhotoPath,

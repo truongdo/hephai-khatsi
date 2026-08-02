@@ -26,6 +26,7 @@ import { canManageDirectory } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
 import { membersQuery, orgUnitsQuery } from '#/query/adminQueries'
 import { deleteMembers } from '#/use-cases/deleteMembers'
+import { exportMembersExcel } from '#/use-cases/exportMembersExcel'
 
 type MembersListPageProps = {
   sanghaType: SanghaType
@@ -135,6 +136,15 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     },
   })
 
+  const exportMutation = useMutation({
+    mutationFn: () =>
+      exportMembersExcel({
+        sanghaType,
+        orgUnitId: orgUnitFilter ?? undefined,
+        status: statusFilter ?? undefined,
+      }),
+  })
+
   const orgUnitSelectData = useMemo(
     () =>
       (orgUnits.data ?? []).map((unit) => ({
@@ -163,14 +173,30 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     <Stack>
       <Group justify="space-between" align="center">
         <Title order={2}>{listTitle(sanghaType)}</Title>
-        <Button
-          component={Link}
-          to="/admin/members/new"
-          search={{ sanghaType }}
-        >
-          {m.admin_members_create()}
-        </Button>
+        <Group>
+          <Button
+            variant="default"
+            loading={exportMutation.isPending}
+            disabled={exportMutation.isPending}
+            onClick={() => exportMutation.mutate()}
+          >
+            {m.admin_members_export_excel()}
+          </Button>
+          <Button
+            component={Link}
+            to="/admin/members/new"
+            search={{ sanghaType }}
+          >
+            {m.admin_members_create()}
+          </Button>
+        </Group>
       </Group>
+
+      {exportMutation.error && (
+        <Text c="red" size="sm" role="alert">
+          {exportMutation.error.message}
+        </Text>
+      )}
 
       <Group>
         <Select

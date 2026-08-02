@@ -144,6 +144,7 @@
   "admin_temples_invite_label": "Lời mời",
   "admin_temples_back": "Quay lại danh sách",
   "admin_members_create": "Thêm mới",
+  "admin_members_export_excel": "Xuất Excel",
   "admin_members_filter_org_unit": "Giáo đoàn",
   "admin_members_filter_status": "Trạng thái",
   "admin_members_col_phap_danh": "Pháp danh",

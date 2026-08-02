@@ -76,10 +76,19 @@ function memberStoreWith(members: Member[]): MemberStore & {
     async list() {
       return { items: [], nextCursor: null }
     },
+    async listAllForExport() {
+      return []
+    },
     async listByCurrentTempleIds() {
       return []
     },
     async deleteMany() {},
+    async mergeDocumentSide() {
+      throw new Error('not implemented')
+    },
+    async removeDocumentPaths() {
+      throw new Error('not implemented')
+    },
   }
 }
 

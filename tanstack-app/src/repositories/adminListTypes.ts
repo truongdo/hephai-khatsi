@@ -28,5 +28,11 @@ export type ListMembersAdminInput = {
   cursor?: string
 }
 
+export type ListMembersExportInput = {
+  orgUnitId?: string
+  sanghaType: SanghaType
+  status?: RecordStatus
+}
+
 export type TempleListResult = AdminListPage<Temple>
 export type MemberListResult = AdminListPage<Member>

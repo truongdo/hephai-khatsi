@@ -16,6 +16,7 @@ import type { Member, SanghaType, Temple } from '#/domain/types'
 import type {
   AdminListPage,
   ListMembersAdminInput,
+  ListMembersExportInput,
   ListTemplesAdminInput,
 } from '#/repositories/adminListTypes'
 import type {
@@ -383,6 +384,10 @@ export function createMemoryMemberStore(
           (!input.status || member.status === input.status),
         sortKey: (member) => member.updatedAt,
       })
+    },
+    async listAllForExport(input: ListMembersExportInput) {
+      const page = await store.list({ ...input, limit: Number.MAX_SAFE_INTEGER })
+      return page.items
     },
     async listByCurrentTempleIds(templeIds: string[]) {
       if (templeIds.length === 0) return []
