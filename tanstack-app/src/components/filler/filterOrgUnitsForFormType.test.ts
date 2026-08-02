@@ -12,9 +12,15 @@ describe('filterOrgUnitsForFormType', () => {
   it('member_ni keeps allowsNi units', () => {
     const result = filterOrgUnitsForFormType(ORG_UNIT_SEED, 'member_ni')
     expect(result.every((u) => u.allowsNi)).toBe(true)
+    expect(result.map((u) => u.id)).toEqual([
+      'ni-gd-i',
+      'ni-gd-iii',
+      'ni-gd-iv',
+      'ni-gd-vi',
+      'ni-gioi',
+    ])
+    expect(result.map((u) => u.id)).not.toContain('gd-i')
     expect(result.map((u) => u.id)).not.toContain('gd-ii')
-    expect(result.map((u) => u.id)).not.toContain('gd-v')
-    expect(result.map((u) => u.id)).toContain('ni-gioi')
   })
 
   it('temple returns all units', () => {

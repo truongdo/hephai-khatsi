@@ -153,6 +153,7 @@ export function FillerEntryForm({
           onChange={setOrgUnitId}
           disabled={!formType}
           searchable
+          maxDropdownHeight={400}
           error={fieldErrors.orgUnitId}
         />
 
