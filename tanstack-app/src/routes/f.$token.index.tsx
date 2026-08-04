@@ -2,7 +2,10 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Alert, Center, Loader } from '@mantine/core'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { FillerEntryForm } from '#/components/filler/FillerEntryForm'
+import {
+  FillerEntryForm,
+  type FillerEntryMatchedMember,
+} from '#/components/filler/FillerEntryForm'
 import { DomainError } from '#/domain/errors'
 import type { FormType, SanghaType, Temple } from '#/domain/types'
 import { m } from '#/paraglide/messages'
@@ -49,7 +52,7 @@ function FillerEntryRoute() {
     phone: string
   } | null>(null)
   const [templeMatches, setTempleMatches] = useState<Array<{ id: string; label: string }>>([])
-  const [memberMatches, setMemberMatches] = useState<Array<{ id: string; label: string }>>([])
+  const [matchedMember, setMatchedMember] = useState<FillerEntryMatchedMember | null>(null)
 
   const resumeMutation = useMutation({
     mutationFn: async (payload: {
@@ -78,7 +81,7 @@ function FillerEntryRoute() {
     onMutate: () => {
       setError(null)
       setTempleMatches([])
-      setMemberMatches([])
+      setMatchedMember(null)
     },
     onSuccess: (resume) => {
       if (resume.kind === 'member') {
@@ -88,6 +91,7 @@ function FillerEntryRoute() {
           sanghaType: resume.sanghaType,
           phone: resume.payload.phone,
         })
+        setMatchedMember(null)
 
         if (matches.length === 0) {
           void navigate({
@@ -103,20 +107,16 @@ function FillerEntryRoute() {
         }
 
         if (matches.length === 1) {
-          void navigate({
-            to: '/f/$token/edit/member/$memberId',
-            params: { token, memberId: matches[0]!.member.id },
-            search: { phone: resume.payload.phone },
+          const member = matches[0]!.member
+          setMatchedMember({
+            id: member.id,
+            cccd: member.cccd,
+            ngaySinh: member.ngaySinh,
           })
           return
         }
 
-        setMemberMatches(
-          matches.map(({ member }) => ({
-            id: member.id,
-            label: member.phapDanh || member.theDanh || member.cccd || member.id,
-          })),
-        )
+        setError(m.filler_error_generic())
         return
       }
 
@@ -171,9 +171,17 @@ function FillerEntryRoute() {
       orgUnits={orgUnitsQuery.data}
       pending={resumeMutation.isPending}
       templeMatches={templeMatches}
-      memberMatches={memberMatches}
+      matchedMember={matchedMember}
       error={error}
       onSubmit={(payload) => resumeMutation.mutate(payload)}
+      onClearMatch={() => setMatchedMember(null)}
+      onConfirmMatch={(memberId) => {
+        void navigate({
+          to: '/f/$token/edit/member/$memberId',
+          params: { token, memberId },
+          search: lastMemberSearch ? { phone: lastMemberSearch.phone } : {},
+        })
+      }}
       onCreateMember={
         lastMemberSearch
           ? () => {
@@ -185,13 +193,6 @@ function FillerEntryRoute() {
             }
           : undefined
       }
-      onPickMember={(memberId) => {
-        void navigate({
-          to: '/f/$token/edit/member/$memberId',
-          params: { token, memberId },
-          search: lastMemberSearch ? { phone: lastMemberSearch.phone } : {},
-        })
-      }}
       onPickTemple={(templeId) => {
         void navigate({
           to: '/f/$token/edit/temple/$templeId',

@@ -1,5 +1,6 @@
 import { MantineProvider } from '@mantine/core'
-import { render, screen } from '@testing-library/react'
+import { DatesProvider } from '@mantine/dates'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { ORG_UNIT_SEED } from '#/domain/orgUnitSeed'
@@ -37,11 +38,13 @@ function renderForm(
   const onSubmit = vi.fn()
   const result = render(
     <MantineProvider theme={theme} defaultColorScheme="light">
-      <FillerEntryForm
-        orgUnits={ORG_UNIT_SEED}
-        onSubmit={onSubmit}
-        {...props}
-      />
+      <DatesProvider settings={{ locale: 'vi', firstDayOfWeek: 1 }}>
+        <FillerEntryForm
+          orgUnits={ORG_UNIT_SEED}
+          onSubmit={onSubmit}
+          {...props}
+        />
+      </DatesProvider>
     </MantineProvider>,
   )
   return { ...result, onSubmit }
@@ -163,5 +166,80 @@ describe('FillerEntryForm', () => {
     expect(
       screen.getByRole('button', { name: m.filler_identity_create_member() }),
     ).toBeTruthy()
+  })
+
+  it('hides CCCD and ngày sinh until matchedMember is provided', () => {
+    renderForm()
+    expect(screen.queryByLabelText(m.filler_field_cccd())).toBeNull()
+    expect(screen.queryByLabelText(m.filler_field_ngay_sinh())).toBeNull()
+  })
+
+  it('shows identity fields and disables Continue when matchedMember is set', () => {
+    renderForm({
+      matchedMember: {
+        id: 'm1',
+        cccd: '012345678901',
+        ngaySinh: '1990-01-15',
+      },
+    })
+    expect(screen.getByLabelText(m.filler_field_cccd())).toBeTruthy()
+    expect(screen.getByLabelText(m.filler_field_ngay_sinh())).toBeTruthy()
+    expect(screen.getByRole('button', { name: m.filler_continue() })).toBeDisabled()
+  })
+
+  it('shows mismatch error when both fields filled incorrectly', async () => {
+    const user = userEvent.setup()
+    renderForm({
+      matchedMember: {
+        id: 'm1',
+        cccd: '012345678901',
+        ngaySinh: '1990-01-15',
+      },
+    })
+    await user.type(screen.getByLabelText(m.filler_field_cccd()), '999999999999')
+    fireEvent.change(screen.getByLabelText(m.filler_field_ngay_sinh()), {
+      target: { value: '1990-01-16' },
+    })
+    expect(await screen.findByText(m.filler_error_identity_mismatch())).toBeTruthy()
+    expect(screen.getByRole('button', { name: m.filler_continue() })).toBeDisabled()
+  })
+
+  it('enables Continue and calls onConfirmMatch when identity matches', async () => {
+    const user = userEvent.setup()
+    const onConfirmMatch = vi.fn()
+    const onSubmit = vi.fn()
+    renderForm({
+      onSubmit,
+      onConfirmMatch,
+      matchedMember: {
+        id: 'm1',
+        cccd: '012345678901',
+        ngaySinh: '1990-01-15',
+      },
+    })
+    await user.type(screen.getByLabelText(m.filler_field_cccd()), '012345678901')
+    fireEvent.change(screen.getByLabelText(m.filler_field_ngay_sinh()), {
+      target: { value: '1990-01-15' },
+    })
+    const continueBtn = screen.getByRole('button', { name: m.filler_continue() })
+    expect(continueBtn).not.toBeDisabled()
+    await user.click(continueBtn)
+    expect(onConfirmMatch).toHaveBeenCalledWith('m1')
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('calls onClearMatch when phone changes during challenge', async () => {
+    const user = userEvent.setup()
+    const onClearMatch = vi.fn()
+    renderForm({
+      onClearMatch,
+      matchedMember: {
+        id: 'm1',
+        cccd: '012345678901',
+        ngaySinh: '1990-01-15',
+      },
+    })
+    await user.type(screen.getByRole('textbox', { name: m.filler_phone_label() }), '1')
+    expect(onClearMatch).toHaveBeenCalled()
   })
 })

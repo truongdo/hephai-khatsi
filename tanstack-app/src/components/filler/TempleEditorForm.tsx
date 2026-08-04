@@ -1,3 +1,4 @@
+import { Alert } from '@mantine/core'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import type { Temple } from '#/domain/types'
@@ -72,7 +73,7 @@ export function TempleEditorForm({
     fieldsApiRef.current?.restoreDraft(fields)
   }, [])
 
-  const { persist, clear } = useFormLocalDraft<TempleDraft>({
+  const { persist, clear, restored } = useFormLocalDraft<TempleDraft>({
     storageKey,
     enabled: status === 'draft',
     hasServerData: !!templeId,
@@ -227,6 +228,11 @@ export function TempleEditorForm({
         requestEditSuccess={requestEditSuccess}
         requestEditError={requestEditError}
       >
+        {restored ? (
+          <Alert color="blue" variant="light">
+            {m.filler_local_draft_restored()}
+          </Alert>
+        ) : null}
         <TempleFormFields
           apiRef={fieldsApiRef}
           initial={initial}

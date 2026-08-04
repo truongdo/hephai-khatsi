@@ -1,3 +1,4 @@
+import { Alert } from '@mantine/core'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import type { Member, SanghaType } from '#/domain/types'
@@ -82,7 +83,7 @@ export function MemberEditorForm({
     fieldsApiRef.current?.restoreDraft(fields)
   }, [])
 
-  const { persist, clear } = useFormLocalDraft<MemberDraft>({
+  const { persist, clear, restored } = useFormLocalDraft<MemberDraft>({
     storageKey,
     enabled: status === 'draft',
     hasServerData: !!memberId,
@@ -263,6 +264,11 @@ export function MemberEditorForm({
         requestEditSuccess={requestEditSuccess}
         requestEditError={requestEditError}
       >
+        {restored ? (
+          <Alert color="blue" variant="light">
+            {m.filler_local_draft_restored()}
+          </Alert>
+        ) : null}
         <MemberFormFields
           apiRef={fieldsApiRef}
           initial={{

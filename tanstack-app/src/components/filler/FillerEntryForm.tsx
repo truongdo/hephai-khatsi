@@ -9,18 +9,27 @@ import {
   TextInput,
   Title,
 } from '@mantine/core'
+import { DateInput } from '@mantine/dates'
 import { useMemo, useState, type FormEvent } from 'react'
 import { filterOrgUnitsForFormType } from '#/components/filler/filterOrgUnitsForFormType'
 import { isDomainError } from '#/domain/errors'
+import { memberIdentityMatches } from '#/domain/memberIdentityMatches'
 import { normalizeVnPhone } from '#/domain/normalize'
 import type { FormType, OrgUnit } from '#/domain/types'
 import { m } from '#/paraglide/messages'
+
+export type FillerEntryMatchedMember = {
+  id: string
+  cccd: string
+  ngaySinh?: string
+}
 
 export type FillerEntryFormProps = {
   orgUnits: OrgUnit[]
   pending?: boolean
   templeMatches?: Array<{ id: string; label: string }>
   memberMatches?: Array<{ id: string; label: string }>
+  matchedMember?: FillerEntryMatchedMember | null
   onSubmit: (payload: {
     formType: FormType
     orgUnitId: string
@@ -28,6 +37,8 @@ export type FillerEntryFormProps = {
   }) => void
   onPickTemple?: (templeId: string) => void
   onPickMember?: (memberId: string) => void
+  onConfirmMatch?: (memberId: string) => void
+  onClearMatch?: () => void
   onCreateTemple?: () => void
   onCreateMember?: () => void
   notFound?: boolean
@@ -54,9 +65,12 @@ export function FillerEntryForm({
   pending = false,
   templeMatches,
   memberMatches,
+  matchedMember,
   onSubmit,
   onPickTemple,
   onPickMember,
+  onConfirmMatch,
+  onClearMatch,
   onCreateTemple,
   onCreateMember,
   notFound = false,
@@ -65,7 +79,31 @@ export function FillerEntryForm({
   const [formType, setFormType] = useState<FormType | ''>('')
   const [orgUnitId, setOrgUnitId] = useState<string | null>(null)
   const [phone, setPhone] = useState('')
+  const [challengeCccd, setChallengeCccd] = useState('')
+  const [challengeNgaySinh, setChallengeNgaySinh] = useState('')
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+
+  const inChallenge = Boolean(matchedMember) && formType !== 'temple'
+  const verified =
+    inChallenge && matchedMember
+      ? memberIdentityMatches(matchedMember, {
+          cccd: challengeCccd,
+          ngaySinh: challengeNgaySinh,
+        })
+      : false
+  const showIdentityError =
+    inChallenge &&
+    challengeCccd.trim() !== '' &&
+    challengeNgaySinh.trim() !== '' &&
+    !verified
+
+  function handleChallengeContextChange() {
+    if (matchedMember) {
+      setChallengeCccd('')
+      setChallengeNgaySinh('')
+      onClearMatch?.()
+    }
+  }
 
   const orgUnitOptions = useMemo(() => {
     if (!formType) return []
@@ -83,13 +121,29 @@ export function FillerEntryForm({
         : undefined
 
   function handleTypeChange(value: string) {
+    handleChallengeContextChange()
     setFormType(value as FormType)
     setOrgUnitId(null)
     setFieldErrors((prev) => ({ ...prev, formType: undefined }))
   }
 
+  function handleOrgUnitChange(value: string | null) {
+    handleChallengeContextChange()
+    setOrgUnitId(value)
+  }
+
+  function handlePhoneChange(value: string) {
+    handleChallengeContextChange()
+    setPhone(value)
+  }
+
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
+
+    if (inChallenge && verified && matchedMember) {
+      onConfirmMatch?.(matchedMember.id)
+      return
+    }
     const nextErrors: FieldErrors = {}
 
     if (!formType) {
@@ -150,7 +204,7 @@ export function FillerEntryForm({
           placeholder={m.filler_org_placeholder()}
           data={orgUnitOptions}
           value={orgUnitId}
-          onChange={setOrgUnitId}
+          onChange={handleOrgUnitChange}
           disabled={!formType}
           searchable
           maxDropdownHeight={400}
@@ -161,11 +215,32 @@ export function FillerEntryForm({
           label={m.filler_phone_label()}
           description={phoneDescription}
           value={phone}
-          onChange={(event) => setPhone(event.currentTarget.value)}
+          onChange={(event) => handlePhoneChange(event.currentTarget.value)}
           error={fieldErrors.phone}
         />
 
-        <Button type="submit" loading={pending}>
+        {inChallenge ? (
+          <Stack gap="sm">
+            <TextInput
+              label={m.filler_field_cccd()}
+              placeholder={m.filler_ph_cccd()}
+              value={challengeCccd}
+              onChange={(event) => setChallengeCccd(event.currentTarget.value)}
+            />
+            <DateInput
+              label={m.filler_field_ngay_sinh()}
+              valueFormat="YYYY-MM-DD"
+              clearable
+              value={challengeNgaySinh || null}
+              onChange={(value) => setChallengeNgaySinh(value ?? '')}
+            />
+            {showIdentityError ? (
+              <Alert color="red">{m.filler_error_identity_mismatch()}</Alert>
+            ) : null}
+          </Stack>
+        ) : null}
+
+        <Button type="submit" loading={pending} disabled={pending || (inChallenge && !verified)}>
           {m.filler_continue()}
         </Button>
 
