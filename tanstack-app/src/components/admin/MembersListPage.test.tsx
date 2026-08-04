@@ -22,10 +22,31 @@ const memberItems = [
     updatedAt: '2026-07-19T10:00:00.000Z',
     lockedAt: null,
     lockedBy: null,
+    editRequestedAt: null,
+    editRequestedBy: null,
+  },
+  {
+    id: 'm2',
+    orgUnitId: 'gd-i',
+    sanghaType: 'tang' as const,
+    cccd: '001099012346',
+    phapDanh: 'HT Locked',
+    theDanh: 'Nguyễn Văn B',
+    status: 'locked' as const,
+    inviteId: null,
+    currentTempleId: null,
+    photoPath: null,
+    createdAt: '2026-07-19T10:00:00.000Z',
+    updatedAt: '2026-07-19T10:00:00.000Z',
+    lockedAt: '2026-07-19T10:00:00.000Z',
+    lockedBy: 'admin-uid',
+    editRequestedAt: '2026-07-20T00:00:00.000Z',
+    editRequestedBy: '0901234567',
   },
 ]
 
 const deleteMembersMock = vi.fn()
+const unlockMemberMock = vi.fn()
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
 
 vi.mock('#/auth/useAdminClaim', () => ({
@@ -42,6 +63,10 @@ vi.mock('#/auth/useAuth', () => ({
 
 vi.mock('#/use-cases/deleteMembers', () => ({
   deleteMembers: (...args: unknown[]) => deleteMembersMock(...args),
+}))
+
+vi.mock('#/use-cases/unlockMember', () => ({
+  unlockMember: (...args: unknown[]) => unlockMemberMock(...args),
 }))
 
 vi.mock('@tanstack/react-router', () => ({
@@ -119,6 +144,13 @@ beforeAll(() => {
 beforeEach(() => {
   deleteMembersMock.mockReset()
   deleteMembersMock.mockResolvedValue(undefined)
+  unlockMemberMock.mockReset()
+  unlockMemberMock.mockResolvedValue({
+    ...memberItems[1],
+    status: 'draft',
+    editRequestedAt: null,
+    editRequestedBy: null,
+  })
   getIdTokenMock.mockReset()
   getIdTokenMock.mockResolvedValue('admin-id-token')
 })
@@ -192,5 +224,32 @@ describe('MembersListPage', () => {
       queryKey: ['admin', 'members'],
     })
     expect(screen.queryByText('Đã chọn 1')).toBeNull()
+  })
+
+  it('shows edit-request badge and unlock for locked row with edit request', async () => {
+    const user = userEvent.setup()
+    const { invalidateSpy } = renderList()
+    expect(await screen.findByText('HT Locked')).toBeTruthy()
+    expect(screen.getByText('Yêu cầu chỉnh sửa')).toBeTruthy()
+    const unlockButton = screen.getByRole('button', { name: 'Mở khóa' })
+    await user.click(unlockButton)
+    expect(unlockMemberMock).toHaveBeenCalledWith({ memberId: 'm2' })
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: ['admin', 'members'],
+    })
+  })
+
+  it('filters to edit-requested rows client-side', async () => {
+    const user = userEvent.setup()
+    renderList()
+    expect(await screen.findByText('HT Locked')).toBeTruthy()
+    expect(screen.getByText('HT A')).toBeTruthy()
+    const statusSelect = screen.getByRole('combobox', { name: 'Trạng thái' })
+    await user.click(statusSelect)
+    await user.click(await screen.findByText('Có yêu cầu chỉnh sửa'))
+    await waitFor(() => {
+      expect(screen.queryByText('HT A')).toBeNull()
+    })
+    expect(screen.getByText('HT Locked')).toBeTruthy()
   })
 })

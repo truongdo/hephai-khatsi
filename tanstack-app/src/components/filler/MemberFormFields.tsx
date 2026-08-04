@@ -11,7 +11,7 @@ import {
 } from '@mantine/core'
 import { DateInput, MonthPickerInput } from '@mantine/dates'
 import { useQuery } from '@tanstack/react-query'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState, useEffect } from 'react'
 import { VietnamAddressFields } from '#/components/address/VietnamAddressFields'
 import type { AddressDraft } from '#/domain/address'
 import type { MemberDocuments } from '#/domain/memberDocumentTypes'
@@ -96,6 +96,7 @@ function numberInputValue(value: string | number): NumericValue {
 
 export type MemberFormFieldsApi = {
   getDraft: () => MemberDraft
+  restoreDraft: (fields: Partial<MemberDraft>) => void
   getPhotoPath: () => string | null
   getPendingPhoto: () => File | null
   setPhotoPath: (path: string | null) => void
@@ -119,6 +120,7 @@ export type MemberFormFieldsProps = {
   getIdToken?: () => Promise<string | undefined>
   apiRef: React.MutableRefObject<MemberFormFieldsApi | null>
   onUploadError?: (message: string) => void
+  onDraftChange?: (draft: MemberDraft) => void
 }
 
 export function MemberFormFields({
@@ -132,6 +134,7 @@ export function MemberFormFields({
   getIdToken,
   onUploadError,
   apiRef,
+  onDraftChange,
 }: MemberFormFieldsProps) {
   const [draft, setDraft] = useState(() => emptyMemberDraft(initial))
   const [photoPath, setPhotoPath] = useState<string | null>(
@@ -145,6 +148,9 @@ export function MemberFormFields({
     {},
   )
   const [fieldErrors, setFieldErrors] = useState<MemberRequiredFieldErrors>({})
+  const restoreDraft = useCallback((fields: Partial<MemberDraft>) => {
+    setDraft((current) => ({ ...current, ...fields }))
+  }, [])
   const ranks = useMemo(() => rankOptions(sanghaType), [sanghaType])
   const orgUnitsQuery = useQuery(fillerOrgUnitsQuery())
   const giaoDoanOptions = useMemo(
@@ -157,6 +163,7 @@ export function MemberFormFields({
 
   apiRef.current = {
     getDraft: () => draft,
+    restoreDraft,
     getPhotoPath: () => photoPath,
     getPendingPhoto: () => pendingPhoto,
     setPhotoPath,
@@ -168,6 +175,10 @@ export function MemberFormFields({
     setFieldErrors,
     clearFieldErrors: () => setFieldErrors({}),
   }
+
+  useEffect(() => {
+    onDraftChange?.(draft)
+  }, [draft, onDraftChange])
 
   const updateDraft = <K extends keyof MemberDraft>(
     key: K,

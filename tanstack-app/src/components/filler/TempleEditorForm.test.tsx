@@ -5,13 +5,18 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Temple } from '#/domain/types'
 import { m } from '#/paraglide/messages'
-import { saveTempleDraft } from '#/use-cases/saveTempleDraft'
+import { saveAndLockTemple } from '#/use-cases/saveAndLockTemple'
+import { requestTempleEdit } from '#/use-cases/requestTempleEdit'
 import { uploadTemplePhoto } from '#/use-cases/uploadTemplePhoto'
 import { theme } from '../../theme'
 import { TempleEditorForm } from './TempleEditorForm'
 
-vi.mock('#/use-cases/saveTempleDraft', () => ({
-  saveTempleDraft: vi.fn(),
+vi.mock('#/use-cases/saveAndLockTemple', () => ({
+  saveAndLockTemple: vi.fn(),
+}))
+
+vi.mock('#/use-cases/requestTempleEdit', () => ({
+  requestTempleEdit: vi.fn(),
 }))
 
 vi.mock('#/use-cases/uploadTemplePhoto', () => ({
@@ -41,7 +46,8 @@ vi.mock('#/data/vietnam-locations', () => ({
   ]),
 }))
 
-const saveTempleDraftMock = vi.mocked(saveTempleDraft)
+const saveAndLockTempleMock = vi.mocked(saveAndLockTemple)
+const requestTempleEditMock = vi.mocked(requestTempleEdit)
 const uploadTemplePhotoMock = vi.mocked(uploadTemplePhoto)
 
 function getPortraitFileInput(): HTMLInputElement {
@@ -114,12 +120,21 @@ afterEach(() => {
 })
 
 beforeEach(() => {
-  saveTempleDraftMock.mockReset()
+  saveAndLockTempleMock.mockReset()
+  requestTempleEditMock.mockReset()
   uploadTemplePhotoMock.mockReset()
   uploadTemplePhotoMock.mockResolvedValue({
     photoPath: 'temples/created-temple/photo.jpg',
   })
+  localStorage.clear()
 })
+
+async function confirmSave(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole('button', { name: m.filler_save() }))
+  await user.click(
+    await screen.findByRole('button', { name: m.filler_save_confirm_ok() }),
+  )
+}
 
 function renderForm(
   props: Partial<React.ComponentProps<typeof TempleEditorForm>> = {},
@@ -158,6 +173,8 @@ function temple(overrides: Partial<Temple> = {}): Temple {
     updatedAt: '2026-07-20T00:00:00.000Z',
     lockedAt: null,
     lockedBy: null,
+    editRequestedAt: null,
+    editRequestedBy: null,
     ...overrides,
   }
 }
@@ -201,9 +218,9 @@ describe('TempleEditorForm', () => {
     ).toBeTruthy()
   })
 
-  it('calls saveTempleDraft with patch and navigates on create', async () => {
+  it('opens confirm modal before save and calls saveAndLockTemple on confirm', async () => {
     const user = userEvent.setup()
-    saveTempleDraftMock.mockResolvedValue({
+    saveAndLockTempleMock.mockResolvedValue({
       temple: temple({ id: 'created-temple' }),
       mode: 'created',
     })
@@ -216,8 +233,14 @@ describe('TempleEditorForm', () => {
       '0912345678',
     )
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
+    expect(await screen.findByText(m.filler_save_confirm_body())).toBeTruthy()
+    expect(saveAndLockTempleMock).not.toHaveBeenCalled()
 
-    expect(saveTempleDraftMock).toHaveBeenCalledWith({
+    await user.click(
+      await screen.findByRole('button', { name: m.filler_save_confirm_ok() }),
+    )
+
+    expect(saveAndLockTempleMock).toHaveBeenCalledWith({
       token: 'invite-token',
       orgUnitId: 'gd-i',
       templeId: undefined,
@@ -238,7 +261,7 @@ describe('TempleEditorForm', () => {
     const createdPromise = new Promise<void>((resolve) => {
       resolveCreated = resolve
     })
-    saveTempleDraftMock.mockResolvedValue({
+    saveAndLockTempleMock.mockResolvedValue({
       temple: temple({ id: 'created-temple' }),
       mode: 'created',
     })
@@ -247,7 +270,7 @@ describe('TempleEditorForm', () => {
       onCreated: () => createdPromise,
     })
 
-    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+    await confirmSave(user)
 
     await vi.waitFor(() =>
       expect(screen.getByText(m.filler_save_redirecting())).toBeTruthy(),
@@ -267,7 +290,7 @@ describe('TempleEditorForm', () => {
       resolveUpload = resolve
     })
     uploadTemplePhotoMock.mockReturnValue(uploadPromise)
-    saveTempleDraftMock.mockResolvedValue({
+    saveAndLockTempleMock.mockResolvedValue({
       temple: temple({ id: 'created-temple' }),
       mode: 'created',
     })
@@ -277,9 +300,9 @@ describe('TempleEditorForm', () => {
     const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
 
     await user.upload(getPortraitFileInput(), file)
-    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+    await confirmSave(user)
 
-    expect(saveTempleDraftMock).toHaveBeenCalled()
+    expect(saveAndLockTempleMock).toHaveBeenCalled()
     expect(uploadTemplePhotoMock).toHaveBeenCalledWith({
       templeId: 'created-temple',
       bytes: expect.any(Uint8Array),
@@ -301,7 +324,8 @@ describe('TempleEditorForm', () => {
     const user = userEvent.setup()
     renderForm()
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
-    expect(saveTempleDraftMock).not.toHaveBeenCalled()
+
+    expect(saveAndLockTempleMock).not.toHaveBeenCalled()
     expect(
       screen.getAllByText(m.filler_error_field_required()).length,
     ).toBeGreaterThan(0)
@@ -317,13 +341,13 @@ describe('TempleEditorForm', () => {
 
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
 
-    expect(saveTempleDraftMock).not.toHaveBeenCalled()
+    expect(saveAndLockTempleMock).not.toHaveBeenCalled()
     expect(screen.getByText(m.filler_error_field_required())).toBeTruthy()
   })
 
   it('saves structured diaChiMoi from hydrated address', async () => {
     const user = userEvent.setup()
-    saveTempleDraftMock.mockResolvedValue({
+    saveAndLockTempleMock.mockResolvedValue({
       temple: temple({ id: 'created-temple' }),
       mode: 'created',
     })
@@ -339,9 +363,9 @@ describe('TempleEditorForm', () => {
       }),
     })
 
-    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+    await confirmSave(user)
 
-    expect(saveTempleDraftMock).toHaveBeenCalledWith(
+    expect(saveAndLockTempleMock).toHaveBeenCalledWith(
       expect.objectContaining({
         patch: expect.objectContaining({
           diaChiMoi: {
@@ -384,7 +408,7 @@ describe('TempleEditorForm', () => {
 
   it('saves diaChiCu as a trimmed string', async () => {
     const user = userEvent.setup()
-    saveTempleDraftMock.mockResolvedValue({
+    saveAndLockTempleMock.mockResolvedValue({
       temple: temple({ id: 'created-temple' }),
       mode: 'created',
     })
@@ -392,9 +416,9 @@ describe('TempleEditorForm', () => {
       initial: requiredTempleInitial({ diaChiCu: '  123 Đường Láng  ' }),
     })
 
-    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+    await confirmSave(user)
 
-    expect(saveTempleDraftMock).toHaveBeenCalledWith(
+    expect(saveAndLockTempleMock).toHaveBeenCalledWith(
       expect.objectContaining({
         patch: expect.objectContaining({
           diaChiCu: '123 Đường Láng',
@@ -404,12 +428,57 @@ describe('TempleEditorForm', () => {
   })
 
   it('hides Save and disables fields when status is view', () => {
-    renderForm({ status: 'view' })
+    renderForm({ status: 'view', templeId: 't1' })
 
     expect(screen.queryByRole('button', { name: m.filler_save() })).toBeNull()
     expect(
       screen.getByLabelText(new RegExp(`^${m.filler_field_danh_hieu()}`)),
     ).toBeDisabled()
+  })
+
+  it('shows request edit when locked with templeId', () => {
+    renderForm({
+      status: 'view',
+      templeId: 't1',
+      initial: requiredTempleInitial({
+        id: 't1',
+        status: 'locked',
+      }),
+    })
+
+    expect(
+      screen.getByRole('button', { name: m.filler_request_edit() }),
+    ).toBeTruthy()
+  })
+
+  it('calls requestTempleEdit with filler phone', async () => {
+    const user = userEvent.setup()
+    requestTempleEditMock.mockResolvedValue(
+      temple({
+        id: 't1',
+        status: 'locked',
+        editRequestedAt: '2026-07-20T12:00:00.000Z',
+        editRequestedBy: '0901234567',
+      }),
+    )
+    renderForm({
+      status: 'view',
+      templeId: 't1',
+      initial: requiredTempleInitial({
+        id: 't1',
+        status: 'locked',
+      }),
+    })
+
+    await user.click(
+      screen.getByRole('button', { name: m.filler_request_edit() }),
+    )
+
+    expect(requestTempleEditMock).toHaveBeenCalledWith({
+      templeId: 't1',
+      phone: '0901234567',
+    })
+    expect(screen.getByText(m.filler_request_edit_done())).toBeTruthy()
   })
 
   it('surfaces upload error on immediate portrait upload when editing', async () => {

@@ -106,6 +106,7 @@ function FillerEntryRoute() {
           void navigate({
             to: '/f/$token/edit/member/$memberId',
             params: { token, memberId: matches[0]!.member.id },
+            search: { phone: resume.payload.phone },
           })
           return
         }
@@ -141,6 +142,7 @@ function FillerEntryRoute() {
         void navigate({
           to: '/f/$token/edit/temple/$templeId',
           params: { token, templeId: matches[0]!.temple.id },
+          search: { phone: resume.payload.phone },
         })
         return
       }
@@ -187,12 +189,14 @@ function FillerEntryRoute() {
         void navigate({
           to: '/f/$token/edit/member/$memberId',
           params: { token, memberId },
+          search: lastMemberSearch ? { phone: lastMemberSearch.phone } : {},
         })
       }}
       onPickTemple={(templeId) => {
         void navigate({
           to: '/f/$token/edit/temple/$templeId',
           params: { token, templeId },
+          search: lastTempleSearch ? { phone: lastTempleSearch.phone } : {},
         })
       }}
       onCreateTemple={

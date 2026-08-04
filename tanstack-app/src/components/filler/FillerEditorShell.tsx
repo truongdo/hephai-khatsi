@@ -14,6 +14,11 @@ export type FillerEditorShellProps = {
   saveLabel?: string
   saveSuccess?: string | null
   saveError?: string | null
+  onRequestEdit?: () => void
+  requestEditPending?: boolean
+  editRequestedAt?: string | null
+  requestEditSuccess?: string | null
+  requestEditError?: string | null
 }
 
 const STATUS_COLOR: Record<FillerEditorStatus, string> = {
@@ -34,8 +39,15 @@ export function FillerEditorShell({
   saveLabel,
   saveSuccess,
   saveError,
+  onRequestEdit,
+  requestEditPending,
+  editRequestedAt,
+  requestEditSuccess,
+  requestEditError,
 }: FillerEditorShellProps) {
   const showSave = status === 'draft' && onSave
+  const showRequestEdit = status === 'view' && onRequestEdit
+  const showStickyActions = showSave || showRequestEdit
 
   return (
     <Stack gap="lg">
@@ -61,27 +73,54 @@ export function FillerEditorShell({
       {children ?? (
         <Text c="dimmed">{m.filler_editor_placeholder()}</Text>
       )}
-      {showSave ? (
+      {showStickyActions ? (
         <FormStickyActions
           status={
             <>
               {saveError ? <Alert color="red">{saveError}</Alert> : null}
+              {requestEditError ? (
+                <Alert color="red">{requestEditError}</Alert>
+              ) : null}
               {saveSuccess ? (
                 <Alert color="teal" variant="light">
                   {saveSuccess}
                 </Alert>
               ) : null}
+              {requestEditSuccess ? (
+                <Alert color="teal" variant="light">
+                  {requestEditSuccess}
+                </Alert>
+              ) : null}
             </>
           }
         >
-          <Button
-            type="button"
-            onClick={onSave}
-            loading={savePending}
-            disabled={savePending}
-          >
-            {saveLabel ?? m.filler_save()}
-          </Button>
+          {showSave ? (
+            <Button
+              type="button"
+              onClick={onSave}
+              loading={savePending}
+              disabled={savePending}
+            >
+              {saveLabel ?? m.filler_save()}
+            </Button>
+          ) : null}
+          {showRequestEdit ? (
+            editRequestedAt ? (
+              <Button type="button" variant="light" disabled>
+                {m.filler_request_edit_pending()}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="light"
+                onClick={onRequestEdit}
+                loading={requestEditPending}
+                disabled={requestEditPending}
+              >
+                {m.filler_request_edit()}
+              </Button>
+            )
+          ) : null}
         </FormStickyActions>
       ) : null}
     </Stack>

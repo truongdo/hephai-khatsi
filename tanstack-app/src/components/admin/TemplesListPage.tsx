@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Checkbox,
   Group,
@@ -30,6 +31,9 @@ import {
   deleteTemples,
   type TempleDeleteBlocker,
 } from '#/use-cases/deleteTemples'
+import { unlockTemple } from '#/use-cases/unlockTemple'
+
+type StatusFilterValue = RecordStatus | 'edit_requested'
 
 function statusLabel(status: RecordStatus): string {
   switch (status) {
@@ -40,9 +44,10 @@ function statusLabel(status: RecordStatus): string {
   }
 }
 
-const STATUS_OPTIONS: { value: RecordStatus; label: () => string }[] = [
+const STATUS_OPTIONS: { value: StatusFilterValue; label: () => string }[] = [
   { value: 'draft', label: () => m.admin_temples_status_draft() },
   { value: 'locked', label: () => m.admin_temples_status_locked() },
+  { value: 'edit_requested', label: () => m.admin_filter_edit_requested() },
 ]
 
 export function TemplesListPage() {
@@ -55,7 +60,9 @@ export function TemplesListPage() {
     canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
 
   const [orgUnitFilter, setOrgUnitFilter] = useState<string | null>(null)
-  const [statusFilter, setStatusFilter] = useState<RecordStatus | null>(null)
+  const [statusFilter, setStatusFilter] = useState<StatusFilterValue | null>(
+    null,
+  )
   const [cursor, setCursor] = useState<string | undefined>(undefined)
   const [allItems, setAllItems] = useState<Temple[]>([])
   const [nextCursor, setNextCursor] = useState<string | null>(null)
@@ -64,14 +71,17 @@ export function TemplesListPage() {
   const [blockedOpen, setBlockedOpen] = useState(false)
   const [blockers, setBlockers] = useState<TempleDeleteBlocker[]>([])
 
-  const filterKey = `${orgUnitFilter ?? ''}:${statusFilter ?? ''}`
+  const serverStatusFilter =
+    statusFilter === 'edit_requested' ? undefined : (statusFilter ?? undefined)
+
+  const serverFilterKey = `${orgUnitFilter ?? ''}:${serverStatusFilter ?? ''}`
 
   useEffect(() => {
     setCursor(undefined)
     setAllItems([])
     setNextCursor(null)
     lastAppendedKeyRef.current = null
-  }, [filterKey])
+  }, [serverFilterKey])
 
   const orgUnits = useQuery({
     ...orgUnitsQuery(),
@@ -81,7 +91,7 @@ export function TemplesListPage() {
   const temples = useQuery({
     ...templesQuery({
       orgUnitId: orgUnitFilter ?? undefined,
-      status: statusFilter ?? undefined,
+      status: serverStatusFilter,
       cursor,
     }),
     enabled: manageDirectory,
@@ -101,7 +111,17 @@ export function TemplesListPage() {
     setNextCursor(temples.data.nextCursor)
   }, [temples.data, temples.dataUpdatedAt, cursor])
 
-  const itemIds = useMemo(() => allItems.map((temple) => temple.id), [allItems])
+  const displayItems = useMemo(() => {
+    if (statusFilter === 'edit_requested') {
+      return allItems.filter((temple) => temple.editRequestedAt != null)
+    }
+    return allItems
+  }, [allItems, statusFilter])
+
+  const itemIds = useMemo(
+    () => displayItems.map((temple) => temple.id),
+    [displayItems],
+  )
   const selection = useAdminListSelection(itemIds)
 
   const deleteMutation = useMutation({
@@ -128,6 +148,19 @@ export function TemplesListPage() {
     },
     onError: () => {
       setConfirmOpen(false)
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, 'temples'],
+      })
+    },
+  })
+
+  const unlockMutation = useMutation({
+    mutationFn: (templeId: string) => unlockTemple({ templeId }),
+    onSuccess: () => {
+      setCursor(undefined)
+      setAllItems([])
+      setNextCursor(null)
+      lastAppendedKeyRef.current = null
       void queryClient.invalidateQueries({
         queryKey: [...adminKeys.all, 'temples'],
       })
@@ -182,7 +215,7 @@ export function TemplesListPage() {
           placeholder={m.admin_filter_all()}
           data={statusSelectData}
           value={statusFilter}
-          onChange={(value) => setStatusFilter(value as RecordStatus | null)}
+          onChange={(value) => setStatusFilter(value as StatusFilterValue | null)}
           clearable
         />
       </Group>
@@ -202,6 +235,12 @@ export function TemplesListPage() {
         </Text>
       )}
 
+      {unlockMutation.error && (
+        <Text c="red" size="sm" role="alert">
+          {unlockMutation.error.message}
+        </Text>
+      )}
+
       {temples.isError && temples.error && (
         <QueryErrorAlert error={temples.error} />
       )}
@@ -209,7 +248,7 @@ export function TemplesListPage() {
         <>
           <AdminDataTable
             loading={isLoading}
-            empty={!isLoading && allItems.length === 0}
+            empty={!isLoading && displayItems.length === 0}
             aria-label={m.admin_nav_temples()}
           >
             <Table.Thead>
@@ -228,10 +267,11 @@ export function TemplesListPage() {
                 <Table.Th>{m.admin_temples_col_phone()}</Table.Th>
                 <Table.Th>{m.admin_temples_col_status()}</Table.Th>
                 <Table.Th>{m.admin_temples_col_updated_at()}</Table.Th>
+                <Table.Th w={100} />
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {allItems.map((temple) => (
+              {displayItems.map((temple) => (
                 <Table.Tr key={temple.id}>
                   <Table.Td>
                     <Checkbox
@@ -253,13 +293,37 @@ export function TemplesListPage() {
                   </Table.Td>
                   <Table.Td>{emptyCell(temple.managerPhones[0])}</Table.Td>
                   <Table.Td>
-                    <RecordStatusBadge
-                      status={temple.status}
-                      label={statusLabel(temple.status)}
-                    />
+                    <Group gap="xs">
+                      <RecordStatusBadge
+                        status={temple.status}
+                        label={statusLabel(temple.status)}
+                      />
+                      {temple.editRequestedAt != null && (
+                        <Badge color="orange" variant="light" radius="sm">
+                          {m.admin_edit_requested_badge()}
+                        </Badge>
+                      )}
+                    </Group>
                   </Table.Td>
                   <Table.Td>
                     {new Date(temple.updatedAt).toLocaleString('vi-VN')}
+                  </Table.Td>
+                  <Table.Td>
+                    {temple.status === 'locked' && (
+                      <Button
+                        size="compact-xs"
+                        variant={
+                          temple.editRequestedAt != null ? 'filled' : 'light'
+                        }
+                        loading={
+                          unlockMutation.isPending &&
+                          unlockMutation.variables === temple.id
+                        }
+                        onClick={() => unlockMutation.mutate(temple.id)}
+                      >
+                        {m.admin_temples_unlock_row()}
+                      </Button>
+                    )}
                   </Table.Td>
                 </Table.Tr>
               ))}

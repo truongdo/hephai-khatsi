@@ -87,9 +87,57 @@ service cloud.firestore {
           && request.resource.data.lockedBy == resource.data.lockedBy;
       }
 
+      function editRequestFieldsUnchanged() {
+        return request.resource.data.editRequestedAt == resource.data.editRequestedAt
+          && request.resource.data.editRequestedBy == resource.data.editRequestedBy;
+      }
+
       function isLockTransition() {
         return request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status', 'lockedAt', 'lockedBy', 'updatedAt']);
+          .hasOnly(['status', 'lockedAt', 'lockedBy', 'editRequestedAt', 'editRequestedBy', 'updatedAt']);
+      }
+
+      function isFillerSaveAndLock() {
+        return resource.data.status == 'draft'
+          && request.resource.data.status == 'locked'
+          && request.resource.data.lockedBy == 'filler'
+          && request.resource.data.lockedAt is string
+          && request.resource.data.editRequestedAt == null
+          && request.resource.data.editRequestedBy == null;
+      }
+
+      function isFillerEditRequest() {
+        return resource.data.status == 'locked'
+          && request.resource.data.status == 'locked'
+          && lockFieldsUnchanged()
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['editRequestedAt', 'editRequestedBy', 'updatedAt']);
+      }
+
+      function isFillerMediaUpdate() {
+        return resource.data.status == 'locked'
+          && lockFieldsUnchanged()
+          && editRequestFieldsUnchanged()
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['photoPath', 'documents', 'updatedAt']);
+      }
+
+      function isFillerLockedUpdate() {
+        return isFillerSaveAndLock() || isFillerEditRequest() || isFillerMediaUpdate();
+      }
+
+      function isAdminCreateShape() {
+        return request.resource.data.status == 'draft'
+          && request.resource.data.lockedAt == null
+          && request.resource.data.lockedBy == null;
+      }
+
+      function isFillerCreateShape() {
+        return request.resource.data.status == 'locked'
+          && request.resource.data.lockedBy == 'filler'
+          && request.resource.data.lockedAt is string
+          && request.resource.data.editRequestedAt == null
+          && request.resource.data.editRequestedBy == null;
       }
 
       // Re-validated (not frozen) on every non-admin write: the caller must
@@ -105,22 +153,20 @@ service cloud.firestore {
       allow list: if canWriteDirectory();
 
       allow create: if memberId == (request.resource.data.orgUnitId + '_' + request.resource.data.sanghaType + '_' + request.resource.data.cccd)
-        && request.resource.data.status == 'draft'
-        && request.resource.data.lockedAt == null
-        && request.resource.data.lockedBy == null
         && request.resource.data.createdAt is string
         && request.resource.data.updatedAt is string
-        && ((canWriteDirectory() && request.resource.data.inviteId == null)
-            || (validInviteScope(request.resource.data) && !isKiemSoat()));
+        && (
+          (canWriteDirectory() && request.resource.data.inviteId == null && isAdminCreateShape())
+          || (validInviteScope(request.resource.data) && !isKiemSoat() && isFillerCreateShape())
+        );
 
       allow update: if coreIdentityUnchanged() && (
         (canWriteDirectory() && isLockTransition() && request.resource.data.inviteId == resource.data.inviteId)
         || (canWriteDirectory() && !isLockTransition()
             && lockFieldsUnchanged() && request.resource.data.inviteId == resource.data.inviteId)
-        || (resource.data.status != 'locked'
-            && lockFieldsUnchanged()
-            && validInviteScope(request.resource.data)
-            && !isKiemSoat())
+        || (!isStaff() && validInviteScope(request.resource.data) && !isKiemSoat()
+            && request.resource.data.inviteId == resource.data.inviteId
+            && isFillerLockedUpdate())
       );
 
       allow delete: if canWriteDirectory();
@@ -142,9 +188,57 @@ service cloud.firestore {
           && request.resource.data.lockedBy == resource.data.lockedBy;
       }
 
+      function editRequestFieldsUnchanged() {
+        return request.resource.data.editRequestedAt == resource.data.editRequestedAt
+          && request.resource.data.editRequestedBy == resource.data.editRequestedBy;
+      }
+
       function isLockTransition() {
         return request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status', 'lockedAt', 'lockedBy', 'updatedAt']);
+          .hasOnly(['status', 'lockedAt', 'lockedBy', 'editRequestedAt', 'editRequestedBy', 'updatedAt']);
+      }
+
+      function isFillerSaveAndLock() {
+        return resource.data.status == 'draft'
+          && request.resource.data.status == 'locked'
+          && request.resource.data.lockedBy == 'filler'
+          && request.resource.data.lockedAt is string
+          && request.resource.data.editRequestedAt == null
+          && request.resource.data.editRequestedBy == null;
+      }
+
+      function isFillerEditRequest() {
+        return resource.data.status == 'locked'
+          && request.resource.data.status == 'locked'
+          && lockFieldsUnchanged()
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['editRequestedAt', 'editRequestedBy', 'updatedAt']);
+      }
+
+      function isFillerTempleMediaUpdate() {
+        return resource.data.status == 'locked'
+          && lockFieldsUnchanged()
+          && editRequestFieldsUnchanged()
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['photoPath', 'updatedAt']);
+      }
+
+      function isFillerLockedUpdate() {
+        return isFillerSaveAndLock() || isFillerEditRequest() || isFillerTempleMediaUpdate();
+      }
+
+      function isAdminCreateShape() {
+        return request.resource.data.status == 'draft'
+          && request.resource.data.lockedAt == null
+          && request.resource.data.lockedBy == null;
+      }
+
+      function isFillerCreateShape() {
+        return request.resource.data.status == 'locked'
+          && request.resource.data.lockedBy == 'filler'
+          && request.resource.data.lockedAt is string
+          && request.resource.data.editRequestedAt == null
+          && request.resource.data.editRequestedBy == null;
       }
 
       function validInviteScope(data) {
@@ -155,20 +249,21 @@ service cloud.firestore {
       allow get: if true;
       allow list: if canWriteDirectory();
 
-      allow create: if request.resource.data.status == 'draft'
-        && request.resource.data.lockedAt == null
-        && request.resource.data.lockedBy == null
+      allow create: if request.resource.data.createdAt is string
+        && request.resource.data.updatedAt is string
         && request.resource.data.managerPhones is list
         && request.resource.data.managerPhones.size() > 0
-        && request.resource.data.createdAt is string
-        && request.resource.data.updatedAt is string
-        && ((canWriteDirectory() && request.resource.data.inviteId == null)
-            || (!isStaff() && validInviteScope(request.resource.data)));
+        && (
+          (canWriteDirectory() && request.resource.data.inviteId == null && isAdminCreateShape())
+          || (!isStaff() && validInviteScope(request.resource.data) && isFillerCreateShape())
+        );
 
       allow update: if coreIdentityUnchanged() && (
         (canWriteDirectory() && isLockTransition())
         || (canWriteDirectory() && !isLockTransition() && lockFieldsUnchanged())
-        || (!isStaff() && resource.data.status != 'locked' && lockFieldsUnchanged() && validInviteScope(request.resource.data))
+        || (!isStaff() && validInviteScope(request.resource.data)
+            && request.resource.data.inviteId == resource.data.inviteId
+            && isFillerLockedUpdate())
       );
 
       allow delete: if canWriteDirectory();

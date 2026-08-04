@@ -9,6 +9,7 @@ import { lockTemple } from '#/use-cases/lockTemple'
 import { saveAdminTemple } from '#/use-cases/saveAdminTemple'
 import { uploadTemplePhoto } from '#/use-cases/uploadTemplePhoto'
 import { theme } from '../../theme'
+import * as templeRequiredValidation from '../filler/templeRequiredValidation'
 import { TempleFormPage } from './TempleFormPage'
 
 const structuredAddress: AddressValue = {
@@ -33,6 +34,8 @@ const lockedTemple = {
   updatedAt: '2026-07-19T10:00:00.000Z',
   lockedAt: '2026-07-19T11:00:00.000Z',
   lockedBy: 'admin-uid',
+  editRequestedAt: null,
+  editRequestedBy: null,
 }
 
 const draftTemple = {
@@ -196,6 +199,7 @@ afterEach(() => {
 })
 
 beforeEach(() => {
+  localStorage.clear()
   templeFixture = lockedTemple
   lockedTemple.diaChiMoi = '123 Đường A'
   saveAdminTempleMock.mockReset()
@@ -237,7 +241,7 @@ function renderForm({ mode }: { mode: 'create' | 'edit' }) {
 }
 
 async function selectOrgUnit(user: ReturnType<typeof userEvent.setup>) {
-  await screen.findByRole('button', { name: m.admin_temples_save_draft() })
+  await screen.findByRole('button', { name: m.admin_temples_complete() })
   const select = await screen.findByRole('combobox', {
     name: new RegExp(`^${m.admin_temples_form_org_unit()}`),
   })
@@ -263,27 +267,6 @@ describe('TempleFormPage', () => {
     expect(screen.getByText(m.filler_field_anh_tinh_xa())).toBeTruthy()
   })
 
-  it('Lưu nháp saves without temple required-field validation when a manager phone is present', async () => {
-    const user = userEvent.setup()
-    renderForm({ mode: 'create' })
-    await selectOrgUnit(user)
-    await user.type(
-      screen.getByLabelText(m.filler_field_manager_phone()),
-      '0901234567',
-    )
-    await user.click(
-      screen.getByRole('button', { name: m.admin_temples_save_draft() }),
-    )
-
-    await vi.waitFor(() => expect(saveAdminTempleMock).toHaveBeenCalled())
-    expect(saveAdminTempleMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        orgUnitId: 'gd-i',
-        explicitPhones: ['0901234567'],
-      }),
-    )
-  })
-
   it('Hoàn thành does not save when required fields missing', async () => {
     const user = userEvent.setup()
     renderForm({ mode: 'create' })
@@ -302,7 +285,7 @@ describe('TempleFormPage', () => {
     ).toBeGreaterThan(0)
   })
 
-  it('keeps fields editable when locked and shows both save buttons', async () => {
+  it('keeps fields editable when locked and shows complete button', async () => {
     templeFixture = lockedTemple
     renderForm({ mode: 'edit' })
     const input = await screen.findByLabelText(
@@ -310,8 +293,8 @@ describe('TempleFormPage', () => {
     )
     expect(input).not.toBeDisabled()
     expect(
-      screen.getByRole('button', { name: m.admin_temples_save_draft() }),
-    ).toBeTruthy()
+      screen.queryByRole('button', { name: m.admin_temples_save_draft() }),
+    ).toBeNull()
     expect(
       screen.getByRole('button', { name: m.admin_temples_complete() }),
     ).toBeTruthy()
@@ -319,6 +302,10 @@ describe('TempleFormPage', () => {
 
   it('uploads pending portrait after successful create and navigates to edit', async () => {
     const user = userEvent.setup()
+    vi.spyOn(
+      templeRequiredValidation,
+      'validateTempleRequiredFields',
+    ).mockReturnValue({ valid: true, errors: {} })
     let resolveUpload!: (value: { photoPath: string }) => void
     const uploadPromise = new Promise<{ photoPath: string }>((resolve) => {
       resolveUpload = resolve
@@ -333,7 +320,7 @@ describe('TempleFormPage', () => {
     const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
     await user.upload(getPortraitFileInput(), file)
     await user.click(
-      screen.getByRole('button', { name: m.admin_temples_save_draft() }),
+      screen.getByRole('button', { name: m.admin_temples_complete() }),
     )
 
     await vi.waitFor(() => expect(saveAdminTempleMock).toHaveBeenCalled())
@@ -378,7 +365,7 @@ describe('TempleFormPage', () => {
     templeFixture = completeDraftTemple()
     uploadTemplePhotoMock.mockRejectedValue(new Error('upload failed'))
     renderForm({ mode: 'edit' })
-    await screen.findByRole('button', { name: m.admin_temples_save_draft() })
+    await screen.findByRole('button', { name: m.admin_temples_complete() })
     const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
 
     await user.upload(getPortraitFileInput(), file)

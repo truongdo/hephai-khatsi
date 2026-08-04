@@ -6,11 +6,15 @@ import { m } from '#/paraglide/messages'
 import { fillerMemberQuery } from '#/query/fillerQueries'
 
 export const Route = createFileRoute('/f/$token/edit/member/$memberId')({
+  validateSearch: (search: Record<string, unknown>) => ({
+    phone: typeof search.phone === 'string' ? search.phone : '',
+  }),
   component: MemberEditRoute,
 })
 
 function MemberEditRoute() {
   const { token, memberId } = Route.useParams()
+  const { phone } = Route.useSearch()
   const navigate = Route.useNavigate()
   const memberQuery = useQuery(fillerMemberQuery(memberId))
 
@@ -37,6 +41,7 @@ function MemberEditRoute() {
       orgUnitId={member.orgUnitId}
       sanghaType={member.sanghaType}
       cccd={member.cccd}
+      seedPhone={phone || member.dienThoai}
       memberId={memberId}
       initial={member}
       status={status}

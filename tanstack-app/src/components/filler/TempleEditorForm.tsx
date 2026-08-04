@@ -1,20 +1,24 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import type { Temple } from '#/domain/types'
+import { useFormLocalDraft } from '#/hooks/useFormLocalDraft'
+import { templeDraftStorageKey } from '#/lib/formLocalDraft'
 import { m } from '#/paraglide/messages'
 import { fillerKeys } from '#/query/fillerKeys'
 import type { TempleProfilePatch } from '#/repositories/templeRepo'
-import { saveTempleDraft } from '#/use-cases/saveTempleDraft'
+import { requestTempleEdit } from '#/use-cases/requestTempleEdit'
+import { saveAndLockTemple } from '#/use-cases/saveAndLockTemple'
 import { uploadTemplePhoto } from '#/use-cases/uploadTemplePhoto'
 import {
   TempleFormFields,
   type TempleFormFieldsApi,
 } from '../temple/TempleFormFields'
+import { FillerSaveConfirmModal } from './FillerSaveConfirmModal'
 import {
   FillerEditorShell,
   type FillerEditorStatus,
 } from './FillerEditorShell'
-import { buildTemplePatch } from './templeDraft'
+import { buildTemplePatch, type TempleDraft } from './templeDraft'
 import { validateTempleRequiredFields } from './templeRequiredValidation'
 
 export type TempleEditorFormProps = {
@@ -41,7 +45,46 @@ export function TempleEditorForm({
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
   const [postSavePending, setPostSavePending] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [editRequestedAt, setEditRequestedAt] = useState<string | null>(
+    initial.editRequestedAt ?? null,
+  )
+  const [requestEditSuccess, setRequestEditSuccess] = useState<string | null>(
+    null,
+  )
+  const [requestEditError, setRequestEditError] = useState<string | null>(null)
   const disabled = status === 'view'
+  const requestPhone =
+    initial.seedPhone ?? initial.truTriHienNay?.dienThoai ?? ''
+
+  const storageKey = useMemo(() => {
+    if (templeId) {
+      return templeDraftStorageKey({ kind: 'existing', templeId })
+    }
+    return templeDraftStorageKey({
+      kind: 'new',
+      orgUnitId,
+      actorId: requestPhone,
+    })
+  }, [templeId, orgUnitId, requestPhone])
+
+  const handleLocalDraftRestore = useCallback((fields: TempleDraft) => {
+    fieldsApiRef.current?.restoreDraft(fields)
+  }, [])
+
+  const { persist, clear } = useFormLocalDraft<TempleDraft>({
+    storageKey,
+    enabled: status === 'draft',
+    hasServerData: !!templeId,
+    onRestore: handleLocalDraftRestore,
+  })
+
+  const handleDraftChange = useCallback(
+    (draft: TempleDraft) => {
+      persist(draft)
+    },
+    [persist],
+  )
 
   const saveMutation = useMutation({
     mutationFn: ({
@@ -51,7 +94,7 @@ export function TempleEditorForm({
       patch: TempleProfilePatch
       explicitPhones: string[]
     }) =>
-      saveTempleDraft({
+      saveAndLockTemple({
         token,
         orgUnitId,
         templeId,
@@ -64,7 +107,78 @@ export function TempleEditorForm({
     },
   })
 
-  const handleSave = async () => {
+  const requestEditMutation = useMutation({
+    mutationFn: () => {
+      if (!templeId) {
+        throw new Error('templeId required')
+      }
+      return requestTempleEdit({ templeId, phone: requestPhone })
+    },
+    onSuccess: (temple) => {
+      setRequestEditError(null)
+      setEditRequestedAt(temple.editRequestedAt)
+      setRequestEditSuccess(m.filler_request_edit_done())
+      queryClient.setQueryData(fillerKeys.temple(temple.id), temple)
+    },
+    onError: () => {
+      setRequestEditSuccess(null)
+      setRequestEditError(m.filler_request_edit_error())
+    },
+  })
+
+  const performSave = async () => {
+    const api = fieldsApiRef.current
+    if (!api) return
+
+    const draft = api.getDraft()
+    const patch = buildTemplePatch(draft)
+    const explicitPhones = api.getExtraManagerPhone().trim()
+      ? [api.getExtraManagerPhone().trim()]
+      : []
+
+    setPostSavePending(true)
+    try {
+      const saveResult = await saveMutation.mutateAsync({ patch, explicitPhones })
+      setSaveError(null)
+      clear()
+      let savedTemple = saveResult.temple
+
+      if (saveResult.mode === 'created') {
+        setSaveSuccess(m.filler_save_success())
+        const pendingPhoto = api.getPendingPhoto()
+        if (pendingPhoto) {
+          try {
+            const bytes = new Uint8Array(await pendingPhoto.arrayBuffer())
+            const uploadResult = await uploadTemplePhoto({
+              templeId: saveResult.temple.id,
+              bytes,
+              contentType: pendingPhoto.type,
+              inviteToken: token,
+            })
+            api.setPhotoPath(uploadResult.photoPath)
+            api.clearPendingPhoto()
+            savedTemple = { ...savedTemple, photoPath: uploadResult.photoPath }
+          } catch {
+            setSaveError(m.filler_photo_upload_error())
+          }
+        }
+        setSaveSuccess(m.filler_save_redirecting())
+        queryClient.setQueryData(fillerKeys.temple(savedTemple.id), savedTemple)
+        await onCreated(savedTemple.id)
+        return
+      }
+
+      setSaveSuccess(m.filler_save_success())
+      queryClient.setQueryData(fillerKeys.temple(savedTemple.id), savedTemple)
+    } catch {
+      // onError handles save failure
+    } finally {
+      setPostSavePending(false)
+      setConfirmOpen(false)
+    }
+  }
+
+  const handleSave = () => {
     const api = fieldsApiRef.current
     if (!api) return
 
@@ -86,72 +200,49 @@ export function TempleEditorForm({
       return
     }
     api.clearFieldErrors()
+    setConfirmOpen(true)
+  }
 
-    const patch = buildTemplePatch(draft)
-    const explicitPhones = api.getExtraManagerPhone().trim()
-      ? [api.getExtraManagerPhone().trim()]
-      : []
+  const handleConfirmSave = () => {
+    void performSave()
+  }
 
-    setPostSavePending(true)
-    try {
-      const saveResult = await saveMutation.mutateAsync({ patch, explicitPhones })
-      setSaveError(null)
-      if (saveResult.mode === 'created') {
-        setSaveSuccess(m.filler_save_success())
-        let createdTemple = saveResult.temple
-        const pendingPhoto = api.getPendingPhoto()
-        if (pendingPhoto) {
-          try {
-            const bytes = new Uint8Array(await pendingPhoto.arrayBuffer())
-            const uploadResult = await uploadTemplePhoto({
-              templeId: saveResult.temple.id,
-              bytes,
-              contentType: pendingPhoto.type,
-              inviteToken: token,
-            })
-            api.setPhotoPath(uploadResult.photoPath)
-            api.clearPendingPhoto()
-            createdTemple = { ...createdTemple, photoPath: uploadResult.photoPath }
-          } catch {
-            setSaveError(m.filler_photo_upload_error())
-          }
-        }
-        setSaveSuccess(m.filler_save_redirecting())
-        queryClient.setQueryData(
-          fillerKeys.temple(createdTemple.id),
-          createdTemple,
-        )
-        await onCreated(createdTemple.id)
-        return
-      }
-      setSaveSuccess(m.filler_save_success())
-      await queryClient.invalidateQueries({
-        queryKey: fillerKeys.temple(saveResult.temple.id),
-      })
-    } catch {
-      // onError handles save failure
-    } finally {
-      setPostSavePending(false)
-    }
+  const handleRequestEdit = () => {
+    if (!templeId || editRequestedAt) return
+    requestEditMutation.mutate()
   }
 
   return (
-    <FillerEditorShell
-      title={title}
-      status={status}
-      onSave={status === 'draft' ? handleSave : undefined}
-      savePending={saveMutation.isPending || postSavePending}
-      saveError={saveError}
-      saveSuccess={saveSuccess}
-    >
-      <TempleFormFields
-        apiRef={fieldsApiRef}
-        initial={initial}
-        disabled={disabled}
-        templeId={templeId}
-        inviteToken={token}
-        onUploadError={setSaveError}
+    <>
+      <FillerEditorShell
+        title={title}
+        status={status}
+        onSave={status === 'draft' ? handleSave : undefined}
+        savePending={saveMutation.isPending || postSavePending}
+        saveError={saveError}
+        saveSuccess={saveSuccess}
+        onRequestEdit={status === 'view' && templeId ? handleRequestEdit : undefined}
+        requestEditPending={requestEditMutation.isPending}
+        editRequestedAt={editRequestedAt}
+        requestEditSuccess={requestEditSuccess}
+        requestEditError={requestEditError}
+      >
+        <TempleFormFields
+          apiRef={fieldsApiRef}
+          initial={initial}
+          disabled={disabled}
+          templeId={templeId}
+          inviteToken={token}
+          onUploadError={setSaveError}
+          onDraftChange={handleDraftChange}
+        />
+      </FillerEditorShell>
+      <FillerSaveConfirmModal
+        opened={confirmOpen}
+        loading={saveMutation.isPending || postSavePending}
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmSave}
       />
-    </FillerEditorShell>
+    </>
   )
 }

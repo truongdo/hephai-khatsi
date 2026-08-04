@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Checkbox,
   Group,
@@ -27,10 +28,13 @@ import { adminKeys } from '#/query/adminKeys'
 import { membersQuery, orgUnitsQuery } from '#/query/adminQueries'
 import { deleteMembers } from '#/use-cases/deleteMembers'
 import { exportMembersExcel } from '#/use-cases/exportMembersExcel'
+import { unlockMember } from '#/use-cases/unlockMember'
 
 type MembersListPageProps = {
   sanghaType: SanghaType
 }
+
+type StatusFilterValue = RecordStatus | 'edit_requested'
 
 function statusLabel(status: RecordStatus): string {
   switch (status) {
@@ -41,9 +45,10 @@ function statusLabel(status: RecordStatus): string {
   }
 }
 
-const STATUS_OPTIONS: { value: RecordStatus; label: () => string }[] = [
+const STATUS_OPTIONS: { value: StatusFilterValue; label: () => string }[] = [
   { value: 'draft', label: () => m.admin_members_status_draft() },
   { value: 'locked', label: () => m.admin_members_status_locked() },
+  { value: 'edit_requested', label: () => m.admin_filter_edit_requested() },
 ]
 
 function memberDisplayName(member: Member): string {
@@ -64,21 +69,26 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
 
   const [orgUnitFilter, setOrgUnitFilter] = useState<string | null>(null)
-  const [statusFilter, setStatusFilter] = useState<RecordStatus | null>(null)
+  const [statusFilter, setStatusFilter] = useState<StatusFilterValue | null>(
+    null,
+  )
   const [cursor, setCursor] = useState<string | undefined>(undefined)
   const [allItems, setAllItems] = useState<Member[]>([])
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const lastAppendedKeyRef = useRef<string | null>(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
 
-  const filterKey = `${sanghaType}:${orgUnitFilter ?? ''}:${statusFilter ?? ''}`
+  const serverStatusFilter =
+    statusFilter === 'edit_requested' ? undefined : (statusFilter ?? undefined)
+
+  const serverFilterKey = `${sanghaType}:${orgUnitFilter ?? ''}:${serverStatusFilter ?? ''}`
 
   useEffect(() => {
     setCursor(undefined)
     setAllItems([])
     setNextCursor(null)
     lastAppendedKeyRef.current = null
-  }, [filterKey])
+  }, [serverFilterKey])
 
   const orgUnits = useQuery({
     ...orgUnitsQuery(),
@@ -89,7 +99,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     ...membersQuery({
       sanghaType,
       orgUnitId: orgUnitFilter ?? undefined,
-      status: statusFilter ?? undefined,
+      status: serverStatusFilter,
       cursor,
     }),
     enabled: manageDirectory,
@@ -109,7 +119,17 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     setNextCursor(members.data.nextCursor)
   }, [members.data, members.dataUpdatedAt, cursor])
 
-  const itemIds = useMemo(() => allItems.map((member) => member.id), [allItems])
+  const displayItems = useMemo(() => {
+    if (statusFilter === 'edit_requested') {
+      return allItems.filter((member) => member.editRequestedAt != null)
+    }
+    return allItems
+  }, [allItems, statusFilter])
+
+  const itemIds = useMemo(
+    () => displayItems.map((member) => member.id),
+    [displayItems],
+  )
   const selection = useAdminListSelection(itemIds)
 
   const deleteMutation = useMutation({
@@ -141,8 +161,21 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
       exportMembersExcel({
         sanghaType,
         orgUnitId: orgUnitFilter ?? undefined,
-        status: statusFilter ?? undefined,
+        status: serverStatusFilter,
       }),
+  })
+
+  const unlockMutation = useMutation({
+    mutationFn: (memberId: string) => unlockMember({ memberId }),
+    onSuccess: () => {
+      setCursor(undefined)
+      setAllItems([])
+      setNextCursor(null)
+      lastAppendedKeyRef.current = null
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, 'members'],
+      })
+    },
   })
 
   const orgUnitSelectData = useMemo(
@@ -213,7 +246,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
           placeholder={m.admin_filter_all()}
           data={statusSelectData}
           value={statusFilter}
-          onChange={(value) => setStatusFilter(value as RecordStatus | null)}
+          onChange={(value) => setStatusFilter(value as StatusFilterValue | null)}
           clearable
         />
       </Group>
@@ -233,6 +266,12 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
         </Text>
       )}
 
+      {unlockMutation.error && (
+        <Text c="red" size="sm" role="alert">
+          {unlockMutation.error.message}
+        </Text>
+      )}
+
       {members.isError && members.error && (
         <QueryErrorAlert error={members.error} />
       )}
@@ -240,7 +279,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
         <>
           <AdminDataTable
             loading={isLoading}
-            empty={!isLoading && allItems.length === 0}
+            empty={!isLoading && displayItems.length === 0}
             aria-label={listTitle(sanghaType)}
           >
             <Table.Thead>
@@ -260,10 +299,11 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
                 <Table.Th>{m.admin_members_col_cccd()}</Table.Th>
                 <Table.Th>{m.admin_members_col_status()}</Table.Th>
                 <Table.Th>{m.admin_members_col_updated_at()}</Table.Th>
+                <Table.Th w={100} />
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {allItems.map((member) => (
+              {displayItems.map((member) => (
                 <Table.Tr key={member.id}>
                   <Table.Td>
                     <Checkbox
@@ -286,13 +326,37 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
                   <Table.Td>{emptyCell(member.theDanh)}</Table.Td>
                   <Table.Td>{member.cccd}</Table.Td>
                   <Table.Td>
-                    <RecordStatusBadge
-                      status={member.status}
-                      label={statusLabel(member.status)}
-                    />
+                    <Group gap="xs">
+                      <RecordStatusBadge
+                        status={member.status}
+                        label={statusLabel(member.status)}
+                      />
+                      {member.editRequestedAt != null && (
+                        <Badge color="orange" variant="light" radius="sm">
+                          {m.admin_edit_requested_badge()}
+                        </Badge>
+                      )}
+                    </Group>
                   </Table.Td>
                   <Table.Td>
                     {new Date(member.updatedAt).toLocaleString('vi-VN')}
+                  </Table.Td>
+                  <Table.Td>
+                    {member.status === 'locked' && (
+                      <Button
+                        size="compact-xs"
+                        variant={
+                          member.editRequestedAt != null ? 'filled' : 'light'
+                        }
+                        loading={
+                          unlockMutation.isPending &&
+                          unlockMutation.variables === member.id
+                        }
+                        onClick={() => unlockMutation.mutate(member.id)}
+                      >
+                        {m.admin_members_unlock_row()}
+                      </Button>
+                    )}
                   </Table.Td>
                 </Table.Tr>
               ))}

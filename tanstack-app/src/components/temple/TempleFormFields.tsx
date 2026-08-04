@@ -1,5 +1,5 @@
 import { Stack, TextInput } from '@mantine/core'
-import { useState } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import type { Temple } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { FormSection } from '../filler/FormSection'
@@ -65,6 +65,7 @@ function mapTienNhiemErrors(
 
 export type TempleFormFieldsApi = {
   getDraft: () => TempleDraft
+  restoreDraft: (fields: Partial<TempleDraft>) => void
   getExtraManagerPhone: () => string
   getPhotoPath: () => string | null
   getPendingPhoto: () => File | null
@@ -82,6 +83,7 @@ export type TempleFormFieldsProps = {
   getIdToken?: () => Promise<string | undefined>
   onUploadError?: (message: string) => void
   apiRef: React.MutableRefObject<TempleFormFieldsApi | null>
+  onDraftChange?: (draft: TempleDraft) => void
 }
 
 export function TempleFormFields({
@@ -92,8 +94,12 @@ export function TempleFormFields({
   getIdToken,
   onUploadError,
   apiRef,
+  onDraftChange,
 }: TempleFormFieldsProps) {
   const [draft, setDraft] = useState(() => emptyTempleDraft(initial))
+  const restoreDraft = useCallback((fields: Partial<TempleDraft>) => {
+    setDraft((current) => ({ ...current, ...fields }))
+  }, [])
   const [extraManagerPhone, setExtraManagerPhone] = useState('')
   const [photoPath, setPhotoPath] = useState<string | null>(
     initial.photoPath ?? null,
@@ -105,6 +111,7 @@ export function TempleFormFields({
 
   apiRef.current = {
     getDraft: () => draft,
+    restoreDraft,
     getExtraManagerPhone: () => extraManagerPhone,
     getPhotoPath: () => photoPath,
     getPendingPhoto: () => pendingPhoto,
@@ -113,6 +120,10 @@ export function TempleFormFields({
     setFieldErrors,
     clearFieldErrors: () => setFieldErrors({}),
   }
+
+  useEffect(() => {
+    onDraftChange?.(draft)
+  }, [draft, onDraftChange])
 
   return (
     <Stack gap="xl" maw={760}>

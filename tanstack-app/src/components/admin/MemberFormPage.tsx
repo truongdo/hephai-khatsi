@@ -10,7 +10,7 @@ import {
 } from '@mantine/core'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { useAuth } from '#/auth/useAuth'
@@ -21,7 +21,9 @@ import {
   MemberFormFields,
   type MemberFormFieldsApi,
 } from '#/components/filler/MemberFormFields'
-import { buildMemberPatch } from '#/components/filler/memberDraft'
+import { buildMemberPatch, type MemberDraft } from '#/components/filler/memberDraft'
+import { useFormLocalDraft } from '#/hooks/useFormLocalDraft'
+import { memberDraftStorageKey } from '#/lib/formLocalDraft'
 import { validateMemberRequiredFields } from '#/components/filler/memberRequiredValidation'
 import type { SanghaType } from '#/domain/types'
 import { canManageDirectory } from '#/domain/authClaims'
@@ -107,13 +109,46 @@ export function MemberFormPage({
     [],
   )
 
+  const actorId = user?.uid ?? 'admin'
+  const formReady = mode === 'create' || !!member.data
+
+  const storageKey = useMemo(() => {
+    if (mode === 'edit' && memberId) {
+      return memberDraftStorageKey({ kind: 'existing', memberId })
+    }
+    return memberDraftStorageKey({
+      kind: 'new',
+      orgUnitId: orgUnitId ?? '',
+      sanghaType,
+      actorId,
+    })
+  }, [actorId, memberId, mode, orgUnitId, sanghaType])
+
+  const handleLocalDraftRestore = useCallback((fields: MemberDraft) => {
+    fieldsApiRef.current?.restoreDraft(fields)
+  }, [])
+
+  const { persist, clear } = useFormLocalDraft<MemberDraft>({
+    storageKey,
+    enabled: manageDirectory && formReady,
+    hasServerData: mode === 'edit' && !!member.data,
+    onRestore: handleLocalDraftRestore,
+  })
+
+  const handleDraftChange = useCallback(
+    (draft: MemberDraft) => {
+      persist(draft)
+    },
+    [persist],
+  )
+
   const isLocked = mode === 'edit' && member.data?.status === 'locked'
   const effectiveSanghaType =
     mode === 'edit' ? (member.data?.sanghaType ?? sanghaType) : sanghaType
   const resolvedCccd =
     mode === 'edit' ? (member.data?.cccd ?? cccd) : cccd
 
-  async function persist() {
+  async function performSave() {
     const api = fieldsApiRef.current
     if (!api || !orgUnitId) throw new Error('Missing org unit')
     if (mode === 'create' && !cccd.trim()) throw new Error('Missing CCCD')
@@ -187,9 +222,10 @@ export function MemberFormPage({
   }
 
   const saveMutation = useMutation({
-    mutationFn: persist,
+    mutationFn: performSave,
     onSuccess: async (result) => {
       setSaveSuccess(m.filler_save_success())
+      clear()
       await queryClient.invalidateQueries({
         queryKey: [...adminKeys.all, 'members'],
       })
@@ -243,12 +279,6 @@ export function MemberFormPage({
       }
     },
   })
-
-  const saveDraft = () => {
-    setPhotoError(null)
-    setSaveSuccess(null)
-    saveMutation.mutate()
-  }
 
   const complete = () => {
     const api = fieldsApiRef.current
@@ -360,6 +390,7 @@ export function MemberFormPage({
               sanghaType={effectiveSanghaType}
               getIdToken={async () => (user ? user.getIdToken() : undefined)}
               onUploadError={setPhotoError}
+              onDraftChange={handleDraftChange}
             />
 
             <FormStickyActions
@@ -383,13 +414,6 @@ export function MemberFormPage({
                 </>
               }
             >
-              <Button
-                loading={saveMutation.isPending}
-                disabled={saveDisabled}
-                onClick={() => void saveDraft()}
-              >
-                {m.admin_members_save_draft()}
-              </Button>
               <Button
                 loading={saveMutation.isPending}
                 disabled={saveDisabled}

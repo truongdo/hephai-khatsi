@@ -9,7 +9,8 @@ import 'dayjs/locale/vi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Member } from '#/domain/types'
 import { m } from '#/paraglide/messages'
-import { saveMemberDraft } from '#/use-cases/saveMemberDraft'
+import { saveAndLockMember } from '#/use-cases/saveAndLockMember'
+import { requestMemberEdit } from '#/use-cases/requestMemberEdit'
 import { uploadMemberPhoto } from '#/use-cases/uploadMemberPhoto'
 import { uploadMemberDocument } from '#/use-cases/uploadMemberDocument'
 import { theme } from '../../theme'
@@ -19,8 +20,12 @@ import { MemberEditorForm } from './MemberEditorForm'
 dayjs.extend(customParseFormat)
 dayjs.locale('vi')
 
-vi.mock('#/use-cases/saveMemberDraft', () => ({
-  saveMemberDraft: vi.fn(),
+vi.mock('#/use-cases/saveAndLockMember', () => ({
+  saveAndLockMember: vi.fn(),
+}))
+
+vi.mock('#/use-cases/requestMemberEdit', () => ({
+  requestMemberEdit: vi.fn(),
 }))
 
 vi.mock('#/use-cases/uploadMemberPhoto', () => ({
@@ -90,7 +95,8 @@ vi.mock('#/data/vietnam-locations', () => ({
   ]),
 }))
 
-const saveMemberDraftMock = vi.mocked(saveMemberDraft)
+const saveAndLockMemberMock = vi.mocked(saveAndLockMember)
+const requestMemberEditMock = vi.mocked(requestMemberEdit)
 const uploadMemberPhotoMock = vi.mocked(uploadMemberPhoto)
 const uploadMemberDocumentMock = vi.mocked(uploadMemberDocument)
 
@@ -146,7 +152,8 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
-  saveMemberDraftMock.mockReset()
+  saveAndLockMemberMock.mockReset()
+  requestMemberEditMock.mockReset()
   uploadMemberPhotoMock.mockReset()
   uploadMemberDocumentMock.mockReset()
   uploadMemberPhotoMock.mockResolvedValue({
@@ -158,7 +165,15 @@ beforeEach(() => {
       diep_sa_di: { filePath: 'members/created-member/docs/diep_sa_di/file.pdf' },
     },
   })
+  localStorage.clear()
 })
+
+async function confirmSave(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole('button', { name: m.filler_save() }))
+  await user.click(
+    await screen.findByRole('button', { name: m.filler_save_confirm_ok() }),
+  )
+}
 
 function renderForm(
   props: Partial<React.ComponentProps<typeof MemberEditorForm>> = {},
@@ -193,7 +208,7 @@ function member(overrides: Partial<Member> = {}): Member {
     id: 'm1',
     orgUnitId: 'gd-i',
     sanghaType: 'tang',
-    status: 'draft',
+    status: 'locked',
     cccd: '012345678901',
     inviteId: 'invite-1',
     currentTempleId: null,
@@ -202,6 +217,8 @@ function member(overrides: Partial<Member> = {}): Member {
     updatedAt: '2026-07-20T00:00:00.000Z',
     lockedAt: null,
     lockedBy: null,
+    editRequestedAt: null,
+    editRequestedBy: null,
     ...overrides,
   }
 }
@@ -313,9 +330,9 @@ describe('MemberEditorForm', () => {
     expect(screen.getByText(m.filler_field_gioi_ty_kheo_ni())).toBeTruthy()
   })
 
-  it('calls saveMemberDraft on save and navigates on create', async () => {
+  it('opens confirm modal before save and calls saveAndLockMember on confirm', async () => {
     const user = userEvent.setup()
-    saveMemberDraftMock.mockResolvedValue({
+    saveAndLockMemberMock.mockResolvedValue({
       member: member({ id: 'created-member', phapDanh: 'Minh Tâm' }),
       mode: 'created',
     })
@@ -325,8 +342,14 @@ describe('MemberEditorForm', () => {
     })
 
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
+    expect(await screen.findByText(m.filler_save_confirm_body())).toBeTruthy()
+    expect(saveAndLockMemberMock).not.toHaveBeenCalled()
 
-    expect(saveMemberDraftMock).toHaveBeenCalledWith({
+    await user.click(
+      await screen.findByRole('button', { name: m.filler_save_confirm_ok() }),
+    )
+
+    expect(saveAndLockMemberMock).toHaveBeenCalledWith({
       token: 'invite-token',
       orgUnitId: 'gd-i',
       sanghaType: 'tang',
@@ -340,6 +363,21 @@ describe('MemberEditorForm', () => {
     expect(screen.getByText(m.filler_save_redirecting())).toBeTruthy()
   })
 
+  it('does not save when confirm modal is cancelled', async () => {
+    const user = userEvent.setup()
+    renderForm({
+      cccd: '012345678901',
+      initial: requiredCoreInitial,
+    })
+
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+    await user.click(
+      await screen.findByRole('button', { name: m.filler_save_confirm_cancel() }),
+    )
+
+    expect(saveAndLockMemberMock).not.toHaveBeenCalled()
+  })
+
   it('uploads pending portrait after successful create', async () => {
     const user = userEvent.setup()
     let resolveUpload!: (value: { photoPath: string }) => void
@@ -347,7 +385,7 @@ describe('MemberEditorForm', () => {
       resolveUpload = resolve
     })
     uploadMemberPhotoMock.mockReturnValue(uploadPromise)
-    saveMemberDraftMock.mockResolvedValue({
+    saveAndLockMemberMock.mockResolvedValue({
       member: member({ id: 'created-member', phapDanh: 'Minh Tâm' }),
       mode: 'created',
     })
@@ -358,9 +396,9 @@ describe('MemberEditorForm', () => {
     const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
 
     await user.upload(getPortraitFileInput(), file)
-    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+    await confirmSave(user)
 
-    expect(saveMemberDraftMock).toHaveBeenCalled()
+    expect(saveAndLockMemberMock).toHaveBeenCalled()
     expect(uploadMemberPhotoMock).toHaveBeenCalledWith({
       memberId: 'created-member',
       cccd: '012345678901',
@@ -392,7 +430,7 @@ describe('MemberEditorForm', () => {
       resolveUpload = resolve
     })
     uploadMemberDocumentMock.mockReturnValue(uploadPromise)
-    saveMemberDraftMock.mockResolvedValue({
+    saveAndLockMemberMock.mockResolvedValue({
       member: member({ id: 'created-member', phapDanh: 'Minh Tâm' }),
       mode: 'created',
     })
@@ -404,9 +442,9 @@ describe('MemberEditorForm', () => {
 
     await pickPendingDocType(user)
     await user.upload(getDocumentFileInput(), file)
-    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+    await confirmSave(user)
 
-    expect(saveMemberDraftMock).toHaveBeenCalled()
+    expect(saveAndLockMemberMock).toHaveBeenCalled()
     expect(uploadMemberDocumentMock).toHaveBeenCalledWith({
       memberId: 'created-member',
       cccd: '012345678901',
@@ -479,7 +517,7 @@ describe('MemberEditorForm', () => {
     )
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
 
-    expect(saveMemberDraftMock).not.toHaveBeenCalled()
+    expect(saveAndLockMemberMock).not.toHaveBeenCalled()
     expect(
       within(permanent).getByText(m.filler_address_city_required()),
     ).toBeTruthy()
@@ -503,7 +541,7 @@ describe('MemberEditorForm', () => {
 
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
 
-    expect(saveMemberDraftMock).not.toHaveBeenCalled()
+    expect(saveAndLockMemberMock).not.toHaveBeenCalled()
     expect(
       screen.getAllByText(m.filler_error_field_required()).length,
     ).toBeGreaterThanOrEqual(1)
@@ -537,7 +575,69 @@ describe('MemberEditorForm', () => {
 
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
 
-    expect(saveMemberDraftMock).not.toHaveBeenCalled()
+    expect(saveAndLockMemberMock).not.toHaveBeenCalled()
     expect(screen.getByText(m.filler_error_email_invalid())).toBeTruthy()
+  })
+
+  it('hides save and shows request edit when locked', () => {
+    renderForm({
+      memberId: 'm1',
+      cccd: '012345678901',
+      seedPhone: '0901234567',
+      status: 'view',
+      initial: member({ status: 'locked' }),
+    })
+
+    expect(screen.queryByRole('button', { name: m.filler_save() })).toBeNull()
+    expect(
+      screen.getByRole('button', { name: m.filler_request_edit() }),
+    ).toBeTruthy()
+  })
+
+  it('shows pending label when edit already requested', () => {
+    renderForm({
+      memberId: 'm1',
+      cccd: '012345678901',
+      status: 'view',
+      initial: member({
+        status: 'locked',
+        editRequestedAt: '2026-07-20T00:00:00.000Z',
+      }),
+    })
+
+    expect(
+      screen.getByRole('button', { name: m.filler_request_edit_pending() }),
+    ).toBeDisabled()
+    expect(
+      screen.queryByRole('button', { name: m.filler_request_edit() }),
+    ).toBeNull()
+  })
+
+  it('calls requestMemberEdit with filler phone', async () => {
+    const user = userEvent.setup()
+    requestMemberEditMock.mockResolvedValue(
+      member({
+        status: 'locked',
+        editRequestedAt: '2026-07-20T12:00:00.000Z',
+        editRequestedBy: '0901234567',
+      }),
+    )
+    renderForm({
+      memberId: 'm1',
+      cccd: '012345678901',
+      seedPhone: '0901234567',
+      status: 'view',
+      initial: member({ status: 'locked' }),
+    })
+
+    await user.click(
+      screen.getByRole('button', { name: m.filler_request_edit() }),
+    )
+
+    expect(requestMemberEditMock).toHaveBeenCalledWith({
+      memberId: 'm1',
+      phone: '0901234567',
+    })
+    expect(screen.getByText(m.filler_request_edit_done())).toBeTruthy()
   })
 })

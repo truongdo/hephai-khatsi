@@ -130,6 +130,8 @@ export type Member = {
   updatedAt: string
   lockedAt: string | null
   lockedBy: string | null
+  editRequestedAt: string | null
+  editRequestedBy: string | null
 }
 
 export type Temple = {
@@ -180,4 +182,6 @@ export type Temple = {
   updatedAt: string
   lockedAt: string | null
   lockedBy: string | null
+  editRequestedAt: string | null
+  editRequestedBy: string | null
 }

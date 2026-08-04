@@ -62,6 +62,8 @@ function memberDraft(overrides: Record<string, unknown> = {}) {
     updatedAt: '2026-01-01T00:00:00.000Z',
     lockedAt: null,
     lockedBy: null,
+    editRequestedAt: null,
+    editRequestedBy: null,
     ...overrides,
   }
 }
@@ -77,8 +79,32 @@ function templeDraft(overrides: Record<string, unknown> = {}) {
     updatedAt: '2026-01-01T00:00:00.000Z',
     lockedAt: null,
     lockedBy: null,
+    editRequestedAt: null,
+    editRequestedBy: null,
     ...overrides,
   }
+}
+
+function memberLocked(overrides: Record<string, unknown> = {}) {
+  return memberDraft({
+    status: 'locked',
+    lockedAt: '2026-01-01T00:00:00.000Z',
+    lockedBy: 'filler',
+    editRequestedAt: null,
+    editRequestedBy: null,
+    ...overrides,
+  })
+}
+
+function templeLocked(overrides: Record<string, unknown> = {}) {
+  return templeDraft({
+    status: 'locked',
+    lockedAt: '2026-01-01T00:00:00.000Z',
+    lockedBy: 'filler',
+    editRequestedAt: null,
+    editRequestedBy: null,
+    ...overrides,
+  })
 }
 
 beforeEach(async () => {
@@ -131,12 +157,24 @@ describe('invites', () => {
 describe('members', () => {
   const memberId = 'gd-i_tang_012345678901'
 
-  it('allows a public create for any org unit / sangha type, gated only on a valid invite id', async () => {
+  it('rejects filler create with draft status', async () => {
     const env = await getTestEnv()
     const anon = env.unauthenticatedContext().firestore()
-    await assertSucceeds(setDoc(doc(anon, 'members', memberId), memberDraft()))
-    await assertSucceeds(
+    await assertFails(setDoc(doc(anon, 'members', memberId), memberDraft()))
+    await assertFails(
       setDoc(doc(anon, 'members', 'gd-ii_ni_012345678902'), memberDraft({ orgUnitId: 'gd-ii', sanghaType: 'ni', cccd: '012345678902' })),
+    )
+  })
+
+  it('allows filler create when status is locked by filler with null edit-request fields', async () => {
+    const env = await getTestEnv()
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(setDoc(doc(anon, 'members', memberId), memberLocked()))
+    await assertSucceeds(
+      setDoc(
+        doc(anon, 'members', 'gd-ii_ni_012345678902'),
+        memberLocked({ orgUnitId: 'gd-ii', sanghaType: 'ni', cccd: '012345678902' }),
+      ),
     )
   })
 
@@ -161,25 +199,82 @@ describe('members', () => {
     await assertFails(setDoc(doc(ks, 'members', memberId), memberDraft()))
   })
 
-  it('lets the public flow read and update a draft, but not change status/lock fields', async () => {
+  it('lets filler read a draft but not persist profile changes without locking', async () => {
     const env = await getTestEnv()
     await env.withSecurityRulesDisabled(async (ctx) => {
       await setDoc(doc(ctx.firestore(), 'members', memberId), memberDraft())
     })
     const anon = env.unauthenticatedContext().firestore()
     await assertSucceeds(getDoc(doc(anon, 'members', memberId)))
-    await assertSucceeds(updateDoc(doc(anon, 'members', memberId), { theDanh: 'Nguyen Van A', updatedAt: '2026-01-02T00:00:00.000Z' }))
+    await assertFails(updateDoc(doc(anon, 'members', memberId), { theDanh: 'Nguyen Van A', updatedAt: '2026-01-02T00:00:00.000Z' }))
     await assertFails(updateDoc(doc(anon, 'members', memberId), { status: 'locked' }))
     await assertFails(updateDoc(doc(anon, 'members', memberId), { orgUnitId: 'gd-ii' }))
   })
 
-  it('blocks public updates once the record is locked', async () => {
+  it('allows filler draft to locked save-and-lock with profile changes', async () => {
     const env = await getTestEnv()
     await env.withSecurityRulesDisabled(async (ctx) => {
-      await setDoc(doc(ctx.firestore(), 'members', memberId), memberDraft({ status: 'locked', lockedAt: '2026-01-02T00:00:00.000Z', lockedBy: 'admin-uid' }))
+      await setDoc(doc(ctx.firestore(), 'members', memberId), memberDraft())
     })
     const anon = env.unauthenticatedContext().firestore()
-    await assertFails(updateDoc(doc(anon, 'members', memberId), { theDanh: 'Should fail' }))
+    await assertSucceeds(
+      updateDoc(doc(anon, 'members', memberId), {
+        theDanh: 'Nguyen Van A',
+        status: 'locked',
+        lockedAt: '2026-01-02T00:00:00.000Z',
+        lockedBy: 'filler',
+        editRequestedAt: null,
+        editRequestedBy: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('blocks filler profile updates on locked records', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'members', memberId),
+        memberLocked({ lockedAt: '2026-01-02T00:00:00.000Z' }),
+      )
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(updateDoc(doc(anon, 'members', memberId), { theDanh: 'Should fail', updatedAt: '2026-01-03T00:00:00.000Z' }))
+  })
+
+  it('allows filler edit-request on locked record', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'members', memberId),
+        memberLocked({ lockedAt: '2026-01-02T00:00:00.000Z' }),
+      )
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(
+      updateDoc(doc(anon, 'members', memberId), {
+        editRequestedAt: '2026-01-03T00:00:00.000Z',
+        editRequestedBy: '0912345678',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('allows filler photoPath update on locked record', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'members', memberId),
+        memberLocked({ lockedAt: '2026-01-02T00:00:00.000Z', photoPath: null }),
+      )
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(
+      updateDoc(doc(anon, 'members', memberId), {
+        photoPath: 'members/gd-i_tang_012345678901/photo.jpg',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      }),
+    )
   })
 
   it('lets admin lock and unlock regardless of current status, but not sneak in profile edits during a lock transition', async () => {
@@ -193,6 +288,32 @@ describe('members', () => {
     )
     await assertFails(
       updateDoc(doc(admin, 'members', memberId), { status: 'draft', lockedAt: null, lockedBy: null, theDanh: 'sneaky', updatedAt: '2026-01-02T00:01:00.000Z' }),
+    )
+  })
+
+  it('lets admin unlock clear edit-request fields', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'members', memberId),
+        memberLocked({
+          lockedAt: '2026-01-02T00:00:00.000Z',
+          lockedBy: 'filler',
+          editRequestedAt: '2026-01-03T00:00:00.000Z',
+          editRequestedBy: '0912345678',
+        }),
+      )
+    })
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertSucceeds(
+      updateDoc(doc(admin, 'members', memberId), {
+        status: 'draft',
+        lockedAt: null,
+        lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
+        updatedAt: '2026-01-04T00:00:00.000Z',
+      }),
     )
   })
 
@@ -249,11 +370,18 @@ describe('members', () => {
 })
 
 describe('temples', () => {
-  it('allows a public create for any org unit, gated only on a valid invite id', async () => {
+  it('rejects filler create with draft status', async () => {
     const env = await getTestEnv()
     const anon = env.unauthenticatedContext().firestore()
-    await assertSucceeds(setDoc(doc(anon, 'temples', 'temple-1'), templeDraft()))
-    await assertSucceeds(setDoc(doc(anon, 'temples', 'temple-2'), templeDraft({ orgUnitId: 'gd-ii' })))
+    await assertFails(setDoc(doc(anon, 'temples', 'temple-1'), templeDraft()))
+    await assertFails(setDoc(doc(anon, 'temples', 'temple-2'), templeDraft({ orgUnitId: 'gd-ii' })))
+  })
+
+  it('allows filler create when status is locked by filler with null edit-request fields', async () => {
+    const env = await getTestEnv()
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(setDoc(doc(anon, 'temples', 'temple-1'), templeLocked()))
+    await assertSucceeds(setDoc(doc(anon, 'temples', 'temple-2'), templeLocked({ orgUnitId: 'gd-ii' })))
   })
 
   it('rejects create with an invite id that does not exist', async () => {
@@ -262,27 +390,73 @@ describe('temples', () => {
     await assertFails(setDoc(doc(anon, 'temples', 'temple-1'), templeDraft({ inviteId: 'does-not-exist' })))
   })
 
-  it('lets anyone holding the invite update an unlocked temple', async () => {
+  it('blocks filler profile updates on draft without locking', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'temples', 'temple-1'), templeDraft())
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      updateDoc(doc(anon, 'temples', 'temple-1'), { danhHieu: 'Chua ABC', updatedAt: '2026-01-02T00:00:00.000Z' }),
+    )
+  })
+
+  it('allows filler draft to locked save-and-lock with profile changes', async () => {
     const env = await getTestEnv()
     await env.withSecurityRulesDisabled(async (ctx) => {
       await setDoc(doc(ctx.firestore(), 'temples', 'temple-1'), templeDraft())
     })
     const anon = env.unauthenticatedContext().firestore()
     await assertSucceeds(
-      updateDoc(doc(anon, 'temples', 'temple-1'), { danhHieu: 'Chua ABC', updatedAt: '2026-01-02T00:00:00.000Z' }),
+      updateDoc(doc(anon, 'temples', 'temple-1'), {
+        danhHieu: 'Chua ABC',
+        status: 'locked',
+        lockedAt: '2026-01-02T00:00:00.000Z',
+        lockedBy: 'filler',
+        editRequestedAt: null,
+        editRequestedBy: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
     )
   })
 
-  it('blocks updates once locked, and blocks changing orgUnitId', async () => {
+  it('blocks filler profile updates on locked temples', async () => {
     const env = await getTestEnv()
     await env.withSecurityRulesDisabled(async (ctx) => {
-      await setDoc(doc(ctx.firestore(), 'temples', 'temple-1'), templeDraft({ status: 'locked', lockedAt: '2026-01-02T00:00:00.000Z', lockedBy: 'admin-uid' }))
+      await setDoc(
+        doc(ctx.firestore(), 'temples', 'temple-1'),
+        templeLocked({ lockedAt: '2026-01-02T00:00:00.000Z' }),
+      )
     })
     const anon = env.unauthenticatedContext().firestore()
-    await assertFails(updateDoc(doc(anon, 'temples', 'temple-1'), { danhHieu: 'x' }))
+    await assertFails(updateDoc(doc(anon, 'temples', 'temple-1'), { danhHieu: 'x', updatedAt: '2026-01-03T00:00:00.000Z' }))
 
     const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
     await assertFails(updateDoc(doc(admin, 'temples', 'temple-1'), { orgUnitId: 'gd-ii' }))
+  })
+
+  it('allows filler edit-request and photoPath update on locked temple', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'temples', 'temple-1'),
+        templeLocked({ lockedAt: '2026-01-02T00:00:00.000Z', photoPath: null }),
+      )
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(
+      updateDoc(doc(anon, 'temples', 'temple-1'), {
+        editRequestedAt: '2026-01-03T00:00:00.000Z',
+        editRequestedBy: '0912345678',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      }),
+    )
+    await assertSucceeds(
+      updateDoc(doc(anon, 'temples', 'temple-1'), {
+        photoPath: 'temples/temple-1/photo.jpg',
+        updatedAt: '2026-01-04T00:00:00.000Z',
+      }),
+    )
   })
 
   it('allows admin to update profile fields on a locked temple without unlocking', async () => {

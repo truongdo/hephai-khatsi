@@ -25,8 +25,14 @@ const member: Member = {
   hienTuHoc: '',
   bonSu: '',
   inviteId: 'retreat_r1',
+  currentTempleId: null,
+  photoPath: null,
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
+  lockedAt: null,
+  lockedBy: null,
+  editRequestedAt: null,
+  editRequestedBy: null,
 }
 
 function baseRegistration(

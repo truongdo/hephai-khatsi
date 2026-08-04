@@ -10,14 +10,16 @@ import {
 } from '@mantine/core'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { useAuth } from '#/auth/useAuth'
 import { AdminDenied } from '#/components/admin/AdminDenied'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { FormStickyActions } from '#/components/FormStickyActions'
-import { buildTemplePatch } from '#/components/filler/templeDraft'
+import { buildTemplePatch, type TempleDraft } from '#/components/filler/templeDraft'
+import { useFormLocalDraft } from '#/hooks/useFormLocalDraft'
+import { templeDraftStorageKey } from '#/lib/formLocalDraft'
 import { canManageDirectory } from '#/domain/authClaims'
 import { validateTempleRequiredFields } from '#/components/filler/templeRequiredValidation'
 import {
@@ -75,9 +77,41 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
     [orgUnits.data],
   )
 
+  const actorId = user?.uid ?? 'admin'
+  const formReady = mode === 'create' || !!temple.data
+
+  const storageKey = useMemo(() => {
+    if (mode === 'edit' && templeId) {
+      return templeDraftStorageKey({ kind: 'existing', templeId })
+    }
+    return templeDraftStorageKey({
+      kind: 'new',
+      orgUnitId: orgUnitId ?? '',
+      actorId,
+    })
+  }, [actorId, mode, orgUnitId, templeId])
+
+  const handleLocalDraftRestore = useCallback((fields: TempleDraft) => {
+    fieldsApiRef.current?.restoreDraft(fields)
+  }, [])
+
+  const { persist, clear } = useFormLocalDraft<TempleDraft>({
+    storageKey,
+    enabled: manageDirectory && formReady,
+    hasServerData: mode === 'edit' && !!temple.data,
+    onRestore: handleLocalDraftRestore,
+  })
+
+  const handleDraftChange = useCallback(
+    (draft: TempleDraft) => {
+      persist(draft)
+    },
+    [persist],
+  )
+
   const isLocked = mode === 'edit' && temple.data?.status === 'locked'
 
-  async function persist() {
+  async function performSave() {
     const api = fieldsApiRef.current
     if (!api || !orgUnitId) throw new Error('Missing org unit')
 
@@ -113,9 +147,10 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
   }
 
   const saveMutation = useMutation({
-    mutationFn: persist,
+    mutationFn: performSave,
     onSuccess: async (result) => {
       setSaveSuccess(m.filler_save_success())
+      clear()
       await queryClient.invalidateQueries({
         queryKey: [...adminKeys.all, 'temples'],
       })
@@ -169,12 +204,6 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
       }
     },
   })
-
-  const saveDraft = () => {
-    setPhotoError(null)
-    setSaveSuccess(null)
-    saveMutation.mutate()
-  }
 
   const complete = () => {
     const api = fieldsApiRef.current
@@ -265,6 +294,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
               templeId={templeId}
               getIdToken={async () => (user ? user.getIdToken() : undefined)}
               onUploadError={setPhotoError}
+              onDraftChange={handleDraftChange}
             />
 
             <FormStickyActions
@@ -288,13 +318,6 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
                 </>
               }
             >
-              <Button
-                loading={saveMutation.isPending}
-                disabled={!orgUnitId}
-                onClick={() => void saveDraft()}
-              >
-                {m.admin_temples_save_draft()}
-              </Button>
               <Button
                 loading={saveMutation.isPending}
                 disabled={!orgUnitId}

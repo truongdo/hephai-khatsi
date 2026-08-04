@@ -200,12 +200,87 @@ export function createMemoryMemberStore(
         updatedAt: now,
         lockedAt: null,
         lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
         ...input.patch,
       }
       members.set(id, member)
       index.set(indexId, id)
       appendPhoneIndex(phoneIndex, member)
       return { member, mode: 'created' as const }
+    },
+    async createOrUpdateAndLock(input: CreateOrUpdateMemberDraftInput) {
+      const indexId = memberCccdIndexId(
+        input.orgUnitId,
+        input.sanghaType,
+        input.cccd,
+      )
+      const now = '2026-07-19T00:00:00.000Z'
+      const existingMemberId = index.get(indexId)
+
+      if (existingMemberId) {
+        const existing = members.get(existingMemberId)
+        if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
+        if (existing.status === 'locked') {
+          throw new DomainError('RECORD_LOCKED', 'Member is locked')
+        }
+        const member: Member = {
+          ...existing,
+          ...input.patch,
+          inviteId: input.inviteId,
+          status: 'locked',
+          lockedAt: now,
+          lockedBy: 'filler',
+          editRequestedAt: null,
+          editRequestedBy: null,
+          updatedAt: now,
+        }
+        members.set(existing.id, member)
+        appendPhoneIndex(phoneIndex, member)
+        return { member, mode: 'updated' as const }
+      }
+
+      const id = `member-${members.size + 1}`
+      const member: Member = {
+        id,
+        orgUnitId: input.orgUnitId,
+        sanghaType: input.sanghaType,
+        status: 'locked',
+        cccd: input.cccd,
+        inviteId: input.inviteId,
+        currentTempleId: null,
+        photoPath: null,
+        createdAt: now,
+        updatedAt: now,
+        lockedAt: now,
+        lockedBy: 'filler',
+        editRequestedAt: null,
+        editRequestedBy: null,
+        ...input.patch,
+      }
+      members.set(id, member)
+      index.set(indexId, id)
+      appendPhoneIndex(phoneIndex, member)
+      return { member, mode: 'created' as const }
+    },
+    async requestEdit(memberId: string, phone: string) {
+      const existing = members.get(memberId)
+      if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
+      if (existing.status !== 'locked') {
+        throw new DomainError('INVALID_STATUS', 'Member is not locked')
+      }
+      if (existing.editRequestedAt) {
+        return existing
+      }
+      const now = '2026-07-19T00:00:00.000Z'
+      const member: Member = {
+        ...existing,
+        editRequestedAt: now,
+        editRequestedBy: phone,
+        updatedAt: now,
+      }
+      members.set(memberId, member)
+      return member
     },
     async updateDraftById(
       memberId: string,
@@ -230,6 +305,8 @@ export function createMemoryMemberStore(
         createdAt: existing.createdAt,
         lockedAt: existing.lockedAt,
         lockedBy: existing.lockedBy,
+        editRequestedAt: existing.editRequestedAt,
+        editRequestedBy: existing.editRequestedBy,
         updatedAt: now,
       }
       members.set(memberId, member)
@@ -355,6 +432,8 @@ export function createMemoryMemberStore(
         status: 'locked',
         lockedAt: '2026-07-19T00:00:00.000Z',
         lockedBy,
+        editRequestedAt: null,
+        editRequestedBy: null,
         updatedAt: '2026-07-19T00:00:00.000Z',
       }
       members.set(memberId, member)
@@ -371,6 +450,8 @@ export function createMemoryMemberStore(
         status: 'draft',
         lockedAt: null,
         lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
         updatedAt: '2026-07-19T00:00:00.000Z',
       }
       members.set(memberId, member)
@@ -466,6 +547,8 @@ export function createMemoryTempleStore(
           updatedAt: now,
           lockedAt: existing.lockedAt,
           lockedBy: existing.lockedBy,
+          editRequestedAt: existing.editRequestedAt,
+          editRequestedBy: existing.editRequestedBy,
         }
         temples.set(temple.id, temple)
         return { temple, mode: 'updated' as const }
@@ -484,9 +567,87 @@ export function createMemoryTempleStore(
         updatedAt: now,
         lockedAt: null,
         lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
       }
       temples.set(id, temple)
       return { temple, mode: 'created' as const }
+    },
+    async createOrUpdateAndLock(input: CreateOrUpdateTempleDraftInput) {
+      const now = '2026-07-19T00:00:00.000Z'
+
+      if (input.templeId) {
+        const existing = temples.get(input.templeId)
+        if (!existing) throw new DomainError('NOT_FOUND', 'Temple not found')
+        if (existing.orgUnitId !== input.orgUnitId) {
+          throw new DomainError(
+            'FORBIDDEN',
+            'Temple does not belong to this invite org unit',
+          )
+        }
+        if (existing.status === 'locked') {
+          throw new DomainError('RECORD_LOCKED', 'Temple is locked')
+        }
+        const temple: Temple = {
+          ...existing,
+          ...input.patch,
+          id: existing.id,
+          orgUnitId: existing.orgUnitId,
+          status: 'locked',
+          managerPhones: input.managerPhones,
+          inviteId: input.inviteId ?? existing.inviteId,
+          photoPath:
+            'photoPath' in input.patch
+              ? (input.patch.photoPath ?? null)
+              : (existing.photoPath ?? null),
+          createdAt: existing.createdAt,
+          updatedAt: now,
+          lockedAt: now,
+          lockedBy: 'filler',
+          editRequestedAt: null,
+          editRequestedBy: null,
+        }
+        temples.set(temple.id, temple)
+        return { temple, mode: 'updated' as const }
+      }
+
+      const id = `temple-${temples.size + 1}`
+      const temple: Temple = {
+        ...input.patch,
+        id,
+        orgUnitId: input.orgUnitId,
+        status: 'locked',
+        managerPhones: input.managerPhones,
+        inviteId: input.inviteId,
+        photoPath: input.patch.photoPath ?? null,
+        createdAt: now,
+        updatedAt: now,
+        lockedAt: now,
+        lockedBy: 'filler',
+        editRequestedAt: null,
+        editRequestedBy: null,
+      }
+      temples.set(id, temple)
+      return { temple, mode: 'created' as const }
+    },
+    async requestEdit(templeId: string, phone: string) {
+      const existing = temples.get(templeId)
+      if (!existing) throw new DomainError('NOT_FOUND', 'Temple not found')
+      if (existing.status !== 'locked') {
+        throw new DomainError('INVALID_STATUS', 'Temple is not locked')
+      }
+      if (existing.editRequestedAt) {
+        return existing
+      }
+      const now = '2026-07-19T00:00:00.000Z'
+      const temple: Temple = {
+        ...existing,
+        editRequestedAt: now,
+        editRequestedBy: phone,
+        updatedAt: now,
+      }
+      temples.set(templeId, temple)
+      return temple
     },
     async getById(templeId: string) {
       const temple = temples.get(templeId)
@@ -508,6 +669,8 @@ export function createMemoryTempleStore(
         status: 'locked',
         lockedAt: '2026-07-19T00:00:00.000Z',
         lockedBy,
+        editRequestedAt: null,
+        editRequestedBy: null,
         updatedAt: '2026-07-19T00:00:00.000Z',
       }
       temples.set(templeId, temple)
@@ -524,6 +687,8 @@ export function createMemoryTempleStore(
         status: 'draft',
         lockedAt: null,
         lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
         updatedAt: '2026-07-19T00:00:00.000Z',
       }
       temples.set(templeId, temple)

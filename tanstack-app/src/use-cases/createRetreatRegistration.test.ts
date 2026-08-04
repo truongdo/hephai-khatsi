@@ -48,6 +48,8 @@ function sampleMember(overrides: Partial<Member> & Pick<Member, 'id'>): Member {
     updatedAt: '2026-07-19T00:00:00.000Z',
     lockedAt: null,
     lockedBy: null,
+    editRequestedAt: null,
+    editRequestedBy: null,
     ...overrides,
   }
 }

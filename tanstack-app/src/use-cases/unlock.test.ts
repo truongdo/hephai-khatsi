@@ -17,6 +17,8 @@ const lockedMember: Member = {
   updatedAt: '2026-07-19T01:00:00.000Z',
   lockedAt: '2026-07-19T01:00:00.000Z',
   lockedBy: 'admin-1',
+  editRequestedAt: null,
+  editRequestedBy: null,
 }
 
 describe('unlockMember', () => {
@@ -26,6 +28,19 @@ describe('unlockMember', () => {
     expect(result.status).toBe('draft')
     expect(result.lockedAt).toBeNull()
     expect(result.lockedBy).toBeNull()
+  })
+
+  it('clears editRequested* when unlocking a flagged record', async () => {
+    const store = createMemoryMemberStore([
+      {
+        ...lockedMember,
+        editRequestedAt: '2026-08-04T00:00:00.000Z',
+        editRequestedBy: '0901234567',
+      },
+    ])
+    const result = await unlockMember({ memberId: 'm1' }, store)
+    expect(result.editRequestedAt).toBeNull()
+    expect(result.editRequestedBy).toBeNull()
   })
 
   it('is idempotent when already draft', async () => {
@@ -54,11 +69,34 @@ describe('unlockTemple', () => {
       updatedAt: '2026-07-19T01:00:00.000Z',
       lockedAt: '2026-07-19T01:00:00.000Z',
       lockedBy: 'admin-1',
+      editRequestedAt: null,
+      editRequestedBy: null,
     }
     const store = createMemoryTempleStore([temple])
     const result = await unlockTemple({ templeId: 't1' }, store)
     expect(result.status).toBe('draft')
     expect(result.lockedAt).toBeNull()
     expect(result.lockedBy).toBeNull()
+  })
+
+  it('clears editRequested* when unlocking a flagged record', async () => {
+    const temple: Temple = {
+      id: 't2',
+      orgUnitId: 'gd-i',
+      status: 'locked',
+      managerPhones: ['0901234567'],
+      inviteId: null,
+      photoPath: null,
+      createdAt: '2026-07-19T00:00:00.000Z',
+      updatedAt: '2026-07-19T01:00:00.000Z',
+      lockedAt: '2026-07-19T01:00:00.000Z',
+      lockedBy: 'admin-1',
+      editRequestedAt: '2026-08-04T00:00:00.000Z',
+      editRequestedBy: '0901234567',
+    }
+    const store = createMemoryTempleStore([temple])
+    const result = await unlockTemple({ templeId: 't2' }, store)
+    expect(result.editRequestedAt).toBeNull()
+    expect(result.editRequestedBy).toBeNull()
   })
 })

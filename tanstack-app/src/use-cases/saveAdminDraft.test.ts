@@ -45,6 +45,8 @@ describe('saveAdminMember', () => {
         updatedAt: '2026-07-19T00:00:00.000Z',
         lockedAt: null,
         lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
         phapDanh: 'Old',
       },
     ])
@@ -93,6 +95,8 @@ describe('saveAdminMember', () => {
         updatedAt: '2026-07-19T00:00:00.000Z',
         lockedAt: '2026-07-19T01:00:00.000Z',
         lockedBy: 'admin-1',
+        editRequestedAt: null,
+        editRequestedBy: null,
       },
     ])
     const { member, mode } = await saveAdminMember(
@@ -126,6 +130,8 @@ describe('saveAdminMember', () => {
         updatedAt: '2026-07-19T00:00:00.000Z',
         lockedAt: '2026-07-19T01:00:00.000Z',
         lockedBy: 'admin-1',
+        editRequestedAt: null,
+        editRequestedBy: null,
       },
     ])
     const updated = await store.setPhotoPath('m1', 'members/m1/photo.jpg')
@@ -148,6 +154,8 @@ describe('saveAdminMember', () => {
         updatedAt: '2026-07-19T00:00:00.000Z',
         lockedAt: '2026-07-19T01:00:00.000Z',
         lockedBy: 'admin-1',
+        editRequestedAt: null,
+        editRequestedBy: null,
       },
     ])
     await expect(
@@ -170,6 +178,8 @@ describe('saveAdminMember', () => {
         updatedAt: '2026-07-19T00:00:00.000Z',
         lockedAt: null,
         lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
       },
     ])
     await expect(
@@ -211,6 +221,8 @@ describe('saveAdminMember', () => {
         updatedAt: '2026-07-19T00:00:00.000Z',
         lockedAt: null,
         lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
         phapDanh: 'Old',
       },
       {
@@ -226,6 +238,8 @@ describe('saveAdminMember', () => {
         updatedAt: '2026-07-19T00:00:00.000Z',
         lockedAt: null,
         lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
       },
     ])
     store.index.set(memberCccdIndexId('gd-i', 'tang', '001099012345'), 'm2')
@@ -278,6 +292,8 @@ describe('saveAdminTemple', () => {
         updatedAt: '2026-07-19T00:00:00.000Z',
         lockedAt: null,
         lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
       },
     ])
     const { temple, mode } = await saveAdminTemple(
@@ -307,6 +323,8 @@ describe('saveAdminTemple', () => {
         updatedAt: '2026-07-19T00:00:00.000Z',
         lockedAt: '2026-07-19T01:00:00.000Z',
         lockedBy: 'admin-1',
+        editRequestedAt: null,
+        editRequestedBy: null,
       },
     ])
     const { temple, mode } = await saveAdminTemple(
@@ -337,6 +355,8 @@ describe('saveAdminTemple', () => {
         updatedAt: '2026-07-19T00:00:00.000Z',
         lockedAt: '2026-07-19T01:00:00.000Z',
         lockedBy: 'admin-1',
+        editRequestedAt: null,
+        editRequestedBy: null,
       },
     ])
     const updated = await store.setPhotoPath('t1', 'temples/t1/photo.jpg')

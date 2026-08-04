@@ -78,6 +78,10 @@ export type MemberStore = {
   createOrUpdateDraft(
     input: CreateOrUpdateMemberDraftInput,
   ): Promise<{ member: Member; mode: 'created' | 'updated' }>
+  createOrUpdateAndLock(
+    input: CreateOrUpdateMemberDraftInput,
+  ): Promise<{ member: Member; mode: 'created' | 'updated' }>
+  requestEdit(memberId: string, phone: string): Promise<Member>
   updateDraftById(
     memberId: string,
     patch: MemberProfilePatch,
@@ -195,8 +199,9 @@ function memberData(member: Member): Omit<Member, 'id'> {
   return data
 }
 
-async function createOrUpdateDraft(
+async function createOrUpdateMember(
   input: CreateOrUpdateMemberDraftInput,
+  options: { lock: boolean },
 ): Promise<{ member: Member; mode: 'created' | 'updated' }> {
   const db = requireDb()
   const memberId = memberDocId(input.orgUnitId, input.sanghaType, input.cccd)
@@ -221,14 +226,16 @@ async function createOrUpdateDraft(
         id: existing.id,
         orgUnitId: existing.orgUnitId,
         sanghaType: existing.sanghaType,
-        status: existing.status,
+        status: options.lock ? 'locked' : existing.status,
         cccd: existing.cccd,
         // Re-validated (not frozen) per the current invite token, matching
         // the security rule's re-check on every non-admin write.
         inviteId: input.inviteId,
         createdAt: existing.createdAt,
-        lockedAt: existing.lockedAt,
-        lockedBy: existing.lockedBy,
+        lockedAt: options.lock ? now : existing.lockedAt,
+        lockedBy: options.lock ? 'filler' : existing.lockedBy,
+        editRequestedAt: options.lock ? null : existing.editRequestedAt,
+        editRequestedBy: options.lock ? null : existing.editRequestedBy,
         updatedAt: now,
       }
       mode = 'updated'
@@ -240,13 +247,15 @@ async function createOrUpdateDraft(
         id: memberId,
         orgUnitId: input.orgUnitId,
         sanghaType: input.sanghaType,
-        status: 'draft',
+        status: options.lock ? 'locked' : 'draft',
         cccd: input.cccd,
         inviteId: input.inviteId,
         createdAt: now,
         updatedAt: now,
-        lockedAt: null,
-        lockedBy: null,
+        lockedAt: options.lock ? now : null,
+        lockedBy: options.lock ? 'filler' : null,
+        editRequestedAt: null,
+        editRequestedBy: null,
       }
       mode = 'created'
     }
@@ -262,6 +271,48 @@ async function createOrUpdateDraft(
     transaction.set(memberRef, memberData(member))
     writePhoneIndex(transaction, phoneIndex, member.id)
     return { member, mode }
+  })
+}
+
+async function createOrUpdateDraft(
+  input: CreateOrUpdateMemberDraftInput,
+): Promise<{ member: Member; mode: 'created' | 'updated' }> {
+  return createOrUpdateMember(input, { lock: false })
+}
+
+async function createOrUpdateAndLock(
+  input: CreateOrUpdateMemberDraftInput,
+): Promise<{ member: Member; mode: 'created' | 'updated' }> {
+  return createOrUpdateMember(input, { lock: true })
+}
+
+async function requestEdit(memberId: string, phone: string): Promise<Member> {
+  const db = requireDb()
+  const memberRef = doc(db, COLLECTIONS.members, memberId)
+
+  return runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(memberRef)
+    if (!snap.exists()) {
+      throw new DomainError('NOT_FOUND', 'Member not found')
+    }
+
+    const existing = memberFromSnap(snap)
+    if (existing.status !== 'locked') {
+      throw new DomainError('INVALID_STATUS', 'Member is not locked')
+    }
+    if (existing.editRequestedAt) {
+      return existing
+    }
+
+    const now = new Date().toISOString()
+    const member: Member = {
+      ...existing,
+      editRequestedAt: now,
+      editRequestedBy: phone,
+      updatedAt: now,
+    }
+    transaction.set(memberRef, memberData(member))
+    return member
   })
 }
 
@@ -297,6 +348,8 @@ async function updateDraftById(
       createdAt: existing.createdAt,
       lockedAt: existing.lockedAt,
       lockedBy: existing.lockedBy,
+      editRequestedAt: existing.editRequestedAt,
+      editRequestedBy: existing.editRequestedBy,
       updatedAt: now,
     }
 
@@ -568,6 +621,8 @@ async function lock(memberId: string, lockedBy: string): Promise<Member> {
       status: 'locked',
       lockedAt: now,
       lockedBy,
+      editRequestedAt: null,
+      editRequestedBy: null,
       updatedAt: now,
     }
     transaction.set(memberRef, memberData(member))
@@ -594,6 +649,8 @@ async function unlock(memberId: string): Promise<Member> {
       status: 'draft',
       lockedAt: null,
       lockedBy: null,
+      editRequestedAt: null,
+      editRequestedBy: null,
       updatedAt: now,
     }
     transaction.set(memberRef, memberData(member))
@@ -603,6 +660,8 @@ async function unlock(memberId: string): Promise<Member> {
 
 export const memberRepo: MemberStore = {
   createOrUpdateDraft,
+  createOrUpdateAndLock,
+  requestEdit,
   updateDraftById,
   getByCccd,
   getById,

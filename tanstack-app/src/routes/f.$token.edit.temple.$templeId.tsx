@@ -6,11 +6,15 @@ import { m } from '#/paraglide/messages'
 import { fillerTempleQuery } from '#/query/fillerQueries'
 
 export const Route = createFileRoute('/f/$token/edit/temple/$templeId')({
+  validateSearch: (search: Record<string, unknown>) => ({
+    phone: typeof search.phone === 'string' ? search.phone : '',
+  }),
   component: TempleEditRoute,
 })
 
 function TempleEditRoute() {
   const { token, templeId } = Route.useParams()
+  const { phone } = Route.useSearch()
   const navigate = Route.useNavigate()
   const templeQuery = useQuery(fillerTempleQuery(templeId))
 
@@ -36,7 +40,7 @@ function TempleEditRoute() {
       token={token}
       orgUnitId={temple.orgUnitId}
       templeId={templeId}
-      initial={temple}
+      initial={{ ...temple, seedPhone: phone || temple.truTriHienNay?.dienThoai }}
       status={status}
       onCreated={(createdTempleId) =>
         navigate({

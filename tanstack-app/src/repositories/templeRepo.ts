@@ -54,6 +54,10 @@ export type TempleStore = {
   createOrUpdateDraft(
     input: CreateOrUpdateTempleDraftInput,
   ): Promise<{ temple: Temple; mode: 'created' | 'updated' }>
+  createOrUpdateAndLock(
+    input: CreateOrUpdateTempleDraftInput,
+  ): Promise<{ temple: Temple; mode: 'created' | 'updated' }>
+  requestEdit(templeId: string, phone: string): Promise<Temple>
   getById(templeId: string): Promise<Temple | null>
   listByOrgAndPhone(input: TemplePhoneLookupInput): Promise<Temple[]>
   list(input: ListTemplesAdminInput): Promise<AdminListPage<Temple>>
@@ -91,8 +95,9 @@ function templeData(temple: Temple): Omit<Temple, 'id'> {
   return data
 }
 
-async function createOrUpdateDraft(
+async function createOrUpdateTemple(
   input: CreateOrUpdateTempleDraftInput,
+  options: { lock: boolean },
 ): Promise<{ temple: Temple; mode: 'created' | 'updated' }> {
   const db = requireDb()
 
@@ -130,7 +135,7 @@ async function createOrUpdateDraft(
           ...input.patch,
           id: existing.id,
           orgUnitId: existing.orgUnitId,
-          status: existing.status === 'locked' ? 'locked' : 'draft',
+          status: options.lock ? 'locked' : existing.status === 'locked' ? 'locked' : 'draft',
           managerPhones: input.managerPhones,
           // Re-validated (not frozen) per the current invite token on
           // non-admin (public flow) writes, matching the security rule's
@@ -143,21 +148,25 @@ async function createOrUpdateDraft(
               : (existing.photoPath ?? null),
           createdAt: existing.createdAt,
           updatedAt: now,
-          lockedAt: existing.lockedAt,
-          lockedBy: existing.lockedBy,
+          lockedAt: options.lock ? now : existing.lockedAt,
+          lockedBy: options.lock ? 'filler' : existing.lockedBy,
+          editRequestedAt: options.lock ? null : existing.editRequestedAt,
+          editRequestedBy: options.lock ? null : existing.editRequestedBy,
         }
       : {
           ...input.patch,
           id: templeRef.id,
           orgUnitId: input.orgUnitId,
-          status: 'draft',
+          status: options.lock ? 'locked' : 'draft',
           managerPhones: input.managerPhones,
           inviteId: input.inviteId,
           photoPath: input.patch.photoPath ?? null,
           createdAt: now,
           updatedAt: now,
-          lockedAt: null,
-          lockedBy: null,
+          lockedAt: options.lock ? now : null,
+          lockedBy: options.lock ? 'filler' : null,
+          editRequestedAt: null,
+          editRequestedBy: null,
         }
 
     transaction.set(templeRef, templeData(temple))
@@ -170,6 +179,48 @@ async function createOrUpdateDraft(
     })
 
     return existing ? { temple, mode: 'updated' as const } : { temple, mode: 'created' as const }
+  })
+}
+
+async function createOrUpdateDraft(
+  input: CreateOrUpdateTempleDraftInput,
+): Promise<{ temple: Temple; mode: 'created' | 'updated' }> {
+  return createOrUpdateTemple(input, { lock: false })
+}
+
+async function createOrUpdateAndLock(
+  input: CreateOrUpdateTempleDraftInput,
+): Promise<{ temple: Temple; mode: 'created' | 'updated' }> {
+  return createOrUpdateTemple(input, { lock: true })
+}
+
+async function requestEdit(templeId: string, phone: string): Promise<Temple> {
+  const db = requireDb()
+  const templeRef = doc(db, COLLECTIONS.temples, templeId)
+
+  return runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(templeRef)
+    if (!snap.exists()) {
+      throw new DomainError('NOT_FOUND', 'Temple not found')
+    }
+
+    const existing = templeFromSnap(snap)
+    if (existing.status !== 'locked') {
+      throw new DomainError('INVALID_STATUS', 'Temple is not locked')
+    }
+    if (existing.editRequestedAt) {
+      return existing
+    }
+
+    const now = new Date().toISOString()
+    const temple: Temple = {
+      ...existing,
+      editRequestedAt: now,
+      editRequestedBy: phone,
+      updatedAt: now,
+    }
+    transaction.set(templeRef, templeData(temple))
+    return temple
   })
 }
 
@@ -231,6 +282,8 @@ async function lock(templeId: string, lockedBy: string): Promise<Temple> {
       status: 'locked',
       lockedAt: now,
       lockedBy,
+      editRequestedAt: null,
+      editRequestedBy: null,
       updatedAt: now,
     }
     transaction.set(templeRef, templeData(temple))
@@ -332,6 +385,8 @@ async function unlock(templeId: string): Promise<Temple> {
       status: 'draft',
       lockedAt: null,
       lockedBy: null,
+      editRequestedAt: null,
+      editRequestedBy: null,
       updatedAt: now,
     }
     transaction.set(templeRef, templeData(temple))
@@ -341,6 +396,8 @@ async function unlock(templeId: string): Promise<Temple> {
 
 export const templeRepo: TempleStore = {
   createOrUpdateDraft,
+  createOrUpdateAndLock,
+  requestEdit,
   getById,
   listByOrgAndPhone,
   list,

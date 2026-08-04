@@ -18,6 +18,8 @@ function temple(overrides: Partial<Temple> & { id: string }): Temple {
     updatedAt: '2026-07-19T00:00:00.000Z',
     lockedAt: null,
     lockedBy: null,
+    editRequestedAt: null,
+    editRequestedBy: null,
     ...overrides,
   }
 }

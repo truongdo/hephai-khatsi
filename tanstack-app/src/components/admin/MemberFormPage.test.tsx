@@ -12,6 +12,7 @@ import { uploadMemberPhoto } from '#/use-cases/uploadMemberPhoto'
 import { uploadMemberDocument } from '#/use-cases/uploadMemberDocument'
 import { theme } from '../../theme'
 import { documentTypeLabel } from '../filler/memberDocumentLabels'
+import * as memberRequiredValidation from '../filler/memberRequiredValidation'
 import { MemberFormPage } from './MemberFormPage'
 
 const draftMember: Member = {
@@ -30,6 +31,8 @@ const draftMember: Member = {
   updatedAt: '2026-07-19T10:00:00.000Z',
   lockedAt: null,
   lockedBy: null,
+  editRequestedAt: null,
+  editRequestedBy: null,
 }
 
 const lockedMember: Member = {
@@ -225,6 +228,7 @@ afterEach(() => {
 })
 
 beforeEach(() => {
+  localStorage.clear()
   memberFixture = lockedMember
   saveAdminMemberMock.mockReset()
   lockMemberMock.mockReset()
@@ -278,7 +282,7 @@ function renderForm({ mode }: { mode: 'create' | 'edit' }) {
 }
 
 async function selectOrgUnit(user: ReturnType<typeof userEvent.setup>) {
-  await screen.findByRole('button', { name: m.admin_members_save_draft() })
+  await screen.findByRole('button', { name: m.admin_members_complete() })
   const select = await screen.findByRole('combobox', {
     name: new RegExp(`^${m.admin_members_form_org_unit()}$`),
   })
@@ -311,28 +315,6 @@ describe('MemberFormPage', () => {
     expect(screen.getByText(m.filler_field_anh_chan_dung())).toBeTruthy()
   })
 
-  it('Lưu nháp saves without member required-field validation when org and CCCD are present', async () => {
-    const user = userEvent.setup()
-    renderForm({ mode: 'create' })
-    await selectOrgUnit(user)
-    await user.type(
-      screen.getByLabelText(new RegExp(`^${m.admin_members_form_cccd()}`)),
-      '001099012345',
-    )
-    await user.click(
-      screen.getByRole('button', { name: m.admin_members_save_draft() }),
-    )
-
-    await vi.waitFor(() => expect(saveAdminMemberMock).toHaveBeenCalled())
-    expect(saveAdminMemberMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        orgUnitId: 'gd-i',
-        sanghaType: 'tang',
-        cccd: '001099012345',
-      }),
-    )
-  })
-
   it('Hoàn thành does not save when required fields missing', async () => {
     const user = userEvent.setup()
     renderForm({ mode: 'create' })
@@ -351,7 +333,7 @@ describe('MemberFormPage', () => {
     ).toBeGreaterThan(0)
   })
 
-  it('keeps fields editable when locked and shows both save buttons', async () => {
+  it('keeps fields editable when locked and shows complete button', async () => {
     memberFixture = lockedMember
     renderForm({ mode: 'edit' })
     const input = await screen.findByLabelText(
@@ -359,8 +341,8 @@ describe('MemberFormPage', () => {
     )
     expect(input).not.toBeDisabled()
     expect(
-      screen.getByRole('button', { name: m.admin_members_save_draft() }),
-    ).toBeTruthy()
+      screen.queryByRole('button', { name: m.admin_members_save_draft() }),
+    ).toBeNull()
     expect(
       screen.getByRole('button', { name: m.admin_members_complete() }),
     ).toBeTruthy()
@@ -368,6 +350,10 @@ describe('MemberFormPage', () => {
 
   it('uploads pending portrait after successful create and navigates to edit', async () => {
     const user = userEvent.setup()
+    vi.spyOn(
+      memberRequiredValidation,
+      'validateMemberRequiredFields',
+    ).mockReturnValue({ valid: true, errors: {} })
     let resolveUpload!: (value: { photoPath: string }) => void
     const uploadPromise = new Promise<{ photoPath: string }>((resolve) => {
       resolveUpload = resolve
@@ -382,7 +368,7 @@ describe('MemberFormPage', () => {
     const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
     await user.upload(getPortraitFileInput(), file)
     await user.click(
-      screen.getByRole('button', { name: m.admin_members_save_draft() }),
+      screen.getByRole('button', { name: m.admin_members_complete() }),
     )
 
     await vi.waitFor(() => expect(saveAdminMemberMock).toHaveBeenCalled())
@@ -406,6 +392,10 @@ describe('MemberFormPage', () => {
 
   it('uploads pending document after successful create and navigates to edit', async () => {
     const user = userEvent.setup()
+    vi.spyOn(
+      memberRequiredValidation,
+      'validateMemberRequiredFields',
+    ).mockReturnValue({ valid: true, errors: {} })
     let resolveUpload!: (value: {
       filePath: string
       documents: { diep_sa_di: { filePath: string } }
@@ -427,7 +417,7 @@ describe('MemberFormPage', () => {
     await pickPendingDocType(user)
     await user.upload(getDocumentFileInput(), file)
     await user.click(
-      screen.getByRole('button', { name: m.admin_members_save_draft() }),
+      screen.getByRole('button', { name: m.admin_members_complete() }),
     )
 
     await vi.waitFor(() => expect(saveAdminMemberMock).toHaveBeenCalled())
