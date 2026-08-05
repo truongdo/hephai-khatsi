@@ -71,6 +71,8 @@ function completeDraftMember(): Member {
     noiXuatGia: { ...completeAddress, line: 'Tịnh xá A' },
     photoPath: 'members/m1/photo.jpg',
     giaDinh: completeFamily,
+    giaoPhamGiaoHoi: { rank: 'ty_kheo' },
+    giaoPhamHePhai: { rank: 'ty_kheo' },
     documents: {
       cccd: {
         frontPath: 'members/m1/docs/cccd/front.jpg',

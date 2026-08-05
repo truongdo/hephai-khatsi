@@ -54,7 +54,7 @@ type FieldErrors = {
 function identityFieldError(code: string): string {
   switch (code) {
     case 'PHONE_INVALID':
-      return 'Số điện thoại không hợp lệ.'
+      return m.filler_error_phone_invalid()
     default:
       return m.filler_error_generic()
   }

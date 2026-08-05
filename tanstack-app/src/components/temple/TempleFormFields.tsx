@@ -35,6 +35,14 @@ function mapEmailError(
   return undefined
 }
 
+function mapPhoneError(
+  code: 'REQUIRED' | 'INVALID' | undefined,
+): string | undefined {
+  if (code === 'REQUIRED') return m.filler_error_field_required()
+  if (code === 'INVALID') return m.filler_error_phone_invalid()
+  return undefined
+}
+
 function mapAddressCodeErrors(
   errors?: { city?: 'REQUIRED'; ward?: 'REQUIRED' },
 ): AddressFieldErrors | undefined {
@@ -172,7 +180,7 @@ export function TempleFormFields({
         errors={{
           truTriHienNay: {
             phapDanh: mapRequiredError(fieldErrors.truTriHienNay?.phapDanh),
-            dienThoai: mapRequiredError(fieldErrors.truTriHienNay?.dienThoai),
+            dienThoai: mapPhoneError(fieldErrors.truTriHienNay?.dienThoai),
             email: mapEmailError(fieldErrors.truTriHienNay?.email),
           },
           truTriTienNhiem: mapTienNhiemErrors(fieldErrors.truTriTienNhiem),
@@ -237,6 +245,11 @@ export function TempleFormFields({
             setExtraManagerPhone(event.currentTarget.value)
           }
           disabled={disabled}
+          error={
+            fieldErrors.extraManagerPhone === 'INVALID'
+              ? m.filler_error_phone_invalid()
+              : undefined
+          }
         />
       </FormSection>
     </Stack>

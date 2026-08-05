@@ -80,6 +80,14 @@ function mapEmailError(
   return undefined
 }
 
+function mapPhoneError(
+  code: 'REQUIRED' | 'INVALID' | undefined,
+): string | undefined {
+  if (code === 'REQUIRED') return m.filler_error_field_required()
+  if (code === 'INVALID') return m.filler_error_phone_invalid()
+  return undefined
+}
+
 function mapCccdError(
   code: 'REQUIRED' | 'INVALID' | undefined,
 ): string | undefined {
@@ -516,7 +524,7 @@ export function MemberFormFields({
             }
             disabled={disabled}
             required
-            error={mapRequiredError(fieldErrors.dienThoai)}
+            error={mapPhoneError(fieldErrors.dienThoai)}
           />
           <TextInput
             label={m.filler_field_email()}
@@ -793,7 +801,8 @@ export function MemberFormFields({
                   onChange={(value) =>
                     updateGiaoPhamRank('giaoPhamGiaoHoi', value ?? '')
                   }
-                  clearable
+                  required
+                  error={mapRequiredError(fieldErrors.giaoPhamGiaoHoi?.rank)}
                 />
                 {rankShowsNamTienPhong(draft.giaoPhamGiaoHoi.rank) ? (
                   <NumberInput
@@ -821,7 +830,8 @@ export function MemberFormFields({
                   onChange={(value) =>
                     updateGiaoPhamRank('giaoPhamHePhai', value ?? '')
                   }
-                  clearable
+                  required
+                  error={mapRequiredError(fieldErrors.giaoPhamHePhai?.rank)}
                 />
                 {rankShowsNamTienPhong(draft.giaoPhamHePhai.rank) ? (
                   <NumberInput
@@ -975,6 +985,8 @@ export function MemberFormFields({
       fieldErrors.hienTuHoc,
       fieldErrors.bonSu,
       fieldErrors.noiXuatGia,
+      fieldErrors.giaoPhamGiaoHoi,
+      fieldErrors.giaoPhamHePhai,
     ],
   )
 

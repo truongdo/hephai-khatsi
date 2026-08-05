@@ -202,6 +202,7 @@
   "filler_error_field_required": "Vui lòng điền mục này",
   "filler_error_email_invalid": "Email không hợp lệ",
   "filler_error_cccd_invalid": "CCCD phải có 9–12 chữ số.",
+  "filler_error_phone_invalid": "Số điện thoại không hợp lệ.",
   "filler_error_identity_mismatch": "Thông tin nhập không đúng.",
   "filler_status_draft": "Bản nháp",
   "filler_status_view": "Chỉ xem",

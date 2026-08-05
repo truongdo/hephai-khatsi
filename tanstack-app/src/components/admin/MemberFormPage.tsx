@@ -306,6 +306,8 @@ export function MemberFormPage({
       },
       documents: api.getDocuments(),
       pendingDocuments: api.getPendingDocuments(),
+      giaoPhamGiaoHoi: { rank: draft.giaoPhamGiaoHoi.rank },
+      giaoPhamHePhai: { rank: draft.giaoPhamHePhai.rank },
     })
     if (!result.valid) {
       api.setFieldErrors(result.errors)

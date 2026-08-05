@@ -255,6 +255,8 @@ const requiredCoreBase = {
   diaChiThuongTru: { ...completeAddress },
   noiXuatGia: { ...completeAddress, line: 'Tịnh xá A' },
   giaDinh: completeFamily,
+  giaoPhamGiaoHoi: { rank: 'ty_kheo' },
+  giaoPhamHePhai: { rank: 'ty_kheo' },
 }
 
 const requiredCoreInitial = {

@@ -91,6 +91,34 @@ describe('validateTempleRequiredFields', () => {
     expect(result.errors.truTriHienNay?.email).toBe('INVALID')
   })
 
+  it('rejects invalid tru tri phone format', () => {
+    const result = validateTempleRequiredFields(
+      filledDraft({
+        truTriHienNay: {
+          phapDanh: 'Thích A',
+          dienThoai: '12345',
+          email: 'a@b.co',
+        },
+      }),
+    )
+    expect(result.valid).toBe(false)
+    expect(result.errors.truTriHienNay?.dienThoai).toBe('INVALID')
+  })
+
+  it('rejects invalid extra manager phone when present', () => {
+    const result = validateTempleRequiredFields(
+      filledDraft({ extraManagerPhone: 'abc' }),
+    )
+    expect(result.valid).toBe(false)
+    expect(result.errors.extraManagerPhone).toBe('INVALID')
+  })
+
+  it('allows blank extra manager phone', () => {
+    expect(
+      validateTempleRequiredFields(filledDraft({ extraManagerPhone: '  ' })),
+    ).toEqual({ valid: true, errors: {} })
+  })
+
   it('fails empty phap danh on tien nhiem row', () => {
     const result = validateTempleRequiredFields(
       filledDraft({

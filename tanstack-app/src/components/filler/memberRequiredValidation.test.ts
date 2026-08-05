@@ -56,6 +56,8 @@ function filledDraft(
     giaDinh: { cha: filledFamilyPerson, me: filledFamilyPerson },
     documents: completeCccdDocuments,
     pendingDocuments: {},
+    giaoPhamGiaoHoi: { rank: 'ty_kheo' },
+    giaoPhamHePhai: { rank: 'ty_kheo' },
     ...overrides,
   }
 }
@@ -92,6 +94,8 @@ describe('validateMemberRequiredFields', () => {
       giaDinh: { cha: emptyFamilyPerson, me: emptyFamilyPerson },
       documents: {},
       pendingDocuments: {},
+      giaoPhamGiaoHoi: { rank: '' },
+      giaoPhamHePhai: { rank: '  ' },
     })
     expect(result.valid).toBe(false)
     expect(result.errors.cccd).toBe('REQUIRED')
@@ -99,6 +103,8 @@ describe('validateMemberRequiredFields', () => {
     expect(result.errors.phapDanh).toBe('REQUIRED')
     expect(result.errors.email).toBe('REQUIRED')
     expect(result.errors.photo).toBe('REQUIRED')
+    expect(result.errors.giaoPhamGiaoHoi).toEqual({ rank: 'REQUIRED' })
+    expect(result.errors.giaoPhamHePhai).toEqual({ rank: 'REQUIRED' })
     expect(result.errors.noiSinh).toEqual({
       city: 'REQUIRED',
     })
@@ -144,6 +150,20 @@ describe('validateMemberRequiredFields', () => {
     )
     expect(result.valid).toBe(false)
     expect(result.errors.email).toBe('INVALID')
+  })
+
+  it('rejects invalid phone format', () => {
+    const result = validateMemberRequiredFields(
+      filledDraft({ dienThoai: '12345' }),
+    )
+    expect(result.valid).toBe(false)
+    expect(result.errors.dienThoai).toBe('INVALID')
+  })
+
+  it('accepts spaced Vietnam phone', () => {
+    expect(
+      validateMemberRequiredFields(filledDraft({ dienThoai: '0901 234 567' })),
+    ).toEqual({ valid: true, errors: {} })
   })
 
   it('accepts a fully filled draft', () => {
@@ -246,5 +266,33 @@ describe('validateMemberRequiredFields', () => {
         }),
       ),
     ).toEqual({ valid: true, errors: {} })
+  })
+
+  it('requires giaoPhamGiaoHoi and giaoPhamHePhai ranks', () => {
+    const result = validateMemberRequiredFields(
+      filledDraft({
+        giaoPhamGiaoHoi: { rank: '' },
+        giaoPhamHePhai: { rank: '' },
+      }),
+    )
+    expect(result.valid).toBe(false)
+    expect(result.errors.giaoPhamGiaoHoi).toEqual({ rank: 'REQUIRED' })
+    expect(result.errors.giaoPhamHePhai).toEqual({ rank: 'REQUIRED' })
+  })
+
+  it('requires only the missing giáo phẩm rank', () => {
+    const missingGiaoHoi = validateMemberRequiredFields(
+      filledDraft({ giaoPhamGiaoHoi: { rank: '  ' } }),
+    )
+    expect(missingGiaoHoi.valid).toBe(false)
+    expect(missingGiaoHoi.errors.giaoPhamGiaoHoi).toEqual({ rank: 'REQUIRED' })
+    expect(missingGiaoHoi.errors.giaoPhamHePhai).toBeUndefined()
+
+    const missingHePhai = validateMemberRequiredFields(
+      filledDraft({ giaoPhamHePhai: { rank: '' } }),
+    )
+    expect(missingHePhai.valid).toBe(false)
+    expect(missingHePhai.errors.giaoPhamHePhai).toEqual({ rank: 'REQUIRED' })
+    expect(missingHePhai.errors.giaoPhamGiaoHoi).toBeUndefined()
   })
 })

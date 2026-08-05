@@ -1,6 +1,6 @@
 import type { AddressDraft } from '#/domain/address'
 import { validateAddressDraft } from '#/domain/address'
-import { isBasicEmail } from './memberRequiredValidation'
+import { isBasicEmail, requireVnPhone } from './memberRequiredValidation'
 import type { NumericValue } from './templeDraft'
 
 export type TempleRequiredDraft = {
@@ -20,6 +20,8 @@ export type TempleRequiredDraft = {
   soPhatTuQuyY: NumericValue
   soPhatTuThuongXuyen: NumericValue
   hasPhoto: boolean
+  /** Optional additional manager phone — validated only when non-empty. */
+  extraManagerPhone?: string
 }
 
 export type TempleRequiredFieldErrors = {
@@ -30,7 +32,7 @@ export type TempleRequiredFieldErrors = {
   diaChiMoi?: { city?: 'REQUIRED'; ward?: 'REQUIRED' }
   truTriHienNay?: {
     phapDanh?: 'REQUIRED'
-    dienThoai?: 'REQUIRED'
+    dienThoai?: 'REQUIRED' | 'INVALID'
     email?: 'REQUIRED' | 'INVALID'
   }
   truTriTienNhiem?: 'REQUIRED' | Array<{ phapDanh?: 'REQUIRED' } | undefined>
@@ -43,6 +45,7 @@ export type TempleRequiredFieldErrors = {
   soPhatTuQuyY?: 'REQUIRED'
   soPhatTuThuongXuyen?: 'REQUIRED'
   photo?: 'REQUIRED'
+  extraManagerPhone?: 'INVALID'
 }
 
 function requireText(value: string): 'REQUIRED' | undefined {
@@ -82,12 +85,17 @@ export function validateTempleRequiredFields(draft: TempleRequiredDraft): {
   const truTri: NonNullable<TempleRequiredFieldErrors['truTriHienNay']> = {}
   const phapDanh = requireText(draft.truTriHienNay.phapDanh)
   if (phapDanh) truTri.phapDanh = phapDanh
-  const dienThoai = requireText(draft.truTriHienNay.dienThoai)
+  const dienThoai = requireVnPhone(draft.truTriHienNay.dienThoai)
   if (dienThoai) truTri.dienThoai = dienThoai
   const emailTrimmed = draft.truTriHienNay.email.trim()
   if (!emailTrimmed) truTri.email = 'REQUIRED'
   else if (!isBasicEmail(emailTrimmed)) truTri.email = 'INVALID'
   if (Object.keys(truTri).length > 0) errors.truTriHienNay = truTri
+
+  const extraPhone = requireVnPhone(draft.extraManagerPhone ?? '', {
+    required: false,
+  })
+  if (extraPhone === 'INVALID') errors.extraManagerPhone = 'INVALID'
 
   if (draft.truTriTienNhiem.length === 0) {
     errors.truTriTienNhiem = 'REQUIRED'

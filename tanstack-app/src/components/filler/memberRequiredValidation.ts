@@ -22,6 +22,8 @@ export type MemberRequiredDraft = {
   giaDinh: { cha: FamilyPersonDraft; me: FamilyPersonDraft }
   documents: MemberDocuments
   pendingDocuments: PendingDocumentFiles
+  giaoPhamGiaoHoi: { rank: string }
+  giaoPhamHePhai: { rank: string }
 }
 
 export type MemberRequiredFieldErrors = {
@@ -30,7 +32,7 @@ export type MemberRequiredFieldErrors = {
   phapDanh?: 'REQUIRED'
   ngaySinh?: 'REQUIRED'
   noiSinh?: { city?: 'REQUIRED'; ward?: 'REQUIRED' }
-  dienThoai?: 'REQUIRED'
+  dienThoai?: 'REQUIRED' | 'INVALID'
   email?: 'REQUIRED' | 'INVALID'
   diaChiThuongTru?: { city?: 'REQUIRED'; ward?: 'REQUIRED' }
   ngayXuatGia?: 'REQUIRED'
@@ -43,6 +45,8 @@ export type MemberRequiredFieldErrors = {
     cha?: Partial<Record<keyof FamilyPersonDraft, 'REQUIRED'>>
     me?: Partial<Record<keyof FamilyPersonDraft, 'REQUIRED'>>
   }
+  giaoPhamGiaoHoi?: { rank?: 'REQUIRED' }
+  giaoPhamHePhai?: { rank?: 'REQUIRED' }
 }
 
 const BASIC_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -60,6 +64,22 @@ function requireCccd(raw: string): 'REQUIRED' | 'INVALID' | undefined {
   const digits = raw.replace(/\D/g, '')
   if (!digits) return 'REQUIRED'
   if (digits.length < 9 || digits.length > 12) return 'INVALID'
+  return undefined
+}
+
+/** Mirror `normalizeVnPhone` without throwing. Empty → REQUIRED when required. */
+export function requireVnPhone(
+  raw: string,
+  options?: { required?: boolean },
+): 'REQUIRED' | 'INVALID' | undefined {
+  const required = options?.required !== false
+  if (!raw.trim()) return required ? 'REQUIRED' : undefined
+
+  let digits = raw.replace(/\D/g, '')
+  if (digits.startsWith('84') && digits.length >= 11) {
+    digits = `0${digits.slice(2)}`
+  }
+  if (!/^0\d{9,10}$/.test(digits)) return 'INVALID'
   return undefined
 }
 
@@ -101,7 +121,7 @@ export function validateMemberRequiredFields(draft: MemberRequiredDraft): {
   if (phapDanh) errors.phapDanh = phapDanh
   const ngaySinh = requireText(draft.ngaySinh)
   if (ngaySinh) errors.ngaySinh = ngaySinh
-  const dienThoai = requireText(draft.dienThoai)
+  const dienThoai = requireVnPhone(draft.dienThoai)
   if (dienThoai) errors.dienThoai = dienThoai
   const ngayXuatGia = requireText(draft.ngayXuatGia)
   if (ngayXuatGia) errors.ngayXuatGia = ngayXuatGia
@@ -132,6 +152,11 @@ export function validateMemberRequiredFields(draft: MemberRequiredDraft): {
   if (diaChiThuongTru) errors.diaChiThuongTru = diaChiThuongTru
   const noiXuatGia = mapAddress(draft.noiXuatGia, { lineRequired: true })
   if (noiXuatGia) errors.noiXuatGia = noiXuatGia
+
+  const gpGiaoHoiRank = requireText(draft.giaoPhamGiaoHoi.rank)
+  if (gpGiaoHoiRank) errors.giaoPhamGiaoHoi = { rank: gpGiaoHoiRank }
+  const gpHePhaiRank = requireText(draft.giaoPhamHePhai.rank)
+  if (gpHePhaiRank) errors.giaoPhamHePhai = { rank: gpHePhaiRank }
 
   return { valid: Object.keys(errors).length === 0, errors }
 }

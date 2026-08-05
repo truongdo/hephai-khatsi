@@ -222,6 +222,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
       soPhatTuQuyY: draft.soPhatTuQuyY,
       soPhatTuThuongXuyen: draft.soPhatTuThuongXuyen,
       hasPhoto: !!(api.getPhotoPath() || api.getPendingPhoto()),
+      extraManagerPhone: api.getExtraManagerPhone(),
     })
     if (!result.valid) {
       api.setFieldErrors(result.errors)
