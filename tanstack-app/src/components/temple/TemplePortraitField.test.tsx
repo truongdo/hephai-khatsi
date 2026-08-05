@@ -167,4 +167,13 @@ describe('TemplePortraitField', () => {
     expect(onUploadError).toHaveBeenCalledOnce()
     expect(onUploadError).toHaveBeenCalledWith(m.filler_photo_upload_error())
   })
+
+  it('shows required label and validation error', () => {
+    renderField({
+      required: true,
+      error: m.filler_error_field_required(),
+    })
+    expect(screen.getByText(m.filler_field_anh_tinh_xa())).toBeTruthy()
+    expect(screen.getByText(m.filler_error_field_required())).toBeTruthy()
+  })
 })

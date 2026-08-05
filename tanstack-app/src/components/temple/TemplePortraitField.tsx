@@ -1,4 +1,13 @@
-import { ActionIcon, Box, Button, FileButton, Image, Stack, Text } from '@mantine/core'
+import {
+  ActionIcon,
+  Box,
+  Button,
+  FileButton,
+  Image,
+  Input,
+  Stack,
+  Text,
+} from '@mantine/core'
 import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { m } from '#/paraglide/messages'
@@ -26,6 +35,8 @@ export type TemplePortraitFieldProps = {
   onPendingFileChange: (file: File | null) => void
   onPhotoPathChange: (photoPath: string | null) => void
   onUploadError?: (message: string) => void
+  required?: boolean
+  error?: string
 }
 
 export function TemplePortraitField({
@@ -39,6 +50,8 @@ export function TemplePortraitField({
   onPendingFileChange,
   onPhotoPathChange,
   onUploadError,
+  required = false,
+  error,
 }: TemplePortraitFieldProps) {
   const [typeError, setTypeError] = useState<string | null>(null)
   const [objectUrl, setObjectUrl] = useState<string | null>(null)
@@ -147,9 +160,9 @@ export function TemplePortraitField({
 
   return (
     <Stack gap="xs" align="flex-start">
-      <Text size="sm" fw={500}>
+      <Input.Label required={required}>
         {m.filler_field_anh_tinh_xa()}
-      </Text>
+      </Input.Label>
       <Box
         style={{
           position: 'relative',
@@ -201,6 +214,11 @@ export function TemplePortraitField({
             </Button>
           )}
         </FileButton>
+      ) : null}
+      {error ? (
+        <Text size="sm" c="red">
+          {error}
+        </Text>
       ) : null}
       {typeError ? (
         <Text size="sm" c="red">

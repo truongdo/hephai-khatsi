@@ -138,6 +138,8 @@ export function TempleFormFields({
         onPendingFileChange={setPendingPhoto}
         onPhotoPathChange={setPhotoPath}
         onUploadError={onUploadError}
+        required
+        error={mapRequiredError(fieldErrors.photo)}
       />
       <TempleIdentitySection
         danhHieu={draft.danhHieu}
