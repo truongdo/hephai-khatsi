@@ -19,6 +19,7 @@ export type TempleRequiredDraft = {
   }
   soPhatTuQuyY: NumericValue
   soPhatTuThuongXuyen: NumericValue
+  hasPhoto: boolean
 }
 
 export type TempleRequiredFieldErrors = {
@@ -41,6 +42,7 @@ export type TempleRequiredFieldErrors = {
   }
   soPhatTuQuyY?: 'REQUIRED'
   soPhatTuThuongXuyen?: 'REQUIRED'
+  photo?: 'REQUIRED'
 }
 
 function requireText(value: string): 'REQUIRED' | undefined {
@@ -112,6 +114,8 @@ export function validateTempleRequiredFields(draft: TempleRequiredDraft): {
   if (soPhatTuQuyY) errors.soPhatTuQuyY = soPhatTuQuyY
   const soPhatTuThuongXuyen = requireNumber(draft.soPhatTuThuongXuyen)
   if (soPhatTuThuongXuyen) errors.soPhatTuThuongXuyen = soPhatTuThuongXuyen
+
+  if (!draft.hasPhoto) errors.photo = 'REQUIRED'
 
   return { valid: Object.keys(errors).length === 0, errors }
 }

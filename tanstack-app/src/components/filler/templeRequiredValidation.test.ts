@@ -31,6 +31,7 @@ function filledDraft(
     tangSoHienTru: { tyKheo: 0, thucXoaMaNa: 0, saDi: 0, tapSu: 0 },
     soPhatTuQuyY: 0,
     soPhatTuThuongXuyen: 0,
+    hasPhoto: true,
     ...overrides,
   }
 }
@@ -48,6 +49,7 @@ describe('validateTempleRequiredFields', () => {
       tangSoHienTru: { tyKheo: '', thucXoaMaNa: '', saDi: '', tapSu: '' },
       soPhatTuQuyY: '',
       soPhatTuThuongXuyen: '',
+      hasPhoto: false,
     })
     expect(result.valid).toBe(false)
     expect(result.errors.danhHieu).toBe('REQUIRED')
@@ -72,6 +74,7 @@ describe('validateTempleRequiredFields', () => {
     })
     expect(result.errors.soPhatTuQuyY).toBe('REQUIRED')
     expect(result.errors.soPhatTuThuongXuyen).toBe('REQUIRED')
+    expect(result.errors.photo).toBe('REQUIRED')
   })
 
   it('marks invalid tru tri email format', () => {
@@ -100,6 +103,21 @@ describe('validateTempleRequiredFields', () => {
 
   it('accepts zero counts and a filled draft', () => {
     expect(validateTempleRequiredFields(filledDraft())).toEqual({
+      valid: true,
+      errors: {},
+    })
+  })
+
+  it('requires photo when hasPhoto is false', () => {
+    const result = validateTempleRequiredFields(
+      filledDraft({ hasPhoto: false }),
+    )
+    expect(result.valid).toBe(false)
+    expect(result.errors.photo).toBe('REQUIRED')
+  })
+
+  it('accepts hasPhoto true without other photo fields', () => {
+    expect(validateTempleRequiredFields(filledDraft({ hasPhoto: true }))).toEqual({
       valid: true,
       errors: {},
     })
