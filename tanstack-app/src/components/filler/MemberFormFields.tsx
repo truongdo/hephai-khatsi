@@ -19,7 +19,12 @@ import type { Member, SanghaType } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { fillerOrgUnitsQuery } from '#/query/fillerQueries'
 import type { FillerOption } from './fillerFormOptions'
-import { NI_RANKS, TANG_RANKS } from './fillerFormOptions'
+import {
+  namTienPhongAfterRankChange,
+  NI_RANKS,
+  rankShowsNamTienPhong,
+  TANG_RANKS,
+} from './fillerFormOptions'
 import { FormSection } from './FormSection'
 import {
   EMPTY_ANH_CHI_EM,
@@ -204,6 +209,22 @@ export function MemberFormFields({
     setDraft((current) => ({
       ...current,
       [key]: { ...(current[key] as object), [field]: value },
+    }))
+
+  const updateGiaoPhamRank = (
+    key: 'giaoPhamGiaoHoi' | 'giaoPhamHePhai',
+    rank: string,
+  ) =>
+    setDraft((current) => ({
+      ...current,
+      [key]: {
+        ...current[key],
+        rank,
+        namTienPhong: namTienPhongAfterRankChange(
+          rank,
+          current[key].namTienPhong,
+        ),
+      },
     }))
 
   const updateFamilyPerson = (
@@ -760,23 +781,25 @@ export function MemberFormFields({
                   data={ranks}
                   value={draft.giaoPhamGiaoHoi.rank || null}
                   onChange={(value) =>
-                    updateNested('giaoPhamGiaoHoi', 'rank', value ?? '')
+                    updateGiaoPhamRank('giaoPhamGiaoHoi', value ?? '')
                   }
                   clearable
                 />
-                <NumberInput
-                  label={m.filler_field_nam_tien_phong()}
-                  placeholder={m.filler_ph_year()}
-                  value={draft.giaoPhamGiaoHoi.namTienPhong}
-                  onChange={(value) =>
-                    updateNested(
-                      'giaoPhamGiaoHoi',
-                      'namTienPhong',
-                      numberInputValue(value),
-                    )
-                  }
-                  min={0}
-                />
+                {rankShowsNamTienPhong(draft.giaoPhamGiaoHoi.rank) ? (
+                  <NumberInput
+                    label={m.filler_field_nam_tien_phong()}
+                    placeholder={m.filler_ph_year()}
+                    value={draft.giaoPhamGiaoHoi.namTienPhong}
+                    onChange={(value) =>
+                      updateNested(
+                        'giaoPhamGiaoHoi',
+                        'namTienPhong',
+                        numberInputValue(value),
+                      )
+                    }
+                    min={0}
+                  />
+                ) : null}
               </Stack>
             </Fieldset>
             <Fieldset legend={m.filler_field_gp_he_phai()} disabled={disabled}>
@@ -786,23 +809,25 @@ export function MemberFormFields({
                   data={ranks}
                   value={draft.giaoPhamHePhai.rank || null}
                   onChange={(value) =>
-                    updateNested('giaoPhamHePhai', 'rank', value ?? '')
+                    updateGiaoPhamRank('giaoPhamHePhai', value ?? '')
                   }
                   clearable
                 />
-                <NumberInput
-                  label={m.filler_field_nam_tien_phong()}
-                  placeholder={m.filler_ph_year()}
-                  value={draft.giaoPhamHePhai.namTienPhong}
-                  onChange={(value) =>
-                    updateNested(
-                      'giaoPhamHePhai',
-                      'namTienPhong',
-                      numberInputValue(value),
-                    )
-                  }
-                  min={0}
-                />
+                {rankShowsNamTienPhong(draft.giaoPhamHePhai.rank) ? (
+                  <NumberInput
+                    label={m.filler_field_nam_tien_phong()}
+                    placeholder={m.filler_ph_year()}
+                    value={draft.giaoPhamHePhai.namTienPhong}
+                    onChange={(value) =>
+                      updateNested(
+                        'giaoPhamHePhai',
+                        'namTienPhong',
+                        numberInputValue(value),
+                      )
+                    }
+                    min={0}
+                  />
+                ) : null}
               </Stack>
             </Fieldset>
           </SimpleGrid>

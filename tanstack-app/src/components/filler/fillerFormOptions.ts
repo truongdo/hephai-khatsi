@@ -7,15 +7,36 @@ export const TANG_RANKS: FillerOption[] = [
   { value: 'thuong_toa', label: () => m.filler_rank_thuong_toa() },
   { value: 'dai_duc', label: () => m.filler_rank_dai_duc() },
   { value: 'ty_kheo', label: () => m.filler_rank_ty_kheo() },
+  { value: 'sa_di', label: () => m.filler_rank_sa_di() },
+  { value: 'tap_su', label: () => m.filler_rank_tap_su() },
 ]
 
 export const NI_RANKS: FillerOption[] = [
   { value: 'ni_truong', label: () => m.filler_rank_ni_truong() },
   { value: 'ni_su', label: () => m.filler_rank_ni_su() },
-  { value: 'su_co', label: () => m.filler_rank_su_co() },
   { value: 'ty_kheo_ni', label: () => m.filler_rank_ty_kheo_ni() },
-  { value: 'ni_co', label: () => m.filler_rank_ni_co() },
+  { value: 'thuc_xoa_ma_na', label: () => m.filler_rank_thuc_xoa_ma_na() },
+  { value: 'sa_di_ni', label: () => m.filler_rank_sa_di_ni() },
+  { value: 'tap_su', label: () => m.filler_rank_tap_su() },
 ]
+
+const RANKS_WITH_NAM_TIEN_PHONG = new Set([
+  'hoa_thuong',
+  'thuong_toa',
+  'ni_truong',
+  'ni_su',
+])
+
+export function rankShowsNamTienPhong(rank: string): boolean {
+  return RANKS_WITH_NAM_TIEN_PHONG.has(rank)
+}
+
+export function namTienPhongAfterRankChange(
+  rank: string,
+  current: string | number,
+): string | number {
+  return rankShowsNamTienPhong(rank) ? current : ''
+}
 
 export const DAC_DIEM_OPTIONS: FillerOption[] = [
   { value: 'tru_so_he_phai', label: () => m.filler_opt_dac_diem_tru_so_hp() },
