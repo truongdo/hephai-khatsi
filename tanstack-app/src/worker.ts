@@ -1,4 +1,5 @@
 import type { Env } from './worker/env'
+import { handleDirectoryRoleApi } from './worker/directoryRoleApi'
 import { handleDocsApi } from './worker/docsApi'
 import { handlePhotosApi } from './worker/photosApi'
 
@@ -13,6 +14,9 @@ export default {
     }
     if (url.pathname.startsWith('/api/docs')) {
       return handleDocsApi(request, env)
+    }
+    if (url.pathname.startsWith('/api/admin/directory-role')) {
+      return handleDirectoryRoleApi(request, env)
     }
     if (url.pathname.startsWith('/api/')) {
       return new Response('Not found', { status: 404 })

@@ -132,6 +132,10 @@ export type Member = {
   lockedBy: string | null
   editRequestedAt: string | null
   editRequestedBy: string | null
+  directoryRole?: 'giao_doan_admin'
+  directoryAuthUid?: string
+  directoryRoleGrantedAt?: string
+  directoryRoleGrantedBy?: string
 }
 
 export type Temple = {

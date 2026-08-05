@@ -1,12 +1,15 @@
 import {
+  Badge,
   Button,
   Group,
   Loader,
+  Modal,
   Paper,
   Select,
   Stack,
   Text,
   Title,
+  Tooltip,
 } from '@mantine/core'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -27,7 +30,15 @@ import { useFormLocalDraft } from '#/hooks/useFormLocalDraft'
 import { memberDraftStorageKey } from '#/lib/formLocalDraft'
 import { validateMemberRequiredFields } from '#/components/filler/memberRequiredValidation'
 import type { SanghaType } from '#/domain/types'
-import { canManageDirectory } from '#/domain/authClaims'
+import {
+  canGrantDirectoryRole,
+  canManageDirectory,
+} from '#/domain/authClaims'
+import { isGmailEmail } from '#/domain/gmail'
+import {
+  grantDirectoryRole,
+  revokeDirectoryRole,
+} from '#/directoryRole/directoryRoleApiClient'
 import { adminKeys } from '#/query/adminKeys'
 import { memberQuery, orgUnitsQuery } from '#/query/adminQueries'
 import { lockMember } from '#/use-cases/lockMember'
@@ -69,12 +80,28 @@ export function MemberFormPage({
     claim.status === 'admin' &&
     canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
 
+  const isHePhaiAdmin =
+    claim.status === 'admin' && claim.role === 'he_phai_admin'
+
+  const claims =
+    claim.status === 'admin'
+      ? { role: claim.role, orgUnitId: claim.orgUnitId }
+      : null
+
+  const canGrant =
+    claim.status === 'admin' &&
+    canGrantDirectoryRole({ role: claim.role, orgUnitId: claim.orgUnitId })
+
   const [orgUnitId, setOrgUnitId] = useState<string | null>(null)
   const [sanghaType, setSanghaType] = useState<SanghaType>(initialSanghaType)
   const [cccd, setCccd] = useState('')
   const [photoError, setPhotoError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
   const [auditHistoryOpen, setAuditHistoryOpen] = useState(false)
+  const [revokeDirectoryRoleOpen, setRevokeDirectoryRoleOpen] = useState(false)
+  const [directoryRoleSuccess, setDirectoryRoleSuccess] = useState<string | null>(
+    null,
+  )
 
   const orgUnits = useQuery({
     ...orgUnitsQuery(),
@@ -87,11 +114,23 @@ export function MemberFormPage({
   })
 
   useEffect(() => {
+    if (mode === 'create') {
+      if (claim.status === 'admin' && claim.role === 'giao_doan_admin') {
+        setOrgUnitId(claim.orgUnitId)
+      }
+      return
+    }
     if (!member.data) return
     setOrgUnitId(member.data.orgUnitId)
     setSanghaType(member.data.sanghaType)
     setCccd(member.data.cccd)
-  }, [member.data])
+  }, [
+    mode,
+    member.data,
+    claim.status,
+    claim.role,
+    claim.status === 'admin' ? claim.orgUnitId : null,
+  ])
 
   const orgUnitSelectData = useMemo(
     () =>
@@ -153,6 +192,7 @@ export function MemberFormPage({
   async function performSave() {
     const api = fieldsApiRef.current
     if (!api || !orgUnitId) throw new Error('Missing org unit')
+    if (!claims) throw new Error('Not signed in as admin')
     if (mode === 'create' && !cccd.trim()) throw new Error('Missing CCCD')
 
     const draft = api.getDraft()
@@ -171,6 +211,7 @@ export function MemberFormPage({
             patch: buildMemberPatch(draft),
           },
       { actorType: 'admin', actorId: claim.status === 'admin' ? claim.uid : actorId },
+      claims,
     )
 
     const pending = api.getPendingPhoto()
@@ -293,6 +334,50 @@ export function MemberFormPage({
     },
   })
 
+  const invalidateMemberAndSecretaries = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: adminKeys.directorySecretaries(),
+    })
+    if (memberId) {
+      await queryClient.invalidateQueries({
+        queryKey: adminKeys.member(memberId),
+      })
+    }
+  }
+
+  const grantDirectoryRoleMutation = useMutation({
+    mutationFn: async () => {
+      if (!memberId) throw new Error('Missing member id')
+      if (!user) throw new Error('Not signed in')
+      const idToken = await user.getIdToken()
+      return grantDirectoryRole({ memberId, idToken })
+    },
+    onSuccess: async () => {
+      setDirectoryRoleSuccess(m.admin_member_directory_role_grant_success())
+      await invalidateMemberAndSecretaries()
+    },
+    onError: () => {
+      setDirectoryRoleSuccess(null)
+    },
+  })
+
+  const revokeDirectoryRoleMutation = useMutation({
+    mutationFn: async () => {
+      if (!memberId) throw new Error('Missing member id')
+      if (!user) throw new Error('Not signed in')
+      const idToken = await user.getIdToken()
+      return revokeDirectoryRole({ memberId, idToken })
+    },
+    onSuccess: async () => {
+      setRevokeDirectoryRoleOpen(false)
+      setDirectoryRoleSuccess(m.admin_member_directory_role_revoke_success())
+      await invalidateMemberAndSecretaries()
+    },
+    onError: () => {
+      setDirectoryRoleSuccess(null)
+    },
+  })
+
   const complete = () => {
     const api = fieldsApiRef.current
     if (!api) return
@@ -335,7 +420,9 @@ export function MemberFormPage({
   const mutationError =
     saveMutation.error?.message ??
     lockMutation.error?.message ??
-    unlockMutation.error?.message
+    unlockMutation.error?.message ??
+    grantDirectoryRoleMutation.error?.message ??
+    revokeDirectoryRoleMutation.error?.message
 
   const isLoading = mode === 'edit' && member.isPending
   const canSaveCreate = !!orgUnitId && !!cccd.trim()
@@ -361,19 +448,59 @@ export function MemberFormPage({
   return (
     <Stack>
       <Group justify="space-between" align="center">
-        <Title order={2}>
-          {mode === 'create'
-            ? m.admin_members_form_title_create()
-            : m.admin_members_form_title_edit()}
-        </Title>
-        <Button
-          component={Link}
-          to={listPath(effectiveSanghaType)}
-          variant="subtle"
-        >
-          {m.admin_members_back()}
-        </Button>
+        <Group gap="sm">
+          <Title order={2}>
+            {mode === 'create'
+              ? m.admin_members_form_title_create()
+              : m.admin_members_form_title_edit()}
+          </Title>
+          {canGrant &&
+            mode === 'edit' &&
+            member.data?.directoryRole === 'giao_doan_admin' && (
+              <Badge>{m.admin_member_directory_role_badge()}</Badge>
+            )}
+        </Group>
+        <Group gap="sm">
+          {canGrant && mode === 'edit' && member.data && (
+            member.data.directoryRole === 'giao_doan_admin' ? (
+              <Button
+                variant="outline"
+                color="red"
+                onClick={() => setRevokeDirectoryRoleOpen(true)}
+              >
+                {m.admin_member_directory_role_revoke()}
+              </Button>
+            ) : (
+              <Tooltip
+                label={m.admin_member_directory_role_need_gmail()}
+                disabled={isGmailEmail(member.data.email)}
+              >
+                <span>
+                  <Button
+                    variant="outline"
+                    disabled={!isGmailEmail(member.data.email)}
+                    loading={grantDirectoryRoleMutation.isPending}
+                    onClick={() => grantDirectoryRoleMutation.mutate()}
+                  >
+                    {m.admin_member_directory_role_grant()}
+                  </Button>
+                </span>
+              </Tooltip>
+            )
+          )}
+          <Button
+            component={Link}
+            to={listPath(effectiveSanghaType)}
+            variant="subtle"
+          >
+            {m.admin_members_back()}
+          </Button>
+        </Group>
       </Group>
+
+      {directoryRoleSuccess && (
+        <Text c="green" size="sm">{directoryRoleSuccess}</Text>
+      )}
 
       {isLoading && <Loader aria-label="loading" />}
       {member.isError && member.error && (
@@ -390,15 +517,17 @@ export function MemberFormPage({
               </Text>
             )}
 
-            <Select
-              label={m.admin_members_form_org_unit()}
-              data={orgUnitSelectData}
-              value={orgUnitId}
-              onChange={setOrgUnitId}
-              searchable
-              required
-              disabled={mode === 'edit'}
-            />
+            {(isHePhaiAdmin || mode === 'edit') && (
+              <Select
+                label={m.admin_members_form_org_unit()}
+                data={orgUnitSelectData}
+                value={orgUnitId}
+                onChange={setOrgUnitId}
+                searchable
+                required
+                disabled={mode === 'edit'}
+              />
+            )}
             <Select
               label={m.admin_members_form_sangha_type()}
               data={sanghaTypeSelectData}
@@ -497,6 +626,31 @@ export function MemberFormPage({
           parent={{ collection: 'members', id: memberId }}
         />
       )}
+      <Modal
+        opened={revokeDirectoryRoleOpen}
+        onClose={() => setRevokeDirectoryRoleOpen(false)}
+        title={m.admin_member_directory_role_revoke()}
+        closeOnClickOutside={!revokeDirectoryRoleMutation.isPending}
+        closeOnEscape={!revokeDirectoryRoleMutation.isPending}
+      >
+        <Text>{m.admin_org_units_secretaries_revoke_confirm()}</Text>
+        <Group justify="flex-end" mt="md">
+          <Button
+            variant="default"
+            onClick={() => setRevokeDirectoryRoleOpen(false)}
+            disabled={revokeDirectoryRoleMutation.isPending}
+          >
+            Hủy
+          </Button>
+          <Button
+            color="red"
+            loading={revokeDirectoryRoleMutation.isPending}
+            onClick={() => revokeDirectoryRoleMutation.mutate()}
+          >
+            {m.admin_member_directory_role_revoke()}
+          </Button>
+        </Group>
+      </Modal>
     </Stack>
   )
 }

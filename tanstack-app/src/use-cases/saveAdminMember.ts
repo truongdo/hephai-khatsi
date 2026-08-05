@@ -1,5 +1,7 @@
+import { canAccessOrgUnit, type AuthClaims } from '#/domain/authClaims'
 import { DomainError } from '#/domain/errors'
 import type { AuditActor } from '#/domain/auditLog'
+import { normalizeEmail } from '#/domain/gmail'
 import { normalizeCccd } from '#/domain/normalize'
 import type { Member, SanghaType } from '#/domain/types'
 import {
@@ -43,6 +45,10 @@ const protectedPatchKeys = [
   'updatedAt',
   'lockedAt',
   'lockedBy',
+  'directoryRole',
+  'directoryAuthUid',
+  'directoryRoleGrantedAt',
+  'directoryRoleGrantedBy',
 ] satisfies Array<keyof Member>
 
 function sanitizePatch(patch: MemberProfilePatch): MemberProfilePatch {
@@ -56,8 +62,13 @@ function sanitizePatch(patch: MemberProfilePatch): MemberProfilePatch {
 export async function saveAdminMember(
   input: SaveAdminMemberInput,
   audit: AuditActor,
+  claims: AuthClaims,
   memberStore: MemberStore = memberRepo,
 ): Promise<{ member: Member; mode: 'created' | 'updated' }> {
+  if (!canAccessOrgUnit(claims, input.orgUnitId)) {
+    throw new DomainError('FORBIDDEN', 'Org unit out of scope')
+  }
+
   if (isAdminMemberUpdate(input)) {
     const existing = await memberStore.getById(input.memberId)
     if (!existing) {
@@ -70,6 +81,17 @@ export async function saveAdminMember(
       throw new DomainError(
         'FORBIDDEN',
         'Member does not belong to this org unit or sangha type',
+      )
+    }
+
+    if (
+      existing.directoryRole &&
+      input.patch.email !== undefined &&
+      normalizeEmail(input.patch.email) !== normalizeEmail(existing.email ?? '')
+    ) {
+      throw new DomainError(
+        'FORBIDDEN',
+        'Revoke Thư ký before changing email',
       )
     }
 

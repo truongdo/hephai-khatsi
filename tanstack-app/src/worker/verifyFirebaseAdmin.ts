@@ -3,6 +3,8 @@ import * as jose from 'jose'
 const FIREBASE_JWKS_URL =
   'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'
 
+export type AdminRole = 'he_phai_admin' | 'giao_doan_admin'
+
 let jwks: ReturnType<typeof jose.createRemoteJWKSet> | null = null
 
 function getJwks() {
@@ -12,28 +14,50 @@ function getJwks() {
   return jwks
 }
 
-export async function verifyFirebaseAdminToken(
+function resolveAdminRole(payload: jose.JWTPayload): AdminRole | null {
+  if (payload.admin === true) {
+    return 'he_phai_admin'
+  }
+  if (payload.role === 'he_phai_admin' || payload.role === 'giao_doan_admin') {
+    return payload.role
+  }
+  return null
+}
+
+async function verifyAdminPayload(
   idToken: string,
   projectId: string,
-): Promise<{ uid: string } | null> {
+): Promise<jose.JWTPayload | null> {
   try {
     const { payload } = await jose.jwtVerify(idToken, getJwks(), {
       issuer: `https://securetoken.google.com/${projectId}`,
       audience: projectId,
     })
-    if (payload.admin === true) {
-      // legacy claim
-    } else if (
-      payload.role === 'he_phai_admin' ||
-      payload.role === 'giao_doan_admin'
-    ) {
-      // RBAC directory roles (no legacy admin:true required)
-    } else {
-      return null
-    }
     if (typeof payload.sub !== 'string') return null
-    return { uid: payload.sub }
+    return payload
   } catch {
     return null
   }
+}
+
+export async function verifyFirebaseAdminToken(
+  idToken: string,
+  projectId: string,
+): Promise<{ uid: string; role: AdminRole } | null> {
+  const payload = await verifyAdminPayload(idToken, projectId)
+  if (!payload) return null
+
+  const role = resolveAdminRole(payload)
+  if (!role) return null
+
+  return { uid: payload.sub as string, role }
+}
+
+export async function verifyHePhaiAdminToken(
+  idToken: string,
+  projectId: string,
+): Promise<{ uid: string } | null> {
+  const result = await verifyFirebaseAdminToken(idToken, projectId)
+  if (!result || result.role !== 'he_phai_admin') return null
+  return { uid: result.uid }
 }

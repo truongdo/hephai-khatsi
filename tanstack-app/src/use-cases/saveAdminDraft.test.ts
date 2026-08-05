@@ -1,9 +1,16 @@
 import { describe, expect, it } from 'vitest'
+import type { AuthClaims } from '#/domain/authClaims'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
 import { ADMIN_AUDIT } from '#/test/auditActors'
 import { createMemoryMemberStore, createMemoryTempleStore } from '#/test/memoryStores'
 import { saveAdminMember } from './saveAdminMember'
 import { saveAdminTemple } from './saveAdminTemple'
+
+const HE_PHAI_CLAIMS: AuthClaims = { role: 'he_phai_admin', orgUnitId: null }
+const GIAO_DOAN_CLAIMS: AuthClaims = {
+  role: 'giao_doan_admin',
+  orgUnitId: 'gd-i',
+}
 
 describe('saveAdminMember', () => {
   it('creates a draft with inviteId null', async () => {
@@ -16,6 +23,7 @@ describe('saveAdminMember', () => {
         patch: { phapDanh: 'Thiện' },
       },
       ADMIN_AUDIT,
+      HE_PHAI_CLAIMS,
       store,
     )
     expect(mode).toBe('created')
@@ -28,6 +36,7 @@ describe('saveAdminMember', () => {
       saveAdminMember(
         { orgUnitId: 'gd-i', sanghaType: 'tang', cccd: '12345678', patch: {} },
         ADMIN_AUDIT,
+        HE_PHAI_CLAIMS,
         createMemoryMemberStore([]),
       ),
     ).rejects.toMatchObject({ code: 'CCCD_INVALID' })
@@ -61,6 +70,7 @@ describe('saveAdminMember', () => {
         patch: { phapDanh: 'New' },
       },
       ADMIN_AUDIT,
+      HE_PHAI_CLAIMS,
       store,
     )
     expect(mode).toBe('updated')
@@ -79,6 +89,7 @@ describe('saveAdminMember', () => {
           patch: {},
         },
         ADMIN_AUDIT,
+        HE_PHAI_CLAIMS,
         createMemoryMemberStore([]),
       ),
     ).rejects.toMatchObject({ code: 'NOT_FOUND' })
@@ -112,6 +123,7 @@ describe('saveAdminMember', () => {
         patch: { phapDanh: 'New' },
       },
       ADMIN_AUDIT,
+      HE_PHAI_CLAIMS,
       store,
     )
     expect(mode).toBe('updated')
@@ -201,6 +213,7 @@ describe('saveAdminMember', () => {
           patch: {},
         },
         ADMIN_AUDIT,
+        HE_PHAI_CLAIMS,
         store,
       ),
     ).rejects.toMatchObject({ code: 'FORBIDDEN' })
@@ -213,9 +226,129 @@ describe('saveAdminMember', () => {
           patch: {},
         },
         ADMIN_AUDIT,
+        HE_PHAI_CLAIMS,
         store,
       ),
     ).rejects.toMatchObject({ code: 'FORBIDDEN' })
+  })
+
+  it('rejects email change when member has directoryRole', async () => {
+    const store = createMemoryMemberStore([
+      {
+        id: 'm1',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        status: 'locked',
+        cccd: '001099012345',
+        inviteId: null,
+        currentTempleId: null,
+        photoPath: null,
+        email: 'old@gmail.com',
+        directoryRole: 'giao_doan_admin',
+        directoryAuthUid: 'auth-1',
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: null,
+        lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
+      },
+    ])
+    await expect(
+      saveAdminMember(
+        {
+          memberId: 'm1',
+          orgUnitId: 'gd-i',
+          sanghaType: 'tang',
+          patch: { email: 'new@gmail.com' },
+        },
+        ADMIN_AUDIT,
+        HE_PHAI_CLAIMS,
+        store,
+      ),
+    ).rejects.toMatchObject({
+      code: 'FORBIDDEN',
+      message: 'Revoke Thư ký before changing email',
+    })
+  })
+
+  it('allows same email update when member has directoryRole', async () => {
+    const store = createMemoryMemberStore([
+      {
+        id: 'm1',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        status: 'locked',
+        cccd: '001099012345',
+        inviteId: null,
+        currentTempleId: null,
+        photoPath: null,
+        email: 'Sec@gmail.com',
+        directoryRole: 'giao_doan_admin',
+        directoryAuthUid: 'auth-1',
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: null,
+        lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
+        phapDanh: 'Old',
+      },
+    ])
+    const { member } = await saveAdminMember(
+      {
+        memberId: 'm1',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        patch: { email: 'sec@gmail.com', phapDanh: 'New' },
+      },
+      ADMIN_AUDIT,
+      HE_PHAI_CLAIMS,
+      store,
+    )
+    expect(member.phapDanh).toBe('New')
+    expect(member.email).toBe('sec@gmail.com')
+  })
+
+  it('strips directoryRole fields from patch on update', async () => {
+    const store = createMemoryMemberStore([
+      {
+        id: 'm1',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        status: 'draft',
+        cccd: '001099012345',
+        inviteId: null,
+        currentTempleId: null,
+        photoPath: null,
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: null,
+        lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
+      },
+    ])
+    const { member } = await saveAdminMember(
+      {
+        memberId: 'm1',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        patch: {
+          phapDanh: 'New',
+          directoryRole: 'giao_doan_admin',
+          directoryAuthUid: 'forged',
+          directoryRoleGrantedAt: '2026-01-01T00:00:00.000Z',
+          directoryRoleGrantedBy: 'forged',
+        } as never,
+      },
+      ADMIN_AUDIT,
+      HE_PHAI_CLAIMS,
+      store,
+    )
+    expect(member.phapDanh).toBe('New')
+    expect(member.directoryRole).toBeUndefined()
+    expect(member.directoryAuthUid).toBeUndefined()
   })
 
   it('updates by memberId even when CCCD index points elsewhere', async () => {
@@ -264,12 +397,49 @@ describe('saveAdminMember', () => {
         patch: { phapDanh: 'New' },
       },
       ADMIN_AUDIT,
+      HE_PHAI_CLAIMS,
       store,
     )
     expect(mode).toBe('updated')
     expect(member.id).toBe('m1')
     expect(member.phapDanh).toBe('New')
     expect(store.members.size).toBe(2)
+  })
+
+  it('rejects cross-org create for giao_doan_admin', async () => {
+    await expect(
+      saveAdminMember(
+        {
+          orgUnitId: 'gd-ii',
+          sanghaType: 'tang',
+          cccd: '001099012345',
+          patch: {},
+        },
+        ADMIN_AUDIT,
+        GIAO_DOAN_CLAIMS,
+        createMemoryMemberStore([]),
+      ),
+    ).rejects.toMatchObject({
+      code: 'FORBIDDEN',
+      message: 'Org unit out of scope',
+    })
+  })
+
+  it('allows create in own org for giao_doan_admin', async () => {
+    const store = createMemoryMemberStore([])
+    const { member, mode } = await saveAdminMember(
+      {
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        cccd: '001099012345',
+        patch: { phapDanh: 'Thiện' },
+      },
+      ADMIN_AUDIT,
+      GIAO_DOAN_CLAIMS,
+      store,
+    )
+    expect(mode).toBe('created')
+    expect(member.orgUnitId).toBe('gd-i')
   })
 })
 
@@ -285,6 +455,7 @@ describe('saveAdminTemple', () => {
         },
       },
       ADMIN_AUDIT,
+      HE_PHAI_CLAIMS,
       store,
     )
     expect(mode).toBe('created')
@@ -317,6 +488,7 @@ describe('saveAdminTemple', () => {
         patch: { danhHieu: 'New' },
       },
       ADMIN_AUDIT,
+      HE_PHAI_CLAIMS,
       store,
     )
     expect(mode).toBe('updated')
@@ -349,6 +521,7 @@ describe('saveAdminTemple', () => {
         patch: { danhHieu: 'New' },
       },
       ADMIN_AUDIT,
+      HE_PHAI_CLAIMS,
       store,
     )
     expect(mode).toBe('updated')
@@ -382,5 +555,39 @@ describe('saveAdminTemple', () => {
     )
     expect(updated.photoPath).toBe('temples/t1/photo.jpg')
     expect(updated.status).toBe('locked')
+  })
+
+  it('rejects cross-org save for giao_doan_admin', async () => {
+    const store = createMemoryTempleStore([
+      {
+        id: 't1',
+        orgUnitId: 'gd-ii',
+        status: 'draft',
+        managerPhones: [],
+        inviteId: null,
+        photoPath: null,
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: null,
+        lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
+      },
+    ])
+    await expect(
+      saveAdminTemple(
+        {
+          orgUnitId: 'gd-ii',
+          templeId: 't1',
+          patch: { danhHieu: 'New' },
+        },
+        ADMIN_AUDIT,
+        GIAO_DOAN_CLAIMS,
+        store,
+      ),
+    ).rejects.toMatchObject({
+      code: 'FORBIDDEN',
+      message: 'Org unit out of scope',
+    })
   })
 })

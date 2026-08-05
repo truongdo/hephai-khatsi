@@ -68,6 +68,14 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     claim.status === 'admin' &&
     canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
 
+  const isHePhaiAdmin =
+    claim.status === 'admin' && claim.role === 'he_phai_admin'
+
+  const claims =
+    claim.status === 'admin'
+      ? { role: claim.role, orgUnitId: claim.orgUnitId }
+      : null
+
   const [orgUnitFilter, setOrgUnitFilter] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue | null>(
     null,
@@ -81,7 +89,12 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
   const serverStatusFilter =
     statusFilter === 'edit_requested' ? undefined : (statusFilter ?? undefined)
 
-  const serverFilterKey = `${sanghaType}:${orgUnitFilter ?? ''}:${serverStatusFilter ?? ''}`
+  const scopedOrgUnitId =
+    claim.status === 'admin' && claim.role === 'giao_doan_admin'
+      ? (claim.orgUnitId ?? undefined)
+      : (orgUnitFilter ?? undefined)
+
+  const serverFilterKey = `${sanghaType}:${scopedOrgUnitId ?? ''}:${serverStatusFilter ?? ''}`
 
   useEffect(() => {
     setCursor(undefined)
@@ -98,7 +111,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
   const members = useQuery({
     ...membersQuery({
       sanghaType,
-      orgUnitId: orgUnitFilter ?? undefined,
+      orgUnitId: scopedOrgUnitId,
       status: serverStatusFilter,
       cursor,
     }),
@@ -134,8 +147,12 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
+      if (!claims) throw new Error('Not signed in as admin')
       const idToken = await user!.getIdToken()
-      await deleteMembers({ ids: [...selection.selectedIds], idToken })
+      await deleteMembers(claims, {
+        ids: [...selection.selectedIds],
+        idToken,
+      })
     },
     onSuccess: () => {
       selection.clear()
@@ -160,7 +177,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     mutationFn: () =>
       exportMembersExcel({
         sanghaType,
-        orgUnitId: orgUnitFilter ?? undefined,
+        orgUnitId: scopedOrgUnitId,
         status: serverStatusFilter,
       }),
   })
@@ -238,15 +255,17 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
       )}
 
       <Group>
-        <Select
-          label={m.admin_members_filter_org_unit()}
-          placeholder={m.admin_filter_all()}
-          data={orgUnitSelectData}
-          value={orgUnitFilter}
-          onChange={setOrgUnitFilter}
-          clearable
-          searchable
-        />
+        {isHePhaiAdmin && (
+          <Select
+            label={m.admin_members_filter_org_unit()}
+            placeholder={m.admin_filter_all()}
+            data={orgUnitSelectData}
+            value={orgUnitFilter}
+            onChange={setOrgUnitFilter}
+            clearable
+            searchable
+          />
+        )}
         <Select
           label={m.admin_members_filter_status()}
           placeholder={m.admin_filter_all()}

@@ -1,7 +1,14 @@
 import { describe, expect, it, vi } from 'vitest'
+import type { AuthClaims } from '#/domain/authClaims'
 import type { Member } from '#/domain/types'
 import { createMemoryMemberStore } from '#/test/memoryStores'
 import { deleteMembers } from './deleteMembers'
+
+const HE_PHAI_CLAIMS: AuthClaims = { role: 'he_phai_admin', orgUnitId: null }
+const GIAO_DOAN_CLAIMS: AuthClaims = {
+  role: 'giao_doan_admin',
+  orgUnitId: 'gd-i',
+}
 
 function member(
   overrides: Partial<Member> & { id: string },
@@ -31,7 +38,7 @@ describe('deleteMembers', () => {
       member({ id: 'm2' }),
     ])
 
-    await deleteMembers({ ids: ['m1'], idToken: 'token' }, store)
+    await deleteMembers(HE_PHAI_CLAIMS, { ids: ['m1'], idToken: 'token' }, store)
 
     expect(await store.getById('m1')).toBeNull()
     expect(await store.getById('m2')).not.toBeNull()
@@ -44,7 +51,7 @@ describe('deleteMembers', () => {
       member({ id: 'm3' }),
     ])
 
-    await deleteMembers({ ids: ['m1', 'm3'], idToken: 'token' }, store)
+    await deleteMembers(HE_PHAI_CLAIMS, { ids: ['m1', 'm3'], idToken: 'token' }, store)
 
     expect(await store.getById('m1')).toBeNull()
     expect(await store.getById('m2')).not.toBeNull()
@@ -56,6 +63,7 @@ describe('deleteMembers', () => {
     const deletePhoto = vi.fn().mockResolvedValue(undefined)
 
     await deleteMembers(
+      HE_PHAI_CLAIMS,
       { ids: ['m1', 'm2'], idToken: 'admin-token' },
       store,
       deletePhoto,
@@ -73,6 +81,7 @@ describe('deleteMembers', () => {
 
     await expect(
       deleteMembers(
+        HE_PHAI_CLAIMS,
         { ids: ['m1'], idToken: 'token' },
         store,
         deletePhoto,
@@ -90,6 +99,7 @@ describe('deleteMembers', () => {
     const deleteDocsPrefix = vi.fn().mockResolvedValue(undefined)
 
     await deleteMembers(
+      HE_PHAI_CLAIMS,
       { ids: ['m1', 'm2'], idToken: 'admin-token' },
       store,
       deletePhoto,
@@ -108,6 +118,7 @@ describe('deleteMembers', () => {
 
     await expect(
       deleteMembers(
+        HE_PHAI_CLAIMS,
         { ids: ['m1'], idToken: 'token' },
         store,
         deletePhoto,
@@ -117,5 +128,24 @@ describe('deleteMembers', () => {
 
     expect(await store.getById('m1')).toBeNull()
     expect(deleteDocsPrefix).toHaveBeenCalledWith('m1')
+  })
+
+  it('rejects cross-org delete for giao_doan_admin', async () => {
+    const store = createMemoryMemberStore([
+      member({ id: 'm1', orgUnitId: 'gd-ii' }),
+    ])
+
+    await expect(
+      deleteMembers(
+        GIAO_DOAN_CLAIMS,
+        { ids: ['m1'], idToken: 'token' },
+        store,
+      ),
+    ).rejects.toMatchObject({
+      code: 'FORBIDDEN',
+      message: 'Org unit out of scope',
+    })
+
+    expect(await store.getById('m1')).not.toBeNull()
   })
 })

@@ -44,10 +44,19 @@ service cloud.firestore {
         || (isGiaoDoanAdmin() && request.auth.token.orgUnitId == orgUnitId);
     }
 
-    // --- orgUnits: public read, admin write (unchanged) ---
+    function directoryOrgOk(orgUnitId) {
+      return isHePhaiAdmin() || isLegacyAdmin()
+        || (isGiaoDoanAdmin() && request.auth.token.orgUnitId == orgUnitId);
+    }
+
+    function canListDirectory() {
+      return isHePhaiAdmin() || isGiaoDoanAdmin();
+    }
+
+    // --- orgUnits: public read, he_phai write only ---
     match /orgUnits/{id} {
       allow get, list: if true;
-      allow write: if canWriteDirectory();
+      allow write: if isHePhaiAdmin();
     }
 
     // --- invites: there is exactly one invite for the whole app (fixed doc
@@ -153,6 +162,18 @@ service cloud.firestore {
           && request.resource.data.editRequestedBy == null;
       }
 
+      function directoryRoleFieldsUnchanged() {
+        return request.resource.data.get('directoryRole', null) == resource.data.get('directoryRole', null)
+          && request.resource.data.get('directoryAuthUid', null) == resource.data.get('directoryAuthUid', null)
+          && request.resource.data.get('directoryRoleGrantedAt', null) == resource.data.get('directoryRoleGrantedAt', null)
+          && request.resource.data.get('directoryRoleGrantedBy', null) == resource.data.get('directoryRoleGrantedBy', null);
+      }
+
+      function secretaryEmailUnchanged() {
+        return resource.data.get('directoryRole', null) == null
+          || request.resource.data.get('email', null) == resource.data.get('email', null);
+      }
+
       // Re-validated (not frozen) on every non-admin write: the caller must
       // currently hold a valid invite. With a single global invite this is
       // just an existence check — org unit / sangha type are the visitor's
@@ -163,26 +184,28 @@ service cloud.firestore {
       }
 
       allow get: if true;
-      allow list: if canWriteDirectory();
+      allow list: if canWriteDirectory() && (
+        isHePhaiAdmin() || directoryOrgOk(resource.data.orgUnitId)
+      );
 
       allow create: if memberId == (request.resource.data.orgUnitId + '_' + request.resource.data.sanghaType + '_' + request.resource.data.cccd)
         && request.resource.data.createdAt is string
         && request.resource.data.updatedAt is string
         && (
-          (canWriteDirectory() && request.resource.data.inviteId == null && isAdminCreateShape())
+          (canWriteDirectory() && directoryOrgOk(request.resource.data.orgUnitId) && request.resource.data.inviteId == null && isAdminCreateShape())
           || (validInviteScope(request.resource.data) && !isKiemSoat() && isFillerCreateShape())
         );
 
-      allow update: if coreIdentityUnchanged() && (
-        (canWriteDirectory() && isLockTransition() && request.resource.data.inviteId == resource.data.inviteId)
-        || (canWriteDirectory() && !isLockTransition()
+      allow update: if coreIdentityUnchanged() && directoryRoleFieldsUnchanged() && secretaryEmailUnchanged() && (
+        (canWriteDirectory() && directoryOrgOk(resource.data.orgUnitId) && isLockTransition() && request.resource.data.inviteId == resource.data.inviteId)
+        || (canWriteDirectory() && directoryOrgOk(resource.data.orgUnitId) && !isLockTransition()
             && lockFieldsUnchanged() && request.resource.data.inviteId == resource.data.inviteId)
         || (!isStaff() && validInviteScope(request.resource.data) && !isKiemSoat()
             && request.resource.data.inviteId == resource.data.inviteId
             && isFillerLockedUpdate())
       );
 
-      allow delete: if canWriteDirectory();
+      allow delete: if canWriteDirectory() && directoryOrgOk(resource.data.orgUnitId);
 
       match /auditLogs/{logId} {
         allow read: if canWriteDirectory();
@@ -278,26 +301,28 @@ service cloud.firestore {
       }
 
       allow get: if true;
-      allow list: if canWriteDirectory();
+      allow list: if canWriteDirectory() && (
+        isHePhaiAdmin() || directoryOrgOk(resource.data.orgUnitId)
+      );
 
       allow create: if request.resource.data.createdAt is string
         && request.resource.data.updatedAt is string
         && request.resource.data.managerPhones is list
         && request.resource.data.managerPhones.size() > 0
         && (
-          (canWriteDirectory() && request.resource.data.inviteId == null && isAdminCreateShape())
+          (canWriteDirectory() && directoryOrgOk(request.resource.data.orgUnitId) && request.resource.data.inviteId == null && isAdminCreateShape())
           || (!isStaff() && validInviteScope(request.resource.data) && isFillerCreateShape())
         );
 
       allow update: if coreIdentityUnchanged() && (
-        (canWriteDirectory() && isLockTransition())
-        || (canWriteDirectory() && !isLockTransition() && lockFieldsUnchanged())
+        (canWriteDirectory() && directoryOrgOk(resource.data.orgUnitId) && isLockTransition())
+        || (canWriteDirectory() && directoryOrgOk(resource.data.orgUnitId) && !isLockTransition() && lockFieldsUnchanged())
         || (!isStaff() && validInviteScope(request.resource.data)
             && request.resource.data.inviteId == resource.data.inviteId
             && isFillerLockedUpdate())
       );
 
-      allow delete: if canWriteDirectory();
+      allow delete: if canWriteDirectory() && directoryOrgOk(resource.data.orgUnitId);
 
       match /auditLogs/{logId} {
         allow read: if canWriteDirectory();

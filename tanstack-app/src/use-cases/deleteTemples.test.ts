@@ -1,10 +1,17 @@
 import { describe, expect, it, vi } from 'vitest'
+import type { AuthClaims } from '#/domain/authClaims'
 import type { Member, Temple } from '#/domain/types'
 import {
   createMemoryMemberStore,
   createMemoryTempleStore,
 } from '#/test/memoryStores'
 import { deleteTemples } from './deleteTemples'
+
+const HE_PHAI_CLAIMS: AuthClaims = { role: 'he_phai_admin', orgUnitId: null }
+const GIAO_DOAN_CLAIMS: AuthClaims = {
+  role: 'giao_doan_admin',
+  orgUnitId: 'gd-i',
+}
 
 function member(
   overrides: Partial<Member> & { id: string },
@@ -50,6 +57,7 @@ describe('deleteTemples', () => {
     const memberStore = createMemoryMemberStore([])
 
     const result = await deleteTemples(
+      HE_PHAI_CLAIMS,
       { ids: [], idToken: 'token' },
       { templeStore, memberStore },
     )
@@ -68,6 +76,7 @@ describe('deleteTemples', () => {
     ])
 
     const result = await deleteTemples(
+      HE_PHAI_CLAIMS,
       { ids: ['t1', 't2'], idToken: 'token' },
       { templeStore, memberStore },
     )
@@ -99,6 +108,7 @@ describe('deleteTemples', () => {
     ])
 
     const result = await deleteTemples(
+      HE_PHAI_CLAIMS,
       { ids: ['t1', 't2', 't3'], idToken: 'token' },
       { templeStore, memberStore },
     )
@@ -133,6 +143,7 @@ describe('deleteTemples', () => {
     ])
 
     const result = await deleteTemples(
+      HE_PHAI_CLAIMS,
       { ids: ['t1'], idToken: 'token' },
       { templeStore, memberStore },
     )
@@ -152,6 +163,7 @@ describe('deleteTemples', () => {
     ])
 
     const result = await deleteTemples(
+      HE_PHAI_CLAIMS,
       { ids: ['t1'], idToken: 'token' },
       { templeStore, memberStore },
     )
@@ -176,6 +188,7 @@ describe('deleteTemples', () => {
     const deletePhoto = vi.fn().mockResolvedValue(undefined)
 
     const result = await deleteTemples(
+      HE_PHAI_CLAIMS,
       { ids: ['t1', 't2'], idToken: 'admin-token' },
       { templeStore, memberStore },
       deletePhoto,
@@ -195,6 +208,7 @@ describe('deleteTemples', () => {
     const deletePhoto = vi.fn().mockResolvedValue(undefined)
 
     const result = await deleteTemples(
+      HE_PHAI_CLAIMS,
       { ids: ['t1'], idToken: 'token' },
       { templeStore, memberStore },
       deletePhoto,
@@ -202,5 +216,25 @@ describe('deleteTemples', () => {
 
     expect(result.ok).toBe(false)
     expect(deletePhoto).not.toHaveBeenCalled()
+  })
+
+  it('rejects cross-org delete for giao_doan_admin', async () => {
+    const templeStore = createMemoryTempleStore([
+      temple({ id: 't1', orgUnitId: 'gd-ii' }),
+    ])
+    const memberStore = createMemoryMemberStore([])
+
+    await expect(
+      deleteTemples(
+        GIAO_DOAN_CLAIMS,
+        { ids: ['t1'], idToken: 'token' },
+        { templeStore, memberStore },
+      ),
+    ).rejects.toMatchObject({
+      code: 'FORBIDDEN',
+      message: 'Org unit out of scope',
+    })
+
+    expect(await templeStore.getById('t1')).not.toBeNull()
   })
 })

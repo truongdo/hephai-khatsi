@@ -107,6 +107,10 @@ cd tanstack-app
 # .dev.vars example (secrets; plain vars come from wrangler.jsonc in prod):
 # R2_ACCESS_KEY_ID=...
 # R2_SECRET_ACCESS_KEY=...
+# FIREBASE_SERVICE_ACCOUNT_JSON must be the raw JSON string (one line), NOT a file path.
+# Example (minify your *-firebase-adminsdk-*.json first):
+#   node -e 'console.log(JSON.stringify(require("./hephaikhatsi-….json")))'
+# then paste: FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
 pnpm exec wrangler dev
 ```
 

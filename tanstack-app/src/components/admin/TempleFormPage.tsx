@@ -50,6 +50,14 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
     claim.status === 'admin' &&
     canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
 
+  const isHePhaiAdmin =
+    claim.status === 'admin' && claim.role === 'he_phai_admin'
+
+  const claims =
+    claim.status === 'admin'
+      ? { role: claim.role, orgUnitId: claim.orgUnitId }
+      : null
+
   const [orgUnitId, setOrgUnitId] = useState<string | null>(null)
   const [photoError, setPhotoError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
@@ -66,9 +74,21 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
   })
 
   useEffect(() => {
+    if (mode === 'create') {
+      if (claim.status === 'admin' && claim.role === 'giao_doan_admin') {
+        setOrgUnitId(claim.orgUnitId)
+      }
+      return
+    }
     if (!temple.data) return
     setOrgUnitId(temple.data.orgUnitId)
-  }, [temple.data])
+  }, [
+    mode,
+    temple.data,
+    claim.status,
+    claim.role,
+    claim.status === 'admin' ? claim.orgUnitId : null,
+  ])
 
   const orgUnitSelectData = useMemo(
     () =>
@@ -116,6 +136,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
   async function performSave() {
     const api = fieldsApiRef.current
     if (!api || !orgUnitId) throw new Error('Missing org unit')
+    if (!claims) throw new Error('Not signed in as admin')
 
     const draft = api.getDraft()
     const result = await saveAdminTemple(
@@ -128,6 +149,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
           : [],
       },
       { actorType: 'admin', actorId: claim.status === 'admin' ? claim.uid : actorId },
+      claims,
     )
 
     const pending = api.getPendingPhoto()
@@ -297,15 +319,17 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
               </Text>
             )}
 
-            <Select
-              label={m.admin_temples_form_org_unit()}
-              data={orgUnitSelectData}
-              value={orgUnitId}
-              onChange={setOrgUnitId}
-              searchable
-              required
-              disabled={mode === 'edit'}
-            />
+            {(isHePhaiAdmin || mode === 'edit') && (
+              <Select
+                label={m.admin_temples_form_org_unit()}
+                data={orgUnitSelectData}
+                value={orgUnitId}
+                onChange={setOrgUnitId}
+                searchable
+                required
+                disabled={mode === 'edit'}
+              />
+            )}
 
             <TempleFormFields
               key={mode === 'edit' ? templeId : 'create'}

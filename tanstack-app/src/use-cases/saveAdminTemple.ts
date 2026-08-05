@@ -1,3 +1,4 @@
+import { canAccessOrgUnit, type AuthClaims } from '#/domain/authClaims'
 import { buildManagerPhones, mergeManagerPhones } from '#/domain/templePhones'
 import { DomainError } from '#/domain/errors'
 import type { AuditActor } from '#/domain/auditLog'
@@ -38,8 +39,13 @@ function sanitizePatch(patch: TempleProfilePatch): TempleProfilePatch {
 export async function saveAdminTemple(
   input: SaveAdminTempleInput,
   audit: AuditActor,
+  claims: AuthClaims,
   templeStore: TempleStore = templeRepo,
 ): Promise<{ temple: Temple; mode: 'created' | 'updated' }> {
+  if (!canAccessOrgUnit(claims, input.orgUnitId)) {
+    throw new DomainError('FORBIDDEN', 'Org unit out of scope')
+  }
+
   const patch = sanitizePatch(input.patch)
   const incomingPhones = {
     explicitPhones: input.explicitPhones ?? [],

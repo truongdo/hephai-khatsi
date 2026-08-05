@@ -6,6 +6,10 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Member } from '#/domain/types'
 import { m } from '#/paraglide/messages'
+import {
+  grantDirectoryRole,
+  revokeDirectoryRole,
+} from '#/directoryRole/directoryRoleApiClient'
 import { lockMember } from '#/use-cases/lockMember'
 import { saveAdminMember } from '#/use-cases/saveAdminMember'
 import { uploadMemberPhoto } from '#/use-cases/uploadMemberPhoto'
@@ -137,6 +141,10 @@ vi.mock('#/query/adminQueries', () => ({
   }),
 }))
 
+vi.mock('#/directoryRole/directoryRoleApiClient', () => ({
+  grantDirectoryRole: vi.fn(),
+  revokeDirectoryRole: vi.fn(),
+}))
 vi.mock('#/use-cases/saveAdminMember', () => ({
   saveAdminMember: vi.fn(),
 }))
@@ -183,6 +191,8 @@ vi.mock('#/data/vietnam-locations', () => ({
   ]),
 }))
 
+const grantDirectoryRoleMock = vi.mocked(grantDirectoryRole)
+const revokeDirectoryRoleMock = vi.mocked(revokeDirectoryRole)
 const saveAdminMemberMock = vi.mocked(saveAdminMember)
 const lockMemberMock = vi.mocked(lockMember)
 const uploadMemberPhotoMock = vi.mocked(uploadMemberPhoto)
@@ -256,6 +266,8 @@ afterEach(() => {
 beforeEach(() => {
   localStorage.clear()
   memberFixture = lockedMember
+  grantDirectoryRoleMock.mockReset()
+  revokeDirectoryRoleMock.mockReset()
   saveAdminMemberMock.mockReset()
   lockMemberMock.mockReset()
   uploadMemberPhotoMock.mockReset()
@@ -522,6 +534,46 @@ describe('MemberFormPage', () => {
     },
     15_000,
   )
+
+  it('disables grant Thư ký when member email is not gmail', async () => {
+    memberFixture = { ...lockedMember, email: 'a@hephai.org' }
+    renderForm({ mode: 'edit' })
+    const grantBtn = await screen.findByRole('button', {
+      name: m.admin_member_directory_role_grant(),
+    })
+    expect(grantBtn).toBeDisabled()
+  })
+
+  it('enables grant Thư ký when member email is gmail', async () => {
+    memberFixture = { ...lockedMember, email: 'user@gmail.com' }
+    renderForm({ mode: 'edit' })
+    const grantBtn = await screen.findByRole('button', {
+      name: m.admin_member_directory_role_grant(),
+    })
+    expect(grantBtn).not.toBeDisabled()
+  })
+
+  it('shows Thư ký badge when member has directory role', async () => {
+    memberFixture = {
+      ...lockedMember,
+      email: 'sec@gmail.com',
+      directoryRole: 'giao_doan_admin',
+    }
+    renderForm({ mode: 'edit' })
+    expect(
+      await screen.findByText(m.admin_member_directory_role_badge()),
+    ).toBeTruthy()
+    expect(
+      screen.getByRole('button', {
+        name: m.admin_member_directory_role_revoke(),
+      }),
+    ).toBeTruthy()
+    expect(
+      screen.queryByRole('button', {
+        name: m.admin_member_directory_role_grant(),
+      }),
+    ).toBeNull()
+  })
 
   it('Hoàn thành saves a fully-valid draft without locking', async () => {
     const user = userEvent.setup()

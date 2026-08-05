@@ -59,6 +59,14 @@ export function TemplesListPage() {
     claim.status === 'admin' &&
     canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
 
+  const isHePhaiAdmin =
+    claim.status === 'admin' && claim.role === 'he_phai_admin'
+
+  const claims =
+    claim.status === 'admin'
+      ? { role: claim.role, orgUnitId: claim.orgUnitId }
+      : null
+
   const [orgUnitFilter, setOrgUnitFilter] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue | null>(
     null,
@@ -74,7 +82,12 @@ export function TemplesListPage() {
   const serverStatusFilter =
     statusFilter === 'edit_requested' ? undefined : (statusFilter ?? undefined)
 
-  const serverFilterKey = `${orgUnitFilter ?? ''}:${serverStatusFilter ?? ''}`
+  const scopedOrgUnitId =
+    claim.status === 'admin' && claim.role === 'giao_doan_admin'
+      ? (claim.orgUnitId ?? undefined)
+      : (orgUnitFilter ?? undefined)
+
+  const serverFilterKey = `${scopedOrgUnitId ?? ''}:${serverStatusFilter ?? ''}`
 
   useEffect(() => {
     setCursor(undefined)
@@ -90,7 +103,7 @@ export function TemplesListPage() {
 
   const temples = useQuery({
     ...templesQuery({
-      orgUnitId: orgUnitFilter ?? undefined,
+      orgUnitId: scopedOrgUnitId,
       status: serverStatusFilter,
       cursor,
     }),
@@ -126,8 +139,12 @@ export function TemplesListPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
+      if (!claims) throw new Error('Not signed in as admin')
       const idToken = await user!.getIdToken()
-      return deleteTemples({ ids: [...selection.selectedIds], idToken })
+      return deleteTemples(claims, {
+        ids: [...selection.selectedIds],
+        idToken,
+      })
     },
     onSuccess: (result) => {
       if (!result.ok) {
@@ -207,15 +224,17 @@ export function TemplesListPage() {
       </Group>
 
       <Group>
-        <Select
-          label={m.admin_temples_filter_org_unit()}
-          placeholder={m.admin_filter_all()}
-          data={orgUnitSelectData}
-          value={orgUnitFilter}
-          onChange={setOrgUnitFilter}
-          clearable
-          searchable
-        />
+        {isHePhaiAdmin && (
+          <Select
+            label={m.admin_temples_filter_org_unit()}
+            placeholder={m.admin_filter_all()}
+            data={orgUnitSelectData}
+            value={orgUnitFilter}
+            onChange={setOrgUnitFilter}
+            clearable
+            searchable
+          />
+        )}
         <Select
           label={m.admin_temples_filter_status()}
           placeholder={m.admin_filter_all()}

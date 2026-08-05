@@ -48,9 +48,21 @@ const memberItems = [
 const deleteMembersMock = vi.fn()
 const unlockMemberMock = vi.fn()
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
+const membersQueryMock = vi.fn(() => ({
+  queryKey: ['admin', 'members', {}],
+  queryFn: async () => ({ items: memberItems, nextCursor: null }),
+  staleTime: 0,
+}))
+
+const useAdminClaimMock = vi.fn(() => ({
+  status: 'admin' as const,
+  uid: 'admin-uid',
+  role: 'he_phai_admin' as const,
+  orgUnitId: null,
+}))
 
 vi.mock('#/auth/useAdminClaim', () => ({
-  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid', role: 'he_phai_admin', orgUnitId: null }),
+  useAdminClaim: () => useAdminClaimMock(),
 }))
 
 vi.mock('#/auth/useAuth', () => ({
@@ -95,11 +107,7 @@ vi.mock('@tanstack/react-router', () => ({
 }))
 
 vi.mock('#/query/adminQueries', () => ({
-  membersQuery: () => ({
-    queryKey: ['admin', 'members', {}],
-    queryFn: async () => ({ items: memberItems, nextCursor: null }),
-    staleTime: 0,
-  }),
+  membersQuery: (filters: unknown) => membersQueryMock(filters),
   orgUnitsQuery: () => ({
     queryKey: ['admin', 'orgUnits'],
     queryFn: async () => [
@@ -142,6 +150,17 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
+  useAdminClaimMock.mockReturnValue({
+    status: 'admin',
+    uid: 'admin-uid',
+    role: 'he_phai_admin',
+    orgUnitId: null,
+  })
+  membersQueryMock.mockImplementation(() => ({
+    queryKey: ['admin', 'members', {}],
+    queryFn: async () => ({ items: memberItems, nextCursor: null }),
+    staleTime: 0,
+  }))
   deleteMembersMock.mockReset()
   deleteMembersMock.mockResolvedValue(undefined)
   unlockMemberMock.mockReset()
@@ -216,10 +235,13 @@ describe('MembersListPage', () => {
     await user.click(screen.getByRole('button', { name: 'Xóa' }))
     const dialog = await screen.findByRole('dialog')
     await user.click(within(dialog).getByRole('button', { name: 'Xóa' }))
-    expect(deleteMembersMock).toHaveBeenCalledWith({
-      ids: ['m1'],
-      idToken: 'admin-id-token',
-    })
+    expect(deleteMembersMock).toHaveBeenCalledWith(
+      { role: 'he_phai_admin', orgUnitId: null },
+      {
+        ids: ['m1'],
+        idToken: 'admin-id-token',
+      },
+    )
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['admin', 'members'],
     })
@@ -254,5 +276,32 @@ describe('MembersListPage', () => {
       expect(screen.queryByText('HT A')).toBeNull()
     })
     expect(screen.getByText('HT Locked')).toBeTruthy()
+  })
+
+  describe('giao_doan_admin', () => {
+    beforeEach(() => {
+      useAdminClaimMock.mockReturnValue({
+        status: 'admin',
+        uid: 'admin-uid',
+        role: 'giao_doan_admin',
+        orgUnitId: 'gd-i',
+      })
+    })
+
+    it('scopes list query to giao doan org unit', async () => {
+      renderList()
+      await screen.findByText('HT A')
+      expect(membersQueryMock).toHaveBeenCalledWith(
+        expect.objectContaining({ orgUnitId: 'gd-i' }),
+      )
+    })
+
+    it('hides org unit filter select', async () => {
+      renderList()
+      await screen.findByText('HT A')
+      expect(
+        screen.queryByRole('combobox', { name: 'Giáo đoàn' }),
+      ).toBeNull()
+    })
   })
 })

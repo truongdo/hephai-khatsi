@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import {
   canAccessOrgUnit,
+  canGrantDirectoryRole,
   canManageDirectory,
   canManageRetreats,
+  blocksSecretaryGrantOnAuthClaims,
   parseAuthClaims,
 } from './authClaims'
 
@@ -60,6 +62,40 @@ describe('parseAuthClaims', () => {
   })
 })
 
+describe('blocksSecretaryGrantOnAuthClaims', () => {
+  it('blocks he_phai_admin and legacy admin claims', () => {
+    expect(
+      blocksSecretaryGrantOnAuthClaims({ role: 'he_phai_admin' }, 'gd-i'),
+    ).toBe(true)
+    expect(blocksSecretaryGrantOnAuthClaims({ admin: true }, 'gd-i')).toBe(true)
+  })
+
+  it('blocks kiem_soat and cross-org giao_doan_admin', () => {
+    expect(
+      blocksSecretaryGrantOnAuthClaims(
+        { role: 'kiem_soat', orgUnitId: 'gd-i' },
+        'gd-i',
+      ),
+    ).toBe(true)
+    expect(
+      blocksSecretaryGrantOnAuthClaims(
+        { role: 'giao_doan_admin', orgUnitId: 'gd-ii' },
+        'gd-i',
+      ),
+    ).toBe(true)
+  })
+
+  it('allows same-org giao_doan_admin and empty claims', () => {
+    expect(
+      blocksSecretaryGrantOnAuthClaims(
+        { role: 'giao_doan_admin', orgUnitId: 'gd-i' },
+        'gd-i',
+      ),
+    ).toBe(false)
+    expect(blocksSecretaryGrantOnAuthClaims({}, 'gd-i')).toBe(false)
+  })
+})
+
 describe('canAccessOrgUnit', () => {
   it('always allows he_phai_admin regardless of orgUnitId', () => {
     expect(
@@ -89,6 +125,20 @@ describe('canAccessOrgUnit', () => {
     expect(
       canAccessOrgUnit({ role: 'he_phai_admin', orgUnitId: 'gd-i' }, 'gd-ii'),
     ).toBe(true)
+  })
+})
+
+describe('canGrantDirectoryRole', () => {
+  it('allows only he_phai_admin', () => {
+    expect(
+      canGrantDirectoryRole({ role: 'he_phai_admin', orgUnitId: null }),
+    ).toBe(true)
+    expect(
+      canGrantDirectoryRole({ role: 'giao_doan_admin', orgUnitId: 'gd-i' }),
+    ).toBe(false)
+    expect(
+      canGrantDirectoryRole({ role: 'kiem_soat', orgUnitId: 'gd-i' }),
+    ).toBe(false)
   })
 })
 

@@ -26,9 +26,21 @@ const templeItems = [
 
 const deleteTemplesMock = vi.fn()
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
+const templesQueryMock = vi.fn(() => ({
+  queryKey: ['admin', 'temples', {}],
+  queryFn: async () => ({ items: templeItems, nextCursor: null }),
+  staleTime: 0,
+}))
+
+const useAdminClaimMock = vi.fn(() => ({
+  status: 'admin' as const,
+  uid: 'admin-uid',
+  role: 'he_phai_admin' as const,
+  orgUnitId: null,
+}))
 
 vi.mock('#/auth/useAdminClaim', () => ({
-  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid', role: 'he_phai_admin', orgUnitId: null }),
+  useAdminClaim: () => useAdminClaimMock(),
 }))
 
 vi.mock('#/auth/useAuth', () => ({
@@ -71,11 +83,7 @@ vi.mock('@tanstack/react-router', () => ({
 }))
 
 vi.mock('#/query/adminQueries', () => ({
-  templesQuery: () => ({
-    queryKey: ['admin', 'temples', {}],
-    queryFn: async () => ({ items: templeItems, nextCursor: null }),
-    staleTime: 0,
-  }),
+  templesQuery: (filters: unknown) => templesQueryMock(filters),
   orgUnitsQuery: () => ({
     queryKey: ['admin', 'orgUnits'],
     queryFn: async () => [
@@ -118,6 +126,17 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
+  useAdminClaimMock.mockReturnValue({
+    status: 'admin',
+    uid: 'admin-uid',
+    role: 'he_phai_admin',
+    orgUnitId: null,
+  })
+  templesQueryMock.mockImplementation(() => ({
+    queryKey: ['admin', 'temples', {}],
+    queryFn: async () => ({ items: templeItems, nextCursor: null }),
+    staleTime: 0,
+  }))
   deleteTemplesMock.mockReset()
   deleteTemplesMock.mockResolvedValue({ ok: true })
   getIdTokenMock.mockReset()
@@ -166,10 +185,13 @@ describe('TemplesListPage', () => {
     await user.click(screen.getByRole('button', { name: 'Xóa' }))
     const dialog = await screen.findByRole('dialog')
     await user.click(within(dialog).getByRole('button', { name: 'Xóa' }))
-    expect(deleteTemplesMock).toHaveBeenCalledWith({
-      ids: ['t1'],
-      idToken: 'admin-id-token',
-    })
+    expect(deleteTemplesMock).toHaveBeenCalledWith(
+      { role: 'he_phai_admin', orgUnitId: null },
+      {
+        ids: ['t1'],
+        idToken: 'admin-id-token',
+      },
+    )
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['admin', 'temples'],
     })
@@ -221,5 +243,32 @@ describe('TemplesListPage', () => {
     expect(memberLink.getAttribute('href')).toBe('/admin/members/m1')
     expect(memberLink.getAttribute('target')).toBe('_blank')
     expect(memberLink.getAttribute('rel')).toBe('noopener noreferrer')
+  })
+
+  describe('giao_doan_admin', () => {
+    beforeEach(() => {
+      useAdminClaimMock.mockReturnValue({
+        status: 'admin',
+        uid: 'admin-uid',
+        role: 'giao_doan_admin',
+        orgUnitId: 'gd-i',
+      })
+    })
+
+    it('scopes list query to giao doan org unit', async () => {
+      renderList()
+      await screen.findByText('TX A')
+      expect(templesQueryMock).toHaveBeenCalledWith(
+        expect.objectContaining({ orgUnitId: 'gd-i' }),
+      )
+    })
+
+    it('hides org unit filter select', async () => {
+      renderList()
+      await screen.findByText('TX A')
+      expect(
+        screen.queryByRole('combobox', { name: 'Giáo đoàn' }),
+      ).toBeNull()
+    })
   })
 })

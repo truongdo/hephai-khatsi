@@ -48,6 +48,29 @@ export function canManageDirectory(claims: AuthClaims): boolean {
   return claims.role === 'he_phai_admin' || claims.role === 'giao_doan_admin'
 }
 
+export function canGrantDirectoryRole(claims: AuthClaims): boolean {
+  return claims.role === 'he_phai_admin'
+}
+
 export function canManageRetreats(claims: AuthClaims): boolean {
   return canManageDirectory(claims)
+}
+
+/** Blocks grant when overwriting Auth custom claims would strip privileged access. */
+export function blocksSecretaryGrantOnAuthClaims(
+  rawClaims: Record<string, unknown>,
+  targetOrgUnitId: string,
+): boolean {
+  if (rawClaims.admin === true) return true
+
+  const role = rawClaims.role
+  if (role === 'he_phai_admin' || role === 'kiem_soat') return true
+  if (role === 'giao_doan_admin') {
+    const org =
+      typeof rawClaims.orgUnitId === 'string' && rawClaims.orgUnitId.length > 0
+        ? rawClaims.orgUnitId
+        : null
+    return org !== targetOrgUnitId
+  }
+  return false
 }

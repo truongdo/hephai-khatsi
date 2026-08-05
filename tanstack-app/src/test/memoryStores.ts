@@ -716,6 +716,11 @@ export function createMemoryMemberStore(
           templeIdSet.has(member.currentTempleId),
       )
     },
+    async listDirectorySecretaries() {
+      return [...members.values()].filter(
+        (member) => member.directoryRole === 'giao_doan_admin',
+      )
+    },
     async deleteMany(ids: string[]) {
       for (const memberId of ids) {
         const member = members.get(memberId)

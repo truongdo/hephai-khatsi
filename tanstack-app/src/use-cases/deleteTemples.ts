@@ -1,4 +1,6 @@
 import type { Member } from '#/domain/types'
+import { canAccessOrgUnit, type AuthClaims } from '#/domain/authClaims'
+import { DomainError } from '#/domain/errors'
 import { deleteTemplePhotoObject } from '#/photos/photosApiClient'
 import { memberRepo, type MemberStore } from '#/repositories/memberRepo'
 import { templeRepo, type TempleStore } from '#/repositories/templeRepo'
@@ -18,6 +20,7 @@ function memberLabel(member: Member): string {
 }
 
 export async function deleteTemples(
+  claims: AuthClaims,
   input: { ids: string[]; idToken: string },
   deps?: { templeStore?: TempleStore; memberStore?: MemberStore },
   deletePhoto: (templeId: string) => Promise<void> = (id) =>
@@ -29,6 +32,13 @@ export async function deleteTemples(
 
   const templeStore = deps?.templeStore ?? templeRepo
   const memberStore = deps?.memberStore ?? memberRepo
+
+  for (const templeId of input.ids) {
+    const temple = await templeStore.getById(templeId)
+    if (temple && !canAccessOrgUnit(claims, temple.orgUnitId)) {
+      throw new DomainError('FORBIDDEN', 'Org unit out of scope')
+    }
+  }
 
   const members = await memberStore.listByCurrentTempleIds(input.ids)
   if (members.length > 0) {

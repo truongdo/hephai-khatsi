@@ -90,3 +90,12 @@ export function retreatRegistrationsQuery(retreatId: string) {
     retry: 3,
   })
 }
+
+export function directorySecretariesQuery() {
+  return queryOptions({
+    queryKey: adminKeys.directorySecretaries(),
+    queryFn: () => memberRepo.listDirectorySecretaries(),
+    staleTime: 60_000,
+    retry: 3,
+  })
+}

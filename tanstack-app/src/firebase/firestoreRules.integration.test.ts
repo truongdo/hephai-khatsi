@@ -855,6 +855,28 @@ function retreatDraft(overrides: Record<string, unknown> = {}) {
   }
 }
 
+async function seedMembersAcrossOrgs(env: RulesTestEnvironment) {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const db = ctx.firestore()
+    await setDoc(doc(db, 'orgUnits/gd-ii'), {
+      code: 'gd-ii',
+      name: 'Giáo đoàn II',
+      kind: 'giao_doan',
+      order: 2,
+      allowsTang: true,
+      allowsNi: true,
+    })
+    await setDoc(
+      doc(db, 'members', 'gd-i_tang_012345678901'),
+      memberDraft({ inviteId: null }),
+    )
+    await setDoc(
+      doc(db, 'members', 'gd-ii_tang_012345678902'),
+      memberDraft({ orgUnitId: 'gd-ii', cccd: '012345678902', inviteId: null }),
+    )
+  })
+}
+
 async function seedRetreatsAcrossOrgs(env: RulesTestEnvironment) {
   await env.withSecurityRulesDisabled(async (ctx) => {
     const db = ctx.firestore()
@@ -882,6 +904,123 @@ async function seedRetreatsAcrossOrgs(env: RulesTestEnvironment) {
     )
   })
 }
+
+describe('members + temples org scope (giao_doan_admin)', () => {
+  it('giao_doan_admin list members requires orgUnitId filter matching claim', async () => {
+    const env = await getTestEnv()
+    await seedMembersAcrossOrgs(env)
+    const gd = env.authenticatedContext('gd-admin', {
+      role: 'giao_doan_admin',
+      orgUnitId: 'gd-i',
+    }).firestore()
+    await assertFails(getDocs(fsCollection(gd, 'members')))
+    await assertSucceeds(
+      getDocs(query(fsCollection(gd, 'members'), where('orgUnitId', '==', 'gd-i'))),
+    )
+  })
+
+  it('giao_doan_admin cannot update member in other org', async () => {
+    const env = await getTestEnv()
+    await seedMembersAcrossOrgs(env)
+    const gd = env.authenticatedContext('gd-admin', {
+      role: 'giao_doan_admin',
+      orgUnitId: 'gd-i',
+    }).firestore()
+    await assertFails(
+      updateDoc(doc(gd, 'members', 'gd-ii_tang_012345678902'), {
+        phapDanh: 'Cross-org edit',
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('giao_doan_admin cannot write orgUnits', async () => {
+    const env = await getTestEnv()
+    await seedMembersAcrossOrgs(env)
+    const gd = env.authenticatedContext('gd-admin', {
+      role: 'giao_doan_admin',
+      orgUnitId: 'gd-i',
+    }).firestore()
+    await assertFails(
+      setDoc(doc(gd, 'orgUnits/gd-x'), {
+        code: 'gd-x',
+        name: 'x',
+        kind: 'giao_doan',
+        order: 9,
+        allowsTang: true,
+        allowsNi: true,
+      }),
+    )
+  })
+
+  it('he_phai_admin update that changes directoryRole fails', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'members', MEMBER_ID),
+        memberDraft({ inviteId: null }),
+      )
+    })
+    const hp = env.authenticatedContext('hp-admin', { role: 'he_phai_admin' }).firestore()
+    await assertFails(
+      updateDoc(doc(hp, 'members', MEMBER_ID), {
+        directoryRole: 'giao_doan_admin',
+        directoryAuthUid: 'some-uid',
+        directoryRoleGrantedAt: '2026-01-01T00:00:00.000Z',
+        directoryRoleGrantedBy: 'hp-admin',
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('he_phai_admin cannot change email when member has directoryRole', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'members', MEMBER_ID),
+        memberDraft({
+          inviteId: null,
+          email: 'secretary@gmail.com',
+          directoryRole: 'giao_doan_admin',
+          directoryAuthUid: 'auth-uid',
+          directoryRoleGrantedAt: '2026-01-01T00:00:00.000Z',
+          directoryRoleGrantedBy: 'hp-admin',
+        }),
+      )
+    })
+    const hp = env.authenticatedContext('hp-admin', { role: 'he_phai_admin' }).firestore()
+    await assertFails(
+      updateDoc(doc(hp, 'members', MEMBER_ID), {
+        email: 'other@gmail.com',
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('he_phai_admin can update other fields when secretary email unchanged', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'members', MEMBER_ID),
+        memberDraft({
+          inviteId: null,
+          email: 'secretary@gmail.com',
+          directoryRole: 'giao_doan_admin',
+          directoryAuthUid: 'auth-uid',
+          directoryRoleGrantedAt: '2026-01-01T00:00:00.000Z',
+          directoryRoleGrantedBy: 'hp-admin',
+        }),
+      )
+    })
+    const hp = env.authenticatedContext('hp-admin', { role: 'he_phai_admin' }).firestore()
+    await assertSucceeds(
+      updateDoc(doc(hp, 'members', MEMBER_ID), {
+        phapDanh: 'Updated name',
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+})
 
 describe('retreats + role claims', () => {
   it('giao_doan_admin can create/get in own org; get by id is public, write to other org denied', async () => {
