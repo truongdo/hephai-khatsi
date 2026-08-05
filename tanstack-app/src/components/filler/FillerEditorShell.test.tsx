@@ -95,6 +95,18 @@ describe('FillerEditorShell', () => {
     expect(screen.getByRole('button', { name: 'Lưu' })).toBeDisabled()
   })
 
+  it('shows validationError in sticky status', () => {
+    renderShell({
+      onSave: () => {},
+      validationError: m.filler_validation_incomplete(),
+    })
+    expect(
+      within(screen.getByTestId('form-sticky-actions-status')).getByText(
+        m.filler_validation_incomplete(),
+      ),
+    ).toBeTruthy()
+  })
+
   it('keeps title sticky in header without Save button', () => {
     renderShell({ onSave: () => {}, saveLabel: 'Lưu' })
     const header = screen.getByTestId('filler-editor-header')

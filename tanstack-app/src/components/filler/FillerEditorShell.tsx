@@ -14,6 +14,7 @@ export type FillerEditorShellProps = {
   saveLabel?: string
   saveSuccess?: string | null
   saveError?: string | null
+  validationError?: string | null
   onRequestEdit?: () => void
   requestEditPending?: boolean
   editRequestedAt?: string | null
@@ -39,6 +40,7 @@ export function FillerEditorShell({
   saveLabel,
   saveSuccess,
   saveError,
+  validationError,
   onRequestEdit,
   requestEditPending,
   editRequestedAt,
@@ -77,6 +79,9 @@ export function FillerEditorShell({
         <FormStickyActions
           status={
             <>
+              {validationError ? (
+                <Alert color="red">{validationError}</Alert>
+              ) : null}
               {saveError ? <Alert color="red">{saveError}</Alert> : null}
               {requestEditError ? (
                 <Alert color="red">{requestEditError}</Alert>

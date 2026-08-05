@@ -4,6 +4,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import type { Temple } from '#/domain/types'
 import { useFormLocalDraft } from '#/hooks/useFormLocalDraft'
 import { templeDraftStorageKey } from '#/lib/formLocalDraft'
+import { scheduleScrollToFirstFieldError } from '#/lib/scrollToFirstFieldError'
 import { m } from '#/paraglide/messages'
 import { fillerKeys } from '#/query/fillerKeys'
 import type { TempleProfilePatch } from '#/repositories/templeRepo'
@@ -45,6 +46,7 @@ export function TempleEditorForm({
   const fieldsApiRef = useRef<TempleFormFieldsApi | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
+  const [validationError, setValidationError] = useState<string | null>(null)
   const [postSavePending, setPostSavePending] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [editRequestedAt, setEditRequestedAt] = useState<string | null>(
@@ -82,6 +84,7 @@ export function TempleEditorForm({
 
   const handleDraftChange = useCallback(
     (draft: TempleDraft) => {
+      setValidationError(null)
       persist(draft)
     },
     [persist],
@@ -104,6 +107,7 @@ export function TempleEditorForm({
       }),
     onError: () => {
       setSaveSuccess(null)
+      setValidationError(null)
       setSaveError(m.filler_save_error())
     },
   })
@@ -141,6 +145,7 @@ export function TempleEditorForm({
     try {
       const saveResult = await saveMutation.mutateAsync({ patch, explicitPhones })
       setSaveError(null)
+      setValidationError(null)
       clear()
       let savedTemple = saveResult.temple
 
@@ -160,6 +165,7 @@ export function TempleEditorForm({
             api.clearPendingPhoto()
             savedTemple = { ...savedTemple, photoPath: uploadResult.photoPath }
           } catch {
+            setValidationError(null)
             setSaveError(m.filler_photo_upload_error())
           }
         }
@@ -199,9 +205,14 @@ export function TempleEditorForm({
     })
     if (!result.valid) {
       api.setFieldErrors(result.errors)
+      setSaveError(null)
+      setSaveSuccess(null)
+      setValidationError(m.filler_validation_incomplete())
+      scheduleScrollToFirstFieldError()
       return
     }
     api.clearFieldErrors()
+    setValidationError(null)
     setConfirmOpen(true)
   }
 
@@ -223,6 +234,7 @@ export function TempleEditorForm({
         savePending={saveMutation.isPending || postSavePending}
         saveError={saveError}
         saveSuccess={saveSuccess}
+        validationError={validationError}
         onRequestEdit={status === 'view' && templeId ? handleRequestEdit : undefined}
         requestEditPending={requestEditMutation.isPending}
         editRequestedAt={editRequestedAt}

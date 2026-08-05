@@ -5,6 +5,7 @@ import type { PendingDocumentFiles } from './MemberDocumentsField'
 import type { FamilyPersonDraft } from './memberDraft'
 
 export type MemberRequiredDraft = {
+  cccd: string
   theDanh: string
   phapDanh: string
   ngaySinh: string
@@ -24,6 +25,7 @@ export type MemberRequiredDraft = {
 }
 
 export type MemberRequiredFieldErrors = {
+  cccd?: 'REQUIRED' | 'INVALID'
   theDanh?: 'REQUIRED'
   phapDanh?: 'REQUIRED'
   ngaySinh?: 'REQUIRED'
@@ -51,6 +53,14 @@ export function isBasicEmail(value: string): boolean {
 
 function requireText(value: string): 'REQUIRED' | undefined {
   return value.trim() ? undefined : 'REQUIRED'
+}
+
+/** Mirror `normalizeCccd` without throwing — empty → REQUIRED, bad length → INVALID. */
+function requireCccd(raw: string): 'REQUIRED' | 'INVALID' | undefined {
+  const digits = raw.replace(/\D/g, '')
+  if (!digits) return 'REQUIRED'
+  if (digits.length < 9 || digits.length > 12) return 'INVALID'
+  return undefined
 }
 
 function requireFamilyPerson(
@@ -81,6 +91,9 @@ export function validateMemberRequiredFields(draft: MemberRequiredDraft): {
   errors: MemberRequiredFieldErrors
 } {
   const errors: MemberRequiredFieldErrors = {}
+
+  const cccd = requireCccd(draft.cccd)
+  if (cccd) errors.cccd = cccd
 
   const theDanh = requireText(draft.theDanh)
   if (theDanh) errors.theDanh = theDanh

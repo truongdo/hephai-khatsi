@@ -39,6 +39,7 @@ function filledDraft(
   overrides: Partial<MemberRequiredDraft> = {},
 ): MemberRequiredDraft {
   return {
+    cccd: '012345678901',
     theDanh: 'Nguyễn Văn A',
     phapDanh: 'Minh Tâm',
     ngaySinh: '1990-01-01',
@@ -74,6 +75,7 @@ describe('isBasicEmail', () => {
 describe('validateMemberRequiredFields', () => {
   it('fails all text/date/address when blank', () => {
     const result = validateMemberRequiredFields({
+      cccd: '',
       theDanh: '',
       phapDanh: '  ',
       ngaySinh: '',
@@ -92,6 +94,7 @@ describe('validateMemberRequiredFields', () => {
       pendingDocuments: {},
     })
     expect(result.valid).toBe(false)
+    expect(result.errors.cccd).toBe('REQUIRED')
     expect(result.errors.theDanh).toBe('REQUIRED')
     expect(result.errors.phapDanh).toBe('REQUIRED')
     expect(result.errors.email).toBe('REQUIRED')
@@ -115,6 +118,24 @@ describe('validateMemberRequiredFields', () => {
       ngheNghiep: 'REQUIRED',
       noiO: 'REQUIRED',
     })
+  })
+
+  it('requires CCCD number', () => {
+    const result = validateMemberRequiredFields(filledDraft({ cccd: '  ' }))
+    expect(result.valid).toBe(false)
+    expect(result.errors.cccd).toBe('REQUIRED')
+  })
+
+  it('rejects CCCD with wrong digit length', () => {
+    const result = validateMemberRequiredFields(filledDraft({ cccd: '12345' }))
+    expect(result.valid).toBe(false)
+    expect(result.errors.cccd).toBe('INVALID')
+  })
+
+  it('accepts spaced CCCD with 9–12 digits', () => {
+    expect(
+      validateMemberRequiredFields(filledDraft({ cccd: '0123 456 78901' })),
+    ).toEqual({ valid: true, errors: {} })
   })
 
   it('marks invalid email format', () => {

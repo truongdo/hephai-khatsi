@@ -80,6 +80,14 @@ function mapEmailError(
   return undefined
 }
 
+function mapCccdError(
+  code: 'REQUIRED' | 'INVALID' | undefined,
+): string | undefined {
+  if (code === 'REQUIRED') return m.filler_error_field_required()
+  if (code === 'INVALID') return m.filler_error_cccd_invalid()
+  return undefined
+}
+
 function optionData(options: FillerOption[]) {
   return options.map((option) => ({
     value: option.value,
@@ -422,6 +430,7 @@ export function MemberFormFields({
             }
             disabled={disabled || !onCccdChange}
             required={!!onCccdChange}
+            error={mapCccdError(fieldErrors.cccd)}
           />
           <DateInput
             label={m.filler_field_cccd_ngay_cap()}
@@ -490,6 +499,7 @@ export function MemberFormFields({
       fieldErrors.phapDanh,
       fieldErrors.ngaySinh,
       fieldErrors.noiSinh,
+      fieldErrors.cccd,
     ],
   )
 

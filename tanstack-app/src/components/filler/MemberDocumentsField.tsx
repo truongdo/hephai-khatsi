@@ -383,7 +383,7 @@ export function MemberDocumentsField({
               )}
         </Stack>
         {error ? (
-          <Text size="sm" c="red" mt="xs">
+          <Text size="sm" c="red" mt="xs" data-field-error="true">
             {error}
           </Text>
         ) : null}

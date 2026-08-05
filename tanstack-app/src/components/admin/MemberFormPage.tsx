@@ -286,6 +286,7 @@ export function MemberFormPage({
 
     const draft = api.getDraft()
     const result = validateMemberRequiredFields({
+      cccd: resolvedCccd,
       theDanh: draft.theDanh,
       phapDanh: draft.phapDanh,
       ngaySinh: draft.ngaySinh,

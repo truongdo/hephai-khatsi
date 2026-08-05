@@ -223,7 +223,7 @@ export function MemberPortraitField({
         </FileButton>
       ) : null}
       {error ? (
-        <Text size="sm" c="red">
+        <Text size="sm" c="red" data-field-error="true">
           {error}
         </Text>
       ) : null}

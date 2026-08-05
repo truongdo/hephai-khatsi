@@ -4,6 +4,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import type { Member, SanghaType } from '#/domain/types'
 import { useFormLocalDraft } from '#/hooks/useFormLocalDraft'
 import { memberDraftStorageKey } from '#/lib/formLocalDraft'
+import { scheduleScrollToFirstFieldError } from '#/lib/scrollToFirstFieldError'
 import { m } from '#/paraglide/messages'
 import { fillerKeys } from '#/query/fillerKeys'
 import type { DocumentSide, DocumentTypeId } from '#/domain/memberDocumentTypes'
@@ -55,6 +56,7 @@ export function MemberEditorForm({
   const resolvedCccd = isCreate ? cccdDraft : (cccd ?? '')
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
+  const [validationError, setValidationError] = useState<string | null>(null)
   const [postSavePending, setPostSavePending] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [editRequestedAt, setEditRequestedAt] = useState<string | null>(
@@ -92,6 +94,7 @@ export function MemberEditorForm({
 
   const handleDraftChange = useCallback(
     (draft: MemberDraft) => {
+      setValidationError(null)
       persist(draft)
     },
     [persist],
@@ -108,6 +111,7 @@ export function MemberEditorForm({
       }),
     onError: () => {
       setSaveSuccess(null)
+      setValidationError(null)
       setSaveError(m.filler_save_error())
     },
   })
@@ -142,6 +146,7 @@ export function MemberEditorForm({
     try {
       const saveResult = await saveMutation.mutateAsync(patch)
       setSaveError(null)
+      setValidationError(null)
       clear()
       let savedMember = saveResult.member
 
@@ -162,6 +167,7 @@ export function MemberEditorForm({
             api.clearPendingPhoto()
             savedMember = { ...savedMember, photoPath: uploadResult.photoPath }
           } catch {
+            setValidationError(null)
             setSaveError(m.filler_photo_upload_error())
           }
         }
@@ -194,6 +200,7 @@ export function MemberEditorForm({
             }
             api.clearPendingDocuments()
           } catch {
+            setValidationError(null)
             setSaveError(m.filler_doc_upload_error())
           }
         }
@@ -220,6 +227,7 @@ export function MemberEditorForm({
 
     const draft = api.getDraft()
     const result = validateMemberRequiredFields({
+      cccd: resolvedCccd,
       theDanh: draft.theDanh,
       phapDanh: draft.phapDanh,
       ngaySinh: draft.ngaySinh,
@@ -242,9 +250,14 @@ export function MemberEditorForm({
     })
     if (!result.valid) {
       api.setFieldErrors(result.errors)
+      setSaveError(null)
+      setSaveSuccess(null)
+      setValidationError(m.filler_validation_incomplete())
+      scheduleScrollToFirstFieldError()
       return
     }
     api.clearFieldErrors()
+    setValidationError(null)
     setConfirmOpen(true)
   }
 
@@ -266,6 +279,7 @@ export function MemberEditorForm({
         savePending={saveMutation.isPending || postSavePending}
         saveError={saveError}
         saveSuccess={saveSuccess}
+        validationError={validationError}
         onRequestEdit={status === 'view' && memberId ? handleRequestEdit : undefined}
         requestEditPending={requestEditMutation.isPending}
         editRequestedAt={editRequestedAt}
@@ -286,7 +300,14 @@ export function MemberEditorForm({
           disabled={disabled}
           memberId={memberId}
           cccd={resolvedCccd}
-          onCccdChange={isCreate ? setCccdDraft : undefined}
+          onCccdChange={
+            isCreate
+              ? (value) => {
+                  setValidationError(null)
+                  setCccdDraft(value)
+                }
+              : undefined
+          }
           sanghaType={sanghaType}
           inviteToken={token}
           onUploadError={setSaveError}

@@ -1,6 +1,6 @@
 import { MantineProvider } from '@mantine/core'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Temple } from '#/domain/types'
@@ -328,13 +328,26 @@ describe('TempleEditorForm', () => {
 
   it('blocks save when required temple fields are empty', async () => {
     const user = userEvent.setup()
+    const scrollIntoView = vi.fn()
+    Element.prototype.scrollIntoView = scrollIntoView
+
     renderForm()
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
 
     expect(saveAndLockTempleMock).not.toHaveBeenCalled()
+    expect(screen.queryByText(m.filler_save_confirm_body())).toBeNull()
     expect(
       screen.getAllByText(m.filler_error_field_required()).length,
     ).toBeGreaterThan(0)
+    expect(
+      within(screen.getByTestId('form-sticky-actions-status')).getByText(
+        m.filler_validation_incomplete(),
+      ),
+    ).toBeTruthy()
+
+    await vi.waitFor(() => {
+      expect(scrollIntoView).toHaveBeenCalled()
+    })
   })
 
   it('blocks save when temple photo is missing', async () => {

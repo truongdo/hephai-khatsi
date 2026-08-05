@@ -622,14 +622,50 @@ describe('MemberEditorForm', () => {
 
   it('blocks save when required core fields are empty', async () => {
     const user = userEvent.setup()
+    const scrollIntoView = vi.fn()
+    Element.prototype.scrollIntoView = scrollIntoView
+
     renderForm({ cccd: '012345678901' })
 
     await user.click(screen.getByRole('button', { name: m.filler_save() }))
 
     expect(saveAndLockMemberMock).not.toHaveBeenCalled()
+    expect(screen.queryByText(m.filler_save_confirm_body())).toBeNull()
     expect(
       screen.getAllByText(m.filler_error_field_required()).length,
     ).toBeGreaterThanOrEqual(1)
+    expect(
+      within(screen.getByTestId('form-sticky-actions-status')).getByText(
+        m.filler_validation_incomplete(),
+      ),
+    ).toBeTruthy()
+
+    await vi.waitFor(() => {
+      expect(scrollIntoView).toHaveBeenCalled()
+    })
+  })
+
+  it('blocks save when CCCD number is empty on create', async () => {
+    const user = userEvent.setup()
+    renderForm({
+      cccd: undefined,
+      initial: requiredCoreInitial,
+    })
+
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+
+    expect(saveAndLockMemberMock).not.toHaveBeenCalled()
+    expect(screen.queryByText(m.filler_save_confirm_body())).toBeNull()
+    expect(
+      within(screen.getByTestId('form-sticky-actions-status')).getByText(
+        m.filler_validation_incomplete(),
+      ),
+    ).toBeTruthy()
+    expect(screen.getByLabelText(/^CCCD/)).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    )
+    expect(screen.getByText(m.filler_error_field_required())).toBeTruthy()
   })
 
   it('does not show phone fields for father or mother', () => {
