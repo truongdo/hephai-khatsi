@@ -192,13 +192,43 @@ describe('uploadMemberDocument', () => {
     ).rejects.toMatchObject({ code: 'INVALID_INPUT' })
   })
 
-  it('rejects filler upload for locked members without idToken', async () => {
+  it('allows filler upload for locked members with inviteToken', async () => {
     const store = createMemoryMemberStore([
       {
         ...draftMember,
         status: 'locked',
         lockedAt: '2026-07-19T00:00:00.000Z',
-        lockedBy: 'admin-1',
+        lockedBy: 'filler',
+      },
+    ])
+    const { storage, calls } = fakeStorage()
+
+    const result = await uploadMemberDocument(
+      {
+        memberId: 'member-1',
+        cccd: '012345678901',
+        typeId: 'cccd',
+        side: 'front',
+        bytes: new Uint8Array([1]),
+        contentType: 'image/jpeg',
+        inviteToken: 'invite-1',
+        current: {},
+      },
+      store,
+      storage,
+    )
+
+    expect(result.filePath).toContain('cccd/front')
+    expect(calls[0]?.inviteToken).toBe('invite-1')
+  })
+
+  it('rejects locked upload without inviteToken or idToken', async () => {
+    const store = createMemoryMemberStore([
+      {
+        ...draftMember,
+        status: 'locked',
+        lockedAt: '2026-07-19T00:00:00.000Z',
+        lockedBy: 'filler',
       },
     ])
     const { storage } = fakeStorage()
@@ -212,7 +242,6 @@ describe('uploadMemberDocument', () => {
           side: 'front',
           bytes: new Uint8Array([1]),
           contentType: 'image/jpeg',
-          inviteToken: 'invite-1',
           current: {},
         },
         store,

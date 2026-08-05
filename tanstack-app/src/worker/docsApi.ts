@@ -88,12 +88,10 @@ async function handleMemberUploadUrl(request: Request, env: Env): Promise<Respon
   if (!member) return jsonError('Member not found', 404)
   if (!cccdMatches(member.cccd, cccd)) return jsonError('CCCD mismatch', 403)
 
-  let isAdmin = false
   const token = bearerToken(request)
   if (token) {
     const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
     if (!admin) return jsonError('Unauthorized', 401)
-    isAdmin = true
   } else if (inviteToken) {
     // Global invite has no orgUnitId — existence only (same as temple photo auth).
     const exists = await inviteExists(env.FIREBASE_PROJECT_ID, inviteToken)
@@ -102,10 +100,7 @@ async function handleMemberUploadUrl(request: Request, env: Env): Promise<Respon
     return jsonError('Unauthorized', 401)
   }
 
-  if (member.status === 'locked' && !isAdmin) {
-    return jsonError('Member is locked', 403)
-  }
-
+  // Filler may upload after save-and-lock (invite validated above). Deletes stay blocked.
   const ext = extForContentType(contentType)
   const filePath = memberDocumentKey(memberId, typeId, side, ext)
   const uploadUrl = await createR2PresignedPutUrl({

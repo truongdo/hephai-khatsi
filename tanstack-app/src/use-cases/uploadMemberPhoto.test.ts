@@ -143,13 +143,45 @@ describe('uploadMemberPhoto', () => {
     )
   })
 
-  it('rejects filler upload for locked members without idToken', async () => {
+  it('allows filler upload for locked members with inviteToken when photoPath is null', async () => {
     const store = memberStoreWith([
       {
         ...draftMember,
         status: 'locked',
         lockedAt: '2026-07-19T00:00:00.000Z',
-        lockedBy: 'admin-1',
+        lockedBy: 'filler',
+        photoPath: null,
+      },
+    ])
+    const { storage, calls } = fakeStorage()
+
+    const result = await uploadMemberPhoto(
+      {
+        memberId: 'member-1',
+        cccd: '012345678901',
+        bytes: new Uint8Array([1]),
+        contentType: 'image/jpeg',
+        inviteToken: 'invite-1',
+      },
+      store,
+      storage,
+    )
+
+    expect(result).toEqual({ photoPath: 'members/member-1/photo.jpg' })
+    expect(calls[0]?.inviteToken).toBe('invite-1')
+    expect(store.members.get('member-1')?.photoPath).toBe(
+      'members/member-1/photo.jpg',
+    )
+  })
+
+  it('rejects filler upload for locked members that already have a photo', async () => {
+    const store = memberStoreWith([
+      {
+        ...draftMember,
+        status: 'locked',
+        lockedAt: '2026-07-19T00:00:00.000Z',
+        lockedBy: 'filler',
+        photoPath: 'members/member-1/photo.jpg',
       },
     ])
     const { storage } = fakeStorage()
@@ -162,6 +194,31 @@ describe('uploadMemberPhoto', () => {
           bytes: new Uint8Array([1]),
           contentType: 'image/jpeg',
           inviteToken: 'invite-1',
+        },
+        store,
+        storage,
+      ),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' })
+  })
+
+  it('rejects locked upload without inviteToken or idToken', async () => {
+    const store = memberStoreWith([
+      {
+        ...draftMember,
+        status: 'locked',
+        lockedAt: '2026-07-19T00:00:00.000Z',
+        lockedBy: 'filler',
+      },
+    ])
+    const { storage } = fakeStorage()
+
+    await expect(
+      uploadMemberPhoto(
+        {
+          memberId: 'member-1',
+          cccd: '012345678901',
+          bytes: new Uint8Array([1]),
+          contentType: 'image/jpeg',
         },
         store,
         storage,

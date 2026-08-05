@@ -45,6 +45,7 @@ describe('getMemberDocument', () => {
       orgUnitId: 'gd-i',
       cccd: '012345678901',
       status: 'draft',
+      photoPath: null,
     })
   })
 
@@ -136,6 +137,7 @@ describe('getTempleDocument', () => {
       id: 't1',
       orgUnitId: 'gd-i',
       status: 'draft',
+      photoPath: null,
     })
   })
 

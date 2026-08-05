@@ -277,6 +277,26 @@ describe('members', () => {
     )
   })
 
+  it('denies filler photoPath replace when locked record already has a photo', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'members', memberId),
+        memberLocked({
+          lockedAt: '2026-01-02T00:00:00.000Z',
+          photoPath: 'members/gd-i_tang_012345678901/photo.jpg',
+        }),
+      )
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      updateDoc(doc(anon, 'members', memberId), {
+        photoPath: 'members/gd-i_tang_012345678901/photo-replaced.jpg',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      }),
+    )
+  })
+
   it('lets admin lock and unlock regardless of current status, but not sneak in profile edits during a lock transition', async () => {
     const env = await getTestEnv()
     await env.withSecurityRulesDisabled(async (ctx) => {
@@ -454,6 +474,26 @@ describe('temples', () => {
     await assertSucceeds(
       updateDoc(doc(anon, 'temples', 'temple-1'), {
         photoPath: 'temples/temple-1/photo.jpg',
+        updatedAt: '2026-01-04T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('denies filler photoPath replace when locked temple already has a photo', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'temples', 'temple-1'),
+        templeLocked({
+          lockedAt: '2026-01-02T00:00:00.000Z',
+          photoPath: 'temples/temple-1/photo.jpg',
+        }),
+      )
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      updateDoc(doc(anon, 'temples', 'temple-1'), {
+        photoPath: 'temples/temple-1/photo-replaced.jpg',
         updatedAt: '2026-01-04T00:00:00.000Z',
       }),
     )

@@ -34,12 +34,14 @@ const draftMember: WorkerMember = {
   orgUnitId: 'gd-i',
   cccd: '012345678901',
   status: 'draft',
+  photoPath: null,
 }
 
 const draftTemple: WorkerTemple = {
   id: TEMPLE_ID,
   orgUnitId: 'gd-i',
   status: 'draft',
+  photoPath: null,
 }
 
 function makeEnv(overrides: Partial<Env> = {}): Env {
@@ -189,8 +191,38 @@ describe('handlePhotosApi', () => {
       })
     })
 
-    it('returns 403 for filler invite on locked member', async () => {
-      getMemberDocument.mockResolvedValue({ ...draftMember, status: 'locked' })
+    it('returns uploadUrl for filler invite on locked member without photo', async () => {
+      getMemberDocument.mockResolvedValue({
+        ...draftMember,
+        status: 'locked',
+        photoPath: null,
+      })
+      inviteExists.mockResolvedValue(true)
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        new Request('https://example.com/api/photos/member-upload-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            memberId: MEMBER_ID,
+            cccd: '012345678901',
+            contentType: 'image/jpeg',
+            inviteToken: 'invite-1',
+          }),
+        }),
+        makeEnv(),
+      )
+
+      expect(response.status).toBe(200)
+    })
+
+    it('returns 403 for filler invite on locked member that already has a photo', async () => {
+      getMemberDocument.mockResolvedValue({
+        ...draftMember,
+        status: 'locked',
+        photoPath: 'members/m1/photo.jpg',
+      })
       inviteExists.mockResolvedValue(true)
       const { handlePhotosApi } = await import('./photosApi')
 
@@ -485,8 +517,37 @@ describe('handlePhotosApi', () => {
       })
     })
 
-    it('returns 403 for filler invite on locked temple', async () => {
-      getTempleDocument.mockResolvedValue({ ...draftTemple, status: 'locked' })
+    it('returns uploadUrl for filler invite on locked temple without photo', async () => {
+      getTempleDocument.mockResolvedValue({
+        ...draftTemple,
+        status: 'locked',
+        photoPath: null,
+      })
+      inviteExists.mockResolvedValue(true)
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        new Request('https://example.com/api/photos/temple-upload-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            templeId: TEMPLE_ID,
+            contentType: 'image/jpeg',
+            inviteToken: 'invite-1',
+          }),
+        }),
+        makeEnv(),
+      )
+
+      expect(response.status).toBe(200)
+    })
+
+    it('returns 403 for filler invite on locked temple that already has a photo', async () => {
+      getTempleDocument.mockResolvedValue({
+        ...draftTemple,
+        status: 'locked',
+        photoPath: 'temples/t1/photo.jpg',
+      })
       inviteExists.mockResolvedValue(true)
       const { handlePhotosApi } = await import('./photosApi')
 

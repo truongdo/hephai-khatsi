@@ -3,12 +3,14 @@ export type WorkerMember = {
   orgUnitId: string
   cccd: string
   status: 'draft' | 'locked'
+  photoPath: string | null
 }
 
 export type WorkerTemple = {
   id: string
   orgUnitId: string
   status: 'draft' | 'locked'
+  photoPath: string | null
 }
 
 type FirestoreValue = {
@@ -61,6 +63,7 @@ export async function getMemberDocument(
     orgUnitId,
     cccd,
     status,
+    photoPath: parseStringField(doc, 'photoPath'),
   }
 }
 
@@ -90,6 +93,7 @@ export async function getTempleDocument(
     id: templeId,
     orgUnitId,
     status,
+    photoPath: parseStringField(doc, 'photoPath'),
   }
 }
 

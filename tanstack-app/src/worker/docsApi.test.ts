@@ -35,6 +35,7 @@ const draftMember: WorkerMember = {
   orgUnitId: 'gd-i',
   cccd: '012345678901',
   status: 'draft',
+  photoPath: null,
 }
 
 function makeEnv(overrides: Partial<Env> = {}): Env {
@@ -164,7 +165,7 @@ describe('handleDocsApi', () => {
       })
     })
 
-    it('returns 403 for invite on locked member', async () => {
+    it('returns uploadUrl for invite on locked member', async () => {
       getMemberDocument.mockResolvedValue({ ...draftMember, status: 'locked' })
       inviteExists.mockResolvedValue(true)
       const { handleDocsApi } = await import('./docsApi')
@@ -185,7 +186,7 @@ describe('handleDocsApi', () => {
         makeEnv(),
       )
 
-      expect(response.status).toBe(403)
+      expect(response.status).toBe(200)
     })
 
     it('accepts image/jpg content type', async () => {

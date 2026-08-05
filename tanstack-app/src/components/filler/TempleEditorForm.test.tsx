@@ -326,6 +326,27 @@ describe('TempleEditorForm', () => {
     expect(screen.getByText(m.filler_save_redirecting())).toBeTruthy()
   })
 
+  it('keeps form open when portrait upload fails after create', async () => {
+    const user = userEvent.setup()
+    uploadTemplePhotoMock.mockRejectedValue(new Error('upload failed'))
+    saveAndLockTempleMock.mockResolvedValue({
+      temple: temple({ id: 'created-temple' }),
+      mode: 'created',
+    })
+    const { onCreated } = renderForm({
+      initial: requiredTempleInitial({ photoPath: null }),
+    })
+    const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
+
+    await user.upload(getPortraitFileInput(), file)
+    await confirmSave(user)
+
+    expect(await screen.findByText(m.filler_photo_upload_error())).toBeTruthy()
+    expect(onCreated).not.toHaveBeenCalled()
+    expect(screen.queryByText(m.filler_save_redirecting())).toBeNull()
+    expect(screen.queryByText(m.filler_save_success())).toBeNull()
+  })
+
   it('blocks save when required temple fields are empty', async () => {
     const user = userEvent.setup()
     const scrollIntoView = vi.fn()

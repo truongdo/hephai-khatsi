@@ -90,7 +90,11 @@ export async function uploadMemberDocument(
     throw new DomainError('FORBIDDEN', 'CCCD does not match member')
   }
 
-  if (member.status === 'locked' && !input.idToken) {
+  if (
+    member.status === 'locked' &&
+    !input.idToken &&
+    !input.inviteToken?.trim()
+  ) {
     throw new DomainError('RECORD_LOCKED', 'Member is locked')
   }
 

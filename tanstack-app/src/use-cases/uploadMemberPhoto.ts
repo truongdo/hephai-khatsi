@@ -65,8 +65,20 @@ export async function uploadMemberPhoto(
     throw new DomainError('FORBIDDEN', 'CCCD does not match member')
   }
 
-  if (member.status === 'locked' && !input.idToken) {
+  if (
+    member.status === 'locked' &&
+    !input.idToken &&
+    !input.inviteToken?.trim()
+  ) {
     throw new DomainError('RECORD_LOCKED', 'Member is locked')
+  }
+
+  if (
+    member.status === 'locked' &&
+    !input.idToken &&
+    member.photoPath
+  ) {
+    throw new DomainError('FORBIDDEN', 'Photo already set on locked member')
   }
 
   const photoPath = memberPhotoPath(input.memberId)

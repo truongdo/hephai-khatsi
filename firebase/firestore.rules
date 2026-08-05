@@ -119,7 +119,10 @@ service cloud.firestore {
           && lockFieldsUnchanged()
           && editRequestFieldsUnchanged()
           && request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['photoPath', 'documents', 'updatedAt']);
+            .hasOnly(['photoPath', 'documents', 'updatedAt'])
+          // First portrait attach only — cannot replace an existing photoPath.
+          && (request.resource.data.photoPath == resource.data.photoPath
+            || resource.data.photoPath == null);
       }
 
       function isFillerLockedUpdate() {
@@ -220,7 +223,9 @@ service cloud.firestore {
           && lockFieldsUnchanged()
           && editRequestFieldsUnchanged()
           && request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['photoPath', 'updatedAt']);
+            .hasOnly(['photoPath', 'updatedAt'])
+          && (request.resource.data.photoPath == resource.data.photoPath
+            || resource.data.photoPath == null);
       }
 
       function isFillerLockedUpdate() {

@@ -55,8 +55,20 @@ export async function uploadTemplePhoto(
     throw new DomainError('NOT_FOUND', 'Temple not found')
   }
 
-  if (temple.status === 'locked' && !input.idToken) {
+  if (
+    temple.status === 'locked' &&
+    !input.idToken &&
+    !input.inviteToken?.trim()
+  ) {
     throw new DomainError('RECORD_LOCKED', 'Temple is locked')
+  }
+
+  if (
+    temple.status === 'locked' &&
+    !input.idToken &&
+    temple.photoPath
+  ) {
+    throw new DomainError('FORBIDDEN', 'Photo already set on locked temple')
   }
 
   const photoPath = templePhotoPath(input.templeId)

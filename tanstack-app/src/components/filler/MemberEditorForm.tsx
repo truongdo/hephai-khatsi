@@ -51,9 +51,11 @@ export function MemberEditorForm({
 }: MemberEditorFormProps) {
   const queryClient = useQueryClient()
   const fieldsApiRef = useRef<MemberFormFieldsApi | null>(null)
-  const isCreate = !memberId
+  const [sessionCreatedId, setSessionCreatedId] = useState<string | undefined>()
+  const effectiveMemberId = memberId ?? sessionCreatedId
+  const isCreate = !effectiveMemberId
   const [cccdDraft, setCccdDraft] = useState(cccd ?? '')
-  const resolvedCccd = isCreate ? cccdDraft : (cccd ?? '')
+  const resolvedCccd = memberId ? (cccd ?? '') : cccdDraft
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
   const [validationError, setValidationError] = useState<string | null>(null)
@@ -144,20 +146,46 @@ export function MemberEditorForm({
 
     setPostSavePending(true)
     try {
-      const saveResult = await saveMutation.mutateAsync(patch)
-      setSaveError(null)
-      setValidationError(null)
-      clear()
-      let savedMember = saveResult.member
+      let savedMember: Member
+      let createdThisSave = false
 
-      if (saveResult.mode === 'created') {
+      if (sessionCreatedId) {
+        const cached = queryClient.getQueryData<Member>(
+          fillerKeys.member(sessionCreatedId),
+        )
+        if (!cached) {
+          setSaveSuccess(null)
+          setSaveError(m.filler_save_error())
+          return
+        }
+        savedMember = cached
+        setSaveError(null)
+        setValidationError(null)
+      } else {
+        const saveResult = await saveMutation.mutateAsync(patch)
+        setSaveError(null)
+        setValidationError(null)
+        clear()
+        savedMember = saveResult.member
+
+        if (saveResult.mode !== 'created') {
+          setSaveSuccess(m.filler_save_success())
+          queryClient.setQueryData(fillerKeys.member(savedMember.id), savedMember)
+          return
+        }
+
+        createdThisSave = true
+        setSessionCreatedId(savedMember.id)
+      }
+
+      if (createdThisSave || sessionCreatedId) {
         setSaveSuccess(m.filler_save_success())
         const pendingPhoto = api.getPendingPhoto()
         if (pendingPhoto) {
           try {
             const bytes = new Uint8Array(await pendingPhoto.arrayBuffer())
             const uploadResult = await uploadMemberPhoto({
-              memberId: saveResult.member.id,
+              memberId: savedMember.id,
               cccd: resolvedCccd,
               bytes,
               contentType: pendingPhoto.type,
@@ -168,7 +196,13 @@ export function MemberEditorForm({
             savedMember = { ...savedMember, photoPath: uploadResult.photoPath }
           } catch {
             setValidationError(null)
+            setSaveSuccess(null)
             setSaveError(m.filler_photo_upload_error())
+            queryClient.setQueryData(
+              fillerKeys.member(savedMember.id),
+              savedMember,
+            )
+            return
           }
         }
 
@@ -182,7 +216,7 @@ export function MemberEditorForm({
                 if (!file) continue
                 const bytes = new Uint8Array(await file.arrayBuffer())
                 const uploadResult = await uploadMemberDocument({
-                  memberId: saveResult.member.id,
+                  memberId: savedMember.id,
                   cccd: resolvedCccd,
                   typeId,
                   side,
@@ -201,18 +235,20 @@ export function MemberEditorForm({
             api.clearPendingDocuments()
           } catch {
             setValidationError(null)
+            setSaveSuccess(null)
             setSaveError(m.filler_doc_upload_error())
+            queryClient.setQueryData(
+              fillerKeys.member(savedMember.id),
+              savedMember,
+            )
+            return
           }
         }
 
         setSaveSuccess(m.filler_save_redirecting())
         queryClient.setQueryData(fillerKeys.member(savedMember.id), savedMember)
         await onCreated(savedMember.id)
-        return
       }
-
-      setSaveSuccess(m.filler_save_success())
-      queryClient.setQueryData(fillerKeys.member(savedMember.id), savedMember)
     } catch {
       // onError handles save failure
     } finally {
@@ -298,7 +334,7 @@ export function MemberEditorForm({
             dienThoai: initial.dienThoai ?? seedPhone,
           }}
           disabled={disabled}
-          memberId={memberId}
+          memberId={effectiveMemberId}
           cccd={resolvedCccd}
           onCccdChange={
             isCreate

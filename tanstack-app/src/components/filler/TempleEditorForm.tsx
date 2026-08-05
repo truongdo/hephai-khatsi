@@ -56,6 +56,8 @@ export function TempleEditorForm({
     null,
   )
   const [requestEditError, setRequestEditError] = useState<string | null>(null)
+  const [sessionCreatedId, setSessionCreatedId] = useState<string | undefined>()
+  const effectiveTempleId = templeId ?? sessionCreatedId
   const disabled = status === 'view'
   const requestPhone =
     initial.seedPhone ?? initial.truTriHienNay?.dienThoai ?? ''
@@ -143,20 +145,49 @@ export function TempleEditorForm({
 
     setPostSavePending(true)
     try {
-      const saveResult = await saveMutation.mutateAsync({ patch, explicitPhones })
-      setSaveError(null)
-      setValidationError(null)
-      clear()
-      let savedTemple = saveResult.temple
+      let savedTemple: Temple
+      let createdThisSave = false
 
-      if (saveResult.mode === 'created') {
+      if (sessionCreatedId) {
+        const cached = queryClient.getQueryData<Temple>(
+          fillerKeys.temple(sessionCreatedId),
+        )
+        if (!cached) {
+          setSaveSuccess(null)
+          setSaveError(m.filler_save_error())
+          return
+        }
+        savedTemple = cached
+        setSaveError(null)
+        setValidationError(null)
+      } else {
+        const saveResult = await saveMutation.mutateAsync({
+          patch,
+          explicitPhones,
+        })
+        setSaveError(null)
+        setValidationError(null)
+        clear()
+        savedTemple = saveResult.temple
+
+        if (saveResult.mode !== 'created') {
+          setSaveSuccess(m.filler_save_success())
+          queryClient.setQueryData(fillerKeys.temple(savedTemple.id), savedTemple)
+          return
+        }
+
+        createdThisSave = true
+        setSessionCreatedId(savedTemple.id)
+      }
+
+      if (createdThisSave || sessionCreatedId) {
         setSaveSuccess(m.filler_save_success())
         const pendingPhoto = api.getPendingPhoto()
         if (pendingPhoto) {
           try {
             const bytes = new Uint8Array(await pendingPhoto.arrayBuffer())
             const uploadResult = await uploadTemplePhoto({
-              templeId: saveResult.temple.id,
+              templeId: savedTemple.id,
               bytes,
               contentType: pendingPhoto.type,
               inviteToken: token,
@@ -166,17 +197,19 @@ export function TempleEditorForm({
             savedTemple = { ...savedTemple, photoPath: uploadResult.photoPath }
           } catch {
             setValidationError(null)
+            setSaveSuccess(null)
             setSaveError(m.filler_photo_upload_error())
+            queryClient.setQueryData(
+              fillerKeys.temple(savedTemple.id),
+              savedTemple,
+            )
+            return
           }
         }
         setSaveSuccess(m.filler_save_redirecting())
         queryClient.setQueryData(fillerKeys.temple(savedTemple.id), savedTemple)
         await onCreated(savedTemple.id)
-        return
       }
-
-      setSaveSuccess(m.filler_save_success())
-      queryClient.setQueryData(fillerKeys.temple(savedTemple.id), savedTemple)
     } catch {
       // onError handles save failure
     } finally {
@@ -250,7 +283,7 @@ export function TempleEditorForm({
           apiRef={fieldsApiRef}
           initial={initial}
           disabled={disabled}
-          templeId={templeId}
+          templeId={effectiveTempleId}
           inviteToken={token}
           onUploadError={setSaveError}
           onDraftChange={handleDraftChange}

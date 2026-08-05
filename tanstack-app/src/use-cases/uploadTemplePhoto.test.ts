@@ -109,13 +109,44 @@ describe('uploadTemplePhoto', () => {
     )
   })
 
-  it('rejects filler upload for locked temples', async () => {
+  it('allows filler upload for locked temples with inviteToken when photoPath is null', async () => {
     const store = templeStoreWith([
       {
         ...draftTemple,
         status: 'locked',
         lockedAt: '2026-07-19T00:00:00.000Z',
-        lockedBy: 'admin-1',
+        lockedBy: 'filler',
+        photoPath: null,
+      },
+    ])
+    const { storage, calls } = fakeStorage()
+
+    const result = await uploadTemplePhoto(
+      {
+        templeId: 'temple-1',
+        bytes: new Uint8Array([1]),
+        contentType: 'image/jpeg',
+        inviteToken: 'invite-1',
+      },
+      store,
+      storage,
+    )
+
+    expect(result).toEqual({ photoPath: 'temples/temple-1/photo.jpg' })
+    expect(calls[0]?.inviteToken).toBe('invite-1')
+    expect(store.temples.get('temple-1')?.photoPath).toBe(
+      'temples/temple-1/photo.jpg',
+    )
+  })
+
+  it('rejects filler upload for locked temples that already have a photo', async () => {
+    const store = templeStoreWith([
+      {
+        ...draftTemple,
+        status: 'locked',
+        lockedAt: '2026-07-19T00:00:00.000Z',
+        lockedBy: 'filler',
+        photoPath: 'temples/temple-1/photo.jpg',
       },
     ])
     const { storage } = fakeStorage()
@@ -127,6 +158,30 @@ describe('uploadTemplePhoto', () => {
           bytes: new Uint8Array([1]),
           contentType: 'image/jpeg',
           inviteToken: 'invite-1',
+        },
+        store,
+        storage,
+      ),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' })
+  })
+
+  it('rejects locked upload without inviteToken or idToken', async () => {
+    const store = templeStoreWith([
+      {
+        ...draftTemple,
+        status: 'locked',
+        lockedAt: '2026-07-19T00:00:00.000Z',
+        lockedBy: 'filler',
+      },
+    ])
+    const { storage } = fakeStorage()
+
+    await expect(
+      uploadTemplePhoto(
+        {
+          templeId: 'temple-1',
+          bytes: new Uint8Array([1]),
+          contentType: 'image/jpeg',
         },
         store,
         storage,

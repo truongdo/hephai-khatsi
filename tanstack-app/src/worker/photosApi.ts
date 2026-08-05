@@ -74,8 +74,8 @@ async function handleMemberUploadUrl(request: Request, env: Env): Promise<Respon
   if (!member) return jsonError('Member not found', 404)
   if (!cccdMatches(member.cccd, cccd)) return jsonError('CCCD mismatch', 403)
 
-  let isAdmin = false
   const token = bearerToken(request)
+  let isAdmin = false
   if (token) {
     const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
     if (!admin) return jsonError('Unauthorized', 401)
@@ -88,8 +88,9 @@ async function handleMemberUploadUrl(request: Request, env: Env): Promise<Respon
     return jsonError('Unauthorized', 401)
   }
 
-  if (member.status === 'locked' && !isAdmin) {
-    return jsonError('Member is locked', 403)
+  // Filler may attach a first photo after save-and-lock, but not replace.
+  if (!isAdmin && member.status === 'locked' && member.photoPath) {
+    return jsonError('Photo already set', 403)
   }
 
   const photoPath = memberPhotoKey(memberId)
@@ -162,8 +163,8 @@ async function handleTempleUploadUrl(request: Request, env: Env): Promise<Respon
   const temple = await getTempleDocument(env.FIREBASE_PROJECT_ID, templeId)
   if (!temple) return jsonError('Temple not found', 404)
 
-  let isAdmin = false
   const token = bearerToken(request)
+  let isAdmin = false
   if (token) {
     const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
     if (!admin) return jsonError('Unauthorized', 401)
@@ -175,8 +176,9 @@ async function handleTempleUploadUrl(request: Request, env: Env): Promise<Respon
     return jsonError('Unauthorized', 401)
   }
 
-  if (temple.status === 'locked' && !isAdmin) {
-    return jsonError('Temple is locked', 403)
+  // Filler may attach a first photo after save-and-lock, but not replace.
+  if (!isAdmin && temple.status === 'locked' && temple.photoPath) {
+    return jsonError('Photo already set', 403)
   }
 
   const photoPath = templePhotoKey(templeId)
