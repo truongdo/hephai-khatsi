@@ -297,6 +297,12 @@ export function MemberFormPage({
       noiXuatGia: draft.noiXuatGia,
       hienTuHoc: draft.hienTuHoc,
       bonSu: draft.bonSu,
+      photoPath: api.getPhotoPath(),
+      pendingPhoto: api.getPendingPhoto(),
+      giaDinh: {
+        cha: draft.giaDinh.cha,
+        me: draft.giaDinh.me,
+      },
     })
     if (!result.valid) {
       api.setFieldErrors(result.errors)

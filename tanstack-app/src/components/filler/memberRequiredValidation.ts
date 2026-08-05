@@ -1,5 +1,6 @@
 import type { AddressDraft } from '#/domain/address'
 import { validateAddressDraft } from '#/domain/address'
+import type { FamilyPersonDraft } from './memberDraft'
 
 export type MemberRequiredDraft = {
   theDanh: string
@@ -13,6 +14,9 @@ export type MemberRequiredDraft = {
   noiXuatGia: AddressDraft
   hienTuHoc: string
   bonSu: string
+  photoPath: string | null
+  pendingPhoto: File | null
+  giaDinh: { cha: FamilyPersonDraft; me: FamilyPersonDraft }
 }
 
 export type MemberRequiredFieldErrors = {
@@ -24,9 +28,14 @@ export type MemberRequiredFieldErrors = {
   email?: 'REQUIRED' | 'INVALID'
   diaChiThuongTru?: { city?: 'REQUIRED'; ward?: 'REQUIRED' }
   ngayXuatGia?: 'REQUIRED'
-  noiXuatGia?: { city?: 'REQUIRED'; ward?: 'REQUIRED' }
+  noiXuatGia?: { city?: 'REQUIRED'; ward?: 'REQUIRED'; line?: 'REQUIRED' }
   hienTuHoc?: 'REQUIRED'
   bonSu?: 'REQUIRED'
+  photo?: 'REQUIRED'
+  giaDinh?: {
+    cha?: Partial<Record<keyof FamilyPersonDraft, 'REQUIRED'>>
+    me?: Partial<Record<keyof FamilyPersonDraft, 'REQUIRED'>>
+  }
 }
 
 const BASIC_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -39,13 +48,24 @@ function requireText(value: string): 'REQUIRED' | undefined {
   return value.trim() ? undefined : 'REQUIRED'
 }
 
+function requireFamilyPerson(
+  person: FamilyPersonDraft,
+): Partial<Record<keyof FamilyPersonDraft, 'REQUIRED'>> | undefined {
+  const errors: Partial<Record<keyof FamilyPersonDraft, 'REQUIRED'>> = {}
+  for (const key of ['hoTen', 'namSinh', 'ngheNghiep', 'noiO'] as const) {
+    if (!person[key].trim()) errors[key] = 'REQUIRED'
+  }
+  return Object.keys(errors).length ? errors : undefined
+}
+
 function mapAddress(
   draft: AddressDraft,
-  options?: { cityOnly?: boolean },
-): { city?: 'REQUIRED'; ward?: 'REQUIRED' } | undefined {
+  options?: { cityOnly?: boolean; lineRequired?: boolean },
+): { city?: 'REQUIRED'; ward?: 'REQUIRED'; line?: 'REQUIRED' } | undefined {
   const result = validateAddressDraft(draft, {
     required: true,
     cityOnly: options?.cityOnly,
+    lineRequired: options?.lineRequired,
   })
   if (result.valid) return undefined
   return result.errors
@@ -76,11 +96,17 @@ export function validateMemberRequiredFields(draft: MemberRequiredDraft): {
   if (!emailTrimmed) errors.email = 'REQUIRED'
   else if (!isBasicEmail(emailTrimmed)) errors.email = 'INVALID'
 
+  if (!draft.photoPath && !draft.pendingPhoto) errors.photo = 'REQUIRED'
+
+  const cha = requireFamilyPerson(draft.giaDinh.cha)
+  const me = requireFamilyPerson(draft.giaDinh.me)
+  if (cha || me) errors.giaDinh = { ...(cha ? { cha } : {}), ...(me ? { me } : {}) }
+
   const noiSinh = mapAddress(draft.noiSinh, { cityOnly: true })
   if (noiSinh) errors.noiSinh = noiSinh
   const diaChiThuongTru = mapAddress(draft.diaChiThuongTru)
   if (diaChiThuongTru) errors.diaChiThuongTru = diaChiThuongTru
-  const noiXuatGia = mapAddress(draft.noiXuatGia)
+  const noiXuatGia = mapAddress(draft.noiXuatGia, { lineRequired: true })
   if (noiXuatGia) errors.noiXuatGia = noiXuatGia
 
   return { valid: Object.keys(errors).length === 0, errors }

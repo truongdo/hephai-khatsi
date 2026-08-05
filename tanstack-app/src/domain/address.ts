@@ -24,7 +24,7 @@ export const EMPTY_ADDRESS_DRAFT: AddressDraft = {
 
 export type AddressValidationResult = {
   valid: boolean
-  errors: { city?: 'REQUIRED'; ward?: 'REQUIRED' }
+  errors: { city?: 'REQUIRED'; ward?: 'REQUIRED'; line?: 'REQUIRED' }
 }
 
 export function isAddressBlank(draft: AddressDraft): boolean {
@@ -33,24 +33,29 @@ export function isAddressBlank(draft: AddressDraft): boolean {
 
 export function validateAddressDraft(
   draft: AddressDraft,
-  options?: { required?: boolean; cityOnly?: boolean },
+  options?: {
+    required?: boolean
+    cityOnly?: boolean
+    lineRequired?: boolean
+  },
 ): AddressValidationResult {
   const cityOnly = options?.cityOnly === true
+  const lineRequired = options?.lineRequired === true
 
   if (isAddressBlank(draft)) {
     if (options?.required) {
-      return {
-        valid: false,
-        errors: cityOnly
-          ? { city: 'REQUIRED' }
-          : { city: 'REQUIRED', ward: 'REQUIRED' },
-      }
+      const errors: AddressValidationResult['errors'] = cityOnly
+        ? { city: 'REQUIRED' }
+        : { city: 'REQUIRED', ward: 'REQUIRED' }
+      if (lineRequired && !cityOnly) errors.line = 'REQUIRED'
+      return { valid: false, errors }
     }
     return { valid: true, errors: {} }
   }
   const errors: AddressValidationResult['errors'] = {}
   if (!draft.cityCode) errors.city = 'REQUIRED'
   if (!cityOnly && !draft.wardCode) errors.ward = 'REQUIRED'
+  if (!cityOnly && lineRequired && !draft.line.trim()) errors.line = 'REQUIRED'
   return { valid: Object.keys(errors).length === 0, errors }
 }
 

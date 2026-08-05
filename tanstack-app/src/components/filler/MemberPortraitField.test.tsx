@@ -92,6 +92,11 @@ function getFileInput() {
 }
 
 describe('MemberPortraitField', () => {
+  it('shows portrait description text', () => {
+    renderField()
+    expect(screen.getByText(m.filler_desc_anh_chan_dung())).toBeTruthy()
+  })
+
   it('without memberId: selecting a jpeg file calls onPendingFileChange with the File', async () => {
     const { onPendingFileChange } = renderField()
     const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })

@@ -50,6 +50,11 @@ const completeAddress = {
   wardName: 'Hà Đông',
 } as const
 
+const completeFamily = {
+  cha: { hoTen: 'A', namSinh: '1960', ngheNghiep: 'X', noiO: 'Y' },
+  me: { hoTen: 'B', namSinh: '1962', ngheNghiep: 'Z', noiO: 'Y' },
+} as const
+
 function completeDraftMember(): Member {
   return {
     ...draftMember,
@@ -63,7 +68,9 @@ function completeDraftMember(): Member {
     bonSu: 'TT. Minh',
     noiSinh: { ...completeAddress },
     diaChiThuongTru: { ...completeAddress },
-    noiXuatGia: { ...completeAddress },
+    noiXuatGia: { ...completeAddress, line: 'Tịnh xá A' },
+    photoPath: 'members/m1/photo.jpg',
+    giaDinh: completeFamily,
   }
 }
 
@@ -171,7 +178,12 @@ const uploadMemberPhotoMock = vi.mocked(uploadMemberPhoto)
 const uploadMemberDocumentMock = vi.mocked(uploadMemberDocument)
 
 function getPortraitFileInput(): HTMLInputElement {
-  const button = screen.getByRole('button', { name: m.filler_photo_choose() })
+  const choose = screen.queryByRole('button', { name: m.filler_photo_choose() })
+  const change = screen.queryByRole('button', { name: m.filler_photo_change() })
+  const button = choose ?? change
+  if (!button) {
+    throw new Error('Portrait file button not found')
+  }
   return button.parentElement?.querySelector(
     'input[type="file"]',
   ) as HTMLInputElement

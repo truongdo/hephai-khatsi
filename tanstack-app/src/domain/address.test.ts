@@ -150,6 +150,39 @@ describe('validateAddressDraft', () => {
       ),
     ).toEqual({ valid: true, errors: {} })
   })
+
+  it('requires line when lineRequired', () => {
+    expect(
+      validateAddressDraft(
+        {
+          cityCode: '01',
+          cityName: 'Hà Nội',
+          wardCode: '00013',
+          wardName: 'Hà Đông',
+          line: '  ',
+        },
+        { required: true, lineRequired: true },
+      ),
+    ).toEqual({
+      valid: false,
+      errors: { line: 'REQUIRED' },
+    })
+  })
+
+  it('accepts line when lineRequired', () => {
+    expect(
+      validateAddressDraft(
+        {
+          cityCode: '01',
+          cityName: 'Hà Nội',
+          wardCode: '00013',
+          wardName: 'Hà Đông',
+          line: 'Tịnh xá A',
+        },
+        { required: true, lineRequired: true },
+      ),
+    ).toEqual({ valid: true, errors: {} })
+  })
 })
 
 describe('validateAddressDraft cityOnly', () => {

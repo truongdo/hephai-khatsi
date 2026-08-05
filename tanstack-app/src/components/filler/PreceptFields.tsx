@@ -23,7 +23,8 @@ export function PreceptFields({
       <Stack gap="sm">
         <DateInput
           label={m.filler_field_precept_ngay_gh()}
-          valueFormat="YYYY-MM-DD"
+          valueFormat="DD-MM-YYYY"
+          placeholder={m.filler_ph_date_dmy()}
           clearable
           value={value.ngayGh || null}
           onChange={(next) => onChange({ ...value, ngayGh: next ?? '' })}
@@ -42,7 +43,7 @@ export function PreceptFields({
         />
         <DateInput
           label={m.filler_field_precept_ngay_hp()}
-          valueFormat="YYYY-MM-DD"
+          valueFormat="DD-MM-YYYY"
           placeholder={m.filler_field_precept_ngay_hp_placeholder()}
           clearable
           value={value.ngayHePhai || null}

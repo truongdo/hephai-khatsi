@@ -101,7 +101,12 @@ const uploadMemberPhotoMock = vi.mocked(uploadMemberPhoto)
 const uploadMemberDocumentMock = vi.mocked(uploadMemberDocument)
 
 function getPortraitFileInput(): HTMLInputElement {
-  const button = screen.getByRole('button', { name: m.filler_photo_choose() })
+  const choose = screen.queryByRole('button', { name: m.filler_photo_choose() })
+  const change = screen.queryByRole('button', { name: m.filler_photo_change() })
+  const button = choose ?? change
+  if (!button) {
+    throw new Error('Portrait file button not found')
+  }
   return button.parentElement?.querySelector(
     'input[type="file"]',
   ) as HTMLInputElement
@@ -230,7 +235,12 @@ const completeAddress = {
   wardName: 'Hà Đông',
 } as const
 
-const requiredCoreInitial = {
+const completeFamily = {
+  cha: { hoTen: 'A', namSinh: '1960', ngheNghiep: 'X', noiO: 'Y' },
+  me: { hoTen: 'B', namSinh: '1962', ngheNghiep: 'Z', noiO: 'Y' },
+} as const
+
+const requiredCoreBase = {
   theDanh: 'Nguyễn Văn A',
   phapDanh: 'Minh Tâm',
   ngaySinh: '1990-01-01',
@@ -241,7 +251,13 @@ const requiredCoreInitial = {
   bonSu: 'TT. Minh',
   noiSinh: { ...completeAddress },
   diaChiThuongTru: { ...completeAddress },
-  noiXuatGia: { ...completeAddress },
+  noiXuatGia: { ...completeAddress, line: 'Tịnh xá A' },
+  giaDinh: completeFamily,
+}
+
+const requiredCoreInitial = {
+  ...requiredCoreBase,
+  photoPath: 'members/m1/photo.jpg',
 }
 
 describe('MemberEditorForm', () => {
@@ -264,6 +280,11 @@ describe('MemberEditorForm', () => {
     expect(screen.getByText(m.filler_desc_dia_chi_thuong_tru())).toBeTruthy()
     expect(screen.getByText(m.filler_desc_ha_lap())).toBeTruthy()
     expect(screen.getByText(m.filler_desc_anh_chi_em())).toBeTruthy()
+    expect(screen.getByText(m.filler_desc_anh_chan_dung())).toBeTruthy()
+    expect(screen.getByText(m.filler_desc_he_phai_goc())).toBeTruthy()
+    expect(
+      screen.getByRole('textbox', { name: m.filler_field_noi_xuat_gia_line() }),
+    ).toBeTruthy()
 
     expect(screen.getByPlaceholderText(m.filler_ph_the_danh())).toBeTruthy()
     expect(
@@ -391,7 +412,7 @@ describe('MemberEditorForm', () => {
     })
     const { onCreated } = renderForm({
       cccd: '012345678901',
-      initial: requiredCoreInitial,
+      initial: requiredCoreBase,
     })
     const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
 
@@ -533,6 +554,28 @@ describe('MemberEditorForm', () => {
       screen.getByRole('combobox', { name: m.filler_field_noi_sinh() }),
     ).toBeTruthy()
     expect(screen.queryByDisplayValue('Cũ nơi sinh')).toBeNull()
+  })
+
+  it('blocks save when portrait, family, or nơi xuất gia line missing', async () => {
+    const user = userEvent.setup()
+    renderForm({
+      cccd: '012345678901',
+      initial: {
+        ...requiredCoreBase,
+        noiXuatGia: { ...completeAddress },
+        giaDinh: {
+          cha: { hoTen: '', namSinh: '', ngheNghiep: '', noiO: '' },
+          me: { hoTen: '', namSinh: '', ngheNghiep: '', noiO: '' },
+        },
+      },
+    })
+
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+
+    expect(saveAndLockMemberMock).not.toHaveBeenCalled()
+    expect(
+      screen.getAllByText(m.filler_error_field_required()).length,
+    ).toBeGreaterThanOrEqual(1)
   })
 
   it('blocks save when required core fields are empty', async () => {

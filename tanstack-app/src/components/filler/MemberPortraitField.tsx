@@ -1,4 +1,13 @@
-import { ActionIcon, Box, Button, FileButton, Image, Stack, Text } from '@mantine/core'
+import {
+  ActionIcon,
+  Box,
+  Button,
+  FileButton,
+  Image,
+  Input,
+  Stack,
+  Text,
+} from '@mantine/core'
 import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { m } from '#/paraglide/messages'
@@ -27,6 +36,8 @@ export type MemberPortraitFieldProps = {
   onPendingFileChange: (file: File | null) => void
   onPhotoPathChange: (photoPath: string | null) => void
   onUploadError?: (message: string) => void
+  required?: boolean
+  error?: string
 }
 
 export function MemberPortraitField({
@@ -41,6 +52,8 @@ export function MemberPortraitField({
   onPendingFileChange,
   onPhotoPathChange,
   onUploadError,
+  required = false,
+  error,
 }: MemberPortraitFieldProps) {
   const [typeError, setTypeError] = useState<string | null>(null)
   const [objectUrl, setObjectUrl] = useState<string | null>(null)
@@ -151,8 +164,11 @@ export function MemberPortraitField({
 
   return (
     <Stack gap="xs" align="flex-start">
-      <Text size="sm" fw={500}>
+      <Input.Label required={required}>
         {m.filler_field_anh_chan_dung()}
+      </Input.Label>
+      <Text size="xs" c="dimmed">
+        {m.filler_desc_anh_chan_dung()}
       </Text>
       <Box
         style={{
@@ -205,6 +221,11 @@ export function MemberPortraitField({
             </Button>
           )}
         </FileButton>
+      ) : null}
+      {error ? (
+        <Text size="sm" c="red">
+          {error}
+        </Text>
       ) : null}
       {typeError ? (
         <Text size="sm" c="red">

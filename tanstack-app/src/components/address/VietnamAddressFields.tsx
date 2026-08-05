@@ -10,8 +10,10 @@ export type VietnamAddressFieldsProps = {
   value: AddressDraft
   onChange: (value: AddressDraft) => void
   disabled?: boolean
-  errors?: { city?: string; ward?: string }
+  errors?: { city?: string; ward?: string; line?: string }
   linePlaceholder?: string
+  lineLabel?: string
+  lineRequired?: boolean
   required?: boolean
   cityOnly?: boolean
 }
@@ -133,6 +135,8 @@ export const VietnamAddressFields = memo(function VietnamAddressFields({
   disabled = false,
   errors,
   linePlaceholder,
+  lineLabel,
+  lineRequired = false,
   required,
   cityOnly,
 }: VietnamAddressFieldsProps) {
@@ -190,13 +194,15 @@ export const VietnamAddressFields = memo(function VietnamAddressFields({
         onLocationChange={onLocationChange}
       />
       <TextInput
-        label={m.filler_field_address_line()}
+        label={lineLabel ?? m.filler_field_address_line()}
         placeholder={linePlaceholder ?? m.filler_ph_address_line()}
         value={value.line}
         onChange={(event) =>
           onChange({ ...value, line: event.currentTarget.value })
         }
         disabled={disabled}
+        required={lineRequired}
+        error={errors?.line}
       />
     </Stack>
   )

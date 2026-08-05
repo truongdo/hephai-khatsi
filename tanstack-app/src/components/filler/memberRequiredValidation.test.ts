@@ -14,6 +14,20 @@ const completeAddress = {
   line: '',
 }
 
+const emptyFamilyPerson = {
+  hoTen: '',
+  namSinh: '',
+  ngheNghiep: '',
+  noiO: '',
+}
+
+const filledFamilyPerson = {
+  hoTen: 'Nguyễn Văn B',
+  namSinh: '1960',
+  ngheNghiep: 'Nông',
+  noiO: 'Hà Nội',
+}
+
 function filledDraft(
   overrides: Partial<MemberRequiredDraft> = {},
 ): MemberRequiredDraft {
@@ -26,9 +40,12 @@ function filledDraft(
     email: 'a@b.co',
     diaChiThuongTru: completeAddress,
     ngayXuatGia: '2010-01-01',
-    noiXuatGia: completeAddress,
+    noiXuatGia: { ...completeAddress, line: 'Tịnh xá A' },
     hienTuHoc: 'Tịnh xá X',
     bonSu: 'TT. Minh',
+    photoPath: 'members/m1/photo.jpg',
+    pendingPhoto: null,
+    giaDinh: { cha: filledFamilyPerson, me: filledFamilyPerson },
     ...overrides,
   }
 }
@@ -59,17 +76,33 @@ describe('validateMemberRequiredFields', () => {
       noiXuatGia: { ...EMPTY_ADDRESS_DRAFT },
       hienTuHoc: '',
       bonSu: '',
+      photoPath: null,
+      pendingPhoto: null,
+      giaDinh: { cha: emptyFamilyPerson, me: emptyFamilyPerson },
     })
     expect(result.valid).toBe(false)
     expect(result.errors.theDanh).toBe('REQUIRED')
     expect(result.errors.phapDanh).toBe('REQUIRED')
     expect(result.errors.email).toBe('REQUIRED')
+    expect(result.errors.photo).toBe('REQUIRED')
     expect(result.errors.noiSinh).toEqual({
       city: 'REQUIRED',
     })
     expect(result.errors.diaChiThuongTru).toEqual({
       city: 'REQUIRED',
       ward: 'REQUIRED',
+    })
+    expect(result.errors.giaDinh?.cha).toEqual({
+      hoTen: 'REQUIRED',
+      namSinh: 'REQUIRED',
+      ngheNghiep: 'REQUIRED',
+      noiO: 'REQUIRED',
+    })
+    expect(result.errors.giaDinh?.me).toEqual({
+      hoTen: 'REQUIRED',
+      namSinh: 'REQUIRED',
+      ngheNghiep: 'REQUIRED',
+      noiO: 'REQUIRED',
     })
   })
 
@@ -100,5 +133,53 @@ describe('validateMemberRequiredFields', () => {
         }),
       ),
     ).toEqual({ valid: true, errors: {} })
+  })
+
+  it('requires portrait when no photoPath or pendingPhoto', () => {
+    const result = validateMemberRequiredFields(
+      filledDraft({ photoPath: null, pendingPhoto: null }),
+    )
+    expect(result.valid).toBe(false)
+    expect(result.errors.photo).toBe('REQUIRED')
+  })
+
+  it('accepts pending portrait file without photoPath', () => {
+    const file = new File(['x'], 'p.jpg', { type: 'image/jpeg' })
+    expect(
+      validateMemberRequiredFields(
+        filledDraft({ photoPath: null, pendingPhoto: file }),
+      ),
+    ).toEqual({ valid: true, errors: {} })
+  })
+
+  it('requires all cha and me fields', () => {
+    const result = validateMemberRequiredFields(
+      filledDraft({
+        giaDinh: { cha: emptyFamilyPerson, me: emptyFamilyPerson },
+      }),
+    )
+    expect(result.valid).toBe(false)
+    expect(result.errors.giaDinh?.cha).toEqual({
+      hoTen: 'REQUIRED',
+      namSinh: 'REQUIRED',
+      ngheNghiep: 'REQUIRED',
+      noiO: 'REQUIRED',
+    })
+    expect(result.errors.giaDinh?.me).toEqual({
+      hoTen: 'REQUIRED',
+      namSinh: 'REQUIRED',
+      ngheNghiep: 'REQUIRED',
+      noiO: 'REQUIRED',
+    })
+  })
+
+  it('requires noiXuatGia line', () => {
+    const result = validateMemberRequiredFields(
+      filledDraft({
+        noiXuatGia: { ...completeAddress, line: '' },
+      }),
+    )
+    expect(result.valid).toBe(false)
+    expect(result.errors.noiXuatGia?.line).toBe('REQUIRED')
   })
 })

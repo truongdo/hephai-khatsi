@@ -198,6 +198,27 @@ describe('VietnamAddressFields', () => {
     expect(screen.getByPlaceholderText('vd: Tịnh xá …')).toBeTruthy()
   })
 
+  it('uses custom lineLabel when provided', () => {
+    renderFields({ lineLabel: 'Tự viện/Tịnh xá, tổ/thôn' })
+    expect(
+      screen.getByRole('textbox', { name: 'Tự viện/Tịnh xá, tổ/thôn' }),
+    ).toBeTruthy()
+  })
+
+  it('marks line required when lineRequired is set', () => {
+    renderFields({ lineRequired: true })
+    expect(
+      screen.getByRole('textbox', { name: m.filler_field_address_line() }),
+    ).toBeRequired()
+  })
+
+  it('shows line error when provided', () => {
+    renderFields({
+      errors: { line: m.filler_error_field_required() },
+    })
+    expect(screen.getByText(m.filler_error_field_required())).toBeTruthy()
+  })
+
   it('marks city and ward required when required prop is set', () => {
     renderFields({ required: true })
     expect(

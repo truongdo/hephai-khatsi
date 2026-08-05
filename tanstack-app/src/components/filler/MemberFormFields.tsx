@@ -42,7 +42,11 @@ import type { MemberRequiredFieldErrors } from './memberRequiredValidation'
 import { PreceptFields } from './PreceptFields'
 import { RepeatableFieldset } from './RepeatableFieldset'
 
-function mapAddressErrors(errors?: { city?: 'REQUIRED'; ward?: 'REQUIRED' }) {
+function mapAddressErrors(errors?: {
+  city?: 'REQUIRED'
+  ward?: 'REQUIRED'
+  line?: 'REQUIRED'
+}) {
   return {
     city:
       errors?.city === 'REQUIRED'
@@ -51,6 +55,10 @@ function mapAddressErrors(errors?: { city?: 'REQUIRED'; ward?: 'REQUIRED' }) {
     ward:
       errors?.ward === 'REQUIRED'
         ? m.filler_address_ward_required()
+        : undefined,
+    line:
+      errors?.line === 'REQUIRED'
+        ? m.filler_error_field_required()
         : undefined,
   }
 }
@@ -346,7 +354,8 @@ export function MemberFormFields({
           />
           <DateInput
             label={m.filler_field_ngay_sinh()}
-            valueFormat="YYYY-MM-DD"
+            valueFormat="DD-MM-YYYY"
+            placeholder={m.filler_ph_date_dmy()}
             clearable
             value={draft.ngaySinh || null}
             onChange={(value) => updateDraft('ngaySinh', value ?? '')}
@@ -395,7 +404,8 @@ export function MemberFormFields({
           />
           <DateInput
             label={m.filler_field_cccd_ngay_cap()}
-            valueFormat="YYYY-MM-DD"
+            valueFormat="DD-MM-YYYY"
+            placeholder={m.filler_ph_date_dmy()}
             clearable
             value={draft.cccdMeta.ngayCap || null}
             onChange={(value) =>
@@ -423,7 +433,8 @@ export function MemberFormFields({
           />
           <DateInput
             label={m.filler_field_cntn_ngay_cap()}
-            valueFormat="YYYY-MM-DD"
+            valueFormat="DD-MM-YYYY"
+            placeholder={m.filler_ph_date_dmy()}
             clearable
             value={draft.cntn.ngayCap || null}
             onChange={(value) => updateNested('cntn', 'ngayCap', value ?? '')}
@@ -607,7 +618,8 @@ export function MemberFormFields({
           <SimpleGrid cols={{ base: 1, sm: 2 }}>
             <DateInput
               label={m.filler_field_ngay_xuat_gia()}
-              valueFormat="YYYY-MM-DD"
+              valueFormat="DD-MM-YYYY"
+              placeholder={m.filler_ph_date_dmy()}
               clearable
               value={draft.ngayXuatGia || null}
               onChange={(value) => updateDraft('ngayXuatGia', value ?? '')}
@@ -628,6 +640,8 @@ export function MemberFormFields({
                 onChange={onNoiXuatGiaChange}
                 disabled={disabled}
                 required
+                lineLabel={m.filler_field_noi_xuat_gia_line()}
+                lineRequired
                 linePlaceholder={m.filler_ph_noi_xuat_gia_line()}
                 errors={mapAddressErrors(fieldErrors.noiXuatGia)}
               />
@@ -1019,6 +1033,10 @@ export function MemberFormFields({
                       event.currentTarget.value,
                     )
                   }
+                  required
+                  error={mapRequiredError(
+                    fieldErrors.giaDinh?.[person]?.hoTen,
+                  )}
                 />
                 <TextInput
                   label={m.filler_field_nam_sinh()}
@@ -1031,6 +1049,10 @@ export function MemberFormFields({
                       event.currentTarget.value,
                     )
                   }
+                  required
+                  error={mapRequiredError(
+                    fieldErrors.giaDinh?.[person]?.namSinh,
+                  )}
                 />
                 <TextInput
                   label={m.filler_field_nghe_nghiep()}
@@ -1043,6 +1065,10 @@ export function MemberFormFields({
                       event.currentTarget.value,
                     )
                   }
+                  required
+                  error={mapRequiredError(
+                    fieldErrors.giaDinh?.[person]?.ngheNghiep,
+                  )}
                 />
                 <TextInput
                   label={m.filler_field_noi_o()}
@@ -1055,6 +1081,10 @@ export function MemberFormFields({
                       event.currentTarget.value,
                     )
                   }
+                  required
+                  error={mapRequiredError(
+                    fieldErrors.giaDinh?.[person]?.noiO,
+                  )}
                 />
               </SimpleGrid>
             </Fieldset>
@@ -1179,6 +1209,7 @@ export function MemberFormFields({
       draft.giaDinh,
       draft.nguyenVong,
       disabled,
+      fieldErrors.giaDinh,
       memberId,
       cccd,
       inviteToken,
@@ -1204,6 +1235,8 @@ export function MemberFormFields({
         onPendingFileChange={setPendingPhoto}
         onPhotoPathChange={setPhotoPath}
         onUploadError={onUploadError}
+        required
+        error={mapRequiredError(fieldErrors.photo)}
       />
       {identitySection}
       {contactSection}
