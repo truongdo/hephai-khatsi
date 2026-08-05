@@ -142,11 +142,33 @@ function getFileInputs() {
 }
 
 describe('MemberDocumentsField', () => {
+  it('always shows CCCD block without selecting a type', () => {
+    renderField()
+    expect(screen.getByText(documentTypeLabel('cccd'))).toBeTruthy()
+    expect(screen.getByText(m.filler_doc_side_front())).toBeTruthy()
+    expect(screen.getByText(m.filler_doc_side_back())).toBeTruthy()
+    expect(
+      screen.getAllByRole('button', { name: m.filler_doc_choose_file() }),
+    ).toHaveLength(2)
+  })
+
+  it('excludes cccd from the select even when not attached', async () => {
+    const user = userEvent.setup()
+    renderField()
+    await openDocTypeSelect(user)
+    const select = screen.getByRole('combobox', {
+      name: m.filler_doc_select_label(),
+    })
+    const listbox = document.getElementById(select.getAttribute('aria-controls')!)
+    expect(listbox?.textContent).not.toContain(documentTypeLabel('cccd'))
+    expect(listbox?.textContent).toContain(documentTypeLabel('diep_sa_di'))
+  })
+
   it('hides used types from the select', async () => {
     const user = userEvent.setup()
     renderField({
       documents: {
-        cccd: { frontPath: 'members/m1/docs/cccd/front.jpg' },
+        diep_sa_di: { filePath: 'members/m1/docs/diep_sa_di/file.pdf' },
       },
     })
 
@@ -158,20 +180,30 @@ describe('MemberDocumentsField', () => {
     const listboxId = select.getAttribute('aria-controls')
     expect(listboxId).toBeTruthy()
     const listbox = document.getElementById(listboxId!)
+    expect(listbox?.textContent).not.toContain(documentTypeLabel('diep_sa_di'))
     expect(listbox?.textContent).not.toContain(documentTypeLabel('cccd'))
-    expect(listbox?.textContent).toContain(documentTypeLabel('diep_sa_di'))
+    expect(listbox?.textContent).toContain(documentTypeLabel('chung_nhan_tang_ni'))
   })
 
-  it('shows front/back slots for cccd', async () => {
-    const user = userEvent.setup()
-    renderField()
+  it('does not show remove for CCCD and keeps CCCD out of attached list', () => {
+    renderField({
+      documents: {
+        cccd: { frontPath: 'members/m1/docs/cccd/front.jpg' },
+      },
+    })
+    expect(screen.queryByText(m.filler_doc_attached_heading())).toBeNull()
+    expect(
+      screen.queryByRole('button', { name: m.filler_doc_remove() }),
+    ).toBeNull()
+    expect(screen.getByText(m.filler_doc_missing())).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: m.filler_doc_replace() }),
+    ).toBeTruthy()
+  })
 
-    await pickDocType(user, 'cccd')
-
-    expect(screen.getByText(m.filler_doc_side_front())).toBeTruthy()
-    expect(screen.getByText(m.filler_doc_side_back())).toBeTruthy()
-    expect(screen.getAllByRole('button', { name: m.filler_doc_choose_file() }))
-      .toHaveLength(2)
+  it('shows required error under CCCD block', () => {
+    renderField({ error: m.filler_error_field_required() })
+    expect(screen.getByText(m.filler_error_field_required())).toBeTruthy()
   })
 
   it('stores pending file when memberId is missing', async () => {
@@ -180,15 +212,16 @@ describe('MemberDocumentsField', () => {
     const file = new File(['pdf'], 'doc.pdf', { type: 'application/pdf' })
 
     await pickDocType(user, 'diep_sa_di')
-    const [fileInput] = getFileInputs()
-    await user.upload(fileInput, file)
+    const fileInputs = getFileInputs()
+    const diepInput = fileInputs[fileInputs.length - 1]
+    await user.upload(diepInput, file)
 
     expect(uploadMemberDocumentMock).not.toHaveBeenCalled()
     expect(screen.getByText(m.filler_doc_attached_heading())).toBeTruthy()
     expect(screen.getByText(documentTypeLabel('diep_sa_di'))).toBeTruthy()
   })
 
-  it('with memberId: uploads immediately and updates documents', async () => {
+  it('with memberId: uploads CCCD front from dedicated block', async () => {
     uploadMemberDocumentMock.mockResolvedValue({
       filePath: 'members/m1/docs/cccd/front.jpg',
       documents: {
@@ -196,31 +229,16 @@ describe('MemberDocumentsField', () => {
       },
     })
     const user = userEvent.setup()
-    const { onDocumentsChange, onPendingFilesChange } = renderField({
-      memberId: 'm1',
-    })
+    const { onDocumentsChange } = renderField({ memberId: 'm1' })
     const file = new File(['jpeg'], 'front.jpg', { type: 'image/jpeg' })
-
-    await pickDocType(user, 'cccd')
-    const [fileInput] = getFileInputs()
-    await user.upload(fileInput, file)
-
-    expect(uploadMemberDocumentMock).toHaveBeenCalledOnce()
-    expect(uploadMemberDocumentMock).toHaveBeenCalledWith({
-      memberId: 'm1',
-      cccd: '123456789012',
-      typeId: 'cccd',
-      side: 'front',
-      bytes: expect.any(Uint8Array),
-      contentType: 'image/jpeg',
-      inviteToken: undefined,
-      idToken: undefined,
-      current: {},
-    })
+    const [frontInput] = getFileInputs()
+    await user.upload(frontInput, file)
+    expect(uploadMemberDocumentMock).toHaveBeenCalledWith(
+      expect.objectContaining({ typeId: 'cccd', side: 'front' }),
+    )
     expect(onDocumentsChange).toHaveBeenCalledWith({
       cccd: { frontPath: 'members/m1/docs/cccd/front.jpg' },
     })
-    expect(onPendingFilesChange).not.toHaveBeenCalled()
   })
 
   it('rejects invalid file type with filler_doc_invalid_type', async () => {
@@ -228,9 +246,10 @@ describe('MemberDocumentsField', () => {
     const { onPendingFilesChange } = renderField()
 
     await pickDocType(user, 'diep_sa_di')
-    const [fileInput] = getFileInputs()
+    const fileInputs = getFileInputs()
+    const diepInput = fileInputs[fileInputs.length - 1]
     const file = new File(['gif'], 'doc.gif', { type: 'image/gif' })
-    fireEvent.change(fileInput, { target: { files: [file] } })
+    fireEvent.change(diepInput, { target: { files: [file] } })
 
     expect(screen.getByText(m.filler_doc_invalid_type())).toBeTruthy()
     expect(onPendingFilesChange).not.toHaveBeenCalled()
@@ -240,21 +259,15 @@ describe('MemberDocumentsField', () => {
   it('renders attached types as cards with filename links and missing sides', () => {
     renderField({
       documents: {
-        cccd: { frontPath: 'members/m1/docs/cccd/front.jpg' },
+        diep_sa_di: { filePath: 'members/m1/docs/diep_sa_di/file.pdf' },
       },
     })
 
     expect(screen.getByText(m.filler_doc_attached_heading())).toBeTruthy()
-    expect(screen.getByText(documentTypeLabel('cccd'))).toBeTruthy()
+    expect(screen.getByText(documentTypeLabel('diep_sa_di'))).toBeTruthy()
     expect(
-      screen.getByRole('link', { name: 'front.jpg' }),
-    ).toHaveAttribute('href', 'https://cdn.example/members/m1/docs/cccd/front.jpg')
-    expect(screen.getByText(m.filler_doc_side_front())).toBeTruthy()
-    expect(screen.getByText(m.filler_doc_side_back())).toBeTruthy()
-    expect(screen.getByText(m.filler_doc_missing())).toBeTruthy()
-    expect(
-      screen.getByRole('button', { name: m.filler_doc_choose_file() }),
-    ).toBeTruthy()
+      screen.getByRole('link', { name: 'file.pdf' }),
+    ).toHaveAttribute('href', 'https://cdn.example/members/m1/docs/diep_sa_di/file.pdf')
     expect(
       screen.getByRole('button', { name: m.filler_doc_replace() }),
     ).toBeTruthy()

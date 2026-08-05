@@ -303,6 +303,8 @@ export function MemberFormPage({
         cha: draft.giaDinh.cha,
         me: draft.giaDinh.me,
       },
+      documents: api.getDocuments(),
+      pendingDocuments: api.getPendingDocuments(),
     })
     if (!result.valid) {
       api.setFieldErrors(result.errors)

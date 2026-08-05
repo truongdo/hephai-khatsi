@@ -4,6 +4,7 @@ import {
   Divider,
   FileButton,
   Group,
+  Input,
   Paper,
   Select,
   Stack,
@@ -35,6 +36,10 @@ const ACCEPTED_TYPES = new Set([
 
 const FILE_ACCEPT = 'image/jpeg,image/png,application/pdf'
 
+const OPTIONAL_DOCUMENT_TYPES = MEMBER_DOCUMENT_TYPES.filter(
+  (type) => type.id !== 'cccd',
+)
+
 export type PendingDocumentFiles = Partial<
   Record<DocumentTypeId, Partial<Record<DocumentSide, File>>>
 >
@@ -50,6 +55,7 @@ export type MemberDocumentsFieldProps = {
   onPendingFilesChange: (next: PendingDocumentFiles) => void
   disabled?: boolean
   onUploadError?: (message: string) => void
+  error?: string
 }
 
 function hasAnyDocumentFiles(files?: MemberDocumentFiles): boolean {
@@ -126,6 +132,7 @@ export function MemberDocumentsField({
   onPendingFilesChange,
   disabled = false,
   onUploadError,
+  error,
 }: MemberDocumentsFieldProps) {
   const [selectedTypeId, setSelectedTypeId] = useState<DocumentTypeId | null>(
     null,
@@ -138,7 +145,7 @@ export function MemberDocumentsField({
 
   const availableOptions = useMemo(
     () =>
-      MEMBER_DOCUMENT_TYPES.filter(
+      OPTIONAL_DOCUMENT_TYPES.filter(
         (type) => !isTypeAttached(type.id, documents, pendingFiles),
       ).map((type) => ({
         value: type.id,
@@ -149,7 +156,7 @@ export function MemberDocumentsField({
 
   const attachedTypeIds = useMemo(
     () =>
-      MEMBER_DOCUMENT_TYPES.map((type) => type.id).filter((typeId) =>
+      OPTIONAL_DOCUMENT_TYPES.map((type) => type.id).filter((typeId) =>
         isTypeAttached(typeId, documents, pendingFiles),
       ),
     [documents, pendingFiles],
@@ -285,8 +292,103 @@ export function MemberDocumentsField({
     )
   }
 
+  function renderTypeSideRows(
+    typeId: DocumentTypeId,
+    options?: { clearSelect?: boolean },
+  ) {
+    return sidesForType(typeId).map((side) => {
+      const path = pathForSide(typeId, side)
+      const pendingFile = pendingFiles[typeId]?.[side]
+      const hasFile = Boolean(path || pendingFile)
+
+      if (!hasFile) {
+        if (disabled) return null
+        return (
+          <Group
+            key={side}
+            gap="sm"
+            align="center"
+            justify="space-between"
+            wrap="wrap"
+          >
+            <Group gap="sm" align="center" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+              <Text size="sm" c="dimmed" style={{ minWidth: 88 }}>
+                {sideLabel(side)}
+              </Text>
+              <Text size="sm" c="dimmed">
+                {m.filler_doc_missing()}
+              </Text>
+            </Group>
+            {renderUploadSlot(typeId, side, {
+              buttonLabel: m.filler_doc_choose_file(),
+              hideLabel: true,
+              ...options,
+            })}
+          </Group>
+        )
+      }
+
+      const fileLink = path ? (
+        <Anchor
+          href={getMemberDocumentDownloadUrl(path)}
+          target="_blank"
+          rel="noopener noreferrer"
+          size="sm"
+          style={{ wordBreak: 'break-all' }}
+        >
+          {basenameFromPath(path)}
+        </Anchor>
+      ) : pendingFile ? (
+        <PendingFileLink file={pendingFile} />
+      ) : null
+
+      return (
+        <Group
+          key={side}
+          gap="sm"
+          align="center"
+          justify="space-between"
+          wrap="wrap"
+        >
+          <Group gap="sm" align="center" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+            <Text size="sm" c="dimmed" style={{ minWidth: 88 }}>
+              {sideLabel(side)}
+            </Text>
+            {fileLink}
+          </Group>
+          {!disabled
+            ? renderUploadSlot(typeId, side, {
+                buttonLabel: m.filler_doc_replace(),
+                hideLabel: true,
+                ...options,
+              })
+            : null}
+        </Group>
+      )
+    })
+  }
+
+  const cccdHasAnyFiles = isTypeAttached('cccd', documents, pendingFiles)
+
   return (
     <Stack gap="md" align="stretch">
+      <Paper withBorder p="sm" radius="md">
+        <Input.Label required>{documentTypeLabel('cccd')}</Input.Label>
+        <Divider my="xs" />
+        <Stack gap="xs">
+          {cccdHasAnyFiles
+            ? renderTypeSideRows('cccd')
+            : sidesForType('cccd').map((side) =>
+                renderUploadSlot('cccd', side),
+              )}
+        </Stack>
+        {error ? (
+          <Text size="sm" c="red" mt="xs">
+            {error}
+          </Text>
+        ) : null}
+      </Paper>
+
       {!disabled ? (
         <Select
           label={m.filler_doc_select_label()}
@@ -340,76 +442,7 @@ export function MemberDocumentsField({
                 ) : null}
               </Group>
               <Divider my="xs" />
-              <Stack gap="xs">
-                {sidesForType(typeId).map((side) => {
-                  const path = pathForSide(typeId, side)
-                  const pendingFile = pendingFiles[typeId]?.[side]
-                  const hasFile = Boolean(path || pendingFile)
-
-                  if (!hasFile) {
-                    if (disabled) return null
-                    return (
-                      <Group
-                        key={side}
-                        gap="sm"
-                        align="center"
-                        justify="space-between"
-                        wrap="wrap"
-                      >
-                        <Group gap="sm" align="center" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
-                          <Text size="sm" c="dimmed" style={{ minWidth: 88 }}>
-                            {sideLabel(side)}
-                          </Text>
-                          <Text size="sm" c="dimmed">
-                            {m.filler_doc_missing()}
-                          </Text>
-                        </Group>
-                        {renderUploadSlot(typeId, side, {
-                          buttonLabel: m.filler_doc_choose_file(),
-                          hideLabel: true,
-                        })}
-                      </Group>
-                    )
-                  }
-
-                  const fileLink = path ? (
-                    <Anchor
-                      href={getMemberDocumentDownloadUrl(path)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      size="sm"
-                      style={{ wordBreak: 'break-all' }}
-                    >
-                      {basenameFromPath(path)}
-                    </Anchor>
-                  ) : pendingFile ? (
-                    <PendingFileLink file={pendingFile} />
-                  ) : null
-
-                  return (
-                    <Group
-                      key={side}
-                      gap="sm"
-                      align="center"
-                      justify="space-between"
-                      wrap="wrap"
-                    >
-                      <Group gap="sm" align="center" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
-                        <Text size="sm" c="dimmed" style={{ minWidth: 88 }}>
-                          {sideLabel(side)}
-                        </Text>
-                        {fileLink}
-                      </Group>
-                      {!disabled
-                        ? renderUploadSlot(typeId, side, {
-                            buttonLabel: m.filler_doc_replace(),
-                            hideLabel: true,
-                          })
-                        : null}
-                    </Group>
-                  )
-                })}
-              </Stack>
+              <Stack gap="xs">{renderTypeSideRows(typeId)}</Stack>
             </Paper>
           ))}
         </Stack>

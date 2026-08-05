@@ -6,6 +6,13 @@ import {
   type MemberRequiredDraft,
 } from './memberRequiredValidation'
 
+const completeCccdDocuments = {
+  cccd: {
+    frontPath: 'members/m1/docs/cccd/front.jpg',
+    backPath: 'members/m1/docs/cccd/back.jpg',
+  },
+}
+
 const completeAddress = {
   cityCode: '01',
   cityName: 'Hà Nội',
@@ -46,6 +53,8 @@ function filledDraft(
     photoPath: 'members/m1/photo.jpg',
     pendingPhoto: null,
     giaDinh: { cha: filledFamilyPerson, me: filledFamilyPerson },
+    documents: completeCccdDocuments,
+    pendingDocuments: {},
     ...overrides,
   }
 }
@@ -79,6 +88,8 @@ describe('validateMemberRequiredFields', () => {
       photoPath: null,
       pendingPhoto: null,
       giaDinh: { cha: emptyFamilyPerson, me: emptyFamilyPerson },
+      documents: {},
+      pendingDocuments: {},
     })
     expect(result.valid).toBe(false)
     expect(result.errors.theDanh).toBe('REQUIRED')
@@ -181,5 +192,38 @@ describe('validateMemberRequiredFields', () => {
     )
     expect(result.valid).toBe(false)
     expect(result.errors.noiXuatGia?.line).toBe('REQUIRED')
+  })
+
+  it('requires both CCCD document sides', () => {
+    const result = validateMemberRequiredFields(
+      filledDraft({ documents: {}, pendingDocuments: {} }),
+    )
+    expect(result.valid).toBe(false)
+    expect(result.errors.cccdDocument).toBe('REQUIRED')
+  })
+
+  it('requires CCCD back when only front path exists', () => {
+    const result = validateMemberRequiredFields(
+      filledDraft({
+        documents: {
+          cccd: { frontPath: 'members/m1/docs/cccd/front.jpg' },
+        },
+      }),
+    )
+    expect(result.valid).toBe(false)
+    expect(result.errors.cccdDocument).toBe('REQUIRED')
+  })
+
+  it('accepts pending CCCD front and back without paths', () => {
+    const front = new File(['a'], 'front.jpg', { type: 'image/jpeg' })
+    const back = new File(['b'], 'back.jpg', { type: 'image/jpeg' })
+    expect(
+      validateMemberRequiredFields(
+        filledDraft({
+          documents: {},
+          pendingDocuments: { cccd: { front, back } },
+        }),
+      ),
+    ).toEqual({ valid: true, errors: {} })
   })
 })

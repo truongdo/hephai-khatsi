@@ -1,5 +1,7 @@
 import type { AddressDraft } from '#/domain/address'
 import { validateAddressDraft } from '#/domain/address'
+import type { MemberDocuments } from '#/domain/memberDocumentTypes'
+import type { PendingDocumentFiles } from './MemberDocumentsField'
 import type { FamilyPersonDraft } from './memberDraft'
 
 export type MemberRequiredDraft = {
@@ -17,6 +19,8 @@ export type MemberRequiredDraft = {
   photoPath: string | null
   pendingPhoto: File | null
   giaDinh: { cha: FamilyPersonDraft; me: FamilyPersonDraft }
+  documents: MemberDocuments
+  pendingDocuments: PendingDocumentFiles
 }
 
 export type MemberRequiredFieldErrors = {
@@ -32,6 +36,7 @@ export type MemberRequiredFieldErrors = {
   hienTuHoc?: 'REQUIRED'
   bonSu?: 'REQUIRED'
   photo?: 'REQUIRED'
+  cccdDocument?: 'REQUIRED'
   giaDinh?: {
     cha?: Partial<Record<keyof FamilyPersonDraft, 'REQUIRED'>>
     me?: Partial<Record<keyof FamilyPersonDraft, 'REQUIRED'>>
@@ -97,6 +102,12 @@ export function validateMemberRequiredFields(draft: MemberRequiredDraft): {
   else if (!isBasicEmail(emailTrimmed)) errors.email = 'INVALID'
 
   if (!draft.photoPath && !draft.pendingPhoto) errors.photo = 'REQUIRED'
+
+  const cccdFiles = draft.documents.cccd
+  const cccdPending = draft.pendingDocuments.cccd
+  const hasCccdFront = Boolean(cccdFiles?.frontPath || cccdPending?.front)
+  const hasCccdBack = Boolean(cccdFiles?.backPath || cccdPending?.back)
+  if (!hasCccdFront || !hasCccdBack) errors.cccdDocument = 'REQUIRED'
 
   const cha = requireFamilyPerson(draft.giaDinh.cha)
   const me = requireFamilyPerson(draft.giaDinh.me)

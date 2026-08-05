@@ -1200,6 +1200,7 @@ export function MemberFormFields({
             onPendingFilesChange={setPendingDocuments}
             disabled={disabled}
             onUploadError={onUploadError}
+            error={mapRequiredError(fieldErrors.cccdDocument)}
           />
         </FormSection>
       </>
@@ -1210,6 +1211,7 @@ export function MemberFormFields({
       draft.nguyenVong,
       disabled,
       fieldErrors.giaDinh,
+      fieldErrors.cccdDocument,
       memberId,
       cccd,
       inviteToken,
