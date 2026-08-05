@@ -141,7 +141,12 @@ const lockTempleMock = vi.mocked(lockTemple)
 const uploadTemplePhotoMock = vi.mocked(uploadTemplePhoto)
 
 function getPortraitFileInput(): HTMLInputElement {
-  const button = screen.getByRole('button', { name: m.filler_photo_choose() })
+  const choose = screen.queryByRole('button', { name: m.filler_photo_choose() })
+  const change = screen.queryByRole('button', { name: m.filler_photo_change() })
+  const button = choose ?? change
+  if (!button) {
+    throw new Error('Portrait file button not found')
+  }
   return button.parentElement?.querySelector(
     'input[type="file"]',
   ) as HTMLInputElement
@@ -164,6 +169,7 @@ function completeDraftTemple() {
     tangSoHienTru: { tyKheo: 0, thucXoaMaNa: 0, saDi: 0, tapSu: 0 },
     soPhatTuQuyY: 0,
     soPhatTuThuongXuyen: 0,
+    photoPath: 'temples/seed/photo.jpg',
   }
 }
 
@@ -283,6 +289,18 @@ describe('TempleFormPage', () => {
     expect(
       screen.getAllByText(m.filler_error_field_required()).length,
     ).toBeGreaterThan(0)
+  })
+
+  it('Hoàn thành blocks when photo missing on otherwise complete draft', async () => {
+    const user = userEvent.setup()
+    templeFixture = { ...completeDraftTemple(), photoPath: null }
+    renderForm({ mode: 'edit' })
+    await screen.findByRole('button', { name: m.admin_temples_complete() })
+    await user.click(
+      screen.getByRole('button', { name: m.admin_temples_complete() }),
+    )
+    expect(saveAdminTempleMock).not.toHaveBeenCalled()
+    expect(screen.getByText(m.filler_error_field_required())).toBeTruthy()
   })
 
   it('keeps fields editable when locked and shows complete button', async () => {

@@ -51,7 +51,12 @@ const requestTempleEditMock = vi.mocked(requestTempleEdit)
 const uploadTemplePhotoMock = vi.mocked(uploadTemplePhoto)
 
 function getPortraitFileInput(): HTMLInputElement {
-  const button = screen.getByRole('button', { name: m.filler_photo_choose() })
+  const choose = screen.queryByRole('button', { name: m.filler_photo_choose() })
+  const change = screen.queryByRole('button', { name: m.filler_photo_change() })
+  const button = choose ?? change
+  if (!button) {
+    throw new Error('Portrait file button not found')
+  }
   return button.parentElement?.querySelector(
     'input[type="file"]',
   ) as HTMLInputElement
@@ -84,6 +89,7 @@ function requiredTempleInitial(
     tangSoHienTru: { tyKheo: 0, thucXoaMaNa: 0, saDi: 0, tapSu: 0 },
     soPhatTuQuyY: 0,
     soPhatTuThuongXuyen: 0,
+    photoPath: 'temples/seed/photo.jpg',
     ...overrides,
   }
 }
@@ -295,7 +301,7 @@ describe('TempleEditorForm', () => {
       mode: 'created',
     })
     const { onCreated } = renderForm({
-      initial: requiredTempleInitial(),
+      initial: requiredTempleInitial({ photoPath: null }),
     })
     const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
 
@@ -329,6 +335,17 @@ describe('TempleEditorForm', () => {
     expect(
       screen.getAllByText(m.filler_error_field_required()).length,
     ).toBeGreaterThan(0)
+  })
+
+  it('blocks save when temple photo is missing', async () => {
+    const user = userEvent.setup()
+    renderForm({
+      initial: requiredTempleInitial({ photoPath: null }),
+    })
+    await user.click(screen.getByRole('button', { name: m.filler_save() }))
+
+    expect(saveAndLockTempleMock).not.toHaveBeenCalled()
+    expect(screen.getByText(m.filler_error_field_required())).toBeTruthy()
   })
 
   it('blocks save when diaChiCu is blank', async () => {

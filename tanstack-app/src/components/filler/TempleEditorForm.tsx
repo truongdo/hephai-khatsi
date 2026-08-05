@@ -195,6 +195,7 @@ export function TempleEditorForm({
       tangSoHienTru: draft.tangSoHienTru,
       soPhatTuQuyY: draft.soPhatTuQuyY,
       soPhatTuThuongXuyen: draft.soPhatTuThuongXuyen,
+      hasPhoto: !!(api.getPhotoPath() || api.getPendingPhoto()),
     })
     if (!result.valid) {
       api.setFieldErrors(result.errors)
