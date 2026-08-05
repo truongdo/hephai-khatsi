@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { FILLER_AUDIT, ADMIN_AUDIT } from '#/test/auditActors'
 import { createMemoryMemberStore } from '#/test/memoryStores'
 
 describe('member createOrUpdateAndLock', () => {
@@ -10,6 +11,7 @@ describe('member createOrUpdateAndLock', () => {
       inviteId: 'inv-1',
       cccd: '001099012345',
       patch: { theDanh: 'A', dienThoai: '0901111111' },
+      audit: FILLER_AUDIT,
     })
     expect(mode).toBe('created')
     expect(member.status).toBe('locked')
@@ -44,6 +46,7 @@ describe('member createOrUpdateAndLock', () => {
       inviteId: 'inv-1',
       cccd: '001099012345',
       patch: { theDanh: 'B' },
+      audit: FILLER_AUDIT,
     })
     expect(mode).toBe('updated')
     expect(member.status).toBe('locked')
@@ -76,6 +79,7 @@ describe('member createOrUpdateAndLock', () => {
         inviteId: 'inv-1',
         cccd: '001099012345',
         patch: { theDanh: 'X' },
+        audit: FILLER_AUDIT,
       }),
     ).rejects.toMatchObject({ code: 'RECORD_LOCKED' })
   })
@@ -130,7 +134,7 @@ describe('unlock clears edit request', () => {
         editRequestedBy: '0901234567',
       },
     ])
-    const result = await store.unlock('m1')
+    const result = await store.unlock('m1', ADMIN_AUDIT)
     expect(result.status).toBe('draft')
     expect(result.editRequestedAt).toBeNull()
     expect(result.editRequestedBy).toBeNull()

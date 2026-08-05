@@ -1,4 +1,5 @@
 import { DomainError } from '#/domain/errors'
+import type { AuditActor } from '#/domain/auditLog'
 import {
   getDocumentType,
   isValidDocumentSide,
@@ -39,6 +40,7 @@ export type UploadMemberDocumentInput = {
   inviteToken?: string
   idToken?: string
   current: MemberDocuments
+  audit: AuditActor
 }
 
 export type UploadMemberDocumentResult = {
@@ -127,6 +129,7 @@ export async function uploadMemberDocument(
     input.typeId,
     input.side,
     filePath,
+    input.audit,
   )
 
   if (previousPath && previousPath !== filePath) {

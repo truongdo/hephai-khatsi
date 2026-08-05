@@ -4,6 +4,7 @@ import {
 } from '@firebase/rules-unit-testing'
 import { doc, setDoc } from 'firebase/firestore'
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { ADMIN_AUDIT } from '#/test/auditActors'
 
 const PROJECT_ID = 'demo-khatsi-temple-repo'
 const INVITE_ID = 'invite-temple-1'
@@ -87,7 +88,7 @@ describe('templeRepo.createOrUpdateDraft', () => {
       }),
     ).rejects.toMatchObject({ code: 'FORBIDDEN' })
 
-    await templeRepo.lock(temple.id, 'admin-1')
+    await templeRepo.lock(temple.id, 'admin-1', ADMIN_AUDIT)
     await expect(
       templeRepo.createOrUpdateDraft({
         orgUnitId: 'gd-i',
@@ -178,13 +179,13 @@ describe('templeRepo.list / lock / unlock', () => {
       patch: {},
     })
 
-    const stillDraft = await templeRepo.unlock(temple.id)
+    const stillDraft = await templeRepo.unlock(temple.id, ADMIN_AUDIT)
     expect(stillDraft.status).toBe('draft')
 
-    const locked = await templeRepo.lock(temple.id, 'admin-1')
+    const locked = await templeRepo.lock(temple.id, 'admin-1', ADMIN_AUDIT)
     expect(locked.status).toBe('locked')
 
-    const unlocked = await templeRepo.unlock(temple.id)
+    const unlocked = await templeRepo.unlock(temple.id, ADMIN_AUDIT)
     expect(unlocked.status).toBe('draft')
     expect(unlocked.lockedAt).toBeNull()
   })

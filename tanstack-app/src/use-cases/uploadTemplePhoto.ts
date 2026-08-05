@@ -1,4 +1,5 @@
 import { DomainError } from '#/domain/errors'
+import type { AuditActor } from '#/domain/auditLog'
 import {
   putToPresignedUrl,
   requestTemplePhotoUploadUrl,
@@ -22,6 +23,7 @@ export type UploadTemplePhotoInput = {
   inviteToken?: string
   /** Admin Firebase ID token — required for locked-temple uploads; sent as Bearer to the worker. */
   idToken?: string
+  audit: AuditActor
 }
 
 export type UploadTemplePhotoResult = {
@@ -79,7 +81,7 @@ export async function uploadTemplePhoto(
     input.inviteToken,
     input.idToken,
   )
-  await templeStore.setPhotoPath(input.templeId, photoPath)
+  await templeStore.setPhotoPath(input.templeId, photoPath, input.audit)
 
   return { photoPath }
 }

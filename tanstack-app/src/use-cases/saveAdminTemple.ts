@@ -1,5 +1,6 @@
 import { buildManagerPhones, mergeManagerPhones } from '#/domain/templePhones'
 import { DomainError } from '#/domain/errors'
+import type { AuditActor } from '#/domain/auditLog'
 import type { Temple } from '#/domain/types'
 import {
   templeRepo,
@@ -36,6 +37,7 @@ function sanitizePatch(patch: TempleProfilePatch): TempleProfilePatch {
 
 export async function saveAdminTemple(
   input: SaveAdminTempleInput,
+  audit: AuditActor,
   templeStore: TempleStore = templeRepo,
 ): Promise<{ temple: Temple; mode: 'created' | 'updated' }> {
   const patch = sanitizePatch(input.patch)
@@ -62,5 +64,6 @@ export async function saveAdminTemple(
     templeId: input.templeId,
     patch,
     allowWhenLocked: true,
+    audit,
   })
 }

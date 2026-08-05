@@ -15,6 +15,7 @@ import { useCallback, useMemo, useState, useEffect } from 'react'
 import { VietnamAddressFields } from '#/components/address/VietnamAddressFields'
 import type { AddressDraft } from '#/domain/address'
 import type { MemberDocuments } from '#/domain/memberDocumentTypes'
+import type { AuditActor } from '#/domain/auditLog'
 import type { Member, SanghaType } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { fillerOrgUnitsQuery } from '#/query/fillerQueries'
@@ -150,6 +151,7 @@ export type MemberFormFieldsProps = {
   apiRef: React.MutableRefObject<MemberFormFieldsApi | null>
   onUploadError?: (message: string) => void
   onDraftChange?: (draft: MemberDraft) => void
+  audit?: AuditActor
 }
 
 export function MemberFormFields({
@@ -164,6 +166,7 @@ export function MemberFormFields({
   onUploadError,
   apiRef,
   onDraftChange,
+  audit,
 }: MemberFormFieldsProps) {
   const [draft, setDraft] = useState(() => emptyMemberDraft(initial))
   const [photoPath, setPhotoPath] = useState<string | null>(
@@ -1248,6 +1251,7 @@ export function MemberFormFields({
             disabled={disabled}
             onUploadError={onUploadError}
             error={mapRequiredError(fieldErrors.cccdDocument)}
+            audit={audit}
           />
         </FormSection>
       </>
@@ -1266,6 +1270,7 @@ export function MemberFormFields({
       documents,
       pendingDocuments,
       onUploadError,
+      audit,
     ],
   )
 
@@ -1286,6 +1291,7 @@ export function MemberFormFields({
         onUploadError={onUploadError}
         required
         error={mapRequiredError(fieldErrors.photo)}
+        audit={audit}
       />
       {identitySection}
       {contactSection}

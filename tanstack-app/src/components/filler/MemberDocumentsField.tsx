@@ -22,6 +22,7 @@ import {
   type MemberDocuments,
 } from '#/domain/memberDocumentTypes'
 import { m } from '#/paraglide/messages'
+import type { AuditActor } from '#/domain/auditLog'
 import { deleteMemberDocument } from '#/use-cases/deleteMemberDocument'
 import { uploadMemberDocument } from '#/use-cases/uploadMemberDocument'
 import { documentTypeLabel } from './memberDocumentLabels'
@@ -56,6 +57,7 @@ export type MemberDocumentsFieldProps = {
   disabled?: boolean
   onUploadError?: (message: string) => void
   error?: string
+  audit?: AuditActor
 }
 
 function hasAnyDocumentFiles(files?: MemberDocumentFiles): boolean {
@@ -133,6 +135,7 @@ export function MemberDocumentsField({
   disabled = false,
   onUploadError,
   error,
+  audit,
 }: MemberDocumentsFieldProps) {
   const [selectedTypeId, setSelectedTypeId] = useState<DocumentTypeId | null>(
     null,
@@ -200,6 +203,7 @@ export function MemberDocumentsField({
           inviteToken,
           idToken,
           current: documents,
+          audit: audit ?? { actorType: 'filler', actorId: 'filler' },
         })
         onDocumentsChange(result.documents)
         if (options?.clearSelect) setSelectedTypeId(null)
@@ -233,6 +237,7 @@ export function MemberDocumentsField({
           current: documents,
           inviteToken,
           idToken,
+          audit: audit ?? { actorType: 'filler', actorId: 'filler' },
         })
         onDocumentsChange(result.documents)
       } catch {

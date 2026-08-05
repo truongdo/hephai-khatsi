@@ -87,7 +87,11 @@ describe('member draft emulator smoke', () => {
     expect(resumed.access).toBe('edit')
     expect(resumed.member.id).toBe(saved.member.id)
 
-    await lockMember({ memberId: saved.member.id, lockedBy: 'admin-1' })
+    await lockMember({
+      memberId: saved.member.id,
+      lockedBy: 'admin-1',
+      audit: { actorType: 'admin', actorId: 'admin-1' },
+    })
 
     await expect(
       saveMemberDraft({

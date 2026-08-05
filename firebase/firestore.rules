@@ -29,6 +29,16 @@ service cloud.firestore {
       return isHePhaiAdmin() || isGiaoDoanAdmin() || isLegacyAdmin();
     }
 
+    function isValidAuditCreate() {
+      return request.resource.data.keys().hasAll(['action', 'at', 'actorType', 'actorId', 'changes'])
+        && request.resource.data.action in ['created','updated','locked','unlocked','edit_requested','photo_uploaded','photo_deleted','document_uploaded','document_deleted']
+        && request.resource.data.at is string
+        && request.resource.data.actorType in ['admin', 'filler']
+        && request.resource.data.actorId is string
+        && request.resource.data.actorId.size() > 0
+        && request.resource.data.changes is list;
+    }
+
     function retreatOrgOk(orgUnitId) {
       return isHePhaiAdmin() || isLegacyAdmin()
         || (isGiaoDoanAdmin() && request.auth.token.orgUnitId == orgUnitId);
@@ -173,6 +183,22 @@ service cloud.firestore {
       );
 
       allow delete: if canWriteDirectory();
+
+      match /auditLogs/{logId} {
+        allow read: if canWriteDirectory();
+        // getAfter: parent may be created in the same transaction as this log
+        // (filler save-and-lock create). Plain get() only sees committed docs.
+        allow create: if isValidAuditCreate() && (
+          canWriteDirectory()
+          || (resource == null
+              && existsAfter(/databases/$(database)/documents/members/$(memberId))
+              && getAfter(/databases/$(database)/documents/members/$(memberId)).data.inviteId is string
+              && validInviteScope(getAfter(/databases/$(database)/documents/members/$(memberId)).data)
+              && !isKiemSoat()
+              && request.resource.data.actorType == 'filler')
+        );
+        allow update, delete: if false;
+      }
     }
 
     // --- temples: ids stay random (a phone can map to several temples, so
@@ -272,6 +298,22 @@ service cloud.firestore {
       );
 
       allow delete: if canWriteDirectory();
+
+      match /auditLogs/{logId} {
+        allow read: if canWriteDirectory();
+        // getAfter: parent may be created in the same transaction as this log
+        // (filler save-and-lock create). Plain get() only sees committed docs.
+        allow create: if isValidAuditCreate() && (
+          canWriteDirectory()
+          || (resource == null
+              && existsAfter(/databases/$(database)/documents/temples/$(templeId))
+              && getAfter(/databases/$(database)/documents/temples/$(templeId)).data.inviteId is string
+              && validInviteScope(getAfter(/databases/$(database)/documents/temples/$(templeId)).data)
+              && !isStaff()
+              && request.resource.data.actorType == 'filler')
+        );
+        allow update, delete: if false;
+      }
     }
 
     // --- templeManagerPhoneIndex: secondary lookup index, {orgUnitId}_{phone}

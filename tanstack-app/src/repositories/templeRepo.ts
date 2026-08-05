@@ -16,10 +16,13 @@ import {
   type Transaction,
 } from 'firebase/firestore'
 import { DomainError } from '#/domain/errors'
+import type { AuditActor } from '#/domain/auditLog'
 import type { Temple } from '#/domain/types'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
 import type { AdminListPage, ListTemplesAdminInput } from '#/repositories/adminListTypes'
+import { maybeAppendAuditFromDiff } from '#/repositories/auditLogRepo'
+import { normalizeVnPhone } from '#/domain/normalize'
 
 export type TempleProfilePatch = Partial<
   Omit<
@@ -43,6 +46,11 @@ export type CreateOrUpdateTempleDraftInput = {
   templeId?: string
   patch: TempleProfilePatch
   allowWhenLocked?: boolean
+  audit?: AuditActor
+}
+
+export type CreateOrUpdateTempleAndLockInput = CreateOrUpdateTempleDraftInput & {
+  audit: AuditActor
 }
 
 export type TemplePhoneLookupInput = {
@@ -55,15 +63,19 @@ export type TempleStore = {
     input: CreateOrUpdateTempleDraftInput,
   ): Promise<{ temple: Temple; mode: 'created' | 'updated' }>
   createOrUpdateAndLock(
-    input: CreateOrUpdateTempleDraftInput,
+    input: CreateOrUpdateTempleAndLockInput,
   ): Promise<{ temple: Temple; mode: 'created' | 'updated' }>
   requestEdit(templeId: string, phone: string): Promise<Temple>
   getById(templeId: string): Promise<Temple | null>
   listByOrgAndPhone(input: TemplePhoneLookupInput): Promise<Temple[]>
   list(input: ListTemplesAdminInput): Promise<AdminListPage<Temple>>
-  lock(templeId: string, lockedBy: string): Promise<Temple>
-  unlock(templeId: string): Promise<Temple>
-  setPhotoPath(templeId: string, photoPath: string | null): Promise<Temple>
+  lock(templeId: string, lockedBy: string, audit: AuditActor): Promise<Temple>
+  unlock(templeId: string, audit: AuditActor): Promise<Temple>
+  setPhotoPath(
+    templeId: string,
+    photoPath: string | null,
+    audit: AuditActor,
+  ): Promise<Temple>
   deleteMany(ids: string[]): Promise<void>
 }
 
@@ -178,7 +190,23 @@ async function createOrUpdateTemple(
       transaction.set(ref, { templeIds: [...existingIds, temple.id] })
     })
 
-    return existing ? { temple, mode: 'updated' as const } : { temple, mode: 'created' as const }
+    const mode = existing ? ('updated' as const) : ('created' as const)
+
+    if (input.audit) {
+      maybeAppendAuditFromDiff(
+        transaction,
+        { collection: 'temples', id: temple.id },
+        {
+          action: mode,
+          actor: input.audit,
+          at: now,
+          before: existing,
+          after: temple,
+        },
+      )
+    }
+
+    return { temple, mode }
   })
 }
 
@@ -189,7 +217,7 @@ async function createOrUpdateDraft(
 }
 
 async function createOrUpdateAndLock(
-  input: CreateOrUpdateTempleDraftInput,
+  input: CreateOrUpdateTempleAndLockInput,
 ): Promise<{ temple: Temple; mode: 'created' | 'updated' }> {
   return createOrUpdateTemple(input, { lock: true })
 }
@@ -220,6 +248,25 @@ async function requestEdit(templeId: string, phone: string): Promise<Temple> {
       updatedAt: now,
     }
     transaction.set(templeRef, templeData(temple))
+
+    let actorId = phone
+    try {
+      actorId = normalizeVnPhone(phone)
+    } catch {
+      // keep raw phone
+    }
+    maybeAppendAuditFromDiff(
+      transaction,
+      { collection: 'temples', id: templeId },
+      {
+        action: 'edit_requested',
+        actor: { actorType: 'filler', actorId },
+        at: now,
+        before: existing,
+        after: temple,
+      },
+    )
+
     return temple
   })
 }
@@ -266,7 +313,11 @@ async function list(input: ListTemplesAdminInput): Promise<AdminListPage<Temple>
   return { items, nextCursor }
 }
 
-async function lock(templeId: string, lockedBy: string): Promise<Temple> {
+async function lock(
+  templeId: string,
+  lockedBy: string,
+  audit: AuditActor,
+): Promise<Temple> {
   const db = requireDb()
   const templeRef = doc(db, COLLECTIONS.temples, templeId)
 
@@ -276,9 +327,10 @@ async function lock(templeId: string, lockedBy: string): Promise<Temple> {
       throw new DomainError('NOT_FOUND', 'Temple not found')
     }
 
+    const existing = templeFromSnap(snap)
     const now = new Date().toISOString()
     const temple: Temple = {
-      ...templeFromSnap(snap),
+      ...existing,
       status: 'locked',
       lockedAt: now,
       lockedBy,
@@ -287,6 +339,19 @@ async function lock(templeId: string, lockedBy: string): Promise<Temple> {
       updatedAt: now,
     }
     transaction.set(templeRef, templeData(temple))
+
+    maybeAppendAuditFromDiff(
+      transaction,
+      { collection: 'temples', id: templeId },
+      {
+        action: 'locked',
+        actor: audit,
+        at: now,
+        before: existing,
+        after: temple,
+      },
+    )
+
     return temple
   })
 }
@@ -345,7 +410,11 @@ async function deleteMany(ids: string[]): Promise<void> {
   }
 }
 
-async function setPhotoPath(templeId: string, photoPath: string | null): Promise<Temple> {
+async function setPhotoPath(
+  templeId: string,
+  photoPath: string | null,
+  audit: AuditActor,
+): Promise<Temple> {
   const db = requireDb()
   const templeRef = doc(db, COLLECTIONS.temples, templeId)
 
@@ -355,18 +424,32 @@ async function setPhotoPath(templeId: string, photoPath: string | null): Promise
       throw new DomainError('NOT_FOUND', 'Temple not found')
     }
 
+    const existing = templeFromSnap(snap)
     const now = new Date().toISOString()
     const temple: Temple = {
-      ...templeFromSnap(snap),
+      ...existing,
       photoPath,
       updatedAt: now,
     }
     transaction.set(templeRef, templeData(temple))
+
+    maybeAppendAuditFromDiff(
+      transaction,
+      { collection: 'temples', id: templeId },
+      {
+        action: photoPath !== null ? 'photo_uploaded' : 'photo_deleted',
+        actor: audit,
+        at: now,
+        before: existing,
+        after: temple,
+      },
+    )
+
     return temple
   })
 }
 
-async function unlock(templeId: string): Promise<Temple> {
+async function unlock(templeId: string, audit: AuditActor): Promise<Temple> {
   const db = requireDb()
   const templeRef = doc(db, COLLECTIONS.temples, templeId)
 
@@ -390,6 +473,19 @@ async function unlock(templeId: string): Promise<Temple> {
       updatedAt: now,
     }
     transaction.set(templeRef, templeData(temple))
+
+    maybeAppendAuditFromDiff(
+      transaction,
+      { collection: 'temples', id: templeId },
+      {
+        action: 'unlocked',
+        actor: audit,
+        at: now,
+        before: existing,
+        after: temple,
+      },
+    )
+
     return temple
   })
 }

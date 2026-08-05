@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Member, Temple } from '#/domain/types'
+import { ADMIN_AUDIT } from '#/test/auditActors'
 import { createMemoryMemberStore, createMemoryTempleStore } from '#/test/memoryStores'
 import { unlockMember } from './unlockMember'
 import { unlockTemple } from './unlockTemple'
@@ -24,7 +25,7 @@ const lockedMember: Member = {
 describe('unlockMember', () => {
   it('sets status back to draft and clears lock metadata', async () => {
     const store = createMemoryMemberStore([lockedMember])
-    const result = await unlockMember({ memberId: 'm1' }, store)
+    const result = await unlockMember({ memberId: 'm1', audit: ADMIN_AUDIT }, store)
     expect(result.status).toBe('draft')
     expect(result.lockedAt).toBeNull()
     expect(result.lockedBy).toBeNull()
@@ -38,20 +39,20 @@ describe('unlockMember', () => {
         editRequestedBy: '0901234567',
       },
     ])
-    const result = await unlockMember({ memberId: 'm1' }, store)
+    const result = await unlockMember({ memberId: 'm1', audit: ADMIN_AUDIT }, store)
     expect(result.editRequestedAt).toBeNull()
     expect(result.editRequestedBy).toBeNull()
   })
 
   it('is idempotent when already draft', async () => {
     const store = createMemoryMemberStore([{ ...lockedMember, status: 'draft', lockedAt: null, lockedBy: null }])
-    const result = await unlockMember({ memberId: 'm1' }, store)
+    const result = await unlockMember({ memberId: 'm1', audit: ADMIN_AUDIT }, store)
     expect(result.status).toBe('draft')
   })
 
   it('throws NOT_FOUND for missing member', async () => {
     await expect(
-      unlockMember({ memberId: 'missing' }, createMemoryMemberStore([])),
+      unlockMember({ memberId: 'missing', audit: ADMIN_AUDIT }, createMemoryMemberStore([])),
     ).rejects.toMatchObject({ code: 'NOT_FOUND' })
   })
 })
@@ -73,7 +74,7 @@ describe('unlockTemple', () => {
       editRequestedBy: null,
     }
     const store = createMemoryTempleStore([temple])
-    const result = await unlockTemple({ templeId: 't1' }, store)
+    const result = await unlockTemple({ templeId: 't1', audit: ADMIN_AUDIT }, store)
     expect(result.status).toBe('draft')
     expect(result.lockedAt).toBeNull()
     expect(result.lockedBy).toBeNull()
@@ -95,7 +96,7 @@ describe('unlockTemple', () => {
       editRequestedBy: '0901234567',
     }
     const store = createMemoryTempleStore([temple])
-    const result = await unlockTemple({ templeId: 't2' }, store)
+    const result = await unlockTemple({ templeId: 't2', audit: ADMIN_AUDIT }, store)
     expect(result.editRequestedAt).toBeNull()
     expect(result.editRequestedBy).toBeNull()
   })

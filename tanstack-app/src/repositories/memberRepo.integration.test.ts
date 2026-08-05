@@ -4,6 +4,7 @@ import {
 } from '@firebase/rules-unit-testing'
 import { doc, setDoc } from 'firebase/firestore'
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { ADMIN_AUDIT } from '#/test/auditActors'
 
 const PROJECT_ID = 'demo-khatsi-member-repo'
 const INVITE_ID = 'invite-member-1'
@@ -120,7 +121,7 @@ describe('memberRepo.createOrUpdateDraft', () => {
       cccd: '012345678901',
       patch: {},
     })
-    await memberRepo.lock(created.member.id, 'admin-1')
+    await memberRepo.lock(created.member.id, 'admin-1', ADMIN_AUDIT)
 
     await expect(
       memberRepo.createOrUpdateDraft({
@@ -176,14 +177,14 @@ describe('memberRepo.updateDraftById / getByCccd / lock / unlock', () => {
       patch: {},
     })
 
-    const stillDraft = await memberRepo.unlock(created.member.id)
+    const stillDraft = await memberRepo.unlock(created.member.id, ADMIN_AUDIT)
     expect(stillDraft.status).toBe('draft')
 
-    const locked = await memberRepo.lock(created.member.id, 'admin-1')
+    const locked = await memberRepo.lock(created.member.id, 'admin-1', ADMIN_AUDIT)
     expect(locked.status).toBe('locked')
     expect(locked.lockedBy).toBe('admin-1')
 
-    const unlocked = await memberRepo.unlock(created.member.id)
+    const unlocked = await memberRepo.unlock(created.member.id, ADMIN_AUDIT)
     expect(unlocked.status).toBe('draft')
     expect(unlocked.lockedAt).toBeNull()
     expect(unlocked.lockedBy).toBeNull()

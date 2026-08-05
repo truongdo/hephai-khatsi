@@ -2,6 +2,7 @@ import { Alert } from '@mantine/core'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import type { Member, SanghaType } from '#/domain/types'
+import { normalizeVnPhone } from '#/domain/normalize'
 import { useFormLocalDraft } from '#/hooks/useFormLocalDraft'
 import { memberDraftStorageKey } from '#/lib/formLocalDraft'
 import { scheduleScrollToFirstFieldError } from '#/lib/scrollToFirstFieldError'
@@ -37,6 +38,32 @@ export type MemberEditorFormProps = {
   onCreated: (memberId: string) => void | Promise<void>
 }
 
+function fillerAuditFromPhone(phone: string) {
+  let actorId = 'filler'
+  if (phone) {
+    try {
+      actorId = normalizeVnPhone(phone)
+    } catch {
+      // keep default filler
+    }
+  }
+  return { actorType: 'filler' as const, actorId }
+}
+
+function resolveFillerPhone(
+  draftPhone: string | undefined,
+  seedPhone?: string,
+  initialPhone?: string,
+): string {
+  const fromDraft = draftPhone?.trim()
+  if (fromDraft) return fromDraft
+  const fromSeed = seedPhone?.trim()
+  if (fromSeed) return fromSeed
+  const fromInitial = initialPhone?.trim()
+  if (fromInitial) return fromInitial
+  return ''
+}
+
 export function MemberEditorForm({
   title,
   token,
@@ -69,7 +96,18 @@ export function MemberEditorForm({
   )
   const [requestEditError, setRequestEditError] = useState<string | null>(null)
   const disabled = status === 'view'
-  const requestPhone = seedPhone ?? initial.dienThoai ?? ''
+  const [currentPhone, setCurrentPhone] = useState(
+    () => initial.dienThoai ?? seedPhone ?? '',
+  )
+  const requestPhone = resolveFillerPhone(
+    currentPhone,
+    seedPhone,
+    initial.dienThoai,
+  )
+  const fillerAudit = useMemo(
+    () => fillerAuditFromPhone(requestPhone),
+    [requestPhone],
+  )
 
   const storageKey = useMemo(() => {
     if (memberId) {
@@ -85,6 +123,7 @@ export function MemberEditorForm({
 
   const handleLocalDraftRestore = useCallback((fields: MemberDraft) => {
     fieldsApiRef.current?.restoreDraft(fields)
+    setCurrentPhone(fields.dienThoai)
   }, [])
 
   const { persist, clear, restored } = useFormLocalDraft<MemberDraft>({
@@ -97,6 +136,7 @@ export function MemberEditorForm({
   const handleDraftChange = useCallback(
     (draft: MemberDraft) => {
       setValidationError(null)
+      setCurrentPhone(draft.dienThoai)
       persist(draft)
     },
     [persist],
@@ -123,7 +163,13 @@ export function MemberEditorForm({
       if (!memberId) {
         throw new Error('memberId required')
       }
-      return requestMemberEdit({ memberId, phone: requestPhone })
+      const draft = fieldsApiRef.current?.getDraft()
+      const phone = resolveFillerPhone(
+        draft?.dienThoai ?? currentPhone,
+        seedPhone,
+        initial.dienThoai,
+      )
+      return requestMemberEdit({ memberId, phone })
     },
     onSuccess: (member) => {
       setRequestEditError(null)
@@ -143,6 +189,9 @@ export function MemberEditorForm({
 
     const draft = api.getDraft()
     const patch = buildMemberPatch(draft)
+    const saveAudit = fillerAuditFromPhone(
+      resolveFillerPhone(draft.dienThoai, seedPhone, initial.dienThoai),
+    )
 
     setPostSavePending(true)
     try {
@@ -190,6 +239,7 @@ export function MemberEditorForm({
               bytes,
               contentType: pendingPhoto.type,
               inviteToken: token,
+              audit: saveAudit,
             })
             api.setPhotoPath(uploadResult.photoPath)
             api.clearPendingPhoto()
@@ -224,6 +274,7 @@ export function MemberEditorForm({
                   contentType: file.type,
                   inviteToken: token,
                   current: api.getDocuments(),
+                  audit: saveAudit,
                 })
                 api.setDocuments(uploadResult.documents)
                 savedMember = {
@@ -350,6 +401,7 @@ export function MemberEditorForm({
           inviteToken={token}
           onUploadError={setSaveError}
           onDraftChange={handleDraftChange}
+          audit={fillerAudit}
         />
       </FillerEditorShell>
       <FillerSaveConfirmModal

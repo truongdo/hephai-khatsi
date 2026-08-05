@@ -91,7 +91,7 @@ vi.mock('#/auth/useAdminClaim', () => ({
 
 vi.mock('#/auth/useAuth', () => ({
   useAuth: () => ({
-    user: { getIdToken: getIdTokenMock },
+    user: { uid: 'admin-uid', getIdToken: getIdTokenMock },
     loading: false,
   }),
 }))
@@ -158,6 +158,9 @@ vi.mock('#/use-cases/uploadMemberDocument', () => ({
       diep_sa_di: { filePath: 'members/created-member/docs/diep_sa_di/file.pdf' },
     },
   })),
+}))
+vi.mock('#/repositories/auditLogRepo', () => ({
+  listAuditLogs: vi.fn(async () => ({ entries: [], nextStartAfterAt: null })),
 }))
 vi.mock('#/data/vietnam-locations', () => ({
   cities: [
@@ -321,6 +324,27 @@ describe('MemberFormPage', () => {
     ).toBeTruthy()
   })
 
+  it('shows audit history button in edit mode and opens modal', async () => {
+    const user = userEvent.setup()
+    renderForm({ mode: 'edit' })
+    const historyBtn = await screen.findByRole('button', {
+      name: m.admin_audit_history(),
+    })
+    await user.click(historyBtn)
+    expect(await screen.findByRole('dialog')).toBeTruthy()
+    expect(
+      screen.getByText(new RegExp(m.admin_audit_modal_title())),
+    ).toBeTruthy()
+  })
+
+  it('does not show audit history button in create mode', async () => {
+    renderForm({ mode: 'create' })
+    await screen.findByRole('button', { name: m.admin_members_complete() })
+    expect(
+      screen.queryByRole('button', { name: m.admin_audit_history() }),
+    ).toBeNull()
+  })
+
   it('does not allow editing cccd on existing member', async () => {
     memberFixture = draftMember
     renderForm({ mode: 'edit' })
@@ -401,6 +425,7 @@ describe('MemberFormPage', () => {
       bytes: expect.any(Uint8Array),
       contentType: 'image/jpeg',
       idToken: 'admin-id-token',
+      audit: { actorType: 'admin', actorId: 'admin-uid' },
     })
     expect(navigateMock).not.toHaveBeenCalled()
 
@@ -455,6 +480,7 @@ describe('MemberFormPage', () => {
         contentType: 'application/pdf',
         idToken: 'admin-id-token',
         current: {},
+        audit: { actorType: 'admin', actorId: 'admin-uid' },
       })
       expect(navigateMock).not.toHaveBeenCalled()
 

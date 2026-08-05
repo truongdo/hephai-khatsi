@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
+import { ADMIN_AUDIT } from '#/test/auditActors'
 import { createMemoryMemberStore, createMemoryTempleStore } from '#/test/memoryStores'
 import { saveAdminMember } from './saveAdminMember'
 import { saveAdminTemple } from './saveAdminTemple'
@@ -14,6 +15,7 @@ describe('saveAdminMember', () => {
         cccd: '001099012345',
         patch: { phapDanh: 'Thiện' },
       },
+      ADMIN_AUDIT,
       store,
     )
     expect(mode).toBe('created')
@@ -25,6 +27,7 @@ describe('saveAdminMember', () => {
     await expect(
       saveAdminMember(
         { orgUnitId: 'gd-i', sanghaType: 'tang', cccd: '12345678', patch: {} },
+        ADMIN_AUDIT,
         createMemoryMemberStore([]),
       ),
     ).rejects.toMatchObject({ code: 'CCCD_INVALID' })
@@ -57,6 +60,7 @@ describe('saveAdminMember', () => {
         sanghaType: 'tang',
         patch: { phapDanh: 'New' },
       },
+      ADMIN_AUDIT,
       store,
     )
     expect(mode).toBe('updated')
@@ -74,6 +78,7 @@ describe('saveAdminMember', () => {
           sanghaType: 'tang',
           patch: {},
         },
+        ADMIN_AUDIT,
         createMemoryMemberStore([]),
       ),
     ).rejects.toMatchObject({ code: 'NOT_FOUND' })
@@ -106,6 +111,7 @@ describe('saveAdminMember', () => {
         sanghaType: 'tang',
         patch: { phapDanh: 'New' },
       },
+      ADMIN_AUDIT,
       store,
     )
     expect(mode).toBe('updated')
@@ -134,7 +140,11 @@ describe('saveAdminMember', () => {
         editRequestedBy: null,
       },
     ])
-    const updated = await store.setPhotoPath('m1', 'members/m1/photo.jpg')
+    const updated = await store.setPhotoPath(
+      'm1',
+      'members/m1/photo.jpg',
+      ADMIN_AUDIT,
+    )
     expect(updated.photoPath).toBe('members/m1/photo.jpg')
     expect(updated.status).toBe('locked')
   })
@@ -190,6 +200,7 @@ describe('saveAdminMember', () => {
           sanghaType: 'tang',
           patch: {},
         },
+        ADMIN_AUDIT,
         store,
       ),
     ).rejects.toMatchObject({ code: 'FORBIDDEN' })
@@ -201,6 +212,7 @@ describe('saveAdminMember', () => {
           sanghaType: 'ni',
           patch: {},
         },
+        ADMIN_AUDIT,
         store,
       ),
     ).rejects.toMatchObject({ code: 'FORBIDDEN' })
@@ -251,6 +263,7 @@ describe('saveAdminMember', () => {
         sanghaType: 'tang',
         patch: { phapDanh: 'New' },
       },
+      ADMIN_AUDIT,
       store,
     )
     expect(mode).toBe('updated')
@@ -271,6 +284,7 @@ describe('saveAdminTemple', () => {
           truTriHienNay: { dienThoai: '0901234567' },
         },
       },
+      ADMIN_AUDIT,
       store,
     )
     expect(mode).toBe('created')
@@ -302,6 +316,7 @@ describe('saveAdminTemple', () => {
         templeId: 't1',
         patch: { danhHieu: 'New' },
       },
+      ADMIN_AUDIT,
       store,
     )
     expect(mode).toBe('updated')
@@ -333,6 +348,7 @@ describe('saveAdminTemple', () => {
         templeId: 't1',
         patch: { danhHieu: 'New' },
       },
+      ADMIN_AUDIT,
       store,
     )
     expect(mode).toBe('updated')
@@ -359,7 +375,11 @@ describe('saveAdminTemple', () => {
         editRequestedBy: null,
       },
     ])
-    const updated = await store.setPhotoPath('t1', 'temples/t1/photo.jpg')
+    const updated = await store.setPhotoPath(
+      't1',
+      'temples/t1/photo.jpg',
+      ADMIN_AUDIT,
+    )
     expect(updated.photoPath).toBe('temples/t1/photo.jpg')
     expect(updated.status).toBe('locked')
   })

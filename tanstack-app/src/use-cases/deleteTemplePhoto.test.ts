@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { DomainError } from '#/domain/errors'
 import type { Temple } from '#/domain/types'
+import { FILLER_AUDIT } from '#/test/auditActors'
 import { createMemoryTempleStore } from '#/test/memoryStores'
 import { deleteTemplePhoto } from './deleteTemplePhoto'
 
@@ -28,6 +29,7 @@ describe('deleteTemplePhoto', () => {
       {
         templeId: 'temple-1',
         inviteToken: 'invite-1',
+        audit: FILLER_AUDIT,
       },
       store,
       deleteObject,
@@ -57,6 +59,7 @@ describe('deleteTemplePhoto', () => {
         {
           templeId: 'temple-1',
           inviteToken: 'invite-1',
+          audit: FILLER_AUDIT,
         },
         store,
         deleteObject,

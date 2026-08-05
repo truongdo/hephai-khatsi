@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Invite } from '#/domain/types'
+import { auditParentKey } from '#/repositories/auditLogRepo'
 import type { InviteStore } from '#/repositories/inviteRepo'
 import { createMemoryMemberStore } from '#/test/memoryStores'
 import { saveAndLockMember } from './saveAndLockMember'
@@ -47,6 +48,35 @@ describe('saveAndLockMember', () => {
     expect(result.member.status).toBe('locked')
     expect(result.member.lockedBy).toBe('filler')
     expect(result.mode).toBe('created')
+  })
+
+  it('writes a created audit log with filler actor from phone', async () => {
+    const memberStore = createMemoryMemberStore()
+    const inviteStore = memoryInviteStore([PUBLIC_INVITE])
+
+    const result = await saveAndLockMember(
+      {
+        token: 't',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        cccd: '001099012345',
+        patch: { theDanh: 'A', dienThoai: '0901234567' },
+      },
+      memberStore,
+      inviteStore,
+    )
+
+    const parentKey = auditParentKey({
+      collection: 'members',
+      id: result.member.id,
+    })
+    const { entries } = memberStore.memoryListAudit(parentKey, 10)
+    expect(entries).toHaveLength(1)
+    expect(entries[0]).toMatchObject({
+      action: 'created',
+      actorType: 'filler',
+      actorId: '0901234567',
+    })
   })
 
   it('strips protected patch keys including edit request fields', async () => {

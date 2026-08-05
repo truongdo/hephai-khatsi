@@ -1,4 +1,5 @@
 import { DomainError } from '#/domain/errors'
+import type { AuditActor } from '#/domain/auditLog'
 import { deleteTemplePhotoObject } from '#/photos/photosApiClient'
 import { templeRepo, type TempleStore } from '#/repositories/templeRepo'
 
@@ -6,6 +7,7 @@ export type DeleteTemplePhotoInput = {
   templeId: string
   inviteToken?: string
   idToken?: string
+  audit: AuditActor
 }
 
 export async function deleteTemplePhoto(
@@ -28,5 +30,5 @@ export async function deleteTemplePhoto(
     inviteToken: input.inviteToken,
     idToken: input.idToken,
   })
-  await templeStore.setPhotoPath(input.templeId, null)
+  await templeStore.setPhotoPath(input.templeId, null, input.audit)
 }

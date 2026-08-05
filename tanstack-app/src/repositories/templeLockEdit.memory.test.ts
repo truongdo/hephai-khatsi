@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { FILLER_AUDIT, ADMIN_AUDIT } from '#/test/auditActors'
 import { createMemoryTempleStore } from '#/test/memoryStores'
 
 describe('temple createOrUpdateAndLock', () => {
@@ -9,6 +10,7 @@ describe('temple createOrUpdateAndLock', () => {
       inviteId: 'inv-1',
       managerPhones: ['0901111111'],
       patch: { danhHieu: 'Chua A' },
+      audit: FILLER_AUDIT,
     })
     expect(mode).toBe('created')
     expect(temple.status).toBe('locked')
@@ -41,6 +43,7 @@ describe('temple createOrUpdateAndLock', () => {
       managerPhones: ['0901111111'],
       templeId: 't1',
       patch: { danhHieu: 'Chua B' },
+      audit: FILLER_AUDIT,
     })
     expect(mode).toBe('updated')
     expect(temple.status).toBe('locked')
@@ -71,6 +74,7 @@ describe('temple createOrUpdateAndLock', () => {
         managerPhones: ['0901111111'],
         templeId: 't1',
         patch: { danhHieu: 'X' },
+        audit: FILLER_AUDIT,
       }),
     ).rejects.toMatchObject({ code: 'RECORD_LOCKED' })
   })
@@ -121,7 +125,7 @@ describe('temple unlock clears edit request', () => {
         editRequestedBy: '0901234567',
       },
     ])
-    const result = await store.unlock('t1')
+    const result = await store.unlock('t1', ADMIN_AUDIT)
     expect(result.status).toBe('draft')
     expect(result.editRequestedAt).toBeNull()
     expect(result.editRequestedBy).toBeNull()

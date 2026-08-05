@@ -16,6 +16,7 @@ import {
   type Transaction,
 } from 'firebase/firestore'
 import { DomainError } from '#/domain/errors'
+import type { AuditActor } from '#/domain/auditLog'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
 import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
 import { normalizeVnPhone } from '#/domain/normalize'
@@ -37,6 +38,9 @@ import type {
   ListMembersAdminInput,
   ListMembersExportInput,
 } from '#/repositories/adminListTypes'
+import {
+  maybeAppendAuditFromDiff,
+} from '#/repositories/auditLogRepo'
 
 export type MemberProfilePatch = Partial<
   Omit<
@@ -60,6 +64,11 @@ export type CreateOrUpdateMemberDraftInput = {
   inviteId: string | null
   cccd: string
   patch: MemberProfilePatch
+  audit?: AuditActor
+}
+
+export type CreateOrUpdateMemberAndLockInput = CreateOrUpdateMemberDraftInput & {
+  audit: AuditActor
 }
 
 export type MemberLookupInput = {
@@ -79,13 +88,13 @@ export type MemberStore = {
     input: CreateOrUpdateMemberDraftInput,
   ): Promise<{ member: Member; mode: 'created' | 'updated' }>
   createOrUpdateAndLock(
-    input: CreateOrUpdateMemberDraftInput,
+    input: CreateOrUpdateMemberAndLockInput,
   ): Promise<{ member: Member; mode: 'created' | 'updated' }>
   requestEdit(memberId: string, phone: string): Promise<Member>
   updateDraftById(
     memberId: string,
     patch: MemberProfilePatch,
-    options?: { allowWhenLocked?: boolean },
+    options?: { allowWhenLocked?: boolean; audit?: AuditActor },
   ): Promise<Member>
   getByCccd(input: MemberLookupInput): Promise<Member | null>
   getById(memberId: string): Promise<Member | null>
@@ -94,21 +103,27 @@ export type MemberStore = {
   listAllForExport(input: ListMembersExportInput): Promise<Member[]>
   listByCurrentTempleIds(templeIds: string[]): Promise<Member[]>
   deleteMany(ids: string[]): Promise<void>
-  setPhotoPath(memberId: string, photoPath: string | null): Promise<Member>
+  setPhotoPath(
+    memberId: string,
+    photoPath: string | null,
+    audit: AuditActor,
+  ): Promise<Member>
   setDocumentPaths(memberId: string, documents: MemberDocuments): Promise<Member>
   mergeDocumentSide(
     memberId: string,
     typeId: DocumentTypeId,
     side: DocumentSide,
     filePath: string,
+    audit: AuditActor,
   ): Promise<{ member: Member; previousPath?: string }>
   removeDocumentPaths(
     memberId: string,
     typeId: DocumentTypeId,
-    side?: DocumentSide,
+    side: DocumentSide | undefined,
+    audit: AuditActor,
   ): Promise<{ member: Member; removedPaths: string[] }>
-  lock(memberId: string, lockedBy: string): Promise<Member>
-  unlock(memberId: string): Promise<Member>
+  lock(memberId: string, lockedBy: string, audit: AuditActor): Promise<Member>
+  unlock(memberId: string, audit: AuditActor): Promise<Member>
 }
 
 const PHONE_INDEX_CAP = 20
@@ -213,29 +228,30 @@ async function createOrUpdateMember(
 
     let member: Member
     let mode: 'created' | 'updated'
+    const existing = snap.exists() ? memberFromSnap(snap) : null
 
     if (snap.exists()) {
-      const existing = memberFromSnap(snap)
-      if (existing.status === 'locked') {
+      const existingMember = existing!
+      if (existingMember.status === 'locked') {
         throw new DomainError('RECORD_LOCKED', 'Member is locked')
       }
 
       member = {
-        ...existing,
+        ...existingMember,
         ...input.patch,
-        id: existing.id,
-        orgUnitId: existing.orgUnitId,
-        sanghaType: existing.sanghaType,
-        status: options.lock ? 'locked' : existing.status,
-        cccd: existing.cccd,
+        id: existingMember.id,
+        orgUnitId: existingMember.orgUnitId,
+        sanghaType: existingMember.sanghaType,
+        status: options.lock ? 'locked' : existingMember.status,
+        cccd: existingMember.cccd,
         // Re-validated (not frozen) per the current invite token, matching
         // the security rule's re-check on every non-admin write.
         inviteId: input.inviteId,
-        createdAt: existing.createdAt,
-        lockedAt: options.lock ? now : existing.lockedAt,
-        lockedBy: options.lock ? 'filler' : existing.lockedBy,
-        editRequestedAt: options.lock ? null : existing.editRequestedAt,
-        editRequestedBy: options.lock ? null : existing.editRequestedBy,
+        createdAt: existingMember.createdAt,
+        lockedAt: options.lock ? now : existingMember.lockedAt,
+        lockedBy: options.lock ? 'filler' : existingMember.lockedBy,
+        editRequestedAt: options.lock ? null : existingMember.editRequestedAt,
+        editRequestedBy: options.lock ? null : existingMember.editRequestedBy,
         updatedAt: now,
       }
       mode = 'updated'
@@ -270,6 +286,21 @@ async function createOrUpdateMember(
 
     transaction.set(memberRef, memberData(member))
     writePhoneIndex(transaction, phoneIndex, member.id)
+
+    if (input.audit) {
+      maybeAppendAuditFromDiff(
+        transaction,
+        { collection: 'members', id: memberId },
+        {
+          action: mode,
+          actor: input.audit,
+          at: now,
+          before: existing,
+          after: member,
+        },
+      )
+    }
+
     return { member, mode }
   })
 }
@@ -281,7 +312,7 @@ async function createOrUpdateDraft(
 }
 
 async function createOrUpdateAndLock(
-  input: CreateOrUpdateMemberDraftInput,
+  input: CreateOrUpdateMemberAndLockInput,
 ): Promise<{ member: Member; mode: 'created' | 'updated' }> {
   return createOrUpdateMember(input, { lock: true })
 }
@@ -312,6 +343,25 @@ async function requestEdit(memberId: string, phone: string): Promise<Member> {
       updatedAt: now,
     }
     transaction.set(memberRef, memberData(member))
+
+    let actorId = phone
+    try {
+      actorId = normalizeVnPhone(phone)
+    } catch {
+      // keep raw phone
+    }
+    maybeAppendAuditFromDiff(
+      transaction,
+      { collection: 'members', id: memberId },
+      {
+        action: 'edit_requested',
+        actor: { actorType: 'filler', actorId },
+        at: now,
+        before: existing,
+        after: member,
+      },
+    )
+
     return member
   })
 }
@@ -319,7 +369,7 @@ async function requestEdit(memberId: string, phone: string): Promise<Member> {
 async function updateDraftById(
   memberId: string,
   patch: MemberProfilePatch,
-  options?: { allowWhenLocked?: boolean },
+  options?: { allowWhenLocked?: boolean; audit?: AuditActor },
 ): Promise<Member> {
   const db = requireDb()
   const memberRef = doc(db, COLLECTIONS.members, memberId)
@@ -363,6 +413,21 @@ async function updateDraftById(
 
     transaction.set(memberRef, memberData(member))
     writePhoneIndex(transaction, phoneIndex, member.id)
+
+    if (options?.audit) {
+      maybeAppendAuditFromDiff(
+        transaction,
+        { collection: 'members', id: memberId },
+        {
+          action: 'updated',
+          actor: options.audit,
+          at: now,
+          before: existing,
+          after: member,
+        },
+      )
+    }
+
     return member
   })
 }
@@ -498,7 +563,11 @@ async function deleteMany(ids: string[]): Promise<void> {
   }
 }
 
-async function setPhotoPath(memberId: string, photoPath: string | null): Promise<Member> {
+async function setPhotoPath(
+  memberId: string,
+  photoPath: string | null,
+  audit: AuditActor,
+): Promise<Member> {
   const db = requireDb()
   const memberRef = doc(db, COLLECTIONS.members, memberId)
 
@@ -513,6 +582,19 @@ async function setPhotoPath(memberId: string, photoPath: string | null): Promise
     const now = new Date().toISOString()
     const member: Member = { ...existing, photoPath, updatedAt: now }
     transaction.set(memberRef, memberData(member))
+
+    maybeAppendAuditFromDiff(
+      transaction,
+      { collection: 'members', id: memberId },
+      {
+        action: photoPath !== null ? 'photo_uploaded' : 'photo_deleted',
+        actor: audit,
+        at: now,
+        before: existing,
+        after: member,
+      },
+    )
+
     return member
   })
 }
@@ -544,6 +626,7 @@ async function mergeDocumentSide(
   typeId: DocumentTypeId,
   side: DocumentSide,
   filePath: string,
+  audit: AuditActor,
 ): Promise<{ member: Member; previousPath?: string }> {
   const db = requireDb()
   const memberRef = doc(db, COLLECTIONS.members, memberId)
@@ -563,6 +646,19 @@ async function mergeDocumentSide(
     const now = new Date().toISOString()
     const member: Member = { ...existing, documents, updatedAt: now }
     transaction.set(memberRef, memberData(member))
+
+    maybeAppendAuditFromDiff(
+      transaction,
+      { collection: 'members', id: memberId },
+      {
+        action: 'document_uploaded',
+        actor: audit,
+        at: now,
+        before: existing,
+        after: member,
+      },
+    )
+
     return { member, previousPath }
   })
 }
@@ -570,7 +666,8 @@ async function mergeDocumentSide(
 async function removeDocumentPaths(
   memberId: string,
   typeId: DocumentTypeId,
-  side?: DocumentSide,
+  side: DocumentSide | undefined,
+  audit: AuditActor,
 ): Promise<{ member: Member; removedPaths: string[] }> {
   const db = requireDb()
   const memberRef = doc(db, COLLECTIONS.members, memberId)
@@ -601,11 +698,28 @@ async function removeDocumentPaths(
     const now = new Date().toISOString()
     const member: Member = { ...existing, documents, updatedAt: now }
     transaction.set(memberRef, memberData(member))
+
+    maybeAppendAuditFromDiff(
+      transaction,
+      { collection: 'members', id: memberId },
+      {
+        action: 'document_deleted',
+        actor: audit,
+        at: now,
+        before: existing,
+        after: member,
+      },
+    )
+
     return { member, removedPaths }
   })
 }
 
-async function lock(memberId: string, lockedBy: string): Promise<Member> {
+async function lock(
+  memberId: string,
+  lockedBy: string,
+  audit: AuditActor,
+): Promise<Member> {
   const db = requireDb()
   const memberRef = doc(db, COLLECTIONS.members, memberId)
 
@@ -615,9 +729,10 @@ async function lock(memberId: string, lockedBy: string): Promise<Member> {
       throw new DomainError('NOT_FOUND', 'Member not found')
     }
 
+    const existing = memberFromSnap(snap)
     const now = new Date().toISOString()
     const member: Member = {
-      ...memberFromSnap(snap),
+      ...existing,
       status: 'locked',
       lockedAt: now,
       lockedBy,
@@ -626,11 +741,24 @@ async function lock(memberId: string, lockedBy: string): Promise<Member> {
       updatedAt: now,
     }
     transaction.set(memberRef, memberData(member))
+
+    maybeAppendAuditFromDiff(
+      transaction,
+      { collection: 'members', id: memberId },
+      {
+        action: 'locked',
+        actor: audit,
+        at: now,
+        before: existing,
+        after: member,
+      },
+    )
+
     return member
   })
 }
 
-async function unlock(memberId: string): Promise<Member> {
+async function unlock(memberId: string, audit: AuditActor): Promise<Member> {
   const db = requireDb()
   const memberRef = doc(db, COLLECTIONS.members, memberId)
 
@@ -654,6 +782,19 @@ async function unlock(memberId: string): Promise<Member> {
       updatedAt: now,
     }
     transaction.set(memberRef, memberData(member))
+
+    maybeAppendAuditFromDiff(
+      transaction,
+      { collection: 'members', id: memberId },
+      {
+        action: 'unlocked',
+        actor: audit,
+        at: now,
+        before: existing,
+        after: member,
+      },
+    )
+
     return member
   })
 }

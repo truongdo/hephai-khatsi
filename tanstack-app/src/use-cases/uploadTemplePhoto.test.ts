@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { DomainError } from '#/domain/errors'
 import type { Temple } from '#/domain/types'
+import type { AuditActor } from '#/domain/auditLog'
 import type { TempleStore } from '#/repositories/templeRepo'
+import { ADMIN_AUDIT, FILLER_AUDIT } from '#/test/auditActors'
 import {
   uploadTemplePhoto,
   type TempleStoragePort,
@@ -47,7 +49,11 @@ function templeStoreWith(temples: Temple[]): TempleStore & {
     async unlock() {
       throw new Error('not implemented')
     },
-    async setPhotoPath(templeId: string, photoPath: string | null) {
+    async setPhotoPath(
+      templeId: string,
+      photoPath: string | null,
+      _audit: AuditActor,
+    ) {
       const existing = map.get(templeId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Temple not found')
       const temple = {
@@ -89,6 +95,7 @@ describe('uploadTemplePhoto', () => {
         bytes,
         contentType: 'image/jpeg',
         inviteToken: 'invite-1',
+        audit: FILLER_AUDIT,
       },
       store,
       storage,
@@ -127,6 +134,7 @@ describe('uploadTemplePhoto', () => {
         bytes: new Uint8Array([1]),
         contentType: 'image/jpeg',
         inviteToken: 'invite-1',
+        audit: FILLER_AUDIT,
       },
       store,
       storage,
@@ -158,6 +166,7 @@ describe('uploadTemplePhoto', () => {
           bytes: new Uint8Array([1]),
           contentType: 'image/jpeg',
           inviteToken: 'invite-1',
+          audit: FILLER_AUDIT,
         },
         store,
         storage,
@@ -182,6 +191,7 @@ describe('uploadTemplePhoto', () => {
           templeId: 'temple-1',
           bytes: new Uint8Array([1]),
           contentType: 'image/jpeg',
+          audit: FILLER_AUDIT,
         },
         store,
         storage,
@@ -206,6 +216,7 @@ describe('uploadTemplePhoto', () => {
         bytes: new Uint8Array([1, 2]),
         contentType: 'image/png',
         idToken: 'admin-id-token',
+        audit: ADMIN_AUDIT,
       },
       store,
       storage,

@@ -3,6 +3,7 @@ import { memberCccdIndexId } from '#/domain/memberCccdIndex'
 import type { Invite } from '#/domain/types'
 import type { InviteStore } from '#/repositories/inviteRepo'
 import { createMemoryMemberStore } from '#/test/memoryStores'
+import { ADMIN_AUDIT } from '#/test/auditActors'
 import { lockMember } from './lockMember'
 import { resumeMemberByCccd } from './resumeMemberByCccd'
 import { resumeMemberByPhone } from './resumeMemberByPhone'
@@ -115,7 +116,10 @@ describe('member draft save, resume, and lock', () => {
       store,
       invites,
     )
-    await lockMember({ memberId: saved.member.id, lockedBy: 'admin-1' }, store)
+    await lockMember(
+      { memberId: saved.member.id, lockedBy: 'admin-1', audit: ADMIN_AUDIT },
+      store,
+    )
 
     const resumed = await resumeMemberByCccd(
       { token: 'public', orgUnitId: 'gd-i', sanghaType: 'tang', cccd: '012345678901' },

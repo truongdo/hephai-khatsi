@@ -2,6 +2,7 @@ import { Alert } from '@mantine/core'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import type { Temple } from '#/domain/types'
+import { normalizeVnPhone } from '#/domain/normalize'
 import { useFormLocalDraft } from '#/hooks/useFormLocalDraft'
 import { templeDraftStorageKey } from '#/lib/formLocalDraft'
 import { scheduleScrollToFirstFieldError } from '#/lib/scrollToFirstFieldError'
@@ -22,6 +23,26 @@ import {
 } from './FillerEditorShell'
 import { buildTemplePatch, type TempleDraft } from './templeDraft'
 import { validateTempleRequiredFields } from './templeRequiredValidation'
+
+function fillerAuditFromPhone(phone: string) {
+  let actorId = 'filler'
+  if (phone) {
+    try {
+      actorId = normalizeVnPhone(phone)
+    } catch {
+      // keep default filler
+    }
+  }
+  return { actorType: 'filler' as const, actorId }
+}
+
+function resolveFillerPhone(
+  truTriPhone: string | undefined,
+  seedPhone: string | undefined,
+  extraManagerPhone: string,
+): string {
+  return truTriPhone?.trim() || seedPhone?.trim() || extraManagerPhone.trim() || ''
+}
 
 export type TempleEditorFormProps = {
   title: string
@@ -61,6 +82,10 @@ export function TempleEditorForm({
   const disabled = status === 'view'
   const requestPhone =
     initial.seedPhone ?? initial.truTriHienNay?.dienThoai ?? ''
+  const fillerAudit = useMemo(
+    () => fillerAuditFromPhone(requestPhone),
+    [requestPhone],
+  )
 
   const storageKey = useMemo(() => {
     if (templeId) {
@@ -142,6 +167,13 @@ export function TempleEditorForm({
     const explicitPhones = api.getExtraManagerPhone().trim()
       ? [api.getExtraManagerPhone().trim()]
       : []
+    const saveAudit = fillerAuditFromPhone(
+      resolveFillerPhone(
+        draft.truTriHienNay?.dienThoai,
+        initial.seedPhone,
+        api.getExtraManagerPhone(),
+      ),
+    )
 
     setPostSavePending(true)
     try {
@@ -191,6 +223,7 @@ export function TempleEditorForm({
               bytes,
               contentType: pendingPhoto.type,
               inviteToken: token,
+              audit: saveAudit,
             })
             api.setPhotoPath(uploadResult.photoPath)
             api.clearPendingPhoto()
@@ -286,6 +319,7 @@ export function TempleEditorForm({
           disabled={disabled}
           templeId={effectiveTempleId}
           inviteToken={token}
+          audit={fillerAudit}
           onUploadError={setSaveError}
           onDraftChange={handleDraftChange}
         />

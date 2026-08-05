@@ -1,4 +1,5 @@
 import { DomainError } from '#/domain/errors'
+import type { AuditActor } from '#/domain/auditLog'
 import { normalizeCccd } from '#/domain/normalize'
 import { deleteMemberPhotoObject } from '#/photos/photosApiClient'
 import { memberRepo, type MemberStore } from '#/repositories/memberRepo'
@@ -8,6 +9,7 @@ export type DeleteMemberPhotoInput = {
   cccd: string
   inviteToken?: string
   idToken?: string
+  audit: AuditActor
 }
 
 export async function deleteMemberPhoto(
@@ -36,5 +38,5 @@ export async function deleteMemberPhoto(
     inviteToken: input.inviteToken,
     idToken: input.idToken,
   })
-  await memberStore.setPhotoPath(input.memberId, null)
+  await memberStore.setPhotoPath(input.memberId, null, input.audit)
 }

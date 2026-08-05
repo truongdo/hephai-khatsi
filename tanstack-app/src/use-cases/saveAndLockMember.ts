@@ -1,4 +1,4 @@
-import { normalizeCccd } from '#/domain/normalize'
+import { normalizeCccd, normalizeVnPhone } from '#/domain/normalize'
 import type { SanghaType } from '#/domain/types'
 import type { Member } from '#/domain/types'
 import { inviteRepo, type InviteStore } from '#/repositories/inviteRepo'
@@ -40,6 +40,18 @@ function sanitizePatch(patch: MemberProfilePatch): MemberProfilePatch {
   return sanitized as MemberProfilePatch
 }
 
+function fillerActorFromPatch(patch: MemberProfilePatch) {
+  let actorId = 'filler'
+  if (patch.dienThoai) {
+    try {
+      actorId = normalizeVnPhone(patch.dienThoai)
+    } catch {
+      // keep default filler
+    }
+  }
+  return { actorType: 'filler' as const, actorId }
+}
+
 export async function saveAndLockMember(
   input: SaveMemberDraftInput,
   memberStore: MemberStore = memberRepo,
@@ -47,12 +59,14 @@ export async function saveAndLockMember(
 ): Promise<{ member: Member; mode: 'created' | 'updated' }> {
   const cccd = normalizeCccd(input.cccd)
   const invite = await getInviteByToken(input.token, inviteStore)
+  const patch = sanitizePatch(input.patch)
 
   return memberStore.createOrUpdateAndLock({
     orgUnitId: input.orgUnitId,
     sanghaType: input.sanghaType,
     inviteId: invite.id,
     cccd,
-    patch: sanitizePatch(input.patch),
+    patch,
+    audit: fillerActorFromPatch(patch),
   })
 }

@@ -1,3 +1,5 @@
+import type { AuditAction, AuditActor, AuditLogEntry, AuditLogWrite } from '#/domain/auditLog'
+import { buildAuditChanges } from '#/domain/buildAuditChanges'
 import { DomainError } from '#/domain/errors'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
 import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
@@ -20,16 +22,89 @@ import type {
   ListTemplesAdminInput,
 } from '#/repositories/adminListTypes'
 import type {
+  CreateOrUpdateMemberAndLockInput,
   CreateOrUpdateMemberDraftInput,
   MemberProfilePatch,
   MemberStore,
 } from '#/repositories/memberRepo'
+import { auditParentKey, shouldWriteAudit } from '#/repositories/auditLogRepo'
 import type {
+  CreateOrUpdateTempleAndLockInput,
   CreateOrUpdateTempleDraftInput,
   TempleStore,
 } from '#/repositories/templeRepo'
 
 const PHONE_INDEX_CAP = 20
+
+export function memoryAppendAudit(
+  auditLogs: Map<string, AuditLogEntry[]>,
+  parentKey: string,
+  write: AuditLogWrite,
+): AuditLogEntry {
+  const id = `audit-${auditLogs.size + 1}`
+  const entry: AuditLogEntry = { id, ...write }
+  const existing = auditLogs.get(parentKey) ?? []
+  auditLogs.set(parentKey, [...existing, entry])
+  return entry
+}
+
+export function memoryListAudit(
+  auditLogs: Map<string, AuditLogEntry[]>,
+  parentKey: string,
+  limit: number,
+  startAfterAt?: string,
+): { entries: AuditLogEntry[]; nextStartAfterAt: string | null } {
+  let entries = [...(auditLogs.get(parentKey) ?? [])]
+  entries.sort((a, b) => b.at.localeCompare(a.at))
+
+  if (startAfterAt) {
+    entries = entries.filter((entry) => entry.at < startAfterAt)
+  }
+
+  const page = entries.slice(0, limit)
+  const nextStartAfterAt =
+    entries.length > limit ? page[page.length - 1]!.at : null
+  return { entries: page, nextStartAfterAt }
+}
+
+export function createMemoryAuditStore() {
+  const auditLogs = new Map<string, AuditLogEntry[]>()
+
+  return {
+    auditLogs,
+    memoryAppendAudit: (parentKey: string, write: AuditLogWrite) =>
+      memoryAppendAudit(auditLogs, parentKey, write),
+    memoryListAudit: (
+      parentKey: string,
+      limit: number,
+      startAfterAt?: string,
+    ) => memoryListAudit(auditLogs, parentKey, limit, startAfterAt),
+  }
+}
+
+function maybeMemoryAppendAuditFromDiff(
+  auditLogs: Map<string, AuditLogEntry[]>,
+  parent: { collection: 'members' | 'temples'; id: string },
+  args: {
+    action: AuditAction
+    actor: AuditActor
+    at: string
+    before: unknown
+    after: unknown
+  },
+): void {
+  const changes = buildAuditChanges(args.before, args.after)
+  if (!shouldWriteAudit(args.action, changes)) return
+
+  memoryAppendAudit(auditLogs, auditParentKey(parent), {
+    action: args.action,
+    at: args.at,
+    actorType: args.actor.actorType,
+    actorId: args.actor.actorId,
+    changes,
+    summary: changes.length === 0 ? null : String(changes.length),
+  })
+}
 
 function appendPhoneIndex(
   phoneIndex: Map<string, string[]>,
@@ -138,10 +213,19 @@ export function createMemoryMemberStore(
   members: Map<string, Member>
   index: Map<string, string>
   phoneIndex: Map<string, string[]>
+  auditLogs: Map<string, AuditLogEntry[]>
+  memoryAppendAudit: (parentKey: string, write: AuditLogWrite) => AuditLogEntry
+  memoryListAudit: (
+    parentKey: string,
+    limit: number,
+    startAfterAt?: string,
+  ) => { entries: AuditLogEntry[]; nextStartAfterAt: string | null }
 } {
   const members = new Map(seed.map((member) => [member.id, member]))
   const index = new Map<string, string>()
   const phoneIndex = new Map<string, string[]>()
+  const audit = createMemoryAuditStore()
+  const auditLogs = audit.auditLogs
   for (const member of seed) {
     index.set(
       memberCccdIndexId(member.orgUnitId, member.sanghaType, member.cccd),
@@ -154,10 +238,20 @@ export function createMemoryMemberStore(
     members: Map<string, Member>
     index: Map<string, string>
     phoneIndex: Map<string, string[]>
+    auditLogs: Map<string, AuditLogEntry[]>
+    memoryAppendAudit: (parentKey: string, write: AuditLogWrite) => AuditLogEntry
+    memoryListAudit: (
+      parentKey: string,
+      limit: number,
+      startAfterAt?: string,
+    ) => { entries: AuditLogEntry[]; nextStartAfterAt: string | null }
   } = {
     members,
     index,
     phoneIndex,
+    auditLogs,
+    memoryAppendAudit: audit.memoryAppendAudit,
+    memoryListAudit: audit.memoryListAudit,
     async createOrUpdateDraft(input: CreateOrUpdateMemberDraftInput) {
       const indexId = memberCccdIndexId(
         input.orgUnitId,
@@ -183,6 +277,19 @@ export function createMemoryMemberStore(
         }
         members.set(existing.id, member)
         appendPhoneIndex(phoneIndex, member)
+        if (input.audit) {
+          maybeMemoryAppendAuditFromDiff(
+            auditLogs,
+            { collection: 'members', id: member.id },
+            {
+              action: 'updated',
+              actor: input.audit,
+              at: now,
+              before: existing,
+              after: member,
+            },
+          )
+        }
         return { member, mode: 'updated' as const }
       }
 
@@ -207,9 +314,22 @@ export function createMemoryMemberStore(
       members.set(id, member)
       index.set(indexId, id)
       appendPhoneIndex(phoneIndex, member)
+      if (input.audit) {
+        maybeMemoryAppendAuditFromDiff(
+          auditLogs,
+          { collection: 'members', id: member.id },
+          {
+            action: 'created',
+            actor: input.audit,
+            at: now,
+            before: null,
+            after: member,
+          },
+        )
+      }
       return { member, mode: 'created' as const }
     },
-    async createOrUpdateAndLock(input: CreateOrUpdateMemberDraftInput) {
+    async createOrUpdateAndLock(input: CreateOrUpdateMemberAndLockInput) {
       const indexId = memberCccdIndexId(
         input.orgUnitId,
         input.sanghaType,
@@ -237,6 +357,17 @@ export function createMemoryMemberStore(
         }
         members.set(existing.id, member)
         appendPhoneIndex(phoneIndex, member)
+        maybeMemoryAppendAuditFromDiff(
+          auditLogs,
+          { collection: 'members', id: member.id },
+          {
+            action: 'updated',
+            actor: input.audit,
+            at: now,
+            before: existing,
+            after: member,
+          },
+        )
         return { member, mode: 'updated' as const }
       }
 
@@ -261,6 +392,17 @@ export function createMemoryMemberStore(
       members.set(id, member)
       index.set(indexId, id)
       appendPhoneIndex(phoneIndex, member)
+      maybeMemoryAppendAuditFromDiff(
+        auditLogs,
+        { collection: 'members', id: member.id },
+        {
+          action: 'created',
+          actor: input.audit,
+          at: now,
+          before: null,
+          after: member,
+        },
+      )
       return { member, mode: 'created' as const }
     },
     async requestEdit(memberId: string, phone: string) {
@@ -280,12 +422,29 @@ export function createMemoryMemberStore(
         updatedAt: now,
       }
       members.set(memberId, member)
+      let actorId = phone
+      try {
+        actorId = normalizeVnPhone(phone)
+      } catch {
+        // keep raw phone
+      }
+      maybeMemoryAppendAuditFromDiff(
+        auditLogs,
+        { collection: 'members', id: memberId },
+        {
+          action: 'edit_requested',
+          actor: { actorType: 'filler', actorId },
+          at: now,
+          before: existing,
+          after: member,
+        },
+      )
       return member
     },
     async updateDraftById(
       memberId: string,
       patch: MemberProfilePatch,
-      options?: { allowWhenLocked?: boolean },
+      options?: { allowWhenLocked?: boolean; audit?: AuditActor },
     ) {
       const existing = members.get(memberId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
@@ -311,6 +470,19 @@ export function createMemoryMemberStore(
       }
       members.set(memberId, member)
       appendPhoneIndex(phoneIndex, member)
+      if (options?.audit) {
+        maybeMemoryAppendAuditFromDiff(
+          auditLogs,
+          { collection: 'members', id: memberId },
+          {
+            action: 'updated',
+            actor: options.audit,
+            at: now,
+            before: existing,
+            after: member,
+          },
+        )
+      }
       return member
     },
     async getByCccd(input: {
@@ -353,15 +525,31 @@ export function createMemoryMemberStore(
           }
         })
     },
-    async setPhotoPath(memberId: string, photoPath: string | null) {
+    async setPhotoPath(
+      memberId: string,
+      photoPath: string | null,
+      audit: AuditActor,
+    ) {
       const existing = members.get(memberId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
+      const now = '2026-07-19T00:00:00.000Z'
       const member = {
         ...existing,
         photoPath,
-        updatedAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: now,
       }
       members.set(memberId, member)
+      maybeMemoryAppendAuditFromDiff(
+        auditLogs,
+        { collection: 'members', id: memberId },
+        {
+          action: photoPath !== null ? 'photo_uploaded' : 'photo_deleted',
+          actor: audit,
+          at: now,
+          before: existing,
+          after: member,
+        },
+      )
       return member
     },
     async setDocumentPaths(memberId: string, documents: MemberDocuments) {
@@ -380,6 +568,7 @@ export function createMemoryMemberStore(
       typeId: DocumentTypeId,
       side: DocumentSide,
       filePath: string,
+      audit: AuditActor,
     ) {
       const existing = members.get(memberId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
@@ -387,18 +576,31 @@ export function createMemoryMemberStore(
       const pathField = pathFieldForSide(side)
       const previousPath = current[typeId]?.[pathField]
       const documents = mergeDocumentPath(current, typeId, side, filePath)
+      const now = '2026-07-19T00:00:00.000Z'
       const member = {
         ...existing,
         documents,
-        updatedAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: now,
       }
       members.set(memberId, member)
+      maybeMemoryAppendAuditFromDiff(
+        auditLogs,
+        { collection: 'members', id: memberId },
+        {
+          action: 'document_uploaded',
+          actor: audit,
+          at: now,
+          before: existing,
+          after: member,
+        },
+      )
       return { member, previousPath }
     },
     async removeDocumentPaths(
       memberId: string,
       typeId: DocumentTypeId,
-      side?: DocumentSide,
+      side: DocumentSide | undefined,
+      audit: AuditActor,
     ) {
       const existing = members.get(memberId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
@@ -416,30 +618,54 @@ export function createMemoryMemberStore(
       const documents = side
         ? removeDocumentSide(current, typeId, side)
         : removeDocumentType(current, typeId)
+      const now = '2026-07-19T00:00:00.000Z'
       const member = {
         ...existing,
         documents,
-        updatedAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: now,
       }
       members.set(memberId, member)
+      maybeMemoryAppendAuditFromDiff(
+        auditLogs,
+        { collection: 'members', id: memberId },
+        {
+          action: 'document_deleted',
+          actor: audit,
+          at: now,
+          before: existing,
+          after: member,
+        },
+      )
       return { member, removedPaths }
     },
-    async lock(memberId: string, lockedBy: string) {
+    async lock(memberId: string, lockedBy: string, audit: AuditActor) {
       const existing = members.get(memberId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
+      const now = '2026-07-19T00:00:00.000Z'
       const member: Member = {
         ...existing,
         status: 'locked',
-        lockedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: now,
         lockedBy,
         editRequestedAt: null,
         editRequestedBy: null,
-        updatedAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: now,
       }
       members.set(memberId, member)
+      maybeMemoryAppendAuditFromDiff(
+        auditLogs,
+        { collection: 'members', id: memberId },
+        {
+          action: 'locked',
+          actor: audit,
+          at: now,
+          before: existing,
+          after: member,
+        },
+      )
       return member
     },
-    async unlock(memberId: string) {
+    async unlock(memberId: string, audit: AuditActor) {
       const existing = members.get(memberId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
       if (existing.status === 'draft') {
@@ -455,6 +681,17 @@ export function createMemoryMemberStore(
         updatedAt: '2026-07-19T00:00:00.000Z',
       }
       members.set(memberId, member)
+      maybeMemoryAppendAuditFromDiff(
+        auditLogs,
+        { collection: 'members', id: memberId },
+        {
+          action: 'unlocked',
+          actor: audit,
+          at: '2026-07-19T00:00:00.000Z',
+          before: existing,
+          after: member,
+        },
+      )
       return member
     },
     async list(input: ListMembersAdminInput) {
@@ -500,9 +737,18 @@ export function createMemoryTempleStore(
 ): TempleStore & {
   temples: Map<string, Temple>
   phoneIndex: Map<string, string[]>
+  auditLogs: Map<string, AuditLogEntry[]>
+  memoryAppendAudit: (parentKey: string, write: AuditLogWrite) => AuditLogEntry
+  memoryListAudit: (
+    parentKey: string,
+    limit: number,
+    startAfterAt?: string,
+  ) => { entries: AuditLogEntry[]; nextStartAfterAt: string | null }
 } {
   const temples = new Map(seed.map((temple) => [temple.id, temple]))
   const phoneIndex = new Map<string, string[]>()
+  const audit = createMemoryAuditStore()
+  const auditLogs = audit.auditLogs
   for (const temple of seed) {
     appendTemplePhoneIndex(phoneIndex, temple)
   }
@@ -510,9 +756,19 @@ export function createMemoryTempleStore(
   const store: TempleStore & {
     temples: Map<string, Temple>
     phoneIndex: Map<string, string[]>
+    auditLogs: Map<string, AuditLogEntry[]>
+    memoryAppendAudit: (parentKey: string, write: AuditLogWrite) => AuditLogEntry
+    memoryListAudit: (
+      parentKey: string,
+      limit: number,
+      startAfterAt?: string,
+    ) => { entries: AuditLogEntry[]; nextStartAfterAt: string | null }
   } = {
     temples,
     phoneIndex,
+    auditLogs,
+    memoryAppendAudit: audit.memoryAppendAudit,
+    memoryListAudit: audit.memoryListAudit,
     async createOrUpdateDraft(input: CreateOrUpdateTempleDraftInput) {
       const now = '2026-07-19T00:00:00.000Z'
 
@@ -551,6 +807,20 @@ export function createMemoryTempleStore(
           editRequestedBy: existing.editRequestedBy,
         }
         temples.set(temple.id, temple)
+        appendTemplePhoneIndex(phoneIndex, temple)
+        if (input.audit) {
+          maybeMemoryAppendAuditFromDiff(
+            auditLogs,
+            { collection: 'temples', id: temple.id },
+            {
+              action: 'updated',
+              actor: input.audit,
+              at: now,
+              before: existing,
+              after: temple,
+            },
+          )
+        }
         return { temple, mode: 'updated' as const }
       }
 
@@ -571,9 +841,23 @@ export function createMemoryTempleStore(
         editRequestedBy: null,
       }
       temples.set(id, temple)
+      appendTemplePhoneIndex(phoneIndex, temple)
+      if (input.audit) {
+        maybeMemoryAppendAuditFromDiff(
+          auditLogs,
+          { collection: 'temples', id: temple.id },
+          {
+            action: 'created',
+            actor: input.audit,
+            at: now,
+            before: null,
+            after: temple,
+          },
+        )
+      }
       return { temple, mode: 'created' as const }
     },
-    async createOrUpdateAndLock(input: CreateOrUpdateTempleDraftInput) {
+    async createOrUpdateAndLock(input: CreateOrUpdateTempleAndLockInput) {
       const now = '2026-07-19T00:00:00.000Z'
 
       if (input.templeId) {
@@ -608,6 +892,18 @@ export function createMemoryTempleStore(
           editRequestedBy: null,
         }
         temples.set(temple.id, temple)
+        appendTemplePhoneIndex(phoneIndex, temple)
+        maybeMemoryAppendAuditFromDiff(
+          auditLogs,
+          { collection: 'temples', id: temple.id },
+          {
+            action: 'updated',
+            actor: input.audit,
+            at: now,
+            before: existing,
+            after: temple,
+          },
+        )
         return { temple, mode: 'updated' as const }
       }
 
@@ -628,6 +924,18 @@ export function createMemoryTempleStore(
         editRequestedBy: null,
       }
       temples.set(id, temple)
+      appendTemplePhoneIndex(phoneIndex, temple)
+      maybeMemoryAppendAuditFromDiff(
+        auditLogs,
+        { collection: 'temples', id: temple.id },
+        {
+          action: 'created',
+          actor: input.audit,
+          at: now,
+          before: null,
+          after: temple,
+        },
+      )
       return { temple, mode: 'created' as const }
     },
     async requestEdit(templeId: string, phone: string) {
@@ -647,6 +955,23 @@ export function createMemoryTempleStore(
         updatedAt: now,
       }
       temples.set(templeId, temple)
+      let actorId = phone
+      try {
+        actorId = normalizeVnPhone(phone)
+      } catch {
+        // keep raw phone
+      }
+      maybeMemoryAppendAuditFromDiff(
+        auditLogs,
+        { collection: 'temples', id: templeId },
+        {
+          action: 'edit_requested',
+          actor: { actorType: 'filler', actorId },
+          at: now,
+          before: existing,
+          after: temple,
+        },
+      )
       return temple
     },
     async getById(templeId: string) {
@@ -661,27 +986,40 @@ export function createMemoryTempleStore(
           temple.managerPhones.includes(input.phone),
       )
     },
-    async lock(templeId: string, lockedBy: string) {
+    async lock(templeId: string, lockedBy: string, audit: AuditActor) {
       const existing = temples.get(templeId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Temple not found')
+      const now = '2026-07-19T00:00:00.000Z'
       const temple: Temple = {
         ...existing,
         status: 'locked',
-        lockedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: now,
         lockedBy,
         editRequestedAt: null,
         editRequestedBy: null,
-        updatedAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: now,
       }
       temples.set(templeId, temple)
+      maybeMemoryAppendAuditFromDiff(
+        auditLogs,
+        { collection: 'temples', id: templeId },
+        {
+          action: 'locked',
+          actor: audit,
+          at: now,
+          before: existing,
+          after: temple,
+        },
+      )
       return temple
     },
-    async unlock(templeId: string) {
+    async unlock(templeId: string, audit: AuditActor) {
       const existing = temples.get(templeId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Temple not found')
       if (existing.status === 'draft') {
         return existing
       }
+      const now = '2026-07-19T00:00:00.000Z'
       const temple: Temple = {
         ...existing,
         status: 'draft',
@@ -689,20 +1027,47 @@ export function createMemoryTempleStore(
         lockedBy: null,
         editRequestedAt: null,
         editRequestedBy: null,
-        updatedAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: now,
       }
       temples.set(templeId, temple)
+      maybeMemoryAppendAuditFromDiff(
+        auditLogs,
+        { collection: 'temples', id: templeId },
+        {
+          action: 'unlocked',
+          actor: audit,
+          at: now,
+          before: existing,
+          after: temple,
+        },
+      )
       return temple
     },
-    async setPhotoPath(templeId: string, photoPath: string | null) {
+    async setPhotoPath(
+      templeId: string,
+      photoPath: string | null,
+      audit: AuditActor,
+    ) {
       const existing = temples.get(templeId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Temple not found')
+      const now = '2026-07-19T00:00:00.000Z'
       const temple: Temple = {
         ...existing,
         photoPath,
-        updatedAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: now,
       }
       temples.set(templeId, temple)
+      maybeMemoryAppendAuditFromDiff(
+        auditLogs,
+        { collection: 'temples', id: templeId },
+        {
+          action: photoPath !== null ? 'photo_uploaded' : 'photo_deleted',
+          actor: audit,
+          at: now,
+          before: existing,
+          after: temple,
+        },
+      )
       return temple
     },
     async list(input: ListTemplesAdminInput) {

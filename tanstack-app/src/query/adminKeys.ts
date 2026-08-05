@@ -18,4 +18,8 @@ export const adminKeys = {
   retreat: (id: string) => [...adminKeys.all, 'retreat', id] as const,
   retreatRegistrations: (retreatId: string) =>
     [...adminKeys.all, 'retreatRegistrations', retreatId] as const,
+  memberAuditLogs: (memberId: string) =>
+    [...adminKeys.member(memberId), 'auditLogs'] as const,
+  templeAuditLogs: (templeId: string) =>
+    [...adminKeys.temple(templeId), 'auditLogs'] as const,
 }

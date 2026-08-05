@@ -55,7 +55,7 @@ vi.mock('#/auth/useAdminClaim', () => ({
 
 vi.mock('#/auth/useAuth', () => ({
   useAuth: () => ({
-    user: { getIdToken: getIdTokenMock },
+    user: { uid: 'admin-uid', getIdToken: getIdTokenMock },
     loading: false,
   }),
 }))
@@ -114,6 +114,9 @@ vi.mock('#/use-cases/uploadTemplePhoto', () => ({
   uploadTemplePhoto: vi.fn(async () => ({
     photoPath: 'temples/created-temple/photo.jpg',
   })),
+}))
+vi.mock('#/repositories/auditLogRepo', () => ({
+  listAuditLogs: vi.fn(async () => ({ entries: [], nextStartAfterAt: null })),
 }))
 vi.mock('#/data/vietnam-locations', () => ({
   cities: [
@@ -263,6 +266,27 @@ describe('TempleFormPage', () => {
     ).toBeTruthy()
   })
 
+  it('shows audit history button in edit mode and opens modal', async () => {
+    const user = userEvent.setup()
+    renderForm({ mode: 'edit' })
+    const historyBtn = await screen.findByRole('button', {
+      name: m.admin_audit_history(),
+    })
+    await user.click(historyBtn)
+    expect(await screen.findByRole('dialog')).toBeTruthy()
+    expect(
+      screen.getByText(new RegExp(m.admin_audit_modal_title())),
+    ).toBeTruthy()
+  })
+
+  it('does not show audit history button in create mode', async () => {
+    renderForm({ mode: 'create' })
+    await screen.findByRole('button', { name: m.admin_temples_complete() })
+    expect(
+      screen.queryByRole('button', { name: m.admin_audit_history() }),
+    ).toBeNull()
+  })
+
   it('renders full temple sections', async () => {
     templeFixture = draftTemple
     renderForm({ mode: 'edit' })
@@ -347,6 +371,7 @@ describe('TempleFormPage', () => {
       bytes: expect.any(Uint8Array),
       contentType: 'image/jpeg',
       idToken: 'admin-id-token',
+      audit: { actorType: 'admin', actorId: 'admin-uid' },
     })
     expect(navigateMock).not.toHaveBeenCalled()
 

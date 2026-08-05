@@ -166,7 +166,13 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
   })
 
   const unlockMutation = useMutation({
-    mutationFn: (memberId: string) => unlockMember({ memberId }),
+    mutationFn: async (memberId: string) => {
+      if (claim.status !== 'admin') throw new Error('Not signed in as admin')
+      return unlockMember({
+        memberId,
+        audit: { actorType: 'admin', actorId: claim.uid },
+      })
+    },
     onSuccess: () => {
       setCursor(undefined)
       setAllItems([])

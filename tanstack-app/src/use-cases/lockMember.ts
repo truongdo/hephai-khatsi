@@ -1,14 +1,16 @@
+import type { AuditActor } from '#/domain/auditLog'
 import type { Member } from '#/domain/types'
 import { memberRepo, type MemberStore } from '#/repositories/memberRepo'
 
 export type LockMemberInput = {
   memberId: string
   lockedBy: string
+  audit: AuditActor
 }
 
 export async function lockMember(
   input: LockMemberInput,
   memberStore: MemberStore = memberRepo,
 ): Promise<Member> {
-  return memberStore.lock(input.memberId, input.lockedBy)
+  return memberStore.lock(input.memberId, input.lockedBy, input.audit)
 }

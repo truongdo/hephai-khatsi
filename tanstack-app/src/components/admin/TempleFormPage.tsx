@@ -15,6 +15,7 @@ import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { useAuth } from '#/auth/useAuth'
 import { AdminDenied } from '#/components/admin/AdminDenied'
+import { AuditHistoryModal } from '#/components/admin/AuditHistoryModal'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { FormStickyActions } from '#/components/FormStickyActions'
 import { buildTemplePatch, type TempleDraft } from '#/components/filler/templeDraft'
@@ -52,6 +53,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
   const [orgUnitId, setOrgUnitId] = useState<string | null>(null)
   const [photoError, setPhotoError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
+  const [auditHistoryOpen, setAuditHistoryOpen] = useState(false)
 
   const orgUnits = useQuery({
     ...orgUnitsQuery(),
@@ -116,14 +118,17 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
     if (!api || !orgUnitId) throw new Error('Missing org unit')
 
     const draft = api.getDraft()
-    const result = await saveAdminTemple({
-      orgUnitId,
-      templeId: mode === 'edit' ? templeId : undefined,
-      patch: buildTemplePatch(draft),
-      explicitPhones: api.getExtraManagerPhone().trim()
-        ? [api.getExtraManagerPhone().trim()]
-        : [],
-    })
+    const result = await saveAdminTemple(
+      {
+        orgUnitId,
+        templeId: mode === 'edit' ? templeId : undefined,
+        patch: buildTemplePatch(draft),
+        explicitPhones: api.getExtraManagerPhone().trim()
+          ? [api.getExtraManagerPhone().trim()]
+          : [],
+      },
+      { actorType: 'admin', actorId: claim.status === 'admin' ? claim.uid : actorId },
+    )
 
     const pending = api.getPendingPhoto()
     if (pending && result.temple.id && user) {
@@ -135,6 +140,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
           bytes,
           contentType: pending.type,
           idToken,
+          audit: { actorType: 'admin', actorId: user.uid },
         })
         api.setPhotoPath(uploaded.photoPath)
         api.clearPendingPhoto()
@@ -174,7 +180,11 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
     mutationFn: async () => {
       if (!templeId) throw new Error('Missing temple id')
       if (claim.status !== 'admin') throw new Error('Not signed in as admin')
-      return lockTemple({ templeId, lockedBy: claim.uid })
+      return lockTemple({
+        templeId,
+        lockedBy: claim.uid,
+        audit: { actorType: 'admin', actorId: claim.uid },
+      })
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({
@@ -191,7 +201,11 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
   const unlockMutation = useMutation({
     mutationFn: async () => {
       if (!templeId) throw new Error('Missing temple id')
-      return unlockTemple({ templeId })
+      if (claim.status !== 'admin') throw new Error('Not signed in as admin')
+      return unlockTemple({
+        templeId,
+        audit: { actorType: 'admin', actorId: claim.uid },
+      })
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({
@@ -246,6 +260,11 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
       ? { ...temple.data, photoPath: temple.data.photoPath ?? null }
       : {}
 
+  const auditTitle =
+    mode === 'edit' && temple.data
+      ? temple.data.danhHieu?.trim() || templeId || ''
+      : ''
+
   if (claim.status === 'admin' && !manageDirectory) {
     return <AdminDenied />
   }
@@ -295,6 +314,11 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
               disabled={false}
               templeId={templeId}
               getIdToken={async () => (user ? user.getIdToken() : undefined)}
+              audit={
+                user
+                  ? { actorType: 'admin', actorId: user.uid }
+                  : { actorType: 'admin', actorId: actorId }
+              }
               onUploadError={setPhotoError}
               onDraftChange={handleDraftChange}
             />
@@ -346,9 +370,25 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
                   {m.admin_temples_unlock()}
                 </Button>
               )}
+              {mode === 'edit' && templeId && (
+                <Button
+                  variant="subtle"
+                  onClick={() => setAuditHistoryOpen(true)}
+                >
+                  {m.admin_audit_history()}
+                </Button>
+              )}
             </FormStickyActions>
           </Stack>
         </Paper>
+      )}
+      {mode === 'edit' && templeId && (
+        <AuditHistoryModal
+          opened={auditHistoryOpen}
+          onClose={() => setAuditHistoryOpen(false)}
+          title={auditTitle}
+          parent={{ collection: 'temples', id: templeId }}
+        />
       )}
     </Stack>
   )

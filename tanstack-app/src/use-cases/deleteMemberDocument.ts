@@ -1,4 +1,5 @@
 import { DomainError } from '#/domain/errors'
+import type { AuditActor } from '#/domain/auditLog'
 import {
   type DocumentSide,
   type DocumentTypeId,
@@ -16,6 +17,7 @@ export type DeleteMemberDocumentInput = {
   current: MemberDocuments
   inviteToken?: string
   idToken?: string
+  audit: AuditActor
 }
 
 export type DeleteMemberDocumentResult = {
@@ -46,6 +48,7 @@ export async function deleteMemberDocument(
     input.memberId,
     input.typeId,
     input.side,
+    input.audit,
   )
 
   if (removedPaths.length > 0) {

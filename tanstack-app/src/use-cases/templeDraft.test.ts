@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import type { Invite } from '#/domain/types'
+import { auditParentKey } from '#/repositories/auditLogRepo'
 import type { InviteStore } from '#/repositories/inviteRepo'
+import { ADMIN_AUDIT } from '#/test/auditActors'
 import { createMemoryTempleStore } from '#/test/memoryStores'
 import { lockTemple } from './lockTemple'
 import { resumeTemplesByPhone } from './resumeTemplesByPhone'
@@ -178,7 +180,10 @@ describe('temple draft save, resume, and lock', () => {
       store,
       PUBLIC_INVITES,
     )
-    await lockTemple({ templeId: locked.temple.id, lockedBy: 'admin-1' }, store)
+    await lockTemple(
+      { templeId: locked.temple.id, lockedBy: 'admin-1', audit: ADMIN_AUDIT },
+      store,
+    )
 
     const resumed = await resumeTemplesByPhone(
       { token: 'public', orgUnitId: 'gd-i', phone: '0912.345.678' },
@@ -203,6 +208,37 @@ describe('temple draft save, resume, and lock', () => {
         PUBLIC_INVITES,
       ),
     ).rejects.toMatchObject({ code: 'RECORD_LOCKED' })
+  })
+
+  it('lock temple writes locked audit log', async () => {
+    const store = createMemoryTempleStore()
+    const draft = await saveTempleDraft(
+      {
+        token: 'public',
+        orgUnitId: 'gd-i',
+        explicitPhones: ['0912345678'],
+        patch: { danhHieu: 'Draft Temple' },
+      },
+      store,
+      PUBLIC_INVITES,
+    )
+
+    await lockTemple(
+      { templeId: draft.temple.id, lockedBy: 'admin-1', audit: ADMIN_AUDIT },
+      store,
+    )
+
+    const parentKey = auditParentKey({
+      collection: 'temples',
+      id: draft.temple.id,
+    })
+    const { entries } = store.memoryListAudit(parentKey, 10)
+    expect(entries).toHaveLength(1)
+    expect(entries[0]).toMatchObject({
+      action: 'locked',
+      actorType: 'admin',
+      actorId: 'admin-1',
+    })
   })
 
   it('rejects cross-org draft updates when the temple belongs to a different org unit', async () => {

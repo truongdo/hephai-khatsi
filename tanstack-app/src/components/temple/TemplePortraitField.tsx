@@ -11,6 +11,7 @@ import {
 import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { m } from '#/paraglide/messages'
+import type { AuditActor } from '#/domain/auditLog'
 import { deleteTemplePhoto } from '#/use-cases/deleteTemplePhoto'
 import { uploadTemplePhoto } from '#/use-cases/uploadTemplePhoto'
 import { PhotoDeleteConfirmModal } from '../filler/PhotoDeleteConfirmModal'
@@ -37,6 +38,7 @@ export type TemplePortraitFieldProps = {
   onUploadError?: (message: string) => void
   required?: boolean
   error?: string
+  audit?: AuditActor
 }
 
 export function TemplePortraitField({
@@ -52,6 +54,7 @@ export function TemplePortraitField({
   onUploadError,
   required = false,
   error,
+  audit,
 }: TemplePortraitFieldProps) {
   const [typeError, setTypeError] = useState<string | null>(null)
   const [objectUrl, setObjectUrl] = useState<string | null>(null)
@@ -115,6 +118,7 @@ export function TemplePortraitField({
           contentType: file.type,
           inviteToken,
           idToken,
+          audit: audit ?? { actorType: 'filler', actorId: 'filler' },
         })
         setUploadBust(String(Date.now()))
         onPhotoPathChange(result.photoPath)
@@ -148,6 +152,7 @@ export function TemplePortraitField({
         templeId,
         inviteToken,
         idToken,
+        audit: audit ?? { actorType: 'filler', actorId: 'filler' },
       })
       onPhotoPathChange(null)
       setConfirmOpen(false)

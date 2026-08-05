@@ -5,6 +5,7 @@ import {
   type DocumentTypeId,
 } from '#/domain/memberDocumentTypes'
 import { createMemoryMemberStore } from '#/test/memoryStores'
+import { ADMIN_AUDIT } from '#/test/auditActors'
 
 describe('setDocumentPaths', () => {
   it('writes documents map on member', async () => {
@@ -42,12 +43,14 @@ describe('mergeDocumentSide', () => {
       'cccd',
       'front',
       'members/x/docs/cccd/front.jpg',
+      ADMIN_AUDIT,
     )
     const { member: updated, previousPath } = await store.mergeDocumentSide(
       member.id,
       'cccd',
       'back',
       'members/x/docs/cccd/back.jpg',
+      ADMIN_AUDIT,
     )
 
     expect(previousPath).toBeUndefined()
@@ -70,12 +73,13 @@ describe('mergeDocumentSide', () => {
     })
     const oldPath = 'members/x/docs/cccd/front-old.jpg'
 
-    await store.mergeDocumentSide(member.id, 'cccd', 'front', oldPath)
+    await store.mergeDocumentSide(member.id, 'cccd', 'front', oldPath, ADMIN_AUDIT)
     const { previousPath } = await store.mergeDocumentSide(
       member.id,
       'cccd',
       'front',
       'members/x/docs/cccd/front-new.jpg',
+      ADMIN_AUDIT,
     )
 
     expect(previousPath).toBe(oldPath)
@@ -103,6 +107,7 @@ describe('removeDocumentPaths', () => {
       member.id,
       'cccd',
       'front',
+      ADMIN_AUDIT,
     )
 
     expect(removedPaths).toEqual(['members/x/docs/cccd/front.jpg'])

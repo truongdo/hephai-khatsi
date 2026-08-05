@@ -3,6 +3,7 @@ import { DomainError } from '#/domain/errors'
 import type { MemberDocuments } from '#/domain/memberDocumentTypes'
 import type { Member } from '#/domain/types'
 import { createMemoryMemberStore } from '#/test/memoryStores'
+import { FILLER_AUDIT } from '#/test/auditActors'
 import { deleteMemberDocument } from './deleteMemberDocument'
 
 const draftMember: Member = {
@@ -50,6 +51,7 @@ describe('deleteMemberDocument', () => {
         side: 'front',
         inviteToken: 'invite-1',
         current,
+        audit: FILLER_AUDIT,
       },
       store,
       deleteObjects,
@@ -94,6 +96,7 @@ describe('deleteMemberDocument', () => {
         typeId: 'cccd',
         inviteToken: 'invite-1',
         current,
+        audit: FILLER_AUDIT,
       },
       store,
       deleteObjects,
@@ -132,6 +135,7 @@ describe('deleteMemberDocument', () => {
         side: 'back',
         inviteToken: 'invite-1',
         current: staleCurrent,
+        audit: FILLER_AUDIT,
       },
       store,
       deleteObjects,
@@ -173,6 +177,7 @@ describe('deleteMemberDocument', () => {
           side: 'front',
           inviteToken: 'invite-1',
           current: { cccd: { frontPath: 'members/member-1/docs/cccd/front.jpg' } },
+          audit: FILLER_AUDIT,
         },
         store,
         deleteObjects,

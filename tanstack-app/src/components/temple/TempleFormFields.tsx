@@ -1,6 +1,7 @@
 import { Stack, TextInput } from '@mantine/core'
 import { useState, useCallback, useEffect } from 'react'
 import type { Temple } from '#/domain/types'
+import type { AuditActor } from '#/domain/auditLog'
 import { m } from '#/paraglide/messages'
 import { FormSection } from '../filler/FormSection'
 import {
@@ -89,6 +90,7 @@ export type TempleFormFieldsProps = {
   templeId?: string
   inviteToken?: string
   getIdToken?: () => Promise<string | undefined>
+  audit?: AuditActor
   onUploadError?: (message: string) => void
   apiRef: React.MutableRefObject<TempleFormFieldsApi | null>
   onDraftChange?: (draft: TempleDraft) => void
@@ -100,6 +102,7 @@ export function TempleFormFields({
   templeId,
   inviteToken,
   getIdToken,
+  audit,
   onUploadError,
   apiRef,
   onDraftChange,
@@ -139,6 +142,7 @@ export function TempleFormFields({
         templeId={templeId}
         inviteToken={inviteToken}
         getIdToken={getIdToken}
+        audit={audit}
         photoPath={photoPath}
         photoUpdatedAt={initial.updatedAt ?? null}
         disabled={disabled}

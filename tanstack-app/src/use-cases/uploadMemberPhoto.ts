@@ -1,4 +1,5 @@
 import { DomainError } from '#/domain/errors'
+import type { AuditActor } from '#/domain/auditLog'
 import { normalizeCccd } from '#/domain/normalize'
 import {
   putToPresignedUrl,
@@ -26,6 +27,7 @@ export type UploadMemberPhotoInput = {
   inviteToken?: string
   /** Admin Firebase ID token — required for locked-member uploads; sent as Bearer to the worker. */
   idToken?: string
+  audit: AuditActor
 }
 
 export type UploadMemberPhotoResult = {
@@ -90,7 +92,7 @@ export async function uploadMemberPhoto(
     input.inviteToken,
     input.idToken,
   )
-  await memberStore.setPhotoPath(input.memberId, photoPath)
+  await memberStore.setPhotoPath(input.memberId, photoPath, input.audit)
 
   return { photoPath }
 }

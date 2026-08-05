@@ -314,6 +314,7 @@ describe('TempleEditorForm', () => {
       bytes: expect.any(Uint8Array),
       contentType: 'image/jpeg',
       inviteToken: 'invite-token',
+      audit: { actorType: 'filler', actorId: '0901234567' },
     })
     expect(onCreated).not.toHaveBeenCalled()
     expect(screen.getByText(m.filler_save_success())).toBeTruthy()

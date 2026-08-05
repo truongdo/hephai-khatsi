@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { DomainError } from '#/domain/errors'
 import type { Member } from '#/domain/types'
 import { createMemoryMemberStore } from '#/test/memoryStores'
+import { FILLER_AUDIT } from '#/test/auditActors'
 import { deleteMemberPhoto } from './deleteMemberPhoto'
 
 const draftMember: Member = {
@@ -31,6 +32,7 @@ describe('deleteMemberPhoto', () => {
         memberId: 'member-1',
         cccd: '012345678901',
         inviteToken: 'invite-1',
+        audit: FILLER_AUDIT,
       },
       store,
       deleteObject,
@@ -62,6 +64,7 @@ describe('deleteMemberPhoto', () => {
           memberId: 'member-1',
           cccd: '012345678901',
           inviteToken: 'invite-1',
+          audit: FILLER_AUDIT,
         },
         store,
         deleteObject,

@@ -15,6 +15,7 @@ import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { useAuth } from '#/auth/useAuth'
 import { AdminDenied } from '#/components/admin/AdminDenied'
+import { AuditHistoryModal } from '#/components/admin/AuditHistoryModal'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { FormStickyActions } from '#/components/FormStickyActions'
 import {
@@ -73,6 +74,7 @@ export function MemberFormPage({
   const [cccd, setCccd] = useState('')
   const [photoError, setPhotoError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
+  const [auditHistoryOpen, setAuditHistoryOpen] = useState(false)
 
   const orgUnits = useQuery({
     ...orgUnitsQuery(),
@@ -168,6 +170,7 @@ export function MemberFormPage({
             cccd,
             patch: buildMemberPatch(draft),
           },
+      { actorType: 'admin', actorId: claim.status === 'admin' ? claim.uid : actorId },
     )
 
     const pending = api.getPendingPhoto()
@@ -181,6 +184,7 @@ export function MemberFormPage({
           bytes,
           contentType: pending.type,
           idToken,
+          audit: { actorType: 'admin', actorId: user.uid },
         })
         api.setPhotoPath(uploaded.photoPath)
         api.clearPendingPhoto()
@@ -208,6 +212,7 @@ export function MemberFormPage({
               contentType: file.type,
               idToken,
               current: api.getDocuments(),
+              audit: { actorType: 'admin', actorId: user.uid },
             })
             api.setDocuments(uploadResult.documents)
           }
@@ -249,7 +254,11 @@ export function MemberFormPage({
     mutationFn: async () => {
       if (!memberId) throw new Error('Missing member id')
       if (claim.status !== 'admin') throw new Error('Not signed in as admin')
-      return lockMember({ memberId, lockedBy: claim.uid })
+      return lockMember({
+        memberId,
+        lockedBy: claim.uid,
+        audit: { actorType: 'admin', actorId: claim.uid },
+      })
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({
@@ -266,7 +275,11 @@ export function MemberFormPage({
   const unlockMutation = useMutation({
     mutationFn: async () => {
       if (!memberId) throw new Error('Missing member id')
-      return unlockMember({ memberId })
+      if (claim.status !== 'admin') throw new Error('Not signed in as admin')
+      return unlockMember({
+        memberId,
+        audit: { actorType: 'admin', actorId: claim.uid },
+      })
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({
@@ -332,6 +345,14 @@ export function MemberFormPage({
     mode === 'edit' && member.data
       ? { ...member.data, photoPath: member.data.photoPath ?? null }
       : {}
+
+  const auditTitle =
+    mode === 'edit' && member.data
+      ? member.data.phapDanh?.trim() ||
+        member.data.theDanh?.trim() ||
+        memberId ||
+        ''
+      : ''
 
   if (claim.status === 'admin' && !manageDirectory) {
     return <AdminDenied />
@@ -402,6 +423,11 @@ export function MemberFormPage({
               getIdToken={async () => (user ? user.getIdToken() : undefined)}
               onUploadError={setPhotoError}
               onDraftChange={handleDraftChange}
+              audit={
+                user
+                  ? { actorType: 'admin', actorId: user.uid }
+                  : undefined
+              }
             />
 
             <FormStickyActions
@@ -451,9 +477,25 @@ export function MemberFormPage({
                   {m.admin_members_unlock()}
                 </Button>
               )}
+              {mode === 'edit' && memberId && (
+                <Button
+                  variant="subtle"
+                  onClick={() => setAuditHistoryOpen(true)}
+                >
+                  {m.admin_audit_history()}
+                </Button>
+              )}
             </FormStickyActions>
           </Stack>
         </Paper>
+      )}
+      {mode === 'edit' && memberId && (
+        <AuditHistoryModal
+          opened={auditHistoryOpen}
+          onClose={() => setAuditHistoryOpen(false)}
+          title={auditTitle}
+          parent={{ collection: 'members', id: memberId }}
+        />
       )}
     </Stack>
   )

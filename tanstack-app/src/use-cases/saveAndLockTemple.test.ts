@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Invite } from '#/domain/types'
+import { auditParentKey } from '#/repositories/auditLogRepo'
 import type { InviteStore } from '#/repositories/inviteRepo'
 import { createMemoryTempleStore } from '#/test/memoryStores'
 import { saveAndLockTemple } from './saveAndLockTemple'
@@ -46,6 +47,37 @@ describe('saveAndLockTemple', () => {
     expect(result.temple.status).toBe('locked')
     expect(result.temple.lockedBy).toBe('filler')
     expect(result.mode).toBe('created')
+  })
+
+  it('writes a created audit log with filler actor from phone', async () => {
+    const templeStore = createMemoryTempleStore()
+    const inviteStore = memoryInviteStore([PUBLIC_INVITE])
+
+    const result = await saveAndLockTemple(
+      {
+        token: 't',
+        orgUnitId: 'gd-i',
+        explicitPhones: ['0912345678'],
+        patch: {
+          danhHieu: 'Tinh Xa Trung Tam',
+          truTriHienNay: { phapDanh: 'Minh Tam', dienThoai: '0901234567' },
+        },
+      },
+      templeStore,
+      inviteStore,
+    )
+
+    const parentKey = auditParentKey({
+      collection: 'temples',
+      id: result.temple.id,
+    })
+    const { entries } = templeStore.memoryListAudit(parentKey, 10)
+    expect(entries).toHaveLength(1)
+    expect(entries[0]).toMatchObject({
+      action: 'created',
+      actorType: 'filler',
+      actorId: '0901234567',
+    })
   })
 
   it('strips protected patch keys including edit request fields', async () => {

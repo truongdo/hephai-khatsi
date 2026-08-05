@@ -233,7 +233,10 @@ describe('MembersListPage', () => {
     expect(screen.getByText('Yêu cầu chỉnh sửa')).toBeTruthy()
     const unlockButton = screen.getByRole('button', { name: 'Mở khóa' })
     await user.click(unlockButton)
-    expect(unlockMemberMock).toHaveBeenCalledWith({ memberId: 'm2' })
+    expect(unlockMemberMock).toHaveBeenCalledWith({
+      memberId: 'm2',
+      audit: { actorType: 'admin', actorId: 'admin-uid' },
+    })
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['admin', 'members'],
     })

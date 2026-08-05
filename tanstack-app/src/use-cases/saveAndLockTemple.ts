@@ -1,5 +1,6 @@
 import { buildManagerPhones, mergeManagerPhones } from '#/domain/templePhones'
 import { DomainError } from '#/domain/errors'
+import { normalizeVnPhone } from '#/domain/normalize'
 import type { Temple } from '#/domain/types'
 import { inviteRepo, type InviteStore } from '#/repositories/inviteRepo'
 import {
@@ -39,6 +40,22 @@ function sanitizePatch(patch: TempleProfilePatch): TempleProfilePatch {
   return sanitized as TempleProfilePatch
 }
 
+function fillerActorFromTempleInput(
+  patch: TempleProfilePatch,
+  explicitPhones: string[],
+) {
+  let actorId = 'filler'
+  const phone = patch.truTriHienNay?.dienThoai ?? explicitPhones[0]
+  if (phone) {
+    try {
+      actorId = normalizeVnPhone(phone)
+    } catch {
+      // keep default filler
+    }
+  }
+  return { actorType: 'filler' as const, actorId }
+}
+
 export async function saveAndLockTemple(
   input: SaveTempleDraftInput,
   templeStore: TempleStore = templeRepo,
@@ -68,5 +85,6 @@ export async function saveAndLockTemple(
     managerPhones,
     templeId: input.templeId,
     patch,
+    audit: fillerActorFromTempleInput(patch, input.explicitPhones ?? []),
   })
 }

@@ -16,6 +16,7 @@ import {
   setDoc,
   updateDoc,
   where,
+  writeBatch,
 } from 'firebase/firestore'
 import { afterAll, beforeEach, describe, it } from 'vitest'
 
@@ -104,6 +105,37 @@ function templeLocked(overrides: Record<string, unknown> = {}) {
     editRequestedAt: null,
     editRequestedBy: null,
     ...overrides,
+  })
+}
+
+function auditLogDoc(overrides: Record<string, unknown> = {}) {
+  return {
+    action: 'updated',
+    at: '2026-01-01T00:00:00.000Z',
+    actorType: 'admin',
+    actorId: 'admin-uid',
+    changes: [{ field: 'status', oldValue: 'draft', newValue: 'locked' }],
+    ...overrides,
+  }
+}
+
+const MEMBER_ID = 'gd-i_tang_012345678901'
+const TEMPLE_ID = 'temple-1'
+const AUDIT_LOG_ID = 'log-1'
+
+async function seedMemberAuditLog(env: RulesTestEnvironment) {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const db = ctx.firestore()
+    await setDoc(doc(db, 'members', MEMBER_ID), memberDraft())
+    await setDoc(doc(db, 'members', MEMBER_ID, 'auditLogs', AUDIT_LOG_ID), auditLogDoc())
+  })
+}
+
+async function seedTempleAuditLog(env: RulesTestEnvironment) {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const db = ctx.firestore()
+    await setDoc(doc(db, 'temples', TEMPLE_ID), templeDraft())
+    await setDoc(doc(db, 'temples', TEMPLE_ID, 'auditLogs', AUDIT_LOG_ID), auditLogDoc())
   })
 }
 
@@ -540,6 +572,198 @@ describe('temples', () => {
   })
 })
 
+describe('member auditLogs', () => {
+  it('allows admin get and list; denies unauthenticated get and list', async () => {
+    const env = await getTestEnv()
+    await seedMemberAuditLog(env)
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertSucceeds(getDoc(doc(admin, 'members', MEMBER_ID, 'auditLogs', AUDIT_LOG_ID)))
+    await assertSucceeds(getDocs(fsCollection(admin, 'members', MEMBER_ID, 'auditLogs')))
+
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(getDoc(doc(anon, 'members', MEMBER_ID, 'auditLogs', AUDIT_LOG_ID)))
+    await assertFails(getDocs(fsCollection(anon, 'members', MEMBER_ID, 'auditLogs')))
+  })
+
+  it('allows admin to create a valid-shaped audit log', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'members', MEMBER_ID), memberDraft())
+    })
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertSucceeds(
+      setDoc(doc(admin, 'members', MEMBER_ID, 'auditLogs', 'admin-log'), auditLogDoc()),
+    )
+  })
+
+  it('allows filler with valid invite on parent to create a valid-shaped audit log', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'members', MEMBER_ID), memberDraft())
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(
+      setDoc(
+        doc(anon, 'members', MEMBER_ID, 'auditLogs', 'filler-log'),
+        auditLogDoc({ actorType: 'filler', actorId: '0912345678', action: 'locked' }),
+      ),
+    )
+  })
+
+  it('allows filler to create member and audit log in the same batch', async () => {
+    const env = await getTestEnv()
+    const anon = env.unauthenticatedContext().firestore()
+    const batch = writeBatch(anon)
+    batch.set(doc(anon, 'members', MEMBER_ID), memberLocked())
+    batch.set(
+      doc(anon, 'members', MEMBER_ID, 'auditLogs', 'same-batch'),
+      auditLogDoc({ actorType: 'filler', actorId: '0912345678', action: 'created' }),
+    )
+    await assertSucceeds(batch.commit())
+  })
+
+  it('rejects filler invite create when actorType is admin', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'members', MEMBER_ID), memberDraft())
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      setDoc(
+        doc(anon, 'members', MEMBER_ID, 'auditLogs', 'bad-admin-as-filler'),
+        auditLogDoc({ actorType: 'admin', actorId: 'admin-uid' }),
+      ),
+    )
+  })
+
+  it('denies update and delete for everyone', async () => {
+    const env = await getTestEnv()
+    await seedMemberAuditLog(env)
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertFails(
+      updateDoc(doc(admin, 'members', MEMBER_ID, 'auditLogs', AUDIT_LOG_ID), { action: 'created' }),
+    )
+    await assertFails(deleteDoc(doc(admin, 'members', MEMBER_ID, 'auditLogs', AUDIT_LOG_ID)))
+
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      updateDoc(doc(anon, 'members', MEMBER_ID, 'auditLogs', AUDIT_LOG_ID), { action: 'created' }),
+    )
+    await assertFails(deleteDoc(doc(anon, 'members', MEMBER_ID, 'auditLogs', AUDIT_LOG_ID)))
+  })
+
+  it('rejects create when action, actorId, or changes are missing', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'members', MEMBER_ID), memberDraft())
+    })
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    const base = auditLogDoc()
+    const { action, ...noAction } = base
+    const { actorId, ...noActorId } = base
+    const { changes, ...noChanges } = base
+    await assertFails(setDoc(doc(admin, 'members', MEMBER_ID, 'auditLogs', 'bad-1'), noAction))
+    await assertFails(setDoc(doc(admin, 'members', MEMBER_ID, 'auditLogs', 'bad-2'), noActorId))
+    await assertFails(setDoc(doc(admin, 'members', MEMBER_ID, 'auditLogs', 'bad-3'), noChanges))
+  })
+})
+
+describe('temple auditLogs', () => {
+  it('allows admin get and list; denies unauthenticated get and list', async () => {
+    const env = await getTestEnv()
+    await seedTempleAuditLog(env)
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertSucceeds(getDoc(doc(admin, 'temples', TEMPLE_ID, 'auditLogs', AUDIT_LOG_ID)))
+    await assertSucceeds(getDocs(fsCollection(admin, 'temples', TEMPLE_ID, 'auditLogs')))
+
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(getDoc(doc(anon, 'temples', TEMPLE_ID, 'auditLogs', AUDIT_LOG_ID)))
+    await assertFails(getDocs(fsCollection(anon, 'temples', TEMPLE_ID, 'auditLogs')))
+  })
+
+  it('allows admin to create a valid-shaped audit log', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'temples', TEMPLE_ID), templeDraft())
+    })
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertSucceeds(
+      setDoc(doc(admin, 'temples', TEMPLE_ID, 'auditLogs', 'admin-log'), auditLogDoc()),
+    )
+  })
+
+  it('allows filler with valid invite on parent to create a valid-shaped audit log', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'temples', TEMPLE_ID), templeDraft())
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(
+      setDoc(
+        doc(anon, 'temples', TEMPLE_ID, 'auditLogs', 'filler-log'),
+        auditLogDoc({ actorType: 'filler', actorId: '0912345678', action: 'locked' }),
+      ),
+    )
+  })
+
+  it('allows filler to create temple and audit log in the same batch', async () => {
+    const env = await getTestEnv()
+    const anon = env.unauthenticatedContext().firestore()
+    const batch = writeBatch(anon)
+    batch.set(doc(anon, 'temples', TEMPLE_ID), templeLocked())
+    batch.set(
+      doc(anon, 'temples', TEMPLE_ID, 'auditLogs', 'same-batch'),
+      auditLogDoc({ actorType: 'filler', actorId: '0912345678', action: 'created' }),
+    )
+    await assertSucceeds(batch.commit())
+  })
+
+  it('rejects filler invite create when actorType is admin', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'temples', TEMPLE_ID), templeDraft())
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      setDoc(
+        doc(anon, 'temples', TEMPLE_ID, 'auditLogs', 'bad-admin-as-filler'),
+        auditLogDoc({ actorType: 'admin', actorId: 'admin-uid' }),
+      ),
+    )
+  })
+
+  it('denies update and delete for everyone', async () => {
+    const env = await getTestEnv()
+    await seedTempleAuditLog(env)
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    await assertFails(
+      updateDoc(doc(admin, 'temples', TEMPLE_ID, 'auditLogs', AUDIT_LOG_ID), { action: 'created' }),
+    )
+    await assertFails(deleteDoc(doc(admin, 'temples', TEMPLE_ID, 'auditLogs', AUDIT_LOG_ID)))
+
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      updateDoc(doc(anon, 'temples', TEMPLE_ID, 'auditLogs', AUDIT_LOG_ID), { action: 'created' }),
+    )
+    await assertFails(deleteDoc(doc(anon, 'temples', TEMPLE_ID, 'auditLogs', AUDIT_LOG_ID)))
+  })
+
+  it('rejects create when action, actorId, or changes are missing', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'temples', TEMPLE_ID), templeDraft())
+    })
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    const base = auditLogDoc()
+    const { action, ...noAction } = base
+    const { actorId, ...noActorId } = base
+    const { changes, ...noChanges } = base
+    await assertFails(setDoc(doc(admin, 'temples', TEMPLE_ID, 'auditLogs', 'bad-1'), noAction))
+    await assertFails(setDoc(doc(admin, 'temples', TEMPLE_ID, 'auditLogs', 'bad-2'), noActorId))
+    await assertFails(setDoc(doc(admin, 'temples', TEMPLE_ID, 'auditLogs', 'bad-3'), noChanges))
+  })
+})
+
 describe('templeManagerPhoneIndex', () => {
   it('anyone can get, only admin can list, and the id list can only grow up to the cap', async () => {
     const env = await getTestEnv()
@@ -754,7 +978,6 @@ describe('retreats + role claims', () => {
 })
 
 const RETREAT_ID = 'r-open'
-const MEMBER_ID = 'gd-i_tang_012345678901'
 const REGISTRATION_ID = `${RETREAT_ID}_${MEMBER_ID}`
 
 function registrationDraft(overrides: Record<string, unknown> = {}) {

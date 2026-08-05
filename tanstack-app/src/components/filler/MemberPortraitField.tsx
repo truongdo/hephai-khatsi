@@ -11,6 +11,7 @@ import {
 import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { m } from '#/paraglide/messages'
+import type { AuditActor } from '#/domain/auditLog'
 import { deleteMemberPhoto } from '#/use-cases/deleteMemberPhoto'
 import { uploadMemberPhoto } from '#/use-cases/uploadMemberPhoto'
 import { getMemberPhotoDownloadUrl } from './memberPhotoUrl'
@@ -38,6 +39,7 @@ export type MemberPortraitFieldProps = {
   onUploadError?: (message: string) => void
   required?: boolean
   error?: string
+  audit?: AuditActor
 }
 
 export function MemberPortraitField({
@@ -54,6 +56,7 @@ export function MemberPortraitField({
   onUploadError,
   required = false,
   error,
+  audit,
 }: MemberPortraitFieldProps) {
   const [typeError, setTypeError] = useState<string | null>(null)
   const [objectUrl, setObjectUrl] = useState<string | null>(null)
@@ -118,6 +121,7 @@ export function MemberPortraitField({
           contentType: file.type,
           inviteToken,
           idToken,
+          audit: audit ?? { actorType: 'filler', actorId: 'filler' },
         })
         setUploadBust(String(Date.now()))
         onPhotoPathChange(result.photoPath)
@@ -152,6 +156,7 @@ export function MemberPortraitField({
         cccd,
         inviteToken,
         idToken,
+        audit: audit ?? { actorType: 'filler', actorId: 'filler' },
       })
       onPhotoPathChange(null)
       setConfirmOpen(false)

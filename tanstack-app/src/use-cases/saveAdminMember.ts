@@ -1,4 +1,5 @@
 import { DomainError } from '#/domain/errors'
+import type { AuditActor } from '#/domain/auditLog'
 import { normalizeCccd } from '#/domain/normalize'
 import type { Member, SanghaType } from '#/domain/types'
 import {
@@ -54,6 +55,7 @@ function sanitizePatch(patch: MemberProfilePatch): MemberProfilePatch {
 
 export async function saveAdminMember(
   input: SaveAdminMemberInput,
+  audit: AuditActor,
   memberStore: MemberStore = memberRepo,
 ): Promise<{ member: Member; mode: 'created' | 'updated' }> {
   if (isAdminMemberUpdate(input)) {
@@ -74,7 +76,7 @@ export async function saveAdminMember(
     const member = await memberStore.updateDraftById(
       input.memberId,
       sanitizePatch(input.patch),
-      { allowWhenLocked: true },
+      { allowWhenLocked: true, audit },
     )
     return { member, mode: 'updated' }
   }
@@ -86,5 +88,6 @@ export async function saveAdminMember(
     inviteId: null,
     cccd,
     patch: sanitizePatch(input.patch),
+    audit,
   })
 }

@@ -155,7 +155,13 @@ export function TemplesListPage() {
   })
 
   const unlockMutation = useMutation({
-    mutationFn: (templeId: string) => unlockTemple({ templeId }),
+    mutationFn: async (templeId: string) => {
+      if (claim.status !== 'admin') throw new Error('Not signed in as admin')
+      return unlockTemple({
+        templeId,
+        audit: { actorType: 'admin', actorId: claim.uid },
+      })
+    },
     onSuccess: () => {
       setCursor(undefined)
       setAllItems([])

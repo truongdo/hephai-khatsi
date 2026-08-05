@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { DomainError } from '#/domain/errors'
 import type { Member } from '#/domain/types'
 import type { MemberStore } from '#/repositories/memberRepo'
+import { ADMIN_AUDIT, FILLER_AUDIT } from '#/test/auditActors'
 import {
   uploadMemberPhoto,
   type StoragePort,
@@ -33,6 +34,9 @@ function memberStoreWith(members: Member[]): MemberStore & {
     async createOrUpdateDraft() {
       throw new Error('not implemented')
     },
+    async createOrUpdateAndLock() {
+      throw new Error('not implemented')
+    },
     async updateDraftById() {
       throw new Error('not implemented')
     },
@@ -51,7 +55,7 @@ function memberStoreWith(members: Member[]): MemberStore & {
     async getById(memberId: string) {
       return map.get(memberId) ?? null
     },
-    async setPhotoPath(memberId: string, photoPath: string | null) {
+    async setPhotoPath(memberId: string, photoPath: string | null, _audit) {
       const existing = map.get(memberId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
       const member = {
@@ -122,6 +126,7 @@ describe('uploadMemberPhoto', () => {
         bytes,
         contentType: 'image/jpeg',
         inviteToken: 'invite-1',
+        audit: FILLER_AUDIT,
       },
       store,
       storage,
@@ -162,6 +167,7 @@ describe('uploadMemberPhoto', () => {
         bytes: new Uint8Array([1]),
         contentType: 'image/jpeg',
         inviteToken: 'invite-1',
+        audit: FILLER_AUDIT,
       },
       store,
       storage,
@@ -194,6 +200,7 @@ describe('uploadMemberPhoto', () => {
           bytes: new Uint8Array([1]),
           contentType: 'image/jpeg',
           inviteToken: 'invite-1',
+          audit: FILLER_AUDIT,
         },
         store,
         storage,
@@ -219,6 +226,7 @@ describe('uploadMemberPhoto', () => {
           cccd: '012345678901',
           bytes: new Uint8Array([1]),
           contentType: 'image/jpeg',
+          audit: FILLER_AUDIT,
         },
         store,
         storage,
@@ -244,6 +252,7 @@ describe('uploadMemberPhoto', () => {
         bytes: new Uint8Array([1, 2]),
         contentType: 'image/png',
         idToken: 'admin-id-token',
+        audit: ADMIN_AUDIT,
       },
       store,
       storage,
@@ -267,6 +276,7 @@ describe('uploadMemberPhoto', () => {
           cccd: '9999888777',
           bytes: new Uint8Array([1]),
           contentType: 'image/jpeg',
+          audit: FILLER_AUDIT,
         },
         store,
         storage,
