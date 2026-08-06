@@ -68,6 +68,7 @@ export function OrgUnitSecretariesModal({
         opened={opened}
         onClose={onClose}
         title={`${m.admin_org_units_secretaries_modal_title()} — ${orgUnitName}`}
+        size="xl"
       >
         {secretaries.length === 0 ? (
           <Text>{m.admin_org_units_secretaries_empty()}</Text>
