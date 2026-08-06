@@ -5,6 +5,7 @@ import {
   namTienPhongAfterRankChange,
   NI_RANKS,
   QD_CONG_NHAN_TRANG_THAI_OPTIONS,
+  rankLabel,
   rankShowsNamTienPhong,
   TANG_RANKS,
 } from './fillerFormOptions'
@@ -48,6 +49,13 @@ describe('fillerFormOptions', () => {
     expect(namTienPhongAfterRankChange('hoa_thuong', 1990)).toBe(1990)
     expect(namTienPhongAfterRankChange('dai_duc', 1990)).toBe('')
     expect(namTienPhongAfterRankChange('', 1990)).toBe('')
+  })
+
+  it('resolves localized rank labels by sanghaType', () => {
+    expect(rankLabel('ty_kheo', 'tang')).toBe('Tỳ-kheo')
+    expect(rankLabel('ni_su', 'ni')).toBe('Ni sư')
+    expect(rankLabel(undefined, 'tang')).toBeUndefined()
+    expect(rankLabel('unknown', 'tang')).toBeUndefined()
   })
 
   it('exposes fixed dacDiem and hangMuc option values', () => {

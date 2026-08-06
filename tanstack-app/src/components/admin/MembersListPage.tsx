@@ -22,6 +22,7 @@ import { emptyCell } from '#/components/admin/emptyCell'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
 import { useAdminListSelection } from '#/components/admin/useAdminListSelection'
+import { rankLabel } from '#/components/filler/fillerFormOptions'
 import type { Member, RecordStatus, SanghaType } from '#/domain/types'
 import { canManageDirectory } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
@@ -210,6 +211,14 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     [orgUnits.data],
   )
 
+  const orgUnitNameById = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const unit of orgUnits.data ?? []) {
+      map.set(unit.id, unit.name)
+    }
+    return map
+  }, [orgUnits.data])
+
   const statusSelectData = useMemo(
     () =>
       STATUS_OPTIONS.map((option) => ({
@@ -319,8 +328,10 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
                     })}
                   />
                 </Table.Th>
+                <Table.Th>{m.admin_members_col_pham_vi_he_phai()}</Table.Th>
                 <Table.Th>{m.admin_members_col_phap_danh()}</Table.Th>
                 <Table.Th>{m.admin_members_col_the_danh()}</Table.Th>
+                <Table.Th>{m.admin_members_col_giao_doan()}</Table.Th>
                 <Table.Th>{m.admin_members_col_cccd()}</Table.Th>
                 <Table.Th>{m.admin_members_col_status()}</Table.Th>
                 <Table.Th>{m.admin_members_col_updated_at()}</Table.Th>
@@ -338,17 +349,31 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
                     />
                   </Table.Td>
                   <Table.Td>
-                    <Text
-                      component={Link}
-                      to="/admin/members/$id"
-                      params={{ id: member.id }}
-                      c="teal.7"
-                      fw={600}
-                    >
-                      {memberDisplayName(member)}
-                    </Text>
+                    {emptyCell(
+                      rankLabel(member.giaoPhamHePhai?.rank, sanghaType),
+                    )}
+                  </Table.Td>
+                  <Table.Td>
+                    {member.phapDanh ? (
+                      <Text
+                        component={Link}
+                        to="/admin/members/$id"
+                        params={{ id: member.id }}
+                        c="teal.7"
+                        fw={600}
+                      >
+                        {member.phapDanh}
+                      </Text>
+                    ) : (
+                      emptyCell(member.phapDanh)
+                    )}
                   </Table.Td>
                   <Table.Td>{emptyCell(member.theDanh)}</Table.Td>
+                  <Table.Td>
+                    {emptyCell(
+                      orgUnitNameById.get(member.orgUnitId) ?? member.orgUnitId,
+                    )}
+                  </Table.Td>
                   <Table.Td>{member.cccd}</Table.Td>
                   <Table.Td>
                     <Group gap="xs">

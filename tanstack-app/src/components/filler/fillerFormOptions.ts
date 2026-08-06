@@ -1,4 +1,5 @@
 import { m } from '#/paraglide/messages'
+import type { SanghaType } from '#/domain/types'
 
 export type FillerOption = { value: string; label: () => string }
 
@@ -36,6 +37,15 @@ export function namTienPhongAfterRankChange(
   current: string | number,
 ): string | number {
   return rankShowsNamTienPhong(rank) ? current : ''
+}
+
+export function rankLabel(
+  rank: string | undefined,
+  sanghaType: SanghaType,
+): string | undefined {
+  if (!rank) return undefined
+  const options = sanghaType === 'tang' ? TANG_RANKS : NI_RANKS
+  return options.find((option) => option.value === rank)?.label()
 }
 
 export const DAC_DIEM_OPTIONS: FillerOption[] = [

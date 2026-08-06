@@ -14,6 +14,7 @@ const memberItems = [
     cccd: '001099012345',
     phapDanh: 'HT A',
     theDanh: 'Nguyễn Văn A',
+    giaoPhamHePhai: { rank: 'ty_kheo' },
     status: 'draft' as const,
     inviteId: null,
     currentTempleId: null,
@@ -32,6 +33,7 @@ const memberItems = [
     cccd: '001099012346',
     phapDanh: 'HT Locked',
     theDanh: 'Nguyễn Văn B',
+    giaoPhamHePhai: { rank: 'hoa_thuong' },
     status: 'locked' as const,
     inviteId: null,
     currentTempleId: null,
@@ -195,6 +197,19 @@ describe('MembersListPage', () => {
     expect(await screen.findByText('HT A')).toBeTruthy()
     const link = screen.getByRole('link', { name: 'HT A' })
     expect(link.getAttribute('href')).toBe('/admin/members/m1')
+  })
+
+  it('renders columns for rank, names, giao doan, and cccd', async () => {
+    renderList()
+    await screen.findByText('HT A')
+    expect(screen.getByRole('columnheader', { name: 'Phẩm vị (Hệ phái)' })).toBeTruthy()
+    expect(screen.getByRole('columnheader', { name: 'Pháp danh' })).toBeTruthy()
+    expect(screen.getByRole('columnheader', { name: 'Thế danh' })).toBeTruthy()
+    expect(screen.getByRole('columnheader', { name: 'Giáo đoàn' })).toBeTruthy()
+    expect(screen.getByText('Tỳ-kheo')).toBeTruthy()
+    expect(screen.getByText('Nguyễn Văn A')).toBeTruthy()
+    expect(screen.getAllByText('Giáo đoàn I').length).toBeGreaterThan(0)
+    expect(screen.getByText('001099012345')).toBeTruthy()
   })
 
   it('shows bulk delete toolbar when a row is selected', async () => {
