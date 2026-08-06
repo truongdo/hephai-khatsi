@@ -19,6 +19,7 @@ export type TempleRequiredDraft = {
   }
   soPhatTuQuyY: NumericValue
   soPhatTuThuongXuyen: NumericValue
+  qdCongNhanTrangThai: string
   hasPhoto: boolean
   /** Optional additional manager phone — validated only when non-empty. */
   extraManagerPhone?: string
@@ -44,6 +45,7 @@ export type TempleRequiredFieldErrors = {
   }
   soPhatTuQuyY?: 'REQUIRED'
   soPhatTuThuongXuyen?: 'REQUIRED'
+  qdCongNhanTrangThai?: 'REQUIRED'
   photo?: 'REQUIRED'
   extraManagerPhone?: 'INVALID'
 }
@@ -124,6 +126,13 @@ export function validateTempleRequiredFields(draft: TempleRequiredDraft): {
   if (soPhatTuThuongXuyen) errors.soPhatTuThuongXuyen = soPhatTuThuongXuyen
 
   if (!draft.hasPhoto) errors.photo = 'REQUIRED'
+
+  if (
+    draft.qdCongNhanTrangThai !== 'chinh_thuc' &&
+    draft.qdCongNhanTrangThai !== 'chua_cong_nhan'
+  ) {
+    errors.qdCongNhanTrangThai = 'REQUIRED'
+  }
 
   return { valid: Object.keys(errors).length === 0, errors }
 }

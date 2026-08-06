@@ -226,6 +226,11 @@ export function TempleFormFields({
         qdCongNhan={draft.qdCongNhan}
         qdBoNhiemTruTri={draft.qdBoNhiemTruTri}
         setDraft={setDraft}
+        errors={{
+          qdCongNhanTrangThai: mapRequiredError(
+            fieldErrors.qdCongNhanTrangThai,
+          ),
+        }}
         disabled={disabled}
       />
       <TempleXayDungSection

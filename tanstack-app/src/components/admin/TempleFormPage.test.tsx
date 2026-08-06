@@ -172,6 +172,7 @@ function completeDraftTemple() {
     tangSoHienTru: { tyKheo: 0, thucXoaMaNa: 0, saDi: 0, tapSu: 0 },
     soPhatTuQuyY: 0,
     soPhatTuThuongXuyen: 0,
+    qdCongNhan: { trangThai: 'chinh_thuc' },
     photoPath: 'temples/seed/photo.jpg',
   }
 }

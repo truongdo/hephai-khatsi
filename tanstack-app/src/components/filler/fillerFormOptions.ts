@@ -47,6 +47,17 @@ export const DAC_DIEM_OPTIONS: FillerOption[] = [
   { value: 'khac', label: () => m.filler_opt_dac_diem_khac() },
 ]
 
+export const QD_CONG_NHAN_TRANG_THAI_OPTIONS: FillerOption[] = [
+  {
+    value: 'chinh_thuc',
+    label: () => m.filler_opt_qd_cong_nhan_chinh_thuc(),
+  },
+  {
+    value: 'chua_cong_nhan',
+    label: () => m.filler_opt_qd_cong_nhan_chua(),
+  },
+]
+
 export const HANG_MUC_XAY_DUNG_OPTIONS: FillerOption[] = [
   { value: 'chinh_dien', label: () => m.filler_opt_hang_muc_chinh_dien() },
   { value: 'tang_xa', label: () => m.filler_opt_hang_muc_tang_xa() },

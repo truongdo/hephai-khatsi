@@ -89,6 +89,7 @@ function requiredTempleInitial(
     tangSoHienTru: { tyKheo: 0, thucXoaMaNa: 0, saDi: 0, tapSu: 0 },
     soPhatTuQuyY: 0,
     soPhatTuThuongXuyen: 0,
+    qdCongNhan: { trangThai: 'chinh_thuc' },
     photoPath: 'temples/seed/photo.jpg',
     ...overrides,
   }
@@ -209,6 +210,15 @@ describe('TempleEditorForm', () => {
     ).toBeTruthy()
     expect(
       screen.getByRole('heading', { name: m.filler_section_temple_quyet_dinh() }),
+    ).toBeTruthy()
+    expect(
+      screen.getByText(m.filler_field_qd_cong_nhan_trang_thai()),
+    ).toBeTruthy()
+    expect(
+      screen.getByRole('radio', { name: m.filler_opt_qd_cong_nhan_chinh_thuc() }),
+    ).toBeTruthy()
+    expect(
+      screen.getByRole('radio', { name: m.filler_opt_qd_cong_nhan_chua() }),
     ).toBeTruthy()
     expect(
       screen.getByRole('heading', { name: m.filler_section_temple_xay_dung() }),

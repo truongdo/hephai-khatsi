@@ -4,6 +4,7 @@ import {
   HANG_MUC_XAY_DUNG_OPTIONS,
   namTienPhongAfterRankChange,
   NI_RANKS,
+  QD_CONG_NHAN_TRANG_THAI_OPTIONS,
   rankShowsNamTienPhong,
   TANG_RANKS,
 } from './fillerFormOptions'
@@ -52,5 +53,12 @@ describe('fillerFormOptions', () => {
   it('exposes fixed dacDiem and hangMuc option values', () => {
     expect(DAC_DIEM_OPTIONS.length).toBeGreaterThanOrEqual(5)
     expect(HANG_MUC_XAY_DUNG_OPTIONS.length).toBeGreaterThanOrEqual(5)
+  })
+
+  it('exposes qd cong nhan trang thai options', () => {
+    expect(QD_CONG_NHAN_TRANG_THAI_OPTIONS.map((o) => o.value)).toEqual([
+      'chinh_thuc',
+      'chua_cong_nhan',
+    ])
   })
 })

@@ -29,7 +29,11 @@ export type TempleDraft = {
   soPhatTuQuyY: NumericValue
   soPhatTuThuongXuyen: NumericValue
   hoatDongPhatSu: Array<{ ten: string; thoiGian: string; ghiChu: string }>
-  qdCongNhan: { so: string; ngay: string }
+  qdCongNhan: {
+    trangThai: QdCongNhanTrangThai | ''
+    so: string
+    ngay: string
+  }
   qdBoNhiemTruTri: { so: string; ngay: string }
   moHinhKienTruc: string
   hangMucXayDung: string[]
@@ -60,6 +64,14 @@ function numberOrUndefined(value: NumericValue): number | undefined {
 function textOrUndefined(value: string): string | undefined {
   const trimmed = value.trim()
   return trimmed ? trimmed : undefined
+}
+
+type QdCongNhanTrangThai = 'chinh_thuc' | 'chua_cong_nhan'
+
+function hydrateQdCongNhanTrangThai(
+  value: string | undefined,
+): QdCongNhanTrangThai | '' {
+  return value === 'chinh_thuc' || value === 'chua_cong_nhan' ? value : ''
 }
 
 /** Free-text Địa chỉ cũ: keep legacy strings; structured AddressValue → blank. */
@@ -128,6 +140,7 @@ export function emptyTempleDraft(
       EMPTY_HOAT_DONG,
     ),
     qdCongNhan: {
+      trangThai: hydrateQdCongNhanTrangThai(initial.qdCongNhan?.trangThai),
       so: initial.qdCongNhan?.so ?? '',
       ngay: initial.qdCongNhan?.ngay ?? '',
     },
@@ -204,6 +217,10 @@ export function buildTemplePatch(draft: TempleDraft): TempleProfilePatch {
         ghiChu: textOrUndefined(row.ghiChu),
       })),
     qdCongNhan: {
+      trangThai:
+        draft.qdCongNhan.trangThai === ''
+          ? undefined
+          : draft.qdCongNhan.trangThai,
       so: textOrUndefined(draft.qdCongNhan.so),
       ngay: textOrUndefined(draft.qdCongNhan.ngay),
     },

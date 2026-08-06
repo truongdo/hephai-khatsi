@@ -4,6 +4,7 @@ import {
   Fieldset,
   Group,
   NumberInput,
+  Radio,
   SimpleGrid,
   Stack,
   Text,
@@ -21,6 +22,7 @@ import { m } from '#/paraglide/messages'
 import {
   DAC_DIEM_OPTIONS,
   HANG_MUC_XAY_DUNG_OPTIONS,
+  QD_CONG_NHAN_TRANG_THAI_OPTIONS,
 } from './fillerFormOptions'
 import { FormSection } from './FormSection'
 import { RepeatableFieldset } from './RepeatableFieldset'
@@ -750,15 +752,43 @@ export const TempleQuyetDinhSection = memo(function TempleQuyetDinhSection({
   qdCongNhan,
   qdBoNhiemTruTri,
   setDraft,
+  errors,
   disabled,
 }: {
   qdCongNhan: TempleDraft['qdCongNhan']
   qdBoNhiemTruTri: TempleDraft['qdBoNhiemTruTri']
   setDraft: SetDraft
+  errors?: { qdCongNhanTrangThai?: string }
   disabled: boolean
 }) {
   return (
     <FormSection title={m.filler_section_temple_quyet_dinh()}>
+      <Radio.Group
+        label={m.filler_field_qd_cong_nhan_trang_thai()}
+        withAsterisk
+        value={qdCongNhan.trangThai}
+        onChange={(value) =>
+          setDraft((current) => ({
+            ...current,
+            qdCongNhan: {
+              ...current.qdCongNhan,
+              trangThai: value as TempleDraft['qdCongNhan']['trangThai'],
+            },
+          }))
+        }
+        error={errors?.qdCongNhanTrangThai}
+      >
+        <Group mt="xs">
+          {QD_CONG_NHAN_TRANG_THAI_OPTIONS.map((option) => (
+            <Radio
+              key={option.value}
+              value={option.value}
+              label={option.label()}
+              disabled={disabled}
+            />
+          ))}
+        </Group>
+      </Radio.Group>
       <SimpleGrid cols={{ base: 1, sm: 2 }}>
         <TextInput
           label={m.filler_field_qd_cong_nhan_so()}

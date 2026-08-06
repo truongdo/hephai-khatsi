@@ -41,3 +41,39 @@ describe('templeDraft diaChiCu', () => {
     expect(buildTemplePatch(fromStructured).diaChiCu).toBeUndefined()
   })
 })
+
+describe('templeDraft qdCongNhan.trangThai', () => {
+  it('hydrates known trangThai and patches it', () => {
+    const draft = emptyTempleDraft({
+      qdCongNhan: { trangThai: 'chinh_thuc', so: '01', ngay: '01/01/2020' },
+    })
+    expect(draft.qdCongNhan.trangThai).toBe('chinh_thuc')
+    expect(buildTemplePatch(draft).qdCongNhan).toEqual({
+      trangThai: 'chinh_thuc',
+      so: '01',
+      ngay: '01/01/2020',
+    })
+  })
+
+  it('defaults missing trangThai to empty and omits it from patch', () => {
+    const draft = emptyTempleDraft({
+      qdCongNhan: { so: '01', ngay: '' },
+    })
+    expect(draft.qdCongNhan.trangThai).toBe('')
+    expect(buildTemplePatch(draft).qdCongNhan).toEqual({
+      trangThai: undefined,
+      so: '01',
+      ngay: undefined,
+    })
+  })
+
+  it('ignores unknown trangThai values on hydrate', () => {
+    const draft = emptyTempleDraft({
+      qdCongNhan: {
+        // @ts-expect-error intentional invalid legacy value
+        trangThai: 'other',
+      },
+    })
+    expect(draft.qdCongNhan.trangThai).toBe('')
+  })
+})

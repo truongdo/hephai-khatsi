@@ -169,7 +169,11 @@ export type Temple = {
   soPhatTuQuyY?: number
   soPhatTuThuongXuyen?: number
   hoatDongPhatSu?: Array<{ ten?: string; thoiGian?: string; ghiChu?: string }>
-  qdCongNhan?: { so?: string; ngay?: string }
+  qdCongNhan?: {
+    trangThai?: 'chinh_thuc' | 'chua_cong_nhan'
+    so?: string
+    ngay?: string
+  }
   qdBoNhiemTruTri?: { so?: string; ngay?: string }
   moHinhKienTruc?: string
   hangMucXayDung?: string[]

@@ -31,6 +31,7 @@ function filledDraft(
     tangSoHienTru: { tyKheo: 0, thucXoaMaNa: 0, saDi: 0, tapSu: 0 },
     soPhatTuQuyY: 0,
     soPhatTuThuongXuyen: 0,
+    qdCongNhanTrangThai: 'chinh_thuc',
     hasPhoto: true,
     ...overrides,
   }
@@ -49,6 +50,7 @@ describe('validateTempleRequiredFields', () => {
       tangSoHienTru: { tyKheo: '', thucXoaMaNa: '', saDi: '', tapSu: '' },
       soPhatTuQuyY: '',
       soPhatTuThuongXuyen: '',
+      qdCongNhanTrangThai: '',
       hasPhoto: false,
     })
     expect(result.valid).toBe(false)
@@ -75,6 +77,23 @@ describe('validateTempleRequiredFields', () => {
     expect(result.errors.soPhatTuQuyY).toBe('REQUIRED')
     expect(result.errors.soPhatTuThuongXuyen).toBe('REQUIRED')
     expect(result.errors.photo).toBe('REQUIRED')
+    expect(result.errors.qdCongNhanTrangThai).toBe('REQUIRED')
+  })
+
+  it('requires qdCongNhanTrangThai when empty', () => {
+    const result = validateTempleRequiredFields(
+      filledDraft({ qdCongNhanTrangThai: '' }),
+    )
+    expect(result.valid).toBe(false)
+    expect(result.errors.qdCongNhanTrangThai).toBe('REQUIRED')
+  })
+
+  it('accepts chua_cong_nhan without requiring so/ngay', () => {
+    expect(
+      validateTempleRequiredFields(
+        filledDraft({ qdCongNhanTrangThai: 'chua_cong_nhan' }),
+      ),
+    ).toEqual({ valid: true, errors: {} })
   })
 
   it('marks invalid tru tri email format', () => {
