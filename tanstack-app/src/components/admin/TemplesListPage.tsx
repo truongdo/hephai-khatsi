@@ -23,6 +23,7 @@ import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
 import { TempleDeleteBlockedModal } from '#/components/admin/TempleDeleteBlockedModal'
 import { useAdminListSelection } from '#/components/admin/useAdminListSelection'
+import { isStructuredAddress } from '#/domain/address'
 import type { RecordStatus, Temple } from '#/domain/types'
 import { canManageDirectory, isHePhaiScope } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
@@ -200,6 +201,14 @@ export function TemplesListPage() {
     [orgUnits.data],
   )
 
+  const orgUnitNameById = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const unit of orgUnits.data ?? []) {
+      map.set(unit.id, unit.name)
+    }
+    return map
+  }, [orgUnits.data])
+
   const statusSelectData = useMemo(
     () =>
       STATUS_OPTIONS.map((option) => ({
@@ -292,6 +301,8 @@ export function TemplesListPage() {
                   />
                 </Table.Th>
                 <Table.Th>{m.admin_temples_col_danh_hieu()}</Table.Th>
+                <Table.Th>{m.admin_temples_col_tinh_thanh_pho()}</Table.Th>
+                <Table.Th>{m.admin_temples_col_giao_doan()}</Table.Th>
                 <Table.Th>{m.admin_temples_col_phone()}</Table.Th>
                 <Table.Th>{m.admin_temples_col_status()}</Table.Th>
                 <Table.Th>{m.admin_temples_col_updated_at()}</Table.Th>
@@ -318,6 +329,18 @@ export function TemplesListPage() {
                     >
                       {temple.danhHieu ?? temple.id}
                     </Text>
+                  </Table.Td>
+                  <Table.Td>
+                    {emptyCell(
+                      isStructuredAddress(temple.diaChiMoi)
+                        ? temple.diaChiMoi.cityName
+                        : undefined,
+                    )}
+                  </Table.Td>
+                  <Table.Td>
+                    {emptyCell(
+                      orgUnitNameById.get(temple.orgUnitId) ?? temple.orgUnitId,
+                    )}
                   </Table.Td>
                   <Table.Td>{emptyCell(temple.managerPhones[0])}</Table.Td>
                   <Table.Td>

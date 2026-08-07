@@ -156,6 +156,8 @@
   "admin_temples_filter_org_unit": "Giáo đoàn",
   "admin_temples_filter_status": "Trạng thái",
   "admin_temples_col_danh_hieu": "Danh hiệu",
+  "admin_temples_col_tinh_thanh_pho": "Tỉnh/thành phố",
+  "admin_temples_col_giao_doan": "Giáo đoàn",
   "admin_temples_col_phone": "Điện thoại",
   "admin_temples_col_status": "Trạng thái",
   "admin_temples_col_updated_at": "Cập nhật",

@@ -11,6 +11,12 @@ const templeItems = [
     id: 't1',
     orgUnitId: 'gd-i',
     danhHieu: 'TX A',
+    diaChiMoi: {
+      cityCode: '01',
+      cityName: 'Hà Nội',
+      wardCode: '00001',
+      wardName: 'Phường Test',
+    },
     managerPhones: ['0901234567'],
     status: 'draft' as const,
     inviteId: null,
@@ -164,6 +170,23 @@ describe('TemplesListPage', () => {
     expect(await screen.findByText('TX A')).toBeTruthy()
     const link = screen.getByRole('link', { name: 'TX A' })
     expect(link.getAttribute('href')).toBe('/admin/temples/t1')
+  })
+
+  it('shows province and giao doan after danh hieu', async () => {
+    renderList()
+    await screen.findByText('TX A')
+    expect(
+      screen.getByRole('columnheader', { name: 'Tỉnh/thành phố' }),
+    ).toBeTruthy()
+    expect(screen.getByRole('columnheader', { name: 'Giáo đoàn' })).toBeTruthy()
+    const headers = screen
+      .getAllByRole('columnheader')
+      .map((th) => th.textContent)
+    const danhHieuIdx = headers.indexOf('Danh hiệu')
+    expect(headers[danhHieuIdx + 1]).toBe('Tỉnh/thành phố')
+    expect(headers[danhHieuIdx + 2]).toBe('Giáo đoàn')
+    expect(screen.getByText('Hà Nội')).toBeTruthy()
+    expect(screen.getAllByText('Giáo đoàn I').length).toBeGreaterThan(0)
   })
 
   it('shows bulk delete toolbar when a row is selected', async () => {
