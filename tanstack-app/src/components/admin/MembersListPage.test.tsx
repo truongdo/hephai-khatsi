@@ -319,4 +319,23 @@ describe('MembersListPage', () => {
       ).toBeNull()
     })
   })
+
+  describe('he_phai_secretary', () => {
+    beforeEach(() => {
+      useAdminClaimMock.mockReturnValue({
+        status: 'admin',
+        uid: 'admin-uid',
+        role: 'he_phai_secretary',
+        orgUnitId: null,
+      })
+    })
+
+    it('shows org unit filter select', async () => {
+      renderList()
+      await screen.findByText('HT A')
+      expect(
+        screen.getByRole('combobox', { name: 'Giáo đoàn' }),
+      ).toBeTruthy()
+    })
+  })
 })

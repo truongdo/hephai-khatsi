@@ -13,6 +13,14 @@ service cloud.firestore {
       return isLegacyAdmin() || role() == 'he_phai_admin';
     }
 
+    function isHePhaiSecretary() {
+      return role() == 'he_phai_secretary';
+    }
+
+    function isHePhaiScope() {
+      return isHePhaiAdmin() || isHePhaiSecretary();
+    }
+
     function isGiaoDoanAdmin() {
       return role() == 'giao_doan_admin';
     }
@@ -22,11 +30,11 @@ service cloud.firestore {
     }
 
     function isStaff() {
-      return isHePhaiAdmin() || isGiaoDoanAdmin() || isKiemSoat() || isLegacyAdmin();
+      return isHePhaiScope() || isGiaoDoanAdmin() || isKiemSoat() || isLegacyAdmin();
     }
 
     function canWriteDirectory() {
-      return isHePhaiAdmin() || isGiaoDoanAdmin() || isLegacyAdmin();
+      return isHePhaiScope() || isGiaoDoanAdmin() || isLegacyAdmin();
     }
 
     function isValidAuditCreate() {
@@ -40,17 +48,17 @@ service cloud.firestore {
     }
 
     function retreatOrgOk(orgUnitId) {
-      return isHePhaiAdmin() || isLegacyAdmin()
+      return isHePhaiScope() || isLegacyAdmin()
         || (isGiaoDoanAdmin() && request.auth.token.orgUnitId == orgUnitId);
     }
 
     function directoryOrgOk(orgUnitId) {
-      return isHePhaiAdmin() || isLegacyAdmin()
+      return isHePhaiScope() || isLegacyAdmin()
         || (isGiaoDoanAdmin() && request.auth.token.orgUnitId == orgUnitId);
     }
 
     function canListDirectory() {
-      return isHePhaiAdmin() || isGiaoDoanAdmin();
+      return isHePhaiScope() || isGiaoDoanAdmin();
     }
 
     // --- orgUnits: public read, he_phai write only ---
@@ -185,7 +193,7 @@ service cloud.firestore {
 
       allow get: if true;
       allow list: if canWriteDirectory() && (
-        isHePhaiAdmin() || directoryOrgOk(resource.data.orgUnitId)
+        isHePhaiScope() || directoryOrgOk(resource.data.orgUnitId)
       );
 
       allow create: if memberId == (request.resource.data.orgUnitId + '_' + request.resource.data.sanghaType + '_' + request.resource.data.cccd)
@@ -302,7 +310,7 @@ service cloud.firestore {
 
       allow get: if true;
       allow list: if canWriteDirectory() && (
-        isHePhaiAdmin() || directoryOrgOk(resource.data.orgUnitId)
+        isHePhaiScope() || directoryOrgOk(resource.data.orgUnitId)
       );
 
       allow create: if request.resource.data.createdAt is string
@@ -390,7 +398,7 @@ service cloud.firestore {
 
       allow get: if true;
       allow list: if canWriteDirectory() && (
-        isHePhaiAdmin() || retreatOrgOk(resource.data.orgUnitId)
+        isHePhaiScope() || retreatOrgOk(resource.data.orgUnitId)
       );
       allow create: if canWriteDirectory()
         && request.resource.data.type == 'giao_doan'

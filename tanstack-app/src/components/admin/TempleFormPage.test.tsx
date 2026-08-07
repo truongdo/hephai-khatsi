@@ -49,8 +49,15 @@ const draftTemple = {
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
 const navigateMock = vi.fn()
 
+const useAdminClaimMock = vi.fn(() => ({
+  status: 'admin' as const,
+  uid: 'admin-uid',
+  role: 'he_phai_admin' as const,
+  orgUnitId: null,
+}))
+
 vi.mock('#/auth/useAdminClaim', () => ({
-  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid', role: 'he_phai_admin', orgUnitId: null }),
+  useAdminClaim: () => useAdminClaimMock(),
 }))
 
 vi.mock('#/auth/useAuth', () => ({
@@ -209,6 +216,12 @@ afterEach(() => {
 })
 
 beforeEach(() => {
+  useAdminClaimMock.mockReturnValue({
+    status: 'admin',
+    uid: 'admin-uid',
+    role: 'he_phai_admin',
+    orgUnitId: null,
+  })
   localStorage.clear()
   templeFixture = lockedTemple
   lockedTemple.diaChiMoi = '123 Đường A'
@@ -416,5 +429,25 @@ describe('TempleFormPage', () => {
 
     expect(uploadTemplePhotoMock).toHaveBeenCalledOnce()
     expect(screen.getByText(m.filler_photo_upload_error())).toBeTruthy()
+  })
+
+  describe('he_phai_secretary', () => {
+    beforeEach(() => {
+      useAdminClaimMock.mockReturnValue({
+        status: 'admin',
+        uid: 'admin-uid',
+        role: 'he_phai_secretary',
+        orgUnitId: null,
+      })
+    })
+
+    it('shows org unit select in create mode', async () => {
+      renderForm({ mode: 'create' })
+      expect(
+        await screen.findByRole('combobox', {
+          name: new RegExp(`^${m.admin_temples_form_org_unit()}`),
+        }),
+      ).toBeTruthy()
+    })
   })
 })

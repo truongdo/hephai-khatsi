@@ -1,7 +1,7 @@
 import { MantineProvider } from '@mantine/core'
 import { DatesProvider } from '@mantine/dates'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Member } from '#/domain/types'
@@ -89,8 +89,15 @@ function completeDraftMember(): Member {
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
 const navigateMock = vi.fn()
 
+let adminClaimFixture: {
+  status: 'admin'
+  uid: string
+  role: 'he_phai_admin' | 'he_phai_secretary' | 'giao_doan_admin'
+  orgUnitId: string | null
+} = { status: 'admin', uid: 'admin-uid', role: 'he_phai_admin', orgUnitId: null }
+
 vi.mock('#/auth/useAdminClaim', () => ({
-  useAdminClaim: () => ({ status: 'admin', uid: 'admin-uid', role: 'he_phai_admin', orgUnitId: null }),
+  useAdminClaim: () => adminClaimFixture,
 }))
 
 vi.mock('#/auth/useAuth', () => ({
@@ -265,6 +272,12 @@ afterEach(() => {
 
 beforeEach(() => {
   localStorage.clear()
+  adminClaimFixture = {
+    status: 'admin',
+    uid: 'admin-uid',
+    role: 'he_phai_admin',
+    orgUnitId: null,
+  }
   memberFixture = lockedMember
   grantDirectoryRoleMock.mockReset()
   revokeDirectoryRoleMock.mockReset()
@@ -553,7 +566,41 @@ describe('MemberFormPage', () => {
     expect(grantBtn).not.toBeDisabled()
   })
 
-  it('shows Thư ký badge when member has directory role', async () => {
+  it('shows both grant buttons when canGrant and no directoryRole', async () => {
+    memberFixture = { ...lockedMember, email: 'user@gmail.com' }
+    renderForm({ mode: 'edit' })
+    expect(
+      await screen.findByRole('button', {
+        name: m.admin_member_directory_role_grant(),
+      }),
+    ).toBeTruthy()
+    expect(
+      screen.getByRole('button', {
+        name: m.admin_member_directory_role_grant_he_phai(),
+      }),
+    ).toBeTruthy()
+  })
+
+  it('grants he_phai_secretary via API when he phai grant clicked', async () => {
+    const user = userEvent.setup()
+    memberFixture = { ...lockedMember, email: 'user@gmail.com' }
+    grantDirectoryRoleMock.mockResolvedValue({ ok: true } as never)
+    renderForm({ mode: 'edit' })
+    await user.click(
+      await screen.findByRole('button', {
+        name: m.admin_member_directory_role_grant_he_phai(),
+      }),
+    )
+    await vi.waitFor(() =>
+      expect(grantDirectoryRoleMock).toHaveBeenCalledWith({
+        memberId: 'm1',
+        role: 'he_phai_secretary',
+        idToken: 'admin-id-token',
+      }),
+    )
+  })
+
+  it('shows Thư ký giáo đoàn badge and revoke when member has giao_doan_admin role', async () => {
     memberFixture = {
       ...lockedMember,
       email: 'sec@gmail.com',
@@ -571,6 +618,80 @@ describe('MemberFormPage', () => {
     expect(
       screen.queryByRole('button', {
         name: m.admin_member_directory_role_grant(),
+      }),
+    ).toBeNull()
+    expect(
+      screen.queryByRole('button', {
+        name: m.admin_member_directory_role_grant_he_phai(),
+      }),
+    ).toBeNull()
+  })
+
+  it('shows Thư ký hệ phái badge and revoke when member has he_phai_secretary role', async () => {
+    memberFixture = {
+      ...lockedMember,
+      email: 'sec@gmail.com',
+      directoryRole: 'he_phai_secretary',
+    }
+    renderForm({ mode: 'edit' })
+    expect(
+      await screen.findByText(m.admin_member_directory_role_badge_he_phai()),
+    ).toBeTruthy()
+    expect(
+      screen.getByRole('button', {
+        name: m.admin_member_directory_role_revoke_he_phai(),
+      }),
+    ).toBeTruthy()
+    const user = userEvent.setup()
+    await user.click(
+      screen.getByRole('button', {
+        name: m.admin_member_directory_role_revoke_he_phai(),
+      }),
+    )
+    const confirmDialog = await screen.findByRole('dialog', {
+      name: m.admin_member_directory_role_revoke_he_phai(),
+    })
+    expect(
+      within(confirmDialog).getByText(
+        m.admin_org_units_he_phai_secretaries_revoke_confirm(),
+      ),
+    ).toBeTruthy()
+    expect(
+      screen.queryByRole('button', {
+        name: m.admin_member_directory_role_grant(),
+      }),
+    ).toBeNull()
+    expect(
+      screen.queryByRole('button', {
+        name: m.admin_member_directory_role_grant_he_phai(),
+      }),
+    ).toBeNull()
+  })
+
+  it('shows read-only badge without grant/revoke when viewer is he_phai_secretary', async () => {
+    adminClaimFixture = {
+      status: 'admin',
+      uid: 'sec-uid',
+      role: 'he_phai_secretary',
+      orgUnitId: null,
+    }
+    memberFixture = {
+      ...lockedMember,
+      email: 'sec@gmail.com',
+      directoryRole: 'he_phai_secretary',
+    }
+    renderForm({ mode: 'edit' })
+    expect(
+      await screen.findByText(m.admin_member_directory_role_badge_he_phai()),
+    ).toBeTruthy()
+    expect(
+      screen.queryByRole('button', {
+        name: m.admin_member_directory_role_revoke_he_phai(),
+      }),
+    ).toBeNull()
+    expect(
+      screen.queryByRole('button', {
+        name: m.admin_member_directory_role_grant_he_phai(),
       }),
     ).toBeNull()
   })

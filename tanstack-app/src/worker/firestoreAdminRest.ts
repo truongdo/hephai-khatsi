@@ -115,8 +115,15 @@ export async function listSecretaries(
         where: {
           fieldFilter: {
             field: { fieldPath: 'directoryRole' },
-            op: 'EQUAL',
-            value: { stringValue: 'giao_doan_admin' },
+            op: 'IN',
+            value: {
+              arrayValue: {
+                values: [
+                  { stringValue: 'giao_doan_admin' },
+                  { stringValue: 'he_phai_secretary' },
+                ],
+              },
+            },
           },
         },
       },

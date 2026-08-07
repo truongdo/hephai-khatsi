@@ -33,13 +33,15 @@ const baseRetreat = {
 
 const navigateMock = vi.fn()
 
+const useAdminClaimMock = vi.fn(() => ({
+  status: 'admin' as const,
+  uid: 'admin-uid',
+  role: 'giao_doan_admin' as const,
+  orgUnitId: 'gd-i',
+}))
+
 vi.mock('#/auth/useAdminClaim', () => ({
-  useAdminClaim: () => ({
-    status: 'admin',
-    uid: 'admin-uid',
-    role: 'giao_doan_admin',
-    orgUnitId: 'gd-i',
-  }),
+  useAdminClaim: () => useAdminClaimMock(),
 }))
 
 vi.mock('#/auth/useAuth', () => ({
@@ -130,6 +132,12 @@ afterEach(() => {
 })
 
 beforeEach(() => {
+  useAdminClaimMock.mockReturnValue({
+    status: 'admin',
+    uid: 'admin-uid',
+    role: 'giao_doan_admin',
+    orgUnitId: 'gd-i',
+  })
   retreatFixture = { ...baseRetreat }
   createRetreatMock.mockReset()
   updateRetreatMock.mockReset()
@@ -233,5 +241,25 @@ describe('RetreatFormPage', () => {
         }),
       }),
     )
+  })
+
+  describe('he_phai_secretary', () => {
+    beforeEach(() => {
+      useAdminClaimMock.mockReturnValue({
+        status: 'admin',
+        uid: 'admin-uid',
+        role: 'he_phai_secretary',
+        orgUnitId: null,
+      })
+    })
+
+    it('shows org unit select in create mode', async () => {
+      renderForm({ mode: 'create' })
+      expect(
+        await screen.findByRole('combobox', {
+          name: new RegExp(`^${m.admin_retreats_form_org_unit()}`),
+        }),
+      ).toBeTruthy()
+    })
   })
 })

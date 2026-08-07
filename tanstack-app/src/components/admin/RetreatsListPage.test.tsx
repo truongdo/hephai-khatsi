@@ -44,13 +44,15 @@ const retreatsQueryMock = vi.fn(() => ({
   staleTime: 0,
 }))
 
+const useAdminClaimMock = vi.fn(() => ({
+  status: 'admin' as const,
+  uid: 'admin-uid',
+  role: 'giao_doan_admin' as const,
+  orgUnitId: 'gd-i',
+}))
+
 vi.mock('#/auth/useAdminClaim', () => ({
-  useAdminClaim: () => ({
-    status: 'admin',
-    uid: 'admin-uid',
-    role: 'giao_doan_admin',
-    orgUnitId: 'gd-i',
-  }),
+  useAdminClaim: () => useAdminClaimMock(),
 }))
 
 vi.mock('#/auth/useAuth', () => ({
@@ -130,6 +132,12 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
+  useAdminClaimMock.mockReturnValue({
+    status: 'admin',
+    uid: 'admin-uid',
+    role: 'giao_doan_admin',
+    orgUnitId: 'gd-i',
+  })
   retreatItems = [draftRetreat, openRetreat]
   deleteRetreatMock.mockReset()
   deleteRetreatMock.mockResolvedValue(undefined)
@@ -213,6 +221,32 @@ describe('RetreatsListPage', () => {
     )
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['admin', 'retreats'],
+    })
+  })
+
+  describe('he_phai_secretary', () => {
+    beforeEach(() => {
+      useAdminClaimMock.mockReturnValue({
+        status: 'admin',
+        uid: 'admin-uid',
+        role: 'he_phai_secretary',
+        orgUnitId: null,
+      })
+      retreatsQueryMock.mockImplementation(() => ({
+        queryKey: ['admin', 'retreats', {}],
+        queryFn: async () => ({ items: retreatItems, nextCursor: null }),
+        staleTime: 0,
+      }))
+    })
+
+    it('shows org unit filter select', async () => {
+      renderList()
+      await screen.findByText('Khóa tu mùa hè')
+      expect(
+        screen.getByRole('combobox', {
+          name: m.admin_retreats_filter_org_unit(),
+        }),
+      ).toBeTruthy()
     })
   })
 })

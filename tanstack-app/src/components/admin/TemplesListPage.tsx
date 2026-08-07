@@ -24,7 +24,7 @@ import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
 import { TempleDeleteBlockedModal } from '#/components/admin/TempleDeleteBlockedModal'
 import { useAdminListSelection } from '#/components/admin/useAdminListSelection'
 import type { RecordStatus, Temple } from '#/domain/types'
-import { canManageDirectory } from '#/domain/authClaims'
+import { canManageDirectory, isHePhaiScope } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
 import { templesQuery, orgUnitsQuery } from '#/query/adminQueries'
 import {
@@ -59,8 +59,9 @@ export function TemplesListPage() {
     claim.status === 'admin' &&
     canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
 
-  const isHePhaiAdmin =
-    claim.status === 'admin' && claim.role === 'he_phai_admin'
+  const isHePhaiScoped =
+    claim.status === 'admin' &&
+    isHePhaiScope({ role: claim.role, orgUnitId: claim.orgUnitId })
 
   const claims =
     claim.status === 'admin'
@@ -224,7 +225,7 @@ export function TemplesListPage() {
       </Group>
 
       <Group>
-        {isHePhaiAdmin && (
+        {isHePhaiScoped && (
           <Select
             label={m.admin_temples_filter_org_unit()}
             placeholder={m.admin_filter_all()}

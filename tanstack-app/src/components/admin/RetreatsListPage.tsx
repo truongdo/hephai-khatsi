@@ -18,7 +18,7 @@ import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteMo
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { emptyCell } from '#/components/admin/emptyCell'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
-import { canManageRetreats } from '#/domain/authClaims'
+import { canManageRetreats, isHePhaiScope } from '#/domain/authClaims'
 import { isoToGmt7Date } from '#/domain/gmt7Date'
 import type { Retreat, RetreatStatus } from '#/domain/retreat'
 import { adminKeys } from '#/query/adminKeys'
@@ -67,8 +67,9 @@ export function RetreatsListPage() {
     claim.status === 'admin' &&
     canManageRetreats({ role: claim.role, orgUnitId: claim.orgUnitId })
 
-  const isHePhaiAdmin =
-    claim.status === 'admin' && claim.role === 'he_phai_admin'
+  const isHePhaiScoped =
+    claim.status === 'admin' &&
+    isHePhaiScope({ role: claim.role, orgUnitId: claim.orgUnitId })
 
   const [orgUnitFilter, setOrgUnitFilter] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<RetreatStatus | null>(null)
@@ -190,7 +191,7 @@ export function RetreatsListPage() {
       </Group>
 
       <Group>
-        {isHePhaiAdmin && (
+        {isHePhaiScoped && (
           <Select
             label={m.admin_retreats_filter_org_unit()}
             placeholder={m.admin_filter_all()}

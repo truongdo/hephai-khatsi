@@ -1,19 +1,29 @@
 import { MantineProvider } from '@mantine/core'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { revokeDirectoryRole } from '#/directoryRole/directoryRoleApiClient'
 import { m } from '#/paraglide/messages'
 import { theme } from '../../theme'
 import { OrgUnitsPage } from './OrgUnitsPage'
 
+const revokeDirectoryRoleMock = vi.mocked(revokeDirectoryRole)
+
+let adminClaimFixture: {
+  status: 'admin'
+  uid: string
+  role: 'he_phai_admin' | 'he_phai_secretary'
+  orgUnitId: string | null
+} = {
+  status: 'admin',
+  uid: 'admin-uid',
+  role: 'he_phai_admin',
+  orgUnitId: null,
+}
+
 vi.mock('#/auth/useAdminClaim', () => ({
-  useAdminClaim: () => ({
-    status: 'admin',
-    uid: 'admin-uid',
-    role: 'he_phai_admin',
-    orgUnitId: null,
-  }),
+  useAdminClaim: () => adminClaimFixture,
 }))
 
 vi.mock('#/auth/useAuth', () => ({
@@ -68,7 +78,43 @@ vi.mock('#/query/adminQueries', () => ({
     ],
     staleTime: 60_000,
   }),
+  hePhaiSecretariesQuery: () => ({
+    queryKey: ['admin', 'hePhaiSecretaries'],
+    queryFn: async () => [
+      {
+        id: 'hp-sec-1',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        status: 'locked',
+        cccd: '001099012346',
+        inviteId: null,
+        currentTempleId: null,
+        photoPath: null,
+        phapDanh: 'Thích Hệ Phái',
+        email: 'hpsec@gmail.com',
+        directoryRole: 'he_phai_secretary',
+        directoryRoleGrantedAt: '2026-08-05T12:00:00.000Z',
+        createdAt: '2026-01-01T00:00:00.000Z',
+        updatedAt: '2026-01-01T00:00:00.000Z',
+        lockedAt: null,
+        lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
+      },
+    ],
+    staleTime: 60_000,
+  }),
 }))
+
+beforeEach(() => {
+  adminClaimFixture = {
+    status: 'admin',
+    uid: 'admin-uid',
+    role: 'he_phai_admin',
+    orgUnitId: null,
+  }
+  revokeDirectoryRoleMock.mockReset()
+})
 
 beforeAll(() => {
   class ResizeObserverMock {
@@ -134,5 +180,72 @@ describe('OrgUnitsPage', () => {
       }),
     ).toBeTruthy()
     expect(screen.getByText('sec@gmail.com')).toBeTruthy()
+  })
+
+  it('shows Thư ký hệ phái section with secretary name and email', async () => {
+    renderPage()
+
+    expect(
+      await screen.findByRole('heading', {
+        name: m.admin_org_units_he_phai_secretaries_title(),
+      }),
+    ).toBeTruthy()
+    expect(await screen.findByText('Thích Hệ Phái')).toBeTruthy()
+    expect(screen.getByText('hpsec@gmail.com')).toBeTruthy()
+  })
+
+  it('revokes he phai secretary after confirm', async () => {
+    const user = userEvent.setup()
+    revokeDirectoryRoleMock.mockResolvedValue({ memberId: 'hp-sec-1' })
+    renderPage()
+
+    await user.click(
+      await screen.findByRole('button', {
+        name: m.admin_org_units_he_phai_secretaries_revoke(),
+      }),
+    )
+
+    const confirmDialog = await screen.findByRole('dialog', {
+      name: m.admin_org_units_he_phai_secretaries_revoke(),
+    })
+    expect(
+      within(confirmDialog).getByText(
+        m.admin_org_units_he_phai_secretaries_revoke_confirm(),
+      ),
+    ).toBeTruthy()
+    await user.click(
+      within(confirmDialog).getByRole('button', {
+        name: m.admin_org_units_he_phai_secretaries_revoke(),
+      }),
+    )
+
+    await waitFor(() => {
+      expect(revokeDirectoryRoleMock).toHaveBeenCalledWith({
+        memberId: 'hp-sec-1',
+        idToken: 'admin-id-token',
+      })
+    })
+  })
+
+  it('hides grant UI for he_phai_secretary claim', async () => {
+    adminClaimFixture = {
+      status: 'admin',
+      uid: 'hp-sec-uid',
+      role: 'he_phai_secretary',
+      orgUnitId: null,
+    }
+    renderPage()
+
+    expect(await screen.findByText('Giáo đoàn I')).toBeTruthy()
+    expect(
+      screen.queryByRole('columnheader', {
+        name: m.admin_org_units_col_secretaries(),
+      }),
+    ).toBeNull()
+    expect(
+      screen.queryByRole('heading', {
+        name: m.admin_org_units_he_phai_secretaries_title(),
+      }),
+    ).toBeNull()
   })
 })

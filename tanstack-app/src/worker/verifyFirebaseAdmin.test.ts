@@ -71,6 +71,14 @@ describe('verifyFirebaseAdminToken', () => {
     expect(result).toEqual({ uid: UID, role: 'giao_doan_admin' })
   })
 
+  it('returns uid and he_phai_secretary role when role is he_phai_secretary', async () => {
+    mockJwksFetch()
+    const token = await signToken({ role: 'he_phai_secretary' })
+    const { verifyFirebaseAdminToken } = await import('./verifyFirebaseAdmin')
+    const result = await verifyFirebaseAdminToken(token, PROJECT_ID)
+    expect(result).toEqual({ uid: UID, role: 'he_phai_secretary' })
+  })
+
   it('returns null when role is kiem_soat', async () => {
     mockJwksFetch()
     const token = await signToken({ role: 'kiem_soat' })
@@ -123,6 +131,14 @@ describe('verifyHePhaiAdminToken', () => {
   it('returns null when role is giao_doan_admin', async () => {
     mockJwksFetch()
     const token = await signToken({ role: 'giao_doan_admin', orgUnitId: 'gd-i' })
+    const { verifyHePhaiAdminToken } = await import('./verifyFirebaseAdmin')
+    const result = await verifyHePhaiAdminToken(token, PROJECT_ID)
+    expect(result).toBeNull()
+  })
+
+  it('returns null when role is he_phai_secretary', async () => {
+    mockJwksFetch()
+    const token = await signToken({ role: 'he_phai_secretary' })
     const { verifyHePhaiAdminToken } = await import('./verifyFirebaseAdmin')
     const result = await verifyHePhaiAdminToken(token, PROJECT_ID)
     expect(result).toBeNull()

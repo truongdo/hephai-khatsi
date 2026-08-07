@@ -26,6 +26,7 @@ describe('grantDirectoryRole', () => {
 
     const result = await grantDirectoryRole({
       memberId: 'm1',
+      role: 'giao_doan_admin',
       idToken: 'admin-token',
     })
 
@@ -41,7 +42,7 @@ describe('grantDirectoryRole', () => {
         'Content-Type': 'application/json',
         Authorization: 'Bearer admin-token',
       },
-      body: JSON.stringify({ memberId: 'm1' }),
+      body: JSON.stringify({ memberId: 'm1', role: 'giao_doan_admin' }),
     })
   })
 
@@ -53,7 +54,11 @@ describe('grantDirectoryRole', () => {
     })
 
     await expect(
-      grantDirectoryRole({ memberId: 'm1', idToken: 'admin-token' }),
+      grantDirectoryRole({
+        memberId: 'm1',
+        role: 'giao_doan_admin',
+        idToken: 'admin-token',
+      }),
     ).rejects.toThrow(/EMAIL_NOT_GMAIL/)
   })
 })

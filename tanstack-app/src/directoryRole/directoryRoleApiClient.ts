@@ -11,6 +11,7 @@ async function readApiError(response: Response): Promise<string> {
 
 export async function grantDirectoryRole(input: {
   memberId: string
+  role: 'giao_doan_admin' | 'he_phai_secretary'
   idToken: string
 }): Promise<{
   memberId: string
@@ -24,7 +25,7 @@ export async function grantDirectoryRole(input: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${input.idToken}`,
     },
-    body: JSON.stringify({ memberId: input.memberId }),
+    body: JSON.stringify({ memberId: input.memberId, role: input.role }),
   })
 
   if (!response.ok) {

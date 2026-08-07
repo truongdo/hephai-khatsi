@@ -721,6 +721,11 @@ export function createMemoryMemberStore(
         (member) => member.directoryRole === 'giao_doan_admin',
       )
     },
+    async listHePhaiSecretaries() {
+      return [...members.values()].filter(
+        (member) => member.directoryRole === 'he_phai_secretary',
+      )
+    },
     async deleteMany(ids: string[]) {
       for (const memberId of ids) {
         const member = members.get(memberId)

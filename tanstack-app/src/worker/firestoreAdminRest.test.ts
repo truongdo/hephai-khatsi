@@ -120,8 +120,15 @@ describe('listSecretaries', () => {
         expect(body.structuredQuery.from).toEqual([{ collectionId: 'members' }])
         expect(body.structuredQuery.where.fieldFilter).toEqual({
           field: { fieldPath: 'directoryRole' },
-          op: 'EQUAL',
-          value: { stringValue: 'giao_doan_admin' },
+          op: 'IN',
+          value: {
+            arrayValue: {
+              values: [
+                { stringValue: 'giao_doan_admin' },
+                { stringValue: 'he_phai_secretary' },
+              ],
+            },
+          },
         })
 
         return new Response(

@@ -54,14 +54,17 @@ function makeEnv(overrides: Partial<Env> = {}): Env {
   }
 }
 
-function grantRequest(memberId = MEMBER_ID): Request {
+function grantRequest(
+  memberId = MEMBER_ID,
+  role: 'giao_doan_admin' | 'he_phai_secretary' = 'giao_doan_admin',
+): Request {
   return new Request('https://example.com/api/admin/directory-role/grant', {
     method: 'POST',
     headers: {
       Authorization: 'Bearer he-phai-token',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ memberId }),
+    body: JSON.stringify({ memberId, role }),
   })
 }
 
@@ -307,6 +310,92 @@ describe('handleDirectoryRoleApi', () => {
       )
 
       expect(response.status).toBe(400)
+    })
+
+    it('grants he_phai_secretary claims and patches member', async () => {
+      const { handleDirectoryRoleApi } = await import('./directoryRoleApi')
+
+      const response = await handleDirectoryRoleApi(
+        grantRequest(MEMBER_ID, 'he_phai_secretary'),
+        makeEnv(),
+      )
+      const body = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(body).toEqual({
+        memberId: MEMBER_ID,
+        directoryAuthUid: AUTH_UID,
+        orgUnitId: 'gd-i',
+        email: 'secretary@gmail.com',
+      })
+      expect(setAuthCustomClaims).toHaveBeenCalledWith(
+        ACCESS_TOKEN,
+        PROJECT_ID,
+        AUTH_UID,
+        { role: 'he_phai_secretary' },
+      )
+      expect(patchMemberDirectoryFields).toHaveBeenCalledWith(
+        ACCESS_TOKEN,
+        PROJECT_ID,
+        MEMBER_ID,
+        expect.objectContaining({
+          directoryRole: 'he_phai_secretary',
+          directoryAuthUid: AUTH_UID,
+        }),
+      )
+    })
+
+    it('returns 400 ROLE_REQUIRED when role missing', async () => {
+      const { handleDirectoryRoleApi } = await import('./directoryRoleApi')
+
+      const response = await handleDirectoryRoleApi(
+        new Request('https://example.com/api/admin/directory-role/grant', {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer he-phai-token',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ memberId: MEMBER_ID }),
+        }),
+        makeEnv(),
+      )
+      const body = await response.json()
+
+      expect(response.status).toBe(400)
+      expect(body).toEqual({ code: 'ROLE_REQUIRED' })
+    })
+
+    it('returns 400 ALREADY_SECRETARY when member has he_phai_secretary', async () => {
+      getMemberAdminFields.mockResolvedValue({
+        id: MEMBER_ID,
+        orgUnitId: 'gd-i',
+        email: 'secretary@gmail.com',
+        directoryRole: 'he_phai_secretary',
+        directoryAuthUid: AUTH_UID,
+      })
+      const { handleDirectoryRoleApi } = await import('./directoryRoleApi')
+
+      const response = await handleDirectoryRoleApi(
+        grantRequest(MEMBER_ID, 'he_phai_secretary'),
+        makeEnv(),
+      )
+      const body = await response.json()
+
+      expect(response.status).toBe(400)
+      expect(body).toEqual({ code: 'ALREADY_SECRETARY' })
+    })
+
+    it('returns 403 when caller is he_phai_secretary', async () => {
+      verifyHePhaiAdminToken.mockResolvedValue(null)
+      const { handleDirectoryRoleApi } = await import('./directoryRoleApi')
+
+      const response = await handleDirectoryRoleApi(
+        grantRequest(MEMBER_ID, 'he_phai_secretary'),
+        makeEnv(),
+      )
+
+      expect(response.status).toBe(403)
+      expect(getMemberAdminFields).not.toHaveBeenCalled()
     })
   })
 

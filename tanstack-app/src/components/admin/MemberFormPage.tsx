@@ -33,6 +33,7 @@ import type { SanghaType } from '#/domain/types'
 import {
   canGrantDirectoryRole,
   canManageDirectory,
+  isHePhaiScope,
 } from '#/domain/authClaims'
 import { isGmailEmail } from '#/domain/gmail'
 import {
@@ -80,8 +81,9 @@ export function MemberFormPage({
     claim.status === 'admin' &&
     canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
 
-  const isHePhaiAdmin =
-    claim.status === 'admin' && claim.role === 'he_phai_admin'
+  const isHePhaiScoped =
+    claim.status === 'admin' &&
+    isHePhaiScope({ role: claim.role, orgUnitId: claim.orgUnitId })
 
   const claims =
     claim.status === 'admin'
@@ -338,6 +340,9 @@ export function MemberFormPage({
     await queryClient.invalidateQueries({
       queryKey: adminKeys.directorySecretaries(),
     })
+    await queryClient.invalidateQueries({
+      queryKey: adminKeys.hePhaiSecretaries(),
+    })
     if (memberId) {
       await queryClient.invalidateQueries({
         queryKey: adminKeys.member(memberId),
@@ -346,14 +351,18 @@ export function MemberFormPage({
   }
 
   const grantDirectoryRoleMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (role: 'giao_doan_admin' | 'he_phai_secretary') => {
       if (!memberId) throw new Error('Missing member id')
       if (!user) throw new Error('Not signed in')
       const idToken = await user.getIdToken()
-      return grantDirectoryRole({ memberId, idToken })
+      return grantDirectoryRole({ memberId, role, idToken })
     },
-    onSuccess: async () => {
-      setDirectoryRoleSuccess(m.admin_member_directory_role_grant_success())
+    onSuccess: async (_data, role) => {
+      setDirectoryRoleSuccess(
+        role === 'he_phai_secretary'
+          ? m.admin_member_directory_role_grant_success_he_phai()
+          : m.admin_member_directory_role_grant_success(),
+      )
       await invalidateMemberAndSecretaries()
     },
     onError: () => {
@@ -369,8 +378,13 @@ export function MemberFormPage({
       return revokeDirectoryRole({ memberId, idToken })
     },
     onSuccess: async () => {
+      const revokedRole = member.data?.directoryRole
       setRevokeDirectoryRoleOpen(false)
-      setDirectoryRoleSuccess(m.admin_member_directory_role_revoke_success())
+      setDirectoryRoleSuccess(
+        revokedRole === 'he_phai_secretary'
+          ? m.admin_member_directory_role_revoke_success_he_phai()
+          : m.admin_member_directory_role_revoke_success(),
+      )
       await invalidateMemberAndSecretaries()
     },
     onError: () => {
@@ -454,10 +468,13 @@ export function MemberFormPage({
               ? m.admin_members_form_title_create()
               : m.admin_members_form_title_edit()}
           </Title>
-          {canGrant &&
-            mode === 'edit' &&
+          {mode === 'edit' &&
             member.data?.directoryRole === 'giao_doan_admin' && (
               <Badge>{m.admin_member_directory_role_badge()}</Badge>
+            )}
+          {mode === 'edit' &&
+            member.data?.directoryRole === 'he_phai_secretary' && (
+              <Badge>{m.admin_member_directory_role_badge_he_phai()}</Badge>
             )}
         </Group>
         <Group gap="sm">
@@ -470,22 +487,51 @@ export function MemberFormPage({
               >
                 {m.admin_member_directory_role_revoke()}
               </Button>
-            ) : (
-              <Tooltip
-                label={m.admin_member_directory_role_need_gmail()}
-                disabled={isGmailEmail(member.data.email)}
+            ) : member.data.directoryRole === 'he_phai_secretary' ? (
+              <Button
+                variant="outline"
+                color="red"
+                onClick={() => setRevokeDirectoryRoleOpen(true)}
               >
-                <span>
-                  <Button
-                    variant="outline"
-                    disabled={!isGmailEmail(member.data.email)}
-                    loading={grantDirectoryRoleMutation.isPending}
-                    onClick={() => grantDirectoryRoleMutation.mutate()}
-                  >
-                    {m.admin_member_directory_role_grant()}
-                  </Button>
-                </span>
-              </Tooltip>
+                {m.admin_member_directory_role_revoke_he_phai()}
+              </Button>
+            ) : (
+              <>
+                <Tooltip
+                  label={m.admin_member_directory_role_need_gmail()}
+                  disabled={isGmailEmail(member.data.email)}
+                >
+                  <span>
+                    <Button
+                      variant="outline"
+                      disabled={!isGmailEmail(member.data.email)}
+                      loading={grantDirectoryRoleMutation.isPending}
+                      onClick={() =>
+                        grantDirectoryRoleMutation.mutate('giao_doan_admin')
+                      }
+                    >
+                      {m.admin_member_directory_role_grant()}
+                    </Button>
+                  </span>
+                </Tooltip>
+                <Tooltip
+                  label={m.admin_member_directory_role_need_gmail()}
+                  disabled={isGmailEmail(member.data.email)}
+                >
+                  <span>
+                    <Button
+                      variant="outline"
+                      disabled={!isGmailEmail(member.data.email)}
+                      loading={grantDirectoryRoleMutation.isPending}
+                      onClick={() =>
+                        grantDirectoryRoleMutation.mutate('he_phai_secretary')
+                      }
+                    >
+                      {m.admin_member_directory_role_grant_he_phai()}
+                    </Button>
+                  </span>
+                </Tooltip>
+              </>
             )
           )}
           <Button
@@ -517,7 +563,7 @@ export function MemberFormPage({
               </Text>
             )}
 
-            {(isHePhaiAdmin || mode === 'edit') && (
+            {(isHePhaiScoped || mode === 'edit') && (
               <Select
                 label={m.admin_members_form_org_unit()}
                 data={orgUnitSelectData}
@@ -629,11 +675,19 @@ export function MemberFormPage({
       <Modal
         opened={revokeDirectoryRoleOpen}
         onClose={() => setRevokeDirectoryRoleOpen(false)}
-        title={m.admin_member_directory_role_revoke()}
+        title={
+          member.data?.directoryRole === 'he_phai_secretary'
+            ? m.admin_member_directory_role_revoke_he_phai()
+            : m.admin_member_directory_role_revoke()
+        }
         closeOnClickOutside={!revokeDirectoryRoleMutation.isPending}
         closeOnEscape={!revokeDirectoryRoleMutation.isPending}
       >
-        <Text>{m.admin_org_units_secretaries_revoke_confirm()}</Text>
+        <Text>
+          {member.data?.directoryRole === 'he_phai_secretary'
+            ? m.admin_org_units_he_phai_secretaries_revoke_confirm()
+            : m.admin_org_units_secretaries_revoke_confirm()}
+        </Text>
         <Group justify="flex-end" mt="md">
           <Button
             variant="default"
@@ -647,7 +701,9 @@ export function MemberFormPage({
             loading={revokeDirectoryRoleMutation.isPending}
             onClick={() => revokeDirectoryRoleMutation.mutate()}
           >
-            {m.admin_member_directory_role_revoke()}
+            {member.data?.directoryRole === 'he_phai_secretary'
+              ? m.admin_member_directory_role_revoke_he_phai()
+              : m.admin_member_directory_role_revoke()}
           </Button>
         </Group>
       </Modal>

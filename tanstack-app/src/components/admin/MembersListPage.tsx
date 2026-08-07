@@ -24,7 +24,7 @@ import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
 import { useAdminListSelection } from '#/components/admin/useAdminListSelection'
 import { rankLabel } from '#/components/filler/fillerFormOptions'
 import type { Member, RecordStatus, SanghaType } from '#/domain/types'
-import { canManageDirectory } from '#/domain/authClaims'
+import { canManageDirectory, isHePhaiScope } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
 import { membersQuery, orgUnitsQuery } from '#/query/adminQueries'
 import { deleteMembers } from '#/use-cases/deleteMembers'
@@ -69,8 +69,9 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     claim.status === 'admin' &&
     canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
 
-  const isHePhaiAdmin =
-    claim.status === 'admin' && claim.role === 'he_phai_admin'
+  const isHePhaiScoped =
+    claim.status === 'admin' &&
+    isHePhaiScope({ role: claim.role, orgUnitId: claim.orgUnitId })
 
   const claims =
     claim.status === 'admin'
@@ -264,7 +265,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
       )}
 
       <Group>
-        {isHePhaiAdmin && (
+        {isHePhaiScoped && (
           <Select
             label={m.admin_members_filter_org_unit()}
             placeholder={m.admin_filter_all()}

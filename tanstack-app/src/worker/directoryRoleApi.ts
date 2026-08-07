@@ -17,8 +17,15 @@ import {
 } from './googleServiceAccount'
 import { verifyHePhaiAdminToken } from './verifyFirebaseAdmin'
 
+type DirectoryRoleKind = 'giao_doan_admin' | 'he_phai_secretary'
+
 type DirectoryRoleBody = {
   memberId?: string
+  role?: string
+}
+
+function isDirectoryRoleKind(value: unknown): value is DirectoryRoleKind {
+  return value === 'giao_doan_admin' || value === 'he_phai_secretary'
 }
 
 function bearerToken(request: Request): string | null {
@@ -72,6 +79,11 @@ async function handleGrant(
     return jsonError({ error: 'memberId required' }, 400)
   }
 
+  const role = body.role
+  if (!isDirectoryRoleKind(role)) {
+    return jsonError({ code: 'ROLE_REQUIRED' }, 400)
+  }
+
   try {
     const accessToken = await getServiceAccessToken(env)
     const member = await getMemberAdminFields(
@@ -87,7 +99,7 @@ async function handleGrant(
       return jsonError({ code: 'EMAIL_NOT_GMAIL' }, 400)
     }
 
-    if (member.directoryRole === 'giao_doan_admin') {
+    if (member.directoryRole) {
       return jsonError({ code: 'ALREADY_SECRETARY' }, 400)
     }
 
@@ -116,18 +128,27 @@ async function handleGrant(
       )
       authUser = { localId: authUser.localId, customClaims: {} }
     } else if (
-      blocksSecretaryGrantOnAuthClaims(authUser.customClaims, member.orgUnitId)
+      blocksSecretaryGrantOnAuthClaims(
+        authUser.customClaims,
+        member.orgUnitId,
+        role,
+      )
     ) {
       return jsonError({ code: 'AUTH_USER_PRIVILEGED' }, 400)
     }
 
     const directoryAuthUid = authUser.localId
 
+    const claims =
+      role === 'he_phai_secretary'
+        ? { role: 'he_phai_secretary' as const }
+        : { role: 'giao_doan_admin' as const, orgUnitId: member.orgUnitId }
+
     await setAuthCustomClaims(
       accessToken,
       env.FIREBASE_PROJECT_ID,
       directoryAuthUid,
-      { role: 'giao_doan_admin', orgUnitId: member.orgUnitId },
+      claims,
     )
 
     try {
@@ -136,7 +157,7 @@ async function handleGrant(
         env.FIREBASE_PROJECT_ID,
         memberId,
         {
-          directoryRole: 'giao_doan_admin',
+          directoryRole: role,
           directoryAuthUid,
           directoryRoleGrantedAt: new Date().toISOString(),
           directoryRoleGrantedBy: grantedByUid,

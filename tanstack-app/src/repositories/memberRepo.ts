@@ -125,6 +125,7 @@ export type MemberStore = {
   lock(memberId: string, lockedBy: string, audit: AuditActor): Promise<Member>
   unlock(memberId: string, audit: AuditActor): Promise<Member>
   listDirectorySecretaries(): Promise<Member[]>
+  listHePhaiSecretaries(): Promise<Member[]>
 }
 
 const PHONE_INDEX_CAP = 20
@@ -771,6 +772,18 @@ async function listDirectorySecretaries(): Promise<Member[]> {
   return snap.docs.map(memberFromSnap)
 }
 
+async function listHePhaiSecretaries(): Promise<Member[]> {
+  const db = requireDb()
+  const snap = await getDocs(
+    query(
+      collection(db, COLLECTIONS.members),
+      where('directoryRole', '==', 'he_phai_secretary'),
+      fbLimit(200),
+    ),
+  )
+  return snap.docs.map(memberFromSnap)
+}
+
 async function unlock(memberId: string, audit: AuditActor): Promise<Member> {
   const db = requireDb()
   const memberRef = doc(db, COLLECTIONS.members, memberId)
@@ -831,4 +844,5 @@ export const memberRepo: MemberStore = {
   lock,
   unlock,
   listDirectorySecretaries,
+  listHePhaiSecretaries,
 }

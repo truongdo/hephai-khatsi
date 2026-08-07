@@ -21,7 +21,7 @@ import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteMo
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { FormStickyActions } from '#/components/FormStickyActions'
 import { RepeatableFieldset } from '#/components/filler/RepeatableFieldset'
-import { canManageRetreats } from '#/domain/authClaims'
+import { canManageRetreats, isHePhaiScope } from '#/domain/authClaims'
 import type {
   QuyenDangKy,
   RetreatExtraField,
@@ -86,8 +86,9 @@ export function RetreatFormPage({ mode, retreatId }: RetreatFormPageProps) {
     claim.status === 'admin' &&
     canManageRetreats({ role: claim.role, orgUnitId: claim.orgUnitId })
 
-  const isHePhaiAdmin =
-    claim.status === 'admin' && claim.role === 'he_phai_admin'
+  const isHePhaiScoped =
+    claim.status === 'admin' &&
+    isHePhaiScope({ role: claim.role, orgUnitId: claim.orgUnitId })
 
   const [orgUnitId, setOrgUnitId] = useState<string | null>(null)
   const [fields, setFields] = useState<RetreatWritableFields>(emptyFields)
@@ -313,7 +314,7 @@ export function RetreatFormPage({ mode, retreatId }: RetreatFormPageProps) {
       {(mode === 'create' || retreat.data) && !retreat.isError && (
         <Paper p="xl" radius="md" maw={760} w="100%">
           <Stack gap="lg">
-            {(isHePhaiAdmin || mode === 'edit') && (
+            {(isHePhaiScoped || mode === 'edit') && (
               <Select
                 label={m.admin_retreats_form_org_unit()}
                 data={orgUnitSelectData}

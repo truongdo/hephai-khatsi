@@ -1022,6 +1022,35 @@ describe('members + temples org scope (giao_doan_admin)', () => {
   })
 })
 
+describe('he_phai_secretary', () => {
+  it('can list members without org filter', async () => {
+    const env = await getTestEnv()
+    await seedMembersAcrossOrgs(env)
+    const sec = env.authenticatedContext('hp-sec', { role: 'he_phai_secretary' }).firestore()
+    await assertSucceeds(getDocs(fsCollection(sec, 'members')))
+  })
+
+  it('cannot write orgUnits', async () => {
+    const env = await getTestEnv()
+    const sec = env.authenticatedContext('hp-sec', { role: 'he_phai_secretary' }).firestore()
+    await assertFails(
+      setDoc(doc(sec, 'orgUnits/gd-ii'), { name: 'x' }, { merge: true }),
+    )
+  })
+
+  it('can update member in any org', async () => {
+    const env = await getTestEnv()
+    await seedMembersAcrossOrgs(env)
+    const sec = env.authenticatedContext('hp-sec', { role: 'he_phai_secretary' }).firestore()
+    await assertSucceeds(
+      updateDoc(doc(sec, 'members', 'gd-ii_tang_012345678902'), {
+        phapDanh: 'Cross-org edit',
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+})
+
 describe('retreats + role claims', () => {
   it('giao_doan_admin can create/get in own org; get by id is public, write to other org denied', async () => {
     const env = await getTestEnv()

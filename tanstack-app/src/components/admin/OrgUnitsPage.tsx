@@ -1,8 +1,19 @@
-import { Anchor, Stack, Table, Title, UnstyledButton } from '@mantine/core'
-import { useQuery } from '@tanstack/react-query'
+import {
+  Anchor,
+  Button,
+  Group,
+  Modal,
+  Stack,
+  Table,
+  Text,
+  Title,
+  UnstyledButton,
+} from '@mantine/core'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
+import { useAuth } from '#/auth/useAuth'
 import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
@@ -11,14 +22,18 @@ import {
   OrgUnitSecretariesModal,
 } from '#/components/admin/OrgUnitSecretariesModal'
 import type { Member, OrgUnitKind } from '#/domain/types'
+import { isoToGmt7Date } from '#/domain/gmt7Date'
 import {
   canGrantDirectoryRole,
   canManageDirectory,
 } from '#/domain/authClaims'
+import { revokeDirectoryRole } from '#/directoryRole/directoryRoleApiClient'
 import {
   directorySecretariesQuery,
+  hePhaiSecretariesQuery,
   orgUnitsQuery,
 } from '#/query/adminQueries'
+import { adminKeys } from '#/query/adminKeys'
 
 function orgUnitKindLabel(kind: OrgUnitKind): string {
   switch (kind) {
@@ -29,12 +44,25 @@ function orgUnitKindLabel(kind: OrgUnitKind): string {
   }
 }
 
+function formatGrantedAt(iso: string | undefined): string {
+  if (!iso) return '—'
+  const ymd = isoToGmt7Date(iso)
+  if (!ymd) return '—'
+  const [year, month, day] = ymd.split('-')
+  return `${day}/${month}/${year}`
+}
+
 export function OrgUnitsPage() {
   const claim = useAdminClaim()
+  const { user } = useAuth()
+  const queryClient = useQueryClient()
   const [modalOrgUnit, setModalOrgUnit] = useState<{
     id: string
     name: string
   } | null>(null)
+  const [revokeHePhaiTarget, setRevokeHePhaiTarget] = useState<Member | null>(
+    null,
+  )
 
   const manageDirectory =
     claim.status === 'admin' &&
@@ -52,6 +80,27 @@ export function OrgUnitsPage() {
   const secretaries = useQuery({
     ...directorySecretariesQuery(),
     enabled: manageDirectory && canGrant,
+  })
+
+  const hePhaiSecretaries = useQuery({
+    ...hePhaiSecretariesQuery(),
+    enabled: manageDirectory && canGrant,
+  })
+
+  const revokeHePhaiMutation = useMutation({
+    mutationFn: async (memberId: string) => {
+      const idToken = await user!.getIdToken()
+      return revokeDirectoryRole({ memberId, idToken })
+    },
+    onSuccess: () => {
+      setRevokeHePhaiTarget(null)
+      void queryClient.invalidateQueries({
+        queryKey: adminKeys.directorySecretaries(),
+      })
+      void queryClient.invalidateQueries({
+        queryKey: adminKeys.hePhaiSecretaries(),
+      })
+    },
   })
 
   const secretariesByOrgUnit = useMemo(() => {
@@ -125,6 +174,57 @@ export function OrgUnitsPage() {
         </AdminDataTable>
       )}
 
+      {canGrant && (
+        <Stack gap="sm">
+          <Title order={3}>
+            {m.admin_org_units_he_phai_secretaries_title()}
+          </Title>
+          {(hePhaiSecretaries.data ?? []).length === 0 ? (
+            <Text>{m.admin_org_units_he_phai_secretaries_empty()}</Text>
+          ) : (
+            <Table>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>
+                    {m.admin_org_units_he_phai_secretaries_col_name()}
+                  </Table.Th>
+                  <Table.Th>
+                    {m.admin_org_units_he_phai_secretaries_col_email()}
+                  </Table.Th>
+                  <Table.Th>
+                    {m.admin_org_units_he_phai_secretaries_col_granted_at()}
+                  </Table.Th>
+                  <Table.Th />
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {hePhaiSecretaries.data?.map((member) => (
+                  <Table.Tr key={member.id}>
+                    <Table.Td>
+                      {directorySecretaryDisplayName(member)}
+                    </Table.Td>
+                    <Table.Td>{member.email ?? '—'}</Table.Td>
+                    <Table.Td>
+                      {formatGrantedAt(member.directoryRoleGrantedAt)}
+                    </Table.Td>
+                    <Table.Td>
+                      <Button
+                        variant="subtle"
+                        color="red"
+                        size="compact-sm"
+                        onClick={() => setRevokeHePhaiTarget(member)}
+                      >
+                        {m.admin_org_units_he_phai_secretaries_revoke()}
+                      </Button>
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+          )}
+        </Stack>
+      )}
+
       {modalOrgUnit && (
         <OrgUnitSecretariesModal
           opened
@@ -133,6 +233,36 @@ export function OrgUnitsPage() {
           secretaries={secretariesByOrgUnit.get(modalOrgUnit.id) ?? []}
         />
       )}
+
+      <Modal
+        opened={revokeHePhaiTarget != null}
+        onClose={() => setRevokeHePhaiTarget(null)}
+        title={m.admin_org_units_he_phai_secretaries_revoke()}
+        closeOnClickOutside={!revokeHePhaiMutation.isPending}
+        closeOnEscape={!revokeHePhaiMutation.isPending}
+      >
+        <Text>{m.admin_org_units_he_phai_secretaries_revoke_confirm()}</Text>
+        <Group justify="flex-end" mt="md">
+          <Button
+            variant="default"
+            onClick={() => setRevokeHePhaiTarget(null)}
+            disabled={revokeHePhaiMutation.isPending}
+          >
+            Hủy
+          </Button>
+          <Button
+            color="red"
+            loading={revokeHePhaiMutation.isPending}
+            onClick={() => {
+              if (revokeHePhaiTarget) {
+                revokeHePhaiMutation.mutate(revokeHePhaiTarget.id)
+              }
+            }}
+          >
+            {m.admin_org_units_he_phai_secretaries_revoke()}
+          </Button>
+        </Group>
+      </Modal>
     </Stack>
   )
 }

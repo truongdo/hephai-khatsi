@@ -5,6 +5,7 @@ import {
   canManageDirectory,
   canManageRetreats,
   blocksSecretaryGrantOnAuthClaims,
+  isHePhaiScope,
   parseAuthClaims,
 } from './authClaims'
 
@@ -12,6 +13,13 @@ describe('parseAuthClaims', () => {
   it('returns he_phai_admin with null orgUnitId when role is he_phai_admin', () => {
     expect(parseAuthClaims({ role: 'he_phai_admin' })).toEqual({
       role: 'he_phai_admin',
+      orgUnitId: null,
+    })
+  })
+
+  it('returns he_phai_secretary with null orgUnitId', () => {
+    expect(parseAuthClaims({ role: 'he_phai_secretary' })).toEqual({
+      role: 'he_phai_secretary',
       orgUnitId: null,
     })
   })
@@ -94,12 +102,34 @@ describe('blocksSecretaryGrantOnAuthClaims', () => {
     ).toBe(false)
     expect(blocksSecretaryGrantOnAuthClaims({}, 'gd-i')).toBe(false)
   })
+
+  it('blocks he_phai_secretary on Auth claims', () => {
+    expect(
+      blocksSecretaryGrantOnAuthClaims({ role: 'he_phai_secretary' }, 'gd-i'),
+    ).toBe(true)
+  })
+
+  it('blocks any giao_doan_admin when granting he_phai_secretary', () => {
+    expect(
+      blocksSecretaryGrantOnAuthClaims(
+        { role: 'giao_doan_admin', orgUnitId: 'gd-i' },
+        'gd-i',
+        'he_phai_secretary',
+      ),
+    ).toBe(true)
+  })
 })
 
 describe('canAccessOrgUnit', () => {
   it('always allows he_phai_admin regardless of orgUnitId', () => {
     expect(
       canAccessOrgUnit({ role: 'he_phai_admin', orgUnitId: null }, 'gd-i'),
+    ).toBe(true)
+  })
+
+  it('always allows he_phai_secretary for any org', () => {
+    expect(
+      canAccessOrgUnit({ role: 'he_phai_secretary', orgUnitId: null }, 'gd-i'),
     ).toBe(true)
   })
 
@@ -125,6 +155,18 @@ describe('canAccessOrgUnit', () => {
     expect(
       canAccessOrgUnit({ role: 'he_phai_admin', orgUnitId: 'gd-i' }, 'gd-ii'),
     ).toBe(true)
+  })
+})
+
+describe('isHePhaiScope', () => {
+  it('isHePhaiScope true for he_phai_admin and he_phai_secretary only', () => {
+    expect(isHePhaiScope({ role: 'he_phai_admin', orgUnitId: null })).toBe(true)
+    expect(isHePhaiScope({ role: 'he_phai_secretary', orgUnitId: null })).toBe(
+      true,
+    )
+    expect(
+      isHePhaiScope({ role: 'giao_doan_admin', orgUnitId: 'gd-i' }),
+    ).toBe(false)
   })
 })
 
@@ -159,5 +201,12 @@ describe('canManageDirectory / canManageRetreats', () => {
     const c = { role: 'kiem_soat' as const, orgUnitId: 'gd-i' }
     expect(canManageDirectory(c)).toBe(false)
     expect(canManageRetreats(c)).toBe(false)
+  })
+
+  it('canManageDirectory allows he_phai_secretary; canGrantDirectoryRole denies it', () => {
+    const c = { role: 'he_phai_secretary' as const, orgUnitId: null }
+    expect(canManageDirectory(c)).toBe(true)
+    expect(canManageRetreats(c)).toBe(true)
+    expect(canGrantDirectoryRole(c)).toBe(false)
   })
 })

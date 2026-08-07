@@ -1,4 +1,8 @@
-export type AdminRole = 'he_phai_admin' | 'giao_doan_admin' | 'kiem_soat'
+export type AdminRole =
+  | 'he_phai_admin'
+  | 'he_phai_secretary'
+  | 'giao_doan_admin'
+  | 'kiem_soat'
 
 export type AuthClaims = {
   role: AdminRole
@@ -7,6 +11,7 @@ export type AuthClaims = {
 
 const ADMIN_ROLES: readonly AdminRole[] = [
   'he_phai_admin',
+  'he_phai_secretary',
   'giao_doan_admin',
   'kiem_soat',
 ]
@@ -36,16 +41,20 @@ export function parseAuthClaims(
   return null
 }
 
+export function isHePhaiScope(claims: AuthClaims): boolean {
+  return claims.role === 'he_phai_admin' || claims.role === 'he_phai_secretary'
+}
+
 export function canAccessOrgUnit(
   claims: AuthClaims,
   orgUnitId: string,
 ): boolean {
-  if (claims.role === 'he_phai_admin') return true
+  if (isHePhaiScope(claims)) return true
   return claims.orgUnitId === orgUnitId
 }
 
 export function canManageDirectory(claims: AuthClaims): boolean {
-  return claims.role === 'he_phai_admin' || claims.role === 'giao_doan_admin'
+  return isHePhaiScope(claims) || claims.role === 'giao_doan_admin'
 }
 
 export function canGrantDirectoryRole(claims: AuthClaims): boolean {
@@ -60,12 +69,19 @@ export function canManageRetreats(claims: AuthClaims): boolean {
 export function blocksSecretaryGrantOnAuthClaims(
   rawClaims: Record<string, unknown>,
   targetOrgUnitId: string,
+  grantRole: 'giao_doan_admin' | 'he_phai_secretary' = 'giao_doan_admin',
 ): boolean {
   if (rawClaims.admin === true) return true
 
   const role = rawClaims.role
-  if (role === 'he_phai_admin' || role === 'kiem_soat') return true
+  if (
+    role === 'he_phai_admin' ||
+    role === 'kiem_soat' ||
+    role === 'he_phai_secretary'
+  )
+    return true
   if (role === 'giao_doan_admin') {
+    if (grantRole === 'he_phai_secretary') return true
     const org =
       typeof rawClaims.orgUnitId === 'string' && rawClaims.orgUnitId.length > 0
         ? rawClaims.orgUnitId

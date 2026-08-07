@@ -21,7 +21,7 @@ import { FormStickyActions } from '#/components/FormStickyActions'
 import { buildTemplePatch, type TempleDraft } from '#/components/filler/templeDraft'
 import { useFormLocalDraft } from '#/hooks/useFormLocalDraft'
 import { templeDraftStorageKey } from '#/lib/formLocalDraft'
-import { canManageDirectory } from '#/domain/authClaims'
+import { canManageDirectory, isHePhaiScope } from '#/domain/authClaims'
 import { validateTempleRequiredFields } from '#/components/filler/templeRequiredValidation'
 import {
   TempleFormFields,
@@ -50,8 +50,9 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
     claim.status === 'admin' &&
     canManageDirectory({ role: claim.role, orgUnitId: claim.orgUnitId })
 
-  const isHePhaiAdmin =
-    claim.status === 'admin' && claim.role === 'he_phai_admin'
+  const isHePhaiScoped =
+    claim.status === 'admin' &&
+    isHePhaiScope({ role: claim.role, orgUnitId: claim.orgUnitId })
 
   const claims =
     claim.status === 'admin'
@@ -320,7 +321,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
               </Text>
             )}
 
-            {(isHePhaiAdmin || mode === 'edit') && (
+            {(isHePhaiScoped || mode === 'edit') && (
               <Select
                 label={m.admin_temples_form_org_unit()}
                 data={orgUnitSelectData}

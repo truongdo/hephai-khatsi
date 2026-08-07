@@ -99,3 +99,12 @@ export function directorySecretariesQuery() {
     retry: 3,
   })
 }
+
+export function hePhaiSecretariesQuery() {
+  return queryOptions({
+    queryKey: adminKeys.hePhaiSecretaries(),
+    queryFn: () => memberRepo.listHePhaiSecretaries(),
+    staleTime: 60_000,
+    retry: 3,
+  })
+}

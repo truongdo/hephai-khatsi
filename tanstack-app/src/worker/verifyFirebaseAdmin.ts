@@ -3,7 +3,7 @@ import * as jose from 'jose'
 const FIREBASE_JWKS_URL =
   'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'
 
-export type AdminRole = 'he_phai_admin' | 'giao_doan_admin'
+export type AdminRole = 'he_phai_admin' | 'he_phai_secretary' | 'giao_doan_admin'
 
 let jwks: ReturnType<typeof jose.createRemoteJWKSet> | null = null
 
@@ -18,7 +18,11 @@ function resolveAdminRole(payload: jose.JWTPayload): AdminRole | null {
   if (payload.admin === true) {
     return 'he_phai_admin'
   }
-  if (payload.role === 'he_phai_admin' || payload.role === 'giao_doan_admin') {
+  if (
+    payload.role === 'he_phai_admin' ||
+    payload.role === 'he_phai_secretary' ||
+    payload.role === 'giao_doan_admin'
+  ) {
     return payload.role
   }
   return null

@@ -132,7 +132,7 @@ export type Member = {
   lockedBy: string | null
   editRequestedAt: string | null
   editRequestedBy: string | null
-  directoryRole?: 'giao_doan_admin'
+  directoryRole?: 'giao_doan_admin' | 'he_phai_secretary'
   directoryAuthUid?: string
   directoryRoleGrantedAt?: string
   directoryRoleGrantedBy?: string
