@@ -149,4 +149,31 @@ describe('AdminShell', () => {
     )
     expect(await screen.findByText(m.admin_notifications_empty())).toBeTruthy()
   })
+
+  it('shows burger that toggles mobile navbar', async () => {
+    const user = userEvent.setup()
+    renderShell()
+    const burger = await screen.findByRole('button', {
+      name: m.admin_nav_menu_aria(),
+    })
+    expect(burger).toBeTruthy()
+    expect(burger.getAttribute('aria-expanded')).toBe('false')
+    await user.click(burger)
+    expect(burger.getAttribute('aria-expanded')).toBe('true')
+    const nav = screen.getByRole('navigation')
+    expect(nav).toBeTruthy()
+  })
+
+  it('closes mobile navbar when a nav link is clicked', async () => {
+    const user = userEvent.setup()
+    renderShell()
+    const burger = await screen.findByRole('button', {
+      name: m.admin_nav_menu_aria(),
+    })
+    await user.click(burger)
+    expect(burger.getAttribute('aria-expanded')).toBe('true')
+    const nav = screen.getByRole('navigation')
+    await user.click(within(nav).getByText(m.admin_nav_temples()))
+    expect(burger.getAttribute('aria-expanded')).toBe('false')
+  })
 })

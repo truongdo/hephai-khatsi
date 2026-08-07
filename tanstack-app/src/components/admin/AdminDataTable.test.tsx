@@ -60,6 +60,17 @@ describe('AdminDataTable', () => {
     expect(screen.getByRole('table', { name: 'demo' })).toBeTruthy()
   })
 
+  it('wraps the table in a scroll container when showing rows', () => {
+    renderTable(
+      <AdminDataTable aria-label="demo">{sampleChildren}</AdminDataTable>,
+    )
+    const table = screen.getByRole('table', { name: 'demo' })
+    const scroll = table.closest(
+      '[class*="ScrollContainer"], [class*="scrollContainer"]',
+    )
+    expect(scroll).toBeTruthy()
+  })
+
   it('shows default empty message and hides children when empty', () => {
     renderTable(
       <AdminDataTable empty>{sampleChildren}</AdminDataTable>,

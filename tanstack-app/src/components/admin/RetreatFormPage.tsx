@@ -284,13 +284,13 @@ export function RetreatFormPage({ mode, retreatId }: RetreatFormPageProps) {
 
   return (
     <Stack>
-      <Group justify="space-between" align="center">
+      <Group justify="space-between" align="center" wrap="wrap" gap="sm">
         <Title order={2}>
           {mode === 'create'
             ? m.admin_retreats_form_title_create()
             : m.admin_retreats_form_title_edit()}
         </Title>
-        <Group gap="sm">
+        <Group gap="sm" wrap="wrap">
           {mode === 'edit' && retreatId && (
             <Button
               component={Link}
@@ -312,7 +312,7 @@ export function RetreatFormPage({ mode, retreatId }: RetreatFormPageProps) {
         <QueryErrorAlert error={retreat.error} />
       )}
       {(mode === 'create' || retreat.data) && !retreat.isError && (
-        <Paper p="xl" radius="md" maw={760} w="100%">
+        <Paper p={{ base: 'md', sm: 'xl' }} radius="md" maw={760} w="100%">
           <Stack gap="lg">
             {(isHePhaiScoped || mode === 'edit') && (
               <Select

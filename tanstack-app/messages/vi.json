@@ -120,6 +120,7 @@
   "admin_copy_form_link": "Sao chép link form",
   "admin_copy_form_link_copied": "Đã sao chép",
   "admin_copy_form_link_failed": "Không sao chép được liên kết. Vui lòng sao chép thủ công.",
+  "admin_nav_menu_aria": "Mở menu điều hướng",
   "admin_notifications_aria": "Thông báo",
   "admin_notifications_title": "Thông báo",
   "admin_notifications_empty": "Chưa có thông báo",

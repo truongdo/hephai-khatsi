@@ -217,14 +217,14 @@ export function TemplesListPage() {
 
   return (
     <Stack>
-      <Group justify="space-between" align="center">
+      <Group justify="space-between" align="center" wrap="wrap" gap="sm">
         <Title order={2}>{m.admin_nav_temples()}</Title>
         <Button component={Link} to="/admin/temples/new">
           {m.admin_temples_create()}
         </Button>
       </Group>
 
-      <Group>
+      <Group wrap="wrap" gap="sm" align="flex-end">
         {isHePhaiScoped && (
           <Select
             label={m.admin_temples_filter_org_unit()}
@@ -234,6 +234,7 @@ export function TemplesListPage() {
             onChange={setOrgUnitFilter}
             clearable
             searchable
+            w={{ base: '100%', sm: 220 }}
           />
         )}
         <Select
@@ -243,11 +244,12 @@ export function TemplesListPage() {
           value={statusFilter}
           onChange={(value) => setStatusFilter(value as StatusFilterValue | null)}
           clearable
+          w={{ base: '100%', sm: 220 }}
         />
       </Group>
 
       {selection.selectedCount > 0 && (
-        <Group>
+        <Group wrap="wrap">
           <Text>{m.admin_bulk_selected({ count: selection.selectedCount })}</Text>
           <Button color="red" onClick={() => setConfirmOpen(true)}>
             {m.admin_bulk_delete()}

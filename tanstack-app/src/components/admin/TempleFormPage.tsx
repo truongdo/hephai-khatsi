@@ -295,7 +295,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
 
   return (
     <Stack>
-      <Group justify="space-between" align="center">
+      <Group justify="space-between" align="center" wrap="wrap" gap="sm">
         <Title order={2}>
           {mode === 'create'
             ? m.admin_temples_form_title_create()
@@ -311,7 +311,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
         <QueryErrorAlert error={temple.error} />
       )}
       {(mode === 'create' || temple.data) && !temple.isError && (
-        <Paper p="xl" radius="md" maw={760} w="100%">
+        <Paper p={{ base: 'md', sm: 'xl' }} radius="md" maw={760} w="100%">
           <Stack gap="lg">
             {mode === 'edit' && temple.data && (
               <Text size="sm" c="dimmed">

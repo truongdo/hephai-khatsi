@@ -461,8 +461,8 @@ export function MemberFormPage({
 
   return (
     <Stack>
-      <Group justify="space-between" align="center">
-        <Group gap="sm">
+      <Group justify="space-between" align="center" wrap="wrap" gap="sm">
+        <Group gap="sm" wrap="wrap">
           <Title order={2}>
             {mode === 'create'
               ? m.admin_members_form_title_create()
@@ -477,7 +477,7 @@ export function MemberFormPage({
               <Badge>{m.admin_member_directory_role_badge_he_phai()}</Badge>
             )}
         </Group>
-        <Group gap="sm">
+        <Group gap="sm" wrap="wrap">
           {canGrant && mode === 'edit' && member.data && (
             member.data.directoryRole === 'giao_doan_admin' ? (
               <Button
@@ -553,7 +553,7 @@ export function MemberFormPage({
         <QueryErrorAlert error={member.error} />
       )}
       {(mode === 'create' || member.data) && !member.isError && (
-        <Paper p="xl" radius="md" maw={760} w="100%">
+        <Paper p={{ base: 'md', sm: 'xl' }} radius="md" maw={760} w="100%">
           <Stack gap="lg">
             {mode === 'edit' && member.data && (
               <Text size="sm" c="dimmed">
@@ -688,7 +688,7 @@ export function MemberFormPage({
             ? m.admin_org_units_he_phai_secretaries_revoke_confirm()
             : m.admin_org_units_secretaries_revoke_confirm()}
         </Text>
-        <Group justify="flex-end" mt="md">
+        <Group justify="flex-end" mt="md" wrap="wrap" gap="sm">
           <Button
             variant="default"
             onClick={() => setRevokeDirectoryRoleOpen(false)}

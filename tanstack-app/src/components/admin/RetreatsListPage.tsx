@@ -183,14 +183,14 @@ export function RetreatsListPage() {
 
   return (
     <Stack>
-      <Group justify="space-between" align="center">
+      <Group justify="space-between" align="center" wrap="wrap" gap="sm">
         <Title order={2}>{m.admin_nav_retreats()}</Title>
         <Button component={Link} to="/admin/retreats/new">
           {m.admin_retreats_create()}
         </Button>
       </Group>
 
-      <Group>
+      <Group wrap="wrap" gap="sm" align="flex-end">
         {isHePhaiScoped && (
           <Select
             label={m.admin_retreats_filter_org_unit()}
@@ -200,6 +200,7 @@ export function RetreatsListPage() {
             onChange={setOrgUnitFilter}
             clearable
             searchable
+            w={{ base: '100%', sm: 220 }}
           />
         )}
         <Select
@@ -209,6 +210,7 @@ export function RetreatsListPage() {
           value={statusFilter}
           onChange={(value) => setStatusFilter(value as RetreatStatus | null)}
           clearable
+          w={{ base: '100%', sm: 220 }}
         />
       </Group>
 

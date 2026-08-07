@@ -237,9 +237,9 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
 
   return (
     <Stack>
-      <Group justify="space-between" align="center">
+      <Group justify="space-between" align="center" wrap="wrap" gap="sm">
         <Title order={2}>{listTitle(sanghaType)}</Title>
-        <Group>
+        <Group wrap="wrap">
           <Button
             variant="default"
             loading={exportMutation.isPending}
@@ -264,7 +264,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
         </Text>
       )}
 
-      <Group>
+      <Group wrap="wrap" gap="sm" align="flex-end">
         {isHePhaiScoped && (
           <Select
             label={m.admin_members_filter_org_unit()}
@@ -274,6 +274,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
             onChange={setOrgUnitFilter}
             clearable
             searchable
+            w={{ base: '100%', sm: 220 }}
           />
         )}
         <Select
@@ -283,11 +284,12 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
           value={statusFilter}
           onChange={(value) => setStatusFilter(value as StatusFilterValue | null)}
           clearable
+          w={{ base: '100%', sm: 220 }}
         />
       </Group>
 
       {selection.selectedCount > 0 && (
-        <Group>
+        <Group wrap="wrap">
           <Text>{m.admin_bulk_selected({ count: selection.selectedCount })}</Text>
           <Button color="red" onClick={() => setConfirmOpen(true)}>
             {m.admin_bulk_delete()}

@@ -329,7 +329,7 @@ export function RetreatRegistrationsPage({ retreatId }: { retreatId: string }) {
             </Text>
           )}
         </Stack>
-        <Group gap="sm">
+        <Group gap="sm" wrap="wrap">
           <CopyRetreatRegistrationLinkButton retreatId={retreatId} />
           <Button
             component={Link}
@@ -352,7 +352,7 @@ export function RetreatRegistrationsPage({ retreatId }: { retreatId: string }) {
       {!retreat.isError && !registrations.isError && (
         <>
           {selection.selectedCount > 0 && (
-            <Group>
+            <Group wrap="wrap">
               <Text>{m.admin_bulk_selected({ count: selection.selectedCount })}</Text>
               <Button
                 disabled={!allSelectedPending}

@@ -4,6 +4,7 @@ import {
   AppShell,
   Box,
   Breadcrumbs,
+  Burger,
   Button,
   Divider,
   Group,
@@ -12,6 +13,7 @@ import {
   Stack,
   Text,
 } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import { Link, useRouterState } from '@tanstack/react-router'
 import { CalendarDays, Home, List, LogOut } from 'lucide-react'
 import { m } from '#/paraglide/messages'
@@ -64,6 +66,8 @@ const allNavItems: {
 ]
 
 export function AdminShell({ children }: { children: ReactNode }) {
+  const [mobileOpened, { toggle: toggleMobile, close: closeMobile }] =
+    useDisclosure()
   const claim = useAdminClaim()
   const { signOut } = useAuth()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
@@ -83,7 +87,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   return (
     <AppShell
-      navbar={{ width: 260, breakpoint: 'sm' }}
+      navbar={{
+        width: 260,
+        breakpoint: 'sm',
+        collapsed: { mobile: !mobileOpened },
+      }}
       header={{ height: 56 }}
       layout="alt"
       padding="md"
@@ -144,6 +152,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                     variant="filled"
                     color="teal.7"
                     className="admin-nav-link"
+                    onClick={closeMobile}
                     styles={{
                       root: {
                         borderRadius: 'var(--mantine-radius-md)',
@@ -179,8 +188,20 @@ export function AdminShell({ children }: { children: ReactNode }) {
           borderBottom: '1px solid var(--mantine-color-gray-2)',
         }}
       >
-        <Group justify="space-between" w="100%" wrap="nowrap">
-          <Breadcrumbs separator="›">
+        <Group justify="space-between" w="100%" wrap="wrap" gap="sm">
+          <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+            <Burger
+              opened={mobileOpened}
+              onClick={toggleMobile}
+              hiddenFrom="sm"
+              size="sm"
+              aria-label={m.admin_nav_menu_aria()}
+              aria-expanded={mobileOpened}
+            />
+            <Breadcrumbs
+              separator="›"
+              style={{ minWidth: 0, overflow: 'hidden' }}
+            >
             {crumbs.map((crumb, index, all) => {
               const isLast = index === all.length - 1
               if (!isLast && crumb.href) {
@@ -207,7 +228,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 </Text>
               )
             })}
-          </Breadcrumbs>
+            </Breadcrumbs>
+          </Group>
           <Group gap="sm" wrap="nowrap">
             <AdminCopyFormLinkButton />
             <AdminNotificationsButton />

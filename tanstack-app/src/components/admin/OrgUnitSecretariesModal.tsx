@@ -73,39 +73,41 @@ export function OrgUnitSecretariesModal({
         {secretaries.length === 0 ? (
           <Text>{m.admin_org_units_secretaries_empty()}</Text>
         ) : (
-          <Table>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>{m.admin_org_units_secretaries_col_name()}</Table.Th>
-                <Table.Th>{m.admin_org_units_secretaries_col_email()}</Table.Th>
-                <Table.Th>
-                  {m.admin_org_units_secretaries_col_granted_at()}
-                </Table.Th>
-                <Table.Th />
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {secretaries.map((member) => (
-                <Table.Tr key={member.id}>
-                  <Table.Td>{directorySecretaryDisplayName(member)}</Table.Td>
-                  <Table.Td>{member.email ?? '—'}</Table.Td>
-                  <Table.Td>
-                    {formatGrantedAt(member.directoryRoleGrantedAt)}
-                  </Table.Td>
-                  <Table.Td>
-                    <Button
-                      variant="subtle"
-                      color="red"
-                      size="compact-sm"
-                      onClick={() => setRevokeTarget(member)}
-                    >
-                      {m.admin_org_units_secretaries_revoke()}
-                    </Button>
-                  </Table.Td>
+          <Table.ScrollContainer minWidth={800}>
+            <Table>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>{m.admin_org_units_secretaries_col_name()}</Table.Th>
+                  <Table.Th>{m.admin_org_units_secretaries_col_email()}</Table.Th>
+                  <Table.Th>
+                    {m.admin_org_units_secretaries_col_granted_at()}
+                  </Table.Th>
+                  <Table.Th />
                 </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+              </Table.Thead>
+              <Table.Tbody>
+                {secretaries.map((member) => (
+                  <Table.Tr key={member.id}>
+                    <Table.Td>{directorySecretaryDisplayName(member)}</Table.Td>
+                    <Table.Td>{member.email ?? '—'}</Table.Td>
+                    <Table.Td>
+                      {formatGrantedAt(member.directoryRoleGrantedAt)}
+                    </Table.Td>
+                    <Table.Td>
+                      <Button
+                        variant="subtle"
+                        color="red"
+                        size="compact-sm"
+                        onClick={() => setRevokeTarget(member)}
+                      >
+                        {m.admin_org_units_secretaries_revoke()}
+                      </Button>
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
         )}
       </Modal>
 
@@ -117,7 +119,7 @@ export function OrgUnitSecretariesModal({
         closeOnEscape={!revokeMutation.isPending}
       >
         <Text>{m.admin_org_units_secretaries_revoke_confirm()}</Text>
-        <Group justify="flex-end" mt="md">
+        <Group justify="flex-end" mt="md" wrap="wrap" gap="sm">
           <Button
             variant="default"
             onClick={() => setRevokeTarget(null)}

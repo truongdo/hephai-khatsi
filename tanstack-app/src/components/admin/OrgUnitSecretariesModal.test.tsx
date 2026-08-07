@@ -26,6 +26,14 @@ vi.mock('#/auth/useAuth', () => ({
 }))
 
 beforeAll(() => {
+  class ResizeObserverMock {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+  globalThis.ResizeObserver =
+    ResizeObserverMock as unknown as typeof ResizeObserver
+
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: (query: string) => ({

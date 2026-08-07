@@ -31,7 +31,9 @@ export function AdminDataTable({
           {emptyMessage ?? m.admin_table_empty()}
         </Text>
       ) : (
-        <Table aria-label={ariaLabel}>{children}</Table>
+        <Table.ScrollContainer minWidth={800}>
+          <Table aria-label={ariaLabel}>{children}</Table>
+        </Table.ScrollContainer>
       )}
     </Paper>
   )

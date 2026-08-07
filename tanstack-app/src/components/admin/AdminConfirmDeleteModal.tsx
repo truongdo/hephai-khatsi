@@ -25,7 +25,7 @@ export function AdminConfirmDeleteModal({
       closeOnEscape={!loading}
     >
       <Text>{m.admin_bulk_confirm_body()}</Text>
-      <Group justify="flex-end" mt="md">
+      <Group justify="flex-end" mt="md" wrap="wrap" gap="sm">
         <Button variant="default" onClick={onCancel} disabled={loading}>
           Hủy
         </Button>
