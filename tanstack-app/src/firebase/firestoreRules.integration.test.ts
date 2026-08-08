@@ -607,6 +607,57 @@ describe('temples', () => {
     )
   })
 
+  it('allows he_phai_admin to change orgUnitId on draft temple; blocks others', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'temples', 'temple-1'), templeDraft())
+    })
+
+    const hePhai = env
+      .authenticatedContext('hp-admin', { role: 'he_phai_admin' })
+      .firestore()
+    await assertSucceeds(
+      updateDoc(doc(hePhai, 'temples', 'temple-1'), {
+        orgUnitId: 'gd-ii',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      }),
+    )
+
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'temples', 'temple-2'), templeDraft())
+    })
+    const gdAdmin = env
+      .authenticatedContext('gd-admin', {
+        role: 'giao_doan_admin',
+        orgUnitId: 'gd-i',
+      })
+      .firestore()
+    await assertFails(
+      updateDoc(doc(gdAdmin, 'temples', 'temple-2'), {
+        orgUnitId: 'gd-ii',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      }),
+    )
+
+    const secretary = env
+      .authenticatedContext('sec', { role: 'he_phai_secretary' })
+      .firestore()
+    await assertFails(
+      updateDoc(doc(secretary, 'temples', 'temple-2'), {
+        orgUnitId: 'gd-ii',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      }),
+    )
+
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      updateDoc(doc(anon, 'temples', 'temple-2'), {
+        orgUnitId: 'gd-ii',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      }),
+    )
+  })
+
   it('allows admin to update profile fields on a locked temple without unlocking', async () => {
     const env = await getTestEnv()
     await env.withSecurityRulesDisabled(async (ctx) => {

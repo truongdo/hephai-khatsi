@@ -242,9 +242,26 @@ service cloud.firestore {
     // bearer credential is "a currently valid invite" — re-checked on every
     // non-admin write, same pattern as members. ---
     match /temples/{templeId} {
-      function coreIdentityUnchanged() {
-        return request.resource.data.orgUnitId == resource.data.orgUnitId
-          && request.resource.data.createdAt == resource.data.createdAt;
+      function createdAtUnchanged() {
+        return request.resource.data.createdAt == resource.data.createdAt;
+      }
+
+      function orgUnitUnchanged() {
+        return request.resource.data.orgUnitId == resource.data.orgUnitId;
+      }
+
+      function orgUnitReassignOk() {
+        return isHePhaiAdmin()
+          && resource.data.status == 'draft'
+          && request.resource.data.status == 'draft'
+          && request.resource.data.orgUnitId is string
+          && directoryOrgOk(resource.data.orgUnitId)
+          && directoryOrgOk(request.resource.data.orgUnitId);
+      }
+
+      function identityOk() {
+        return createdAtUnchanged()
+          && (orgUnitUnchanged() || orgUnitReassignOk());
       }
 
       function lockFieldsUnchanged() {
@@ -333,7 +350,7 @@ service cloud.firestore {
           || (!isStaff() && validInviteScope(request.resource.data) && isFillerCreateShape())
         );
 
-      allow update: if coreIdentityUnchanged() && (
+      allow update: if identityOk() && (
         (canWriteDirectory() && directoryOrgOk(resource.data.orgUnitId) && isLockTransition())
         || (canWriteDirectory() && directoryOrgOk(resource.data.orgUnitId) && !isLockTransition() && lockFieldsUnchanged())
         || (!isStaff() && validInviteScope(request.resource.data)
