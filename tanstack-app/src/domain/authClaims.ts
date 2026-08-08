@@ -45,6 +45,10 @@ export function isHePhaiScope(claims: AuthClaims): boolean {
   return claims.role === 'he_phai_admin' || claims.role === 'he_phai_secretary'
 }
 
+export function isHePhaiAdmin(claims: AuthClaims): boolean {
+  return claims.role === 'he_phai_admin'
+}
+
 export function canAccessOrgUnit(
   claims: AuthClaims,
   orgUnitId: string,

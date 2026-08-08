@@ -5,6 +5,7 @@ import {
   canManageDirectory,
   canManageRetreats,
   blocksSecretaryGrantOnAuthClaims,
+  isHePhaiAdmin,
   isHePhaiScope,
   parseAuthClaims,
 } from './authClaims'
@@ -155,6 +156,19 @@ describe('canAccessOrgUnit', () => {
     expect(
       canAccessOrgUnit({ role: 'he_phai_admin', orgUnitId: 'gd-i' }, 'gd-ii'),
     ).toBe(true)
+  })
+})
+
+describe('isHePhaiAdmin', () => {
+  it('allows he_phai_admin only', () => {
+    expect(isHePhaiAdmin({ role: 'he_phai_admin', orgUnitId: null })).toBe(true)
+    expect(isHePhaiAdmin({ role: 'he_phai_secretary', orgUnitId: null })).toBe(
+      false,
+    )
+    expect(isHePhaiAdmin({ role: 'giao_doan_admin', orgUnitId: 'gd-i' })).toBe(
+      false,
+    )
+    expect(isHePhaiAdmin({ role: 'kiem_soat', orgUnitId: null })).toBe(false)
   })
 })
 
