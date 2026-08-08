@@ -1,4 +1,8 @@
-import { canAccessOrgUnit, type AuthClaims } from '#/domain/authClaims'
+import {
+  canAccessOrgUnit,
+  isHePhaiAdmin,
+  type AuthClaims,
+} from '#/domain/authClaims'
 import { buildManagerPhones, mergeManagerPhones } from '#/domain/templePhones'
 import { DomainError } from '#/domain/errors'
 import type { AuditActor } from '#/domain/auditLog'
@@ -53,11 +57,22 @@ export async function saveAdminTemple(
   }
 
   let managerPhones: string[]
+  let allowOrgUnitChange = false
+
   if (input.templeId) {
     const existing = await templeStore.getById(input.templeId)
     if (!existing) {
       throw new DomainError('NOT_FOUND', 'Temple not found')
     }
+
+    const orgChanged = existing.orgUnitId !== input.orgUnitId
+    if (orgChanged) {
+      if (!isHePhaiAdmin(claims) || existing.status !== 'draft') {
+        throw new DomainError('FORBIDDEN', 'Cannot change temple org unit')
+      }
+      allowOrgUnitChange = true
+    }
+
     managerPhones = mergeManagerPhones(existing.managerPhones, incomingPhones)
   } else {
     managerPhones = buildManagerPhones(incomingPhones)
@@ -70,6 +85,7 @@ export async function saveAdminTemple(
     templeId: input.templeId,
     patch,
     allowWhenLocked: true,
+    allowOrgUnitChange,
     audit,
   })
 }

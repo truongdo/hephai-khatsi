@@ -557,6 +557,95 @@ describe('saveAdminTemple', () => {
     expect(updated.status).toBe('locked')
   })
 
+  it('reassigns orgUnitId for he_phai_admin on draft', async () => {
+    const store = createMemoryTempleStore([
+      {
+        id: 't1',
+        orgUnitId: 'gd-i',
+        status: 'draft',
+        managerPhones: ['0901234567'],
+        inviteId: 'inv-1',
+        photoPath: null,
+        danhHieu: 'Old',
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: null,
+        lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
+      },
+    ])
+    const { temple } = await saveAdminTemple(
+      {
+        orgUnitId: 'gd-ii',
+        templeId: 't1',
+        patch: { danhHieu: 'New' },
+      },
+      ADMIN_AUDIT,
+      HE_PHAI_CLAIMS,
+      store,
+    )
+    expect(temple.orgUnitId).toBe('gd-ii')
+    expect(temple.danhHieu).toBe('New')
+    expect(temple.inviteId).toBe('inv-1')
+    expect(store.phoneIndex.get('gd-i_0901234567') ?? []).not.toContain('t1')
+    expect(store.phoneIndex.get('gd-ii_0901234567')).toContain('t1')
+  })
+
+  it('rejects org reassignment when temple is locked', async () => {
+    const store = createMemoryTempleStore([
+      {
+        id: 't1',
+        orgUnitId: 'gd-i',
+        status: 'locked',
+        managerPhones: ['0901234567'],
+        inviteId: null,
+        photoPath: null,
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: '2026-07-19T01:00:00.000Z',
+        lockedBy: 'admin-1',
+        editRequestedAt: null,
+        editRequestedBy: null,
+      },
+    ])
+    await expect(
+      saveAdminTemple(
+        { orgUnitId: 'gd-ii', templeId: 't1', patch: { danhHieu: 'X' } },
+        ADMIN_AUDIT,
+        HE_PHAI_CLAIMS,
+        store,
+      ),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' })
+  })
+
+  it('rejects org reassignment for he_phai_secretary', async () => {
+    const store = createMemoryTempleStore([
+      {
+        id: 't1',
+        orgUnitId: 'gd-i',
+        status: 'draft',
+        managerPhones: ['0901234567'],
+        inviteId: null,
+        photoPath: null,
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: null,
+        lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
+      },
+    ])
+    await expect(
+      saveAdminTemple(
+        { orgUnitId: 'gd-ii', templeId: 't1', patch: {} },
+        ADMIN_AUDIT,
+        { role: 'he_phai_secretary', orgUnitId: null },
+        store,
+      ),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' })
+  })
+
   it('rejects cross-org save for giao_doan_admin', async () => {
     const store = createMemoryTempleStore([
       {
