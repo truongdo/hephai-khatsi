@@ -21,7 +21,7 @@ import { FormStickyActions } from '#/components/FormStickyActions'
 import { buildTemplePatch, type TempleDraft } from '#/components/filler/templeDraft'
 import { useFormLocalDraft } from '#/hooks/useFormLocalDraft'
 import { templeDraftStorageKey } from '#/lib/formLocalDraft'
-import { canManageDirectory, isHePhaiScope } from '#/domain/authClaims'
+import { canManageDirectory, isHePhaiAdmin, isHePhaiScope } from '#/domain/authClaims'
 import { validateTempleRequiredFields } from '#/components/filler/templeRequiredValidation'
 import {
   TempleFormFields,
@@ -73,6 +73,12 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
     ...templeQuery(templeId ?? ''),
     enabled: manageDirectory && mode === 'edit' && !!templeId,
   })
+
+  const canEditOrgUnitOnDetail =
+    claim.status === 'admin' &&
+    isHePhaiAdmin({ role: claim.role, orgUnitId: claim.orgUnitId }) &&
+    mode === 'edit' &&
+    temple.data?.status === 'draft'
 
   useEffect(() => {
     if (mode === 'create') {
@@ -329,7 +335,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
                 onChange={setOrgUnitId}
                 searchable
                 required
-                disabled={mode === 'edit'}
+                disabled={mode === 'edit' && !canEditOrgUnitOnDetail}
               />
             )}
 

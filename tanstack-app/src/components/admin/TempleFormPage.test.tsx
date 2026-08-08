@@ -103,6 +103,15 @@ vi.mock('#/query/adminQueries', () => ({
         allowsTang: true,
         allowsNi: true,
       },
+      {
+        id: 'gd-ii',
+        code: 'II',
+        name: 'Giáo đoàn II',
+        kind: 'giao_doan',
+        order: 2,
+        allowsTang: true,
+        allowsNi: true,
+      },
     ],
     staleTime: 0,
   }),
@@ -253,6 +262,15 @@ function renderForm({ mode }: { mode: 'create' | 'edit' }) {
       allowsTang: true,
       allowsNi: true,
     },
+    {
+      id: 'gd-ii',
+      code: 'II',
+      name: 'Giáo đoàn II',
+      kind: 'giao_doan',
+      order: 2,
+      allowsTang: true,
+      allowsNi: true,
+    },
   ])
   return render(
     <QueryClientProvider client={queryClient}>
@@ -309,6 +327,39 @@ describe('TempleFormPage', () => {
     ).toBeTruthy()
     expect(screen.getByText(m.filler_section_temple_address())).toBeTruthy()
     expect(screen.getByText(m.filler_field_anh_tinh_xa())).toBeTruthy()
+  })
+
+  it('enables org unit select for he_phai_admin when temple is draft', async () => {
+    templeFixture = draftTemple
+    renderForm({ mode: 'edit' })
+    const select = await screen.findByRole('combobox', {
+      name: new RegExp(`^${m.admin_temples_form_org_unit()}`),
+    })
+    expect(select).not.toBeDisabled()
+  })
+
+  it('disables org unit select when temple is locked', async () => {
+    templeFixture = lockedTemple
+    renderForm({ mode: 'edit' })
+    const select = await screen.findByRole('combobox', {
+      name: new RegExp(`^${m.admin_temples_form_org_unit()}`),
+    })
+    expect(select).toBeDisabled()
+  })
+
+  it('disables org unit select for giao_doan_admin on edit', async () => {
+    useAdminClaimMock.mockReturnValue({
+      status: 'admin',
+      uid: 'admin-uid',
+      role: 'giao_doan_admin',
+      orgUnitId: 'gd-i',
+    })
+    templeFixture = draftTemple
+    renderForm({ mode: 'edit' })
+    const select = await screen.findByRole('combobox', {
+      name: new RegExp(`^${m.admin_temples_form_org_unit()}`),
+    })
+    expect(select).toBeDisabled()
   })
 
   it('Hoàn thành does not save when required fields missing', async () => {
@@ -448,6 +499,15 @@ describe('TempleFormPage', () => {
           name: new RegExp(`^${m.admin_temples_form_org_unit()}`),
         }),
       ).toBeTruthy()
+    })
+
+    it('disables org unit select on edit even when draft', async () => {
+      templeFixture = draftTemple
+      renderForm({ mode: 'edit' })
+      const select = await screen.findByRole('combobox', {
+        name: new RegExp(`^${m.admin_temples_form_org_unit()}`),
+      })
+      expect(select).toBeDisabled()
     })
   })
 })
