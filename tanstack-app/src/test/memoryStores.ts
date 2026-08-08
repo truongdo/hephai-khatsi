@@ -785,7 +785,8 @@ export function createMemoryTempleStore(
       if (input.templeId) {
         const existing = temples.get(input.templeId)
         if (!existing) throw new DomainError('NOT_FOUND', 'Temple not found')
-        if (existing.orgUnitId !== input.orgUnitId) {
+        const orgChanged = existing.orgUnitId !== input.orgUnitId
+        if (orgChanged && !input.allowOrgUnitChange) {
           throw new DomainError(
             'FORBIDDEN',
             'Temple does not belong to this invite org unit',
@@ -794,11 +795,14 @@ export function createMemoryTempleStore(
         if (existing.status === 'locked' && !input.allowWhenLocked) {
           throw new DomainError('RECORD_LOCKED', 'Temple is locked')
         }
+        if (orgChanged) {
+          removeTempleFromPhoneIndex(phoneIndex, existing)
+        }
         const temple: Temple = {
           ...existing,
           ...input.patch,
           id: existing.id,
-          orgUnitId: existing.orgUnitId,
+          orgUnitId: input.orgUnitId,
           status: existing.status === 'locked' ? 'locked' : 'draft',
           managerPhones: input.managerPhones,
           // Re-validated per the current invite token on non-admin writes;

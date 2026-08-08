@@ -46,6 +46,7 @@ export type CreateOrUpdateTempleDraftInput = {
   templeId?: string
   patch: TempleProfilePatch
   allowWhenLocked?: boolean
+  allowOrgUnitChange?: boolean
   audit?: AuditActor
 }
 
@@ -126,13 +127,16 @@ async function createOrUpdateTemple(
         throw new DomainError('NOT_FOUND', 'Temple not found')
       }
       existing = templeFromSnap(templeSnap)
-      if (existing.orgUnitId !== input.orgUnitId) {
-        throw new DomainError('FORBIDDEN', 'Temple does not belong to this invite org unit')
-      }
       if (existing.status === 'locked' && !input.allowWhenLocked) {
         throw new DomainError('RECORD_LOCKED', 'Temple is locked')
       }
     }
+
+    const orgChanged = existing ? existing.orgUnitId !== input.orgUnitId : false
+    if (orgChanged && !input.allowOrgUnitChange) {
+      throw new DomainError('FORBIDDEN', 'Temple does not belong to this invite org unit')
+    }
+    const oldOrgUnitId = existing?.orgUnitId
 
     // Firestore transactions require all reads before any writes, so the
     // manager-phone index docs are read up front too.
@@ -141,12 +145,21 @@ async function createOrUpdateTemple(
     )
     const phoneIndexSnaps = await Promise.all(phoneIndexRefs.map((ref) => transaction.get(ref)))
 
+    const oldPhoneIndexes =
+      existing && orgChanged
+        ? await Promise.all(
+            existing.managerPhones.map((phone) =>
+              readTemplePhoneIndexForTransaction(transaction, oldOrgUnitId!, phone),
+            ),
+          )
+        : []
+
     const temple: Temple = existing
       ? {
           ...existing,
           ...input.patch,
           id: existing.id,
-          orgUnitId: existing.orgUnitId,
+          orgUnitId: input.orgUnitId,
           status: options.lock ? 'locked' : existing.status === 'locked' ? 'locked' : 'draft',
           managerPhones: input.managerPhones,
           // Re-validated (not frozen) per the current invite token on
@@ -182,6 +195,12 @@ async function createOrUpdateTemple(
         }
 
     transaction.set(templeRef, templeData(temple))
+
+    if (existing && orgChanged) {
+      oldPhoneIndexes.forEach((index) => {
+        shrinkTemplePhoneIndex(transaction, index, temple.id)
+      })
+    }
 
     phoneIndexRefs.forEach((ref, i) => {
       const snap = phoneIndexSnaps[i]!

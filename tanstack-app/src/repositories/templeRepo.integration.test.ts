@@ -2,7 +2,7 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing'
-import { doc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ADMIN_AUDIT } from '#/test/auditActors'
 
@@ -128,6 +128,38 @@ describe('templeRepo.createOrUpdateDraft', () => {
 
     expect(updated.temple.inviteId).toBe(otherInvite)
     expect(updated.temple.danhHieu).toBe('Updated')
+  })
+
+  it('reassigns orgUnitId when allowOrgUnitChange and migrates phone index', async () => {
+    const { templeRepo } = await import('#/repositories/templeRepo')
+    const { temple } = await templeRepo.createOrUpdateDraft({
+      orgUnitId: 'gd-i',
+      inviteId: INVITE_ID,
+      managerPhones: ['0912345678'],
+      patch: { danhHieu: 'Chua Move' },
+    })
+
+    const { temple: moved } = await templeRepo.createOrUpdateDraft({
+      orgUnitId: 'gd-ii',
+      inviteId: null,
+      managerPhones: ['0912345678'],
+      templeId: temple.id,
+      patch: {},
+      allowOrgUnitChange: true,
+    })
+    expect(moved.orgUnitId).toBe('gd-ii')
+
+    const oldIndex = await getDoc(
+      doc(adminDb, 'templeManagerPhoneIndex', 'gd-i_0912345678'),
+    )
+    const newIndex = await getDoc(
+      doc(adminDb, 'templeManagerPhoneIndex', 'gd-ii_0912345678'),
+    )
+    const oldIds = oldIndex.exists()
+      ? ((oldIndex.data()?.templeIds as string[]) ?? [])
+      : []
+    expect(oldIds).not.toContain(temple.id)
+    expect(newIndex.data()?.templeIds).toContain(temple.id)
   })
 
   it('does not duplicate a temple id in the phone index on repeated saves', async () => {
