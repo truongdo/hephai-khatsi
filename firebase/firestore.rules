@@ -142,14 +142,19 @@ service cloud.firestore {
       }
 
       function isFillerMediaUpdate() {
-        return resource.data.status == 'locked'
-          && lockFieldsUnchanged()
+        return lockFieldsUnchanged()
           && editRequestFieldsUnchanged()
           && request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['photoPath', 'documents', 'updatedAt'])
-          // First portrait attach only — cannot replace an existing photoPath.
-          && (request.resource.data.photoPath == resource.data.photoPath
-            || resource.data.photoPath == null);
+          && (
+            // Unlocked (draft): clear / replace / attach photo and documents.
+            (resource.data.status == 'draft'
+              && request.resource.data.status == 'draft')
+            // Locked: first portrait attach only — cannot clear or replace.
+            || (resource.data.status == 'locked'
+              && (request.resource.data.photoPath == resource.data.photoPath
+                || resource.data.photoPath == null))
+          );
       }
 
       function isFillerLockedUpdate() {
@@ -276,13 +281,19 @@ service cloud.firestore {
       }
 
       function isFillerTempleMediaUpdate() {
-        return resource.data.status == 'locked'
-          && lockFieldsUnchanged()
+        return lockFieldsUnchanged()
           && editRequestFieldsUnchanged()
           && request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['photoPath', 'updatedAt'])
-          && (request.resource.data.photoPath == resource.data.photoPath
-            || resource.data.photoPath == null);
+          && (
+            // Unlocked (draft): clear / replace / attach photo.
+            (resource.data.status == 'draft'
+              && request.resource.data.status == 'draft')
+            // Locked: first portrait attach only — cannot clear or replace.
+            || (resource.data.status == 'locked'
+              && (request.resource.data.photoPath == resource.data.photoPath
+                || resource.data.photoPath == null))
+          );
       }
 
       function isFillerLockedUpdate() {
