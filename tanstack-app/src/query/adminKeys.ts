@@ -26,4 +26,8 @@ export const adminKeys = {
     [...adminKeys.member(memberId), 'auditLogs'] as const,
   templeAuditLogs: (templeId: string) =>
     [...adminKeys.temple(templeId), 'auditLogs'] as const,
+  memberDirectoryStats: (scope: {
+    orgUnitId: string | null
+    orgUnitIdsForBreakdown: string[]
+  }) => [...adminKeys.all, 'memberDirectoryStats', scope] as const,
 }

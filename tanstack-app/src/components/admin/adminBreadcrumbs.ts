@@ -77,6 +77,9 @@ export function buildAdminBreadcrumbs(pathname: string): AdminBreadcrumb[] {
     if (rest[0] === 'ni') {
       return [rootCrumb(), { title: m.admin_nav_ni() }]
     }
+    if (rest[0] === 'stats') {
+      return [rootCrumb(), { title: m.admin_nav_member_stats() }]
+    }
     if (rest[0] === 'new') {
       return [rootCrumb(), { title: m.admin_members_form_title_create() }]
     }

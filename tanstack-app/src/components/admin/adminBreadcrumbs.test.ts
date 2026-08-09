@@ -40,6 +40,13 @@ describe('buildAdminBreadcrumbs', () => {
     ])
   })
 
+  it('builds members stats trail', () => {
+    expect(buildAdminBreadcrumbs('/admin/members/stats')).toEqual([
+      { title: m.admin_title(), href: '/admin' },
+      { title: m.admin_nav_member_stats() },
+    ])
+  })
+
   it('builds member create trail', () => {
     expect(buildAdminBreadcrumbs('/admin/members/new')).toEqual([
       { title: m.admin_title(), href: '/admin' },

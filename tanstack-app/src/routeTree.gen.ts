@@ -21,6 +21,7 @@ import { Route as RTokenRouteImport } from './routes/r.$token'
 import { Route as AdminMembersIdRouteImport } from './routes/admin/members.$id'
 import { Route as AdminMembersNewRouteImport } from './routes/admin/members.new'
 import { Route as AdminMembersNiRouteImport } from './routes/admin/members.ni'
+import { Route as AdminMembersStatsRouteImport } from './routes/admin/members.stats'
 import { Route as AdminMembersTangRouteImport } from './routes/admin/members.tang'
 import { Route as AdminRetreatsIndexRouteImport } from './routes/admin/retreats.index'
 import { Route as AdminRetreatsIdRouteImport } from './routes/admin/retreats.$id'
@@ -99,6 +100,11 @@ const AdminMembersNewRoute = AdminMembersNewRouteImport.update({
 const AdminMembersNiRoute = AdminMembersNiRouteImport.update({
   id: '/members/ni',
   path: '/members/ni',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMembersStatsRoute = AdminMembersStatsRouteImport.update({
+  id: '/members/stats',
+  path: '/members/stats',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminMembersTangRoute = AdminMembersTangRouteImport.update({
@@ -213,6 +219,7 @@ export interface FileRoutesByFullPath {
   '/admin/members/$id': typeof AdminMembersIdRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/members/ni': typeof AdminMembersNiRoute
+  '/admin/members/stats': typeof AdminMembersStatsRoute
   '/admin/members/tang': typeof AdminMembersTangRoute
   '/admin/retreats/$id': typeof AdminRetreatsIdRouteWithChildren
   '/admin/retreats/new': typeof AdminRetreatsNewRoute
@@ -241,6 +248,7 @@ export interface FileRoutesByTo {
   '/admin/members/$id': typeof AdminMembersIdRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/members/ni': typeof AdminMembersNiRoute
+  '/admin/members/stats': typeof AdminMembersStatsRoute
   '/admin/members/tang': typeof AdminMembersTangRoute
   '/admin/retreats/new': typeof AdminRetreatsNewRoute
   '/admin/temples/$id': typeof AdminTemplesIdRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/admin/members/$id': typeof AdminMembersIdRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/members/ni': typeof AdminMembersNiRoute
+  '/admin/members/stats': typeof AdminMembersStatsRoute
   '/admin/members/tang': typeof AdminMembersTangRoute
   '/admin/retreats/$id': typeof AdminRetreatsIdRouteWithChildren
   '/admin/retreats/new': typeof AdminRetreatsNewRoute
@@ -307,6 +316,7 @@ export interface FileRouteTypes {
     | '/admin/members/$id'
     | '/admin/members/new'
     | '/admin/members/ni'
+    | '/admin/members/stats'
     | '/admin/members/tang'
     | '/admin/retreats/$id'
     | '/admin/retreats/new'
@@ -335,6 +345,7 @@ export interface FileRouteTypes {
     | '/admin/members/$id'
     | '/admin/members/new'
     | '/admin/members/ni'
+    | '/admin/members/stats'
     | '/admin/members/tang'
     | '/admin/retreats/new'
     | '/admin/temples/$id'
@@ -365,6 +376,7 @@ export interface FileRouteTypes {
     | '/admin/members/$id'
     | '/admin/members/new'
     | '/admin/members/ni'
+    | '/admin/members/stats'
     | '/admin/members/tang'
     | '/admin/retreats/$id'
     | '/admin/retreats/new'
@@ -478,6 +490,13 @@ declare module '@tanstack/react-router' {
       path: '/members/ni'
       fullPath: '/admin/members/ni'
       preLoaderRoute: typeof AdminMembersNiRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/members/stats': {
+      id: '/admin/members/stats'
+      path: '/members/stats'
+      fullPath: '/admin/members/stats'
+      preLoaderRoute: typeof AdminMembersStatsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/members/tang': {
@@ -670,6 +689,7 @@ interface AdminRouteChildren {
   AdminMembersIdRoute: typeof AdminMembersIdRoute
   AdminMembersNewRoute: typeof AdminMembersNewRoute
   AdminMembersNiRoute: typeof AdminMembersNiRoute
+  AdminMembersStatsRoute: typeof AdminMembersStatsRoute
   AdminMembersTangRoute: typeof AdminMembersTangRoute
 }
 
@@ -681,6 +701,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminMembersIdRoute: AdminMembersIdRoute,
   AdminMembersNewRoute: AdminMembersNewRoute,
   AdminMembersNiRoute: AdminMembersNiRoute,
+  AdminMembersStatsRoute: AdminMembersStatsRoute,
   AdminMembersTangRoute: AdminMembersTangRoute,
 }
 

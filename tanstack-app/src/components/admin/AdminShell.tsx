@@ -15,7 +15,7 @@ import {
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { Link, useRouterState } from '@tanstack/react-router'
-import { CalendarDays, Home, List, LogOut } from 'lucide-react'
+import { BarChart3, CalendarDays, Home, List, LogOut } from 'lucide-react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { useAuth } from '#/auth/useAuth'
@@ -49,6 +49,12 @@ const allNavItems: {
     label: () => m.admin_nav_ni(),
     to: '/admin/members/ni',
     icon: DharmaWheel,
+    capability: 'directory',
+  },
+  {
+    label: () => m.admin_nav_member_stats(),
+    to: '/admin/members/stats',
+    icon: BarChart3,
     capability: 'directory',
   },
   {

@@ -170,6 +170,23 @@
         { "fieldPath": "orgUnitId", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "members",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sanghaType", "order": "ASCENDING" },
+        { "fieldPath": "giaoPhamHePhai.rank", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "members",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgUnitId", "order": "ASCENDING" },
+        { "fieldPath": "sanghaType", "order": "ASCENDING" },
+        { "fieldPath": "giaoPhamHePhai.rank", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

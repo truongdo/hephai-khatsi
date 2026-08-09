@@ -96,6 +96,7 @@ describe('AdminShell', () => {
     expect(within(nav).queryByText(m.admin_nav_tang())).toBeNull()
     expect(within(nav).queryByText(m.admin_nav_ni())).toBeNull()
     expect(within(nav).queryByText(m.admin_nav_org_units())).toBeNull()
+    expect(within(nav).queryByText(m.admin_nav_member_stats())).toBeNull()
   })
 
   it('shows directory nav for giao_doan_admin', async () => {
@@ -111,6 +112,12 @@ describe('AdminShell', () => {
     expect(within(nav).getByText(m.admin_nav_tang())).toBeTruthy()
     expect(within(nav).getByText(m.admin_nav_ni())).toBeTruthy()
     expect(within(nav).getByText(m.admin_nav_org_units())).toBeTruthy()
+  })
+
+  it('shows member stats nav for directory managers', async () => {
+    renderShell()
+    const nav = await screen.findByRole('navigation')
+    expect(within(nav).getByText(m.admin_nav_member_stats())).toBeTruthy()
   })
 
   it('renders nav link text from Paraglide', async () => {

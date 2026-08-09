@@ -24,4 +24,17 @@ describe('adminKeys', () => {
       'auditLogs',
     ])
   })
+
+  it('memberDirectoryStats nests under admin with scope', () => {
+    expect(
+      adminKeys.memberDirectoryStats({
+        orgUnitId: 'gd-i',
+        orgUnitIdsForBreakdown: [],
+      }),
+    ).toEqual([
+      'admin',
+      'memberDirectoryStats',
+      { orgUnitId: 'gd-i', orgUnitIdsForBreakdown: [] },
+    ])
+  })
 })

@@ -3,6 +3,7 @@ import { DomainError } from '#/domain/errors'
 import type { Retreat } from '#/domain/retreat'
 import type { Member, Temple } from '#/domain/types'
 import { memberRepo } from '#/repositories/memberRepo'
+import { memberStatsRepo } from '#/repositories/memberStatsRepo'
 import { listOrgUnits } from '#/repositories/orgUnitRepo'
 import { retreatRegistrationRepo } from '#/repositories/retreatRegistrationRepo'
 import { retreatRepo } from '#/repositories/retreatRepo'
@@ -105,6 +106,18 @@ export function hePhaiSecretariesQuery() {
     queryKey: adminKeys.hePhaiSecretaries(),
     queryFn: () => memberRepo.listHePhaiSecretaries(),
     staleTime: 60_000,
+    retry: 3,
+  })
+}
+
+export function memberDirectoryStatsQuery(scope: {
+  orgUnitId: string | null
+  orgUnitIdsForBreakdown: string[]
+}) {
+  return queryOptions({
+    queryKey: adminKeys.memberDirectoryStats(scope),
+    queryFn: () => memberStatsRepo.loadDashboardStats(scope),
+    staleTime: 10 * 60_000,
     retry: 3,
   })
 }
