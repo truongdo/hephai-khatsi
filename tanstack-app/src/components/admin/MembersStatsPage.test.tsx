@@ -119,6 +119,13 @@ describe('MembersStatsPage', () => {
     expect(await screen.findByText(m.admin_denied_title())).toBeTruthy()
   })
 
+  it('shows loader while admin claim is loading, not AdminDenied', () => {
+    useAdminClaimMock.mockReturnValue({ status: 'loading' })
+    renderStats()
+    expect(screen.getByLabelText('loading')).toBeTruthy()
+    expect(screen.queryByText(m.admin_denied_title())).toBeNull()
+  })
+
   it('hides by-org table for giao_doan_admin', async () => {
     useAdminClaimMock.mockReturnValue({
       status: 'admin',

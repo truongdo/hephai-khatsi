@@ -92,6 +92,10 @@ export function MembersStatsPage() {
     (isHePhaiScoped && orgUnits.isPending) ||
     (statsEnabled && stats.isPending && !loadError)
 
+  if (claim.status === 'loading') {
+    return <Loader aria-label="loading" />
+  }
+
   if (claim.status !== 'admin' || !manageDirectory) {
     return <AdminDenied />
   }
