@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import type { Member } from '#/domain/types'
 import {
-  MEMBERS_EXCEL_HEADERS,
-  buildMembersExcelFilename,
-  membersToExcelRows,
-} from '#/domain/exportMembersExcel'
+  catalogMembersExcelColumns,
+  defaultMembersExcelColumnIds,
+} from '#/domain/memberExcelColumns'
+import { buildMembersExcelFilename, membersToExcelRows } from '#/domain/exportMembersExcel'
+
+const emptyCtx = { orgUnitNameById: {} }
 
 function member(overrides: Partial<Member> & Pick<Member, 'id' | 'sanghaType'>): Member {
   return {
@@ -25,12 +27,15 @@ function member(overrides: Partial<Member> & Pick<Member, 'id' | 'sanghaType'>):
 }
 
 describe('membersToExcelRows', () => {
-  it('includes Vietnamese headers as the first row', () => {
-    const rows = membersToExcelRows([], 'tang')
-    expect(rows).toEqual([[...MEMBERS_EXCEL_HEADERS]])
+  it('puts STT first then selected headers in catalog order', () => {
+    const rows = membersToExcelRows([], 'tang', ['hienTuHoc', 'theDanh'], emptyCtx)
+    const cols = catalogMembersExcelColumns('tang')
+    const theDanh = cols.find((c) => c.id === 'theDanh')!
+    const hien = cols.find((c) => c.id === 'hienTuHoc')!
+    expect(rows[0]).toEqual(['STT', theDanh.header(), hien.header()])
   })
 
-  it('maps tang member fields including gioiTyKheo.ngayGh', () => {
+  it('maps default tang columns including gioiTyKheo_ngayGh', () => {
     const rows = membersToExcelRows(
       [
         member({
@@ -47,8 +52,9 @@ describe('membersToExcelRows', () => {
         }),
       ],
       'tang',
+      defaultMembersExcelColumnIds('tang'),
+      emptyCtx,
     )
-
     expect(rows[1]).toEqual([
       1,
       'Nguyen Van A',
@@ -57,40 +63,40 @@ describe('membersToExcelRows', () => {
       '001122334455',
       '2015-01-02',
       'Ha Noi',
-      '2018-06-15',
       'Tinh xa X',
+      '2018-06-15',
     ])
   })
 
-  it('maps ni member fields using gioiTyKheoNi.ngayGh', () => {
+  it('maps ni default precept column from gioiTyKheoNi', () => {
     const rows = membersToExcelRows(
       [
         member({
           id: 'm2',
           sanghaType: 'ni',
-          theDanh: 'Tran Thi B',
-          phapDanh: 'Thich Nu B',
           gioiTyKheo: { ngayGh: '2010-01-01' },
           gioiTyKheoNi: { ngayGh: '2020-08-20' },
         }),
       ],
       'ni',
+      defaultMembersExcelColumnIds('ni'),
+      emptyCtx,
     )
-
-    expect(rows[1]?.[7]).toBe('2020-08-20')
+    expect(rows[1]?.[8]).toBe('2020-08-20')
   })
 
-  it('uses empty strings for missing optional fields and sequential STT', () => {
+  it('ignores unknown ids and sequential STT', () => {
     const rows = membersToExcelRows(
       [
         member({ id: 'm1', sanghaType: 'tang', cccd: '111' }),
         member({ id: 'm2', sanghaType: 'tang', cccd: '222', theDanh: 'Only name' }),
       ],
       'tang',
+      ['nope', 'theDanh', 'cccd'],
+      emptyCtx,
     )
-
-    expect(rows[1]).toEqual([1, '', '', '', '111', '', '', '', ''])
-    expect(rows[2]).toEqual([2, 'Only name', '', '', '222', '', '', '', ''])
+    expect(rows[1]).toEqual([1, '', '111'])
+    expect(rows[2]).toEqual([2, 'Only name', '222'])
   })
 })
 

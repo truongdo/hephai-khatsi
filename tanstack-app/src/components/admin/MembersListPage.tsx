@@ -19,10 +19,15 @@ import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { emptyCell } from '#/components/admin/emptyCell'
+import { MembersExcelColumnsModal } from '#/components/admin/MembersExcelColumnsModal'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
 import { useAdminListSelection } from '#/components/admin/useAdminListSelection'
 import { rankLabel } from '#/components/filler/fillerFormOptions'
+import {
+  loadMembersExcelColumnIds,
+  saveMembersExcelColumnIds,
+} from '#/domain/membersExcelColumnSelection'
 import type { Member, RecordStatus, SanghaType } from '#/domain/types'
 import { canManageDirectory, isHePhaiScope } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
@@ -87,6 +92,8 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const lastAppendedKeyRef = useRef<string | null>(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [exportOpen, setExportOpen] = useState(false)
+  const [exportColumnIds, setExportColumnIds] = useState<string[]>([])
 
   const serverStatusFilter =
     statusFilter === 'edit_requested' ? undefined : (statusFilter ?? undefined)
@@ -175,12 +182,22 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     },
   })
 
+  const orgUnitNameById = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const unit of orgUnits.data ?? []) {
+      map.set(unit.id, unit.name)
+    }
+    return map
+  }, [orgUnits.data])
+
   const exportMutation = useMutation({
-    mutationFn: () =>
+    mutationFn: (columnIds: string[]) =>
       exportMembersExcel({
         sanghaType,
         orgUnitId: scopedOrgUnitId,
         status: serverStatusFilter,
+        columnIds,
+        orgUnitNameById: Object.fromEntries(orgUnitNameById),
       }),
   })
 
@@ -212,14 +229,6 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     [orgUnits.data],
   )
 
-  const orgUnitNameById = useMemo(() => {
-    const map = new Map<string, string>()
-    for (const unit of orgUnits.data ?? []) {
-      map.set(unit.id, unit.name)
-    }
-    return map
-  }, [orgUnits.data])
-
   const statusSelectData = useMemo(
     () =>
       STATUS_OPTIONS.map((option) => ({
@@ -244,7 +253,10 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
             variant="default"
             loading={exportMutation.isPending}
             disabled={exportMutation.isPending}
-            onClick={() => exportMutation.mutate()}
+            onClick={() => {
+              setExportColumnIds(loadMembersExcelColumnIds(sanghaType))
+              setExportOpen(true)
+            }}
           >
             {m.admin_members_export_excel()}
           </Button>
@@ -433,6 +445,21 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
         loading={deleteMutation.isPending}
         onCancel={() => setConfirmOpen(false)}
         onConfirm={() => deleteMutation.mutate()}
+      />
+
+      <MembersExcelColumnsModal
+        opened={exportOpen}
+        onClose={() => setExportOpen(false)}
+        sanghaType={sanghaType}
+        columnIds={exportColumnIds}
+        onColumnIdsChange={setExportColumnIds}
+        confirmLoading={exportMutation.isPending}
+        onConfirm={() => {
+          if (exportColumnIds.length === 0) return
+          saveMembersExcelColumnIds(sanghaType, exportColumnIds)
+          setExportOpen(false)
+          exportMutation.mutate(exportColumnIds)
+        }}
       />
     </Stack>
   )

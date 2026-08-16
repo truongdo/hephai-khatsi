@@ -1,45 +1,25 @@
 import * as XLSX from 'xlsx'
+import {
+  catalogMembersExcelColumns,
+  type MembersExcelRowContext,
+} from '#/domain/memberExcelColumns'
 import type { Member, SanghaType } from '#/domain/types'
 
-export const MEMBERS_EXCEL_HEADERS = [
-  'STT',
-  'Họ và tên',
-  'Pháp danh',
-  'Năm sinh',
-  'số CCCD',
-  'Ngày cấp',
-  'Nơi Cấp',
-  'Năm thọ giới tỳ kheo/tỳ kheo Ni',
-  'Trú xứ Hiện tu học',
-] as const
-
 export type MembersExcelCell = string | number
-
-function cell(value: string | undefined): string {
-  return value ?? ''
-}
-
-function preceptNgayGh(member: Member, sanghaType: SanghaType): string {
-  if (sanghaType === 'tang') return cell(member.gioiTyKheo?.ngayGh)
-  return cell(member.gioiTyKheoNi?.ngayGh)
-}
 
 export function membersToExcelRows(
   members: Member[],
   sanghaType: SanghaType,
+  columnIds: string[],
+  ctx: MembersExcelRowContext,
 ): MembersExcelCell[][] {
+  const selected = new Set(columnIds)
+  const columns = catalogMembersExcelColumns(sanghaType).filter((c) => selected.has(c.id))
   return [
-    [...MEMBERS_EXCEL_HEADERS],
+    ['STT', ...columns.map((c) => c.header())],
     ...members.map((member, index) => [
       index + 1,
-      cell(member.theDanh),
-      cell(member.phapDanh),
-      cell(member.ngaySinh),
-      cell(member.cccd),
-      cell(member.cccdMeta?.ngayCap),
-      cell(member.cccdMeta?.noiCap),
-      preceptNgayGh(member, sanghaType),
-      cell(member.hienTuHoc),
+      ...columns.map((c) => c.cell(member, ctx)),
     ]),
   ]
 }
@@ -61,9 +41,11 @@ export function buildMembersExcelFilename(
 export function downloadMembersExcel(
   members: Member[],
   sanghaType: SanghaType,
+  columnIds: string[],
+  ctx: MembersExcelRowContext,
   options?: { filename?: string; sheetName?: string },
 ): void {
-  const rows = membersToExcelRows(members, sanghaType)
+  const rows = membersToExcelRows(members, sanghaType, columnIds, ctx)
   const worksheet = XLSX.utils.aoa_to_sheet(rows)
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, worksheet, options?.sheetName ?? 'Members')

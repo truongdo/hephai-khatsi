@@ -6,6 +6,8 @@ export type ExportMembersExcelInput = {
   sanghaType: SanghaType
   orgUnitId?: string
   status?: RecordStatus
+  columnIds: string[]
+  orgUnitNameById: Record<string, string>
 }
 
 export async function exportMembersExcel(
@@ -17,5 +19,7 @@ export async function exportMembersExcel(
     orgUnitId: input.orgUnitId,
     status: input.status,
   })
-  downloadMembersExcel(members, input.sanghaType)
+  downloadMembersExcel(members, input.sanghaType, input.columnIds, {
+    orgUnitNameById: input.orgUnitNameById,
+  })
 }

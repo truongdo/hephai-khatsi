@@ -48,6 +48,7 @@ const memberItems = [
 ]
 
 const deleteMembersMock = vi.fn()
+const exportMembersExcelMock = vi.fn(async () => {})
 const unlockMemberMock = vi.fn()
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
 const membersQueryMock = vi.fn(() => ({
@@ -77,6 +78,10 @@ vi.mock('#/auth/useAuth', () => ({
 
 vi.mock('#/use-cases/deleteMembers', () => ({
   deleteMembers: (...args: unknown[]) => deleteMembersMock(...args),
+}))
+
+vi.mock('#/use-cases/exportMembersExcel', () => ({
+  exportMembersExcel: (...args: unknown[]) => exportMembersExcelMock(...args),
 }))
 
 vi.mock('#/use-cases/unlockMember', () => ({
@@ -152,6 +157,8 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
+  localStorage.clear()
+  exportMembersExcelMock.mockClear()
   useAdminClaimMock.mockReturnValue({
     status: 'admin',
     uid: 'admin-uid',
@@ -277,6 +284,25 @@ describe('MembersListPage', () => {
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['admin', 'members'],
     })
+  })
+
+  it('opens column modal on export and exports selected columns on confirm', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await screen.findByText('HT A')
+    await user.click(screen.getByRole('button', { name: 'Xuất Excel' }))
+    expect(exportMembersExcelMock).not.toHaveBeenCalled()
+    const dialog = await screen.findByRole('dialog', { name: 'Chọn cột xuất Excel' })
+    await user.click(within(dialog).getByRole('button', { name: 'Xuất' }))
+    await waitFor(() => expect(exportMembersExcelMock).toHaveBeenCalled())
+    const input = exportMembersExcelMock.mock.calls[0]?.[0] as {
+      columnIds: string[]
+      orgUnitNameById: Record<string, string>
+      sanghaType: string
+    }
+    expect(input.sanghaType).toBe('tang')
+    expect(input.columnIds[0]).toBe('theDanh')
+    expect(input.orgUnitNameById['gd-i']).toBe('Giáo đoàn I')
   })
 
   it('filters to edit-requested rows client-side', async () => {
