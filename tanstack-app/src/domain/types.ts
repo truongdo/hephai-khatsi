@@ -57,6 +57,7 @@ export type Member = {
   photoPath: string | null
   theDanh?: string
   phapDanh?: string
+  phanDoan?: string
   ngaySinh?: string
   noiSinh?: AddressValue | string
   nguyenQuan?: string

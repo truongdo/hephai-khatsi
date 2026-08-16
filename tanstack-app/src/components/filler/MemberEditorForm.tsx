@@ -1,5 +1,5 @@
 import { Alert } from '@mantine/core'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import type { Member, SanghaType } from '#/domain/types'
 import { normalizeVnPhone } from '#/domain/normalize'
@@ -8,6 +8,7 @@ import { memberDraftStorageKey } from '#/lib/formLocalDraft'
 import { scheduleScrollToFirstFieldError } from '#/lib/scrollToFirstFieldError'
 import { m } from '#/paraglide/messages'
 import { fillerKeys } from '#/query/fillerKeys'
+import { fillerOrgUnitsQuery } from '#/query/fillerQueries'
 import type { DocumentSide, DocumentTypeId } from '#/domain/memberDocumentTypes'
 import { requestMemberEdit } from '#/use-cases/requestMemberEdit'
 import { saveAndLockMember } from '#/use-cases/saveAndLockMember'
@@ -77,6 +78,7 @@ export function MemberEditorForm({
   onCreated,
 }: MemberEditorFormProps) {
   const queryClient = useQueryClient()
+  const orgUnitsQuery = useQuery(fillerOrgUnitsQuery())
   const fieldsApiRef = useRef<MemberFormFieldsApi | null>(null)
   const [sessionCreatedId, setSessionCreatedId] = useState<string | undefined>()
   const effectiveMemberId = memberId ?? sessionCreatedId
@@ -336,6 +338,10 @@ export function MemberEditorForm({
       pendingDocuments: api.getPendingDocuments(),
       giaoPhamGiaoHoi: { rank: draft.giaoPhamGiaoHoi.rank },
       giaoPhamHePhai: { rank: draft.giaoPhamHePhai.rank },
+      orgUnitKind:
+        (orgUnitsQuery.data ?? []).find((unit) => unit.id === orgUnitId)?.kind ??
+        null,
+      phanDoan: draft.phanDoan,
     })
     if (!result.valid) {
       api.setFieldErrors(result.errors)
@@ -388,6 +394,7 @@ export function MemberEditorForm({
           }}
           disabled={disabled}
           memberId={effectiveMemberId}
+          orgUnitId={orgUnitId}
           cccd={resolvedCccd}
           onCccdChange={
             isCreate

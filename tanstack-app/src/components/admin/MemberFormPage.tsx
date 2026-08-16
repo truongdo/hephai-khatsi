@@ -420,6 +420,10 @@ export function MemberFormPage({
       pendingDocuments: api.getPendingDocuments(),
       giaoPhamGiaoHoi: { rank: draft.giaoPhamGiaoHoi.rank },
       giaoPhamHePhai: { rank: draft.giaoPhamHePhai.rank },
+      orgUnitKind:
+        (orgUnits.data ?? []).find((unit) => unit.id === orgUnitId)?.kind ??
+        null,
+      phanDoan: draft.phanDoan,
     })
     if (!result.valid) {
       api.setFieldErrors(result.errors)
@@ -588,6 +592,7 @@ export function MemberFormPage({
               initial={formInitial}
               disabled={false}
               memberId={memberId}
+              orgUnitId={orgUnitId ?? ''}
               cccd={resolvedCccd}
               onCccdChange={
                 mode === 'create'

@@ -1,6 +1,8 @@
 import type { AddressDraft } from '#/domain/address'
 import { validateAddressDraft } from '#/domain/address'
 import type { MemberDocuments } from '#/domain/memberDocumentTypes'
+import { isPhanDoanValue } from '#/domain/phanDoan'
+import type { OrgUnitKind } from '#/domain/types'
 import type { PendingDocumentFiles } from './MemberDocumentsField'
 import type { FamilyPersonDraft } from './memberDraft'
 
@@ -24,6 +26,8 @@ export type MemberRequiredDraft = {
   pendingDocuments: PendingDocumentFiles
   giaoPhamGiaoHoi: { rank: string }
   giaoPhamHePhai: { rank: string }
+  orgUnitKind: OrgUnitKind | null
+  phanDoan: string
 }
 
 export type MemberRequiredFieldErrors = {
@@ -47,6 +51,7 @@ export type MemberRequiredFieldErrors = {
   }
   giaoPhamGiaoHoi?: { rank?: 'REQUIRED' }
   giaoPhamHePhai?: { rank?: 'REQUIRED' }
+  phanDoan?: 'REQUIRED'
 }
 
 const BASIC_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -157,6 +162,10 @@ export function validateMemberRequiredFields(draft: MemberRequiredDraft): {
   if (gpGiaoHoiRank) errors.giaoPhamGiaoHoi = { rank: gpGiaoHoiRank }
   const gpHePhaiRank = requireText(draft.giaoPhamHePhai.rank)
   if (gpHePhaiRank) errors.giaoPhamHePhai = { rank: gpHePhaiRank }
+
+  if (draft.orgUnitKind === 'ni_gioi' && !isPhanDoanValue(draft.phanDoan.trim())) {
+    errors.phanDoan = 'REQUIRED'
+  }
 
   return { valid: Object.keys(errors).length === 0, errors }
 }

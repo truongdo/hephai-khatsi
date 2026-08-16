@@ -16,6 +16,7 @@ import { VietnamAddressFields } from '#/components/address/VietnamAddressFields'
 import type { AddressDraft } from '#/domain/address'
 import type { MemberDocuments } from '#/domain/memberDocumentTypes'
 import type { AuditActor } from '#/domain/auditLog'
+import { phanDoanSelectData } from '#/domain/phanDoan'
 import type { Member, SanghaType } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { fillerOrgUnitsQuery } from '#/query/fillerQueries'
@@ -146,6 +147,7 @@ export type MemberFormFieldsProps = {
   cccd: string
   onCccdChange?: (value: string) => void
   sanghaType: SanghaType
+  orgUnitId: string
   inviteToken?: string
   getIdToken?: () => Promise<string | undefined>
   apiRef: React.MutableRefObject<MemberFormFieldsApi | null>
@@ -161,6 +163,7 @@ export function MemberFormFields({
   cccd,
   onCccdChange,
   sanghaType,
+  orgUnitId,
   inviteToken,
   getIdToken,
   onUploadError,
@@ -192,6 +195,19 @@ export function MemberFormFields({
         .map((unit) => ({ value: unit.id, label: unit.name })),
     [orgUnitsQuery.data],
   )
+  const selectedOrgUnit = useMemo(
+    () => (orgUnitsQuery.data ?? []).find((unit) => unit.id === orgUnitId),
+    [orgUnitsQuery.data, orgUnitId],
+  )
+  const showPhanDoan = selectedOrgUnit?.kind === 'ni_gioi'
+
+  useEffect(() => {
+    if (!showPhanDoan) {
+      setDraft((current) =>
+        current.phanDoan ? { ...current, phanDoan: '' } : current,
+      )
+    }
+  }, [showPhanDoan])
 
   apiRef.current = {
     getDraft: () => draft,
@@ -392,6 +408,18 @@ export function MemberFormFields({
             required
             error={mapRequiredError(fieldErrors.phapDanh)}
           />
+          {showPhanDoan ? (
+            <Select
+              label={m.filler_field_phan_doan()}
+              data={phanDoanSelectData()}
+              value={draft.phanDoan || null}
+              onChange={(value) => updateDraft('phanDoan', value ?? '')}
+              disabled={disabled}
+              required
+              clearable
+              error={mapRequiredError(fieldErrors.phanDoan)}
+            />
+          ) : null}
           <DateInput
             label={m.filler_field_ngay_sinh()}
             valueFormat="DD-MM-YYYY"
@@ -494,8 +522,10 @@ export function MemberFormFields({
       </FormSection>
     ),
     [
+      showPhanDoan,
       draft.theDanh,
       draft.phapDanh,
+      draft.phanDoan,
       draft.ngaySinh,
       draft.noiSinh,
       draft.nguyenQuan,
@@ -508,6 +538,7 @@ export function MemberFormFields({
       onNoiSinhChange,
       fieldErrors.theDanh,
       fieldErrors.phapDanh,
+      fieldErrors.phanDoan,
       fieldErrors.ngaySinh,
       fieldErrors.noiSinh,
       fieldErrors.cccd,

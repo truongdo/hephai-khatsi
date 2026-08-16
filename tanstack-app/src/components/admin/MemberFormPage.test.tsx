@@ -125,6 +125,31 @@ vi.mock('@tanstack/react-router', () => ({
 
 let memberFixture: Member = draftMember
 
+const mockOrgUnits = [
+  {
+    id: 'gd-i',
+    code: 'I',
+    name: 'Giáo đoàn I',
+    kind: 'giao_doan' as const,
+    order: 1,
+    allowsTang: true,
+    allowsNi: true,
+  },
+  {
+    id: 'ni-gd-i',
+    code: 'ni-gd-i',
+    name: 'Ni giới Giáo đoàn I',
+    kind: 'ni_gioi' as const,
+    order: 7,
+    allowsTang: false,
+    allowsNi: true,
+  },
+]
+
+vi.mock('#/repositories/orgUnitRepo', () => ({
+  listOrgUnits: vi.fn(async () => mockOrgUnits),
+}))
+
 vi.mock('#/query/adminQueries', () => ({
   memberQuery: (id: string) => ({
     queryKey: ['admin', 'member', id],
@@ -133,17 +158,7 @@ vi.mock('#/query/adminQueries', () => ({
   }),
   orgUnitsQuery: () => ({
     queryKey: ['admin', 'orgUnits'],
-    queryFn: async () => [
-      {
-        id: 'gd-i',
-        code: 'I',
-        name: 'Giáo đoàn I',
-        kind: 'giao_doan',
-        order: 1,
-        allowsTang: true,
-        allowsNi: true,
-      },
-    ],
+    queryFn: async () => mockOrgUnits,
     staleTime: 0,
   }),
 }))
@@ -306,17 +321,8 @@ function renderForm({ mode }: { mode: 'create' | 'edit' }) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
-  queryClient.setQueryData(['admin', 'orgUnits'], [
-    {
-      id: 'gd-i',
-      code: 'I',
-      name: 'Giáo đoàn I',
-      kind: 'giao_doan',
-      order: 1,
-      allowsTang: true,
-      allowsNi: true,
-    },
-  ])
+  queryClient.setQueryData(['admin', 'orgUnits'], mockOrgUnits)
+  queryClient.setQueryData(['filler', 'orgUnits'], mockOrgUnits)
   return render(
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme} defaultColorScheme="light">
@@ -694,6 +700,14 @@ describe('MemberFormPage', () => {
         name: m.admin_member_directory_role_grant_he_phai(),
       }),
     ).toBeNull()
+  })
+
+  it('shows Phân đoàn when editing member under ni giới org unit', async () => {
+    memberFixture = { ...draftMember, orgUnitId: 'ni-gd-i', sanghaType: 'ni' }
+    renderForm({ mode: 'edit' })
+    expect(
+      await screen.findByRole('combobox', { name: m.filler_field_phan_doan() }),
+    ).toBeTruthy()
   })
 
   it('Hoàn thành saves a fully-valid draft without locking', async () => {

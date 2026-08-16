@@ -58,6 +58,8 @@ function filledDraft(
     pendingDocuments: {},
     giaoPhamGiaoHoi: { rank: 'ty_kheo' },
     giaoPhamHePhai: { rank: 'ty_kheo' },
+    orgUnitKind: 'giao_doan' as const,
+    phanDoan: '',
     ...overrides,
   }
 }
@@ -96,6 +98,8 @@ describe('validateMemberRequiredFields', () => {
       pendingDocuments: {},
       giaoPhamGiaoHoi: { rank: '' },
       giaoPhamHePhai: { rank: '  ' },
+      orgUnitKind: 'giao_doan',
+      phanDoan: '',
     })
     expect(result.valid).toBe(false)
     expect(result.errors.cccd).toBe('REQUIRED')
@@ -294,5 +298,35 @@ describe('validateMemberRequiredFields', () => {
     expect(missingHePhai.valid).toBe(false)
     expect(missingHePhai.errors.giaoPhamHePhai).toEqual({ rank: 'REQUIRED' })
     expect(missingHePhai.errors.giaoPhamGiaoHoi).toBeUndefined()
+  })
+
+  it('requires phanDoan when orgUnitKind is ni_gioi', () => {
+    const result = validateMemberRequiredFields(
+      filledDraft({ orgUnitKind: 'ni_gioi', phanDoan: '' }),
+    )
+    expect(result.valid).toBe(false)
+    expect(result.errors.phanDoan).toBe('REQUIRED')
+  })
+
+  it('accepts allowed phanDoan for ni_gioi', () => {
+    const result = validateMemberRequiredFields(
+      filledDraft({ orgUnitKind: 'ni_gioi', phanDoan: 'Phân đoàn 1' }),
+    )
+    expect(result.errors.phanDoan).toBeUndefined()
+    expect(result.valid).toBe(true)
+  })
+
+  it('rejects unknown phanDoan for ni_gioi', () => {
+    const result = validateMemberRequiredFields(
+      filledDraft({ orgUnitKind: 'ni_gioi', phanDoan: '2' }),
+    )
+    expect(result.errors.phanDoan).toBe('REQUIRED')
+  })
+
+  it('does not require phanDoan for giao_doan', () => {
+    const result = validateMemberRequiredFields(
+      filledDraft({ orgUnitKind: 'giao_doan', phanDoan: '' }),
+    )
+    expect(result.errors.phanDoan).toBeUndefined()
   })
 })
