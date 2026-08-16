@@ -57,7 +57,7 @@ vi.mock('#/query/fillerQueries', async (importOriginal) => {
           kind: 'giao_doan' as const,
           order: 1,
           allowsTang: true,
-          allowsNi: true,
+          allowsNi: false,
         },
         {
           id: 'ni-gioi',

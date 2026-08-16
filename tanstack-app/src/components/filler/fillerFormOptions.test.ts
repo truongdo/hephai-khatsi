@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
+import { ORG_UNIT_SEED } from '#/domain/orgUnitSeed'
 import {
   DAC_DIEM_OPTIONS,
+  giaoDoanGocSelectOptions,
   HANG_MUC_XAY_DUNG_OPTIONS,
   namTienPhongAfterRankChange,
   NI_RANKS,
@@ -67,6 +69,31 @@ describe('fillerFormOptions', () => {
     expect(QD_CONG_NHAN_TRANG_THAI_OPTIONS.map((o) => o.value)).toEqual([
       'chinh_thuc',
       'chua_cong_nhan',
+    ])
+  })
+
+  it('lists giao doan units for tang giaoDoanGoc', () => {
+    expect(
+      giaoDoanGocSelectOptions(ORG_UNIT_SEED, 'tang').map((o) => o.label),
+    ).toEqual([
+      'Giáo đoàn I',
+      'Giáo đoàn II',
+      'Giáo đoàn III',
+      'Giáo đoàn IV',
+      'Giáo đoàn V',
+      'Giáo đoàn VI',
+    ])
+  })
+
+  it('lists ni org units for ni giaoDoanGoc, matching Giáo đoàn options', () => {
+    expect(
+      giaoDoanGocSelectOptions(ORG_UNIT_SEED, 'ni').map((o) => o.label),
+    ).toEqual([
+      'Ni giới Giáo đoàn I',
+      'Ni giới Giáo đoàn III',
+      'Ni giới Giáo đoàn IV',
+      'Ni giới Giáo đoàn VI',
+      'Ni giới Hệ phái Khất sĩ',
     ])
   })
 })

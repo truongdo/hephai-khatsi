@@ -1,5 +1,5 @@
 import { m } from '#/paraglide/messages'
-import type { SanghaType } from '#/domain/types'
+import type { OrgUnit, SanghaType } from '#/domain/types'
 
 export type FillerOption = { value: string; label: () => string }
 
@@ -46,6 +46,17 @@ export function rankLabel(
   if (!rank) return undefined
   const options = sanghaType === 'tang' ? TANG_RANKS : NI_RANKS
   return options.find((option) => option.value === rank)?.label()
+}
+
+export function giaoDoanGocSelectOptions(
+  units: OrgUnit[],
+  sanghaType: SanghaType,
+): Array<{ value: string; label: string }> {
+  return units
+    .filter((unit) =>
+      sanghaType === 'ni' ? unit.allowsNi : unit.kind === 'giao_doan',
+    )
+    .map((unit) => ({ value: unit.id, label: unit.name }))
 }
 
 export const DAC_DIEM_OPTIONS: FillerOption[] = [

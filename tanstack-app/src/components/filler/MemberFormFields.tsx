@@ -22,6 +22,7 @@ import { m } from '#/paraglide/messages'
 import { fillerOrgUnitsQuery } from '#/query/fillerQueries'
 import type { FillerOption } from './fillerFormOptions'
 import {
+  giaoDoanGocSelectOptions,
   namTienPhongAfterRankChange,
   NI_RANKS,
   rankShowsNamTienPhong,
@@ -189,11 +190,8 @@ export function MemberFormFields({
   const ranks = useMemo(() => rankOptions(sanghaType), [sanghaType])
   const orgUnitsQuery = useQuery(fillerOrgUnitsQuery())
   const giaoDoanOptions = useMemo(
-    () =>
-      (orgUnitsQuery.data ?? [])
-        .filter((unit) => unit.kind === 'giao_doan')
-        .map((unit) => ({ value: unit.id, label: unit.name })),
-    [orgUnitsQuery.data],
+    () => giaoDoanGocSelectOptions(orgUnitsQuery.data ?? [], sanghaType),
+    [orgUnitsQuery.data, sanghaType],
   )
   const selectedOrgUnit = useMemo(
     () => (orgUnitsQuery.data ?? []).find((unit) => unit.id === orgUnitId),
