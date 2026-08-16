@@ -26,7 +26,7 @@ import {
 } from './fillerFormOptions'
 import { FormSection } from './FormSection'
 import { RepeatableFieldset } from './RepeatableFieldset'
-import type { TempleDraft, NumericValue } from './templeDraft'
+import type { DecimalValue, TempleDraft, NumericValue } from './templeDraft'
 
 type SetDraft = Dispatch<SetStateAction<TempleDraft>>
 
@@ -49,6 +49,10 @@ const EMPTY_TRUNG_TU = { moTa: '', ghiChu: '' }
 
 function numberInputValue(value: string | number): NumericValue {
   return typeof value === 'number' ? value : ''
+}
+
+function decimalInputValue(value: string | number): DecimalValue {
+  return value
 }
 
 export const TempleIdentitySection = memo(function TempleIdentitySection({
@@ -541,6 +545,7 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
           error={errors?.tangSoHienTru?.tyKheo}
           disabled={disabled}
           min={0}
+          allowDecimal={false}
         />
         <NumberInput
           label={m.filler_field_thuc_xoa_ma_na()}
@@ -559,6 +564,7 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
           error={errors?.tangSoHienTru?.thucXoaMaNa}
           disabled={disabled}
           min={0}
+          allowDecimal={false}
         />
         <NumberInput
           label={m.filler_field_sa_di()}
@@ -577,6 +583,7 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
           error={errors?.tangSoHienTru?.saDi}
           disabled={disabled}
           min={0}
+          allowDecimal={false}
         />
         <NumberInput
           label={m.filler_field_tap_su()}
@@ -595,6 +602,7 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
           error={errors?.tangSoHienTru?.tapSu}
           disabled={disabled}
           min={0}
+          allowDecimal={false}
         />
         <NumberInput
           label={m.filler_field_so_pt_quy_y()}
@@ -610,6 +618,7 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
           error={errors?.soPhatTuQuyY}
           disabled={disabled}
           min={0}
+          allowDecimal={false}
         />
         <NumberInput
           label={m.filler_field_so_pt_thuong_xuyen()}
@@ -625,6 +634,7 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
           error={errors?.soPhatTuThuongXuyen}
           disabled={disabled}
           min={0}
+          allowDecimal={false}
         />
       </SimpleGrid>
     </FormSection>
@@ -1036,11 +1046,14 @@ export const TempleDatSection = memo(function TempleDatSection({
                 ...current,
                 quyenSuDungDat: {
                   ...current.quyenSuDungDat,
-                  dienTichKhuonVienM2: numberInputValue(value),
+                  dienTichKhuonVienM2: decimalInputValue(value),
                 },
               }))
             }
             min={0}
+            allowDecimal
+            decimalScale={4}
+            step={0.01}
           />
           <NumberInput
             label={m.filler_field_dat_xd()}
@@ -1051,11 +1064,14 @@ export const TempleDatSection = memo(function TempleDatSection({
                 ...current,
                 quyenSuDungDat: {
                   ...current.quyenSuDungDat,
-                  dienTichXayDungM2: numberInputValue(value),
+                  dienTichXayDungM2: decimalInputValue(value),
                 },
               }))
             }
             min={0}
+            allowDecimal
+            decimalScale={4}
+            step={0.01}
           />
           <TextInput
             label={m.filler_field_dat_canh_tac_so()}
@@ -1081,11 +1097,14 @@ export const TempleDatSection = memo(function TempleDatSection({
                 ...current,
                 quyenSuDungDat: {
                   ...current.quyenSuDungDat,
-                  dienTichDatCanhTacM2: numberInputValue(value),
+                  dienTichDatCanhTacM2: decimalInputValue(value),
                 },
               }))
             }
             min={0}
+            allowDecimal
+            decimalScale={4}
+            step={0.01}
           />
         </SimpleGrid>
       </Fieldset>

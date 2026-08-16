@@ -42,6 +42,35 @@ describe('templeDraft diaChiCu', () => {
   })
 })
 
+describe('templeDraft land areas', () => {
+  it('patches decimal square-meter values', () => {
+    const draft = emptyTempleDraft({
+      quyenSuDungDat: {
+        dienTichKhuonVienM2: 12.5,
+        dienTichXayDungM2: 3.25,
+        dienTichDatCanhTacM2: 100.75,
+      },
+    })
+    expect(buildTemplePatch(draft).quyenSuDungDat).toMatchObject({
+      dienTichKhuonVienM2: 12.5,
+      dienTichXayDungM2: 3.25,
+      dienTichDatCanhTacM2: 100.75,
+    })
+  })
+
+  it('parses in-progress decimal strings when building the patch', () => {
+    const draft = emptyTempleDraft({})
+    draft.quyenSuDungDat.dienTichKhuonVienM2 = '12.5'
+    draft.quyenSuDungDat.dienTichXayDungM2 = '12,'
+    draft.quyenSuDungDat.dienTichDatCanhTacM2 = '8,25'
+    expect(buildTemplePatch(draft).quyenSuDungDat).toMatchObject({
+      dienTichKhuonVienM2: 12.5,
+      dienTichXayDungM2: 12,
+      dienTichDatCanhTacM2: 8.25,
+    })
+  })
+})
+
 describe('templeDraft qdCongNhan.trangThai', () => {
   it('hydrates known trangThai and patches it', () => {
     const draft = emptyTempleDraft({

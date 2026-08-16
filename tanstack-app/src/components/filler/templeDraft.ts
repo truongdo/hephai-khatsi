@@ -8,6 +8,8 @@ import type { Temple } from '#/domain/types'
 import type { TempleProfilePatch } from '#/repositories/templeRepo'
 
 export type NumericValue = number | ''
+/** Controlled NumberInput may hold an in-progress decimal string (e.g. `"12."`). */
+export type DecimalValue = number | string
 
 export type TempleDraft = {
   danhHieu: string
@@ -41,10 +43,10 @@ export type TempleDraft = {
   quyenSuDungDat: {
     soGiay: string
     ngayCap: string
-    dienTichKhuonVienM2: NumericValue
-    dienTichXayDungM2: NumericValue
+    dienTichKhuonVienM2: DecimalValue
+    dienTichXayDungM2: DecimalValue
     soGiayDatCanhTac: string
-    dienTichDatCanhTacM2: NumericValue
+    dienTichDatCanhTacM2: DecimalValue
   }
 }
 
@@ -57,8 +59,14 @@ function numberOrBlank(value?: number): NumericValue {
   return typeof value === 'number' ? value : ''
 }
 
-function numberOrUndefined(value: NumericValue): number | undefined {
-  return typeof value === 'number' ? value : undefined
+function numberOrUndefined(value: NumericValue | DecimalValue): number | undefined {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : undefined
+  }
+  const normalized = value.trim().replace(',', '.')
+  if (!normalized || normalized === '-' || normalized === '.') return undefined
+  const parsed = Number(normalized)
+  return Number.isFinite(parsed) ? parsed : undefined
 }
 
 function textOrUndefined(value: string): string | undefined {
