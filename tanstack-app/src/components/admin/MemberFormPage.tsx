@@ -33,6 +33,7 @@ import type { SanghaType } from '#/domain/types'
 import {
   canGrantDirectoryRole,
   canManageDirectory,
+  isHePhaiAdmin,
   isHePhaiScope,
 } from '#/domain/authClaims'
 import { isGmailEmail } from '#/domain/gmail'
@@ -114,6 +115,12 @@ export function MemberFormPage({
     ...memberQuery(memberId ?? ''),
     enabled: manageDirectory && mode === 'edit' && !!memberId,
   })
+
+  const canEditOrgUnitOnDetail =
+    claim.status === 'admin' &&
+    isHePhaiAdmin({ role: claim.role, orgUnitId: claim.orgUnitId }) &&
+    mode === 'edit' &&
+    member.data?.status === 'draft'
 
   useEffect(() => {
     if (mode === 'create') {
@@ -277,7 +284,7 @@ export function MemberFormPage({
       await queryClient.invalidateQueries({
         queryKey: [...adminKeys.all, 'members'],
       })
-      if (mode === 'create') {
+      if (mode === 'create' || (memberId && result.member.id !== memberId)) {
         await navigate({
           to: '/admin/members/$id',
           params: { id: result.member.id },
@@ -575,7 +582,7 @@ export function MemberFormPage({
                 onChange={setOrgUnitId}
                 searchable
                 required
-                disabled={mode === 'edit'}
+                disabled={mode === 'edit' && !canEditOrgUnitOnDetail}
               />
             )}
             <Select

@@ -83,6 +83,33 @@ export function maybeAppendAuditFromDiff(
   })
 }
 
+export async function listAuditLogDocsForCopy(
+  parent: AuditParent,
+): Promise<Array<{ id: string; data: Record<string, unknown> }>> {
+  const db = requireDb()
+  const snap = await getDocs(
+    collection(db, parent.collection, parent.id, 'auditLogs'),
+  )
+  return snap.docs.map((docSnap) => ({
+    id: docSnap.id,
+    data: docSnap.data() as Record<string, unknown>,
+  }))
+}
+
+export function copyAuditLogDocsInTransaction(
+  transaction: Transaction,
+  to: AuditParent,
+  logs: Array<{ id: string; data: Record<string, unknown> }>,
+): void {
+  const db = requireDb()
+  for (const log of logs) {
+    transaction.set(
+      doc(db, to.collection, to.id, 'auditLogs', log.id),
+      log.data,
+    )
+  }
+}
+
 export async function listAuditLogs(
   parent: AuditParent,
   opts: { limit: number; startAfterAt?: string },

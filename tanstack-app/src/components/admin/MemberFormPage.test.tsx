@@ -393,6 +393,38 @@ describe('MemberFormPage', () => {
     expect(screen.getByText(m.filler_field_anh_chan_dung())).toBeTruthy()
   })
 
+  it('enables org unit select for he_phai_admin when member is draft', async () => {
+    memberFixture = draftMember
+    renderForm({ mode: 'edit' })
+    const select = await screen.findByRole('combobox', {
+      name: new RegExp(`^${m.admin_members_form_org_unit()}$`),
+    })
+    expect(select).not.toBeDisabled()
+  })
+
+  it('disables org unit select when member is locked', async () => {
+    renderForm({ mode: 'edit' })
+    const select = await screen.findByRole('combobox', {
+      name: new RegExp(`^${m.admin_members_form_org_unit()}$`),
+    })
+    expect(select).toBeDisabled()
+  })
+
+  it('disables org unit select for giao_doan_admin on edit', async () => {
+    adminClaimFixture = {
+      status: 'admin',
+      uid: 'admin-uid',
+      role: 'giao_doan_admin',
+      orgUnitId: 'gd-i',
+    }
+    memberFixture = draftMember
+    renderForm({ mode: 'edit' })
+    const select = await screen.findByRole('combobox', {
+      name: new RegExp(`^${m.admin_members_form_org_unit()}$`),
+    })
+    expect(select).toBeDisabled()
+  })
+
   it('Hoàn thành does not save when required fields missing', async () => {
     const user = userEvent.setup()
     renderForm({ mode: 'create' })
@@ -727,5 +759,27 @@ describe('MemberFormPage', () => {
     await vi.waitFor(() => expect(saveAdminMemberMock).toHaveBeenCalledOnce())
     expect(lockMemberMock).not.toHaveBeenCalled()
     expect(navigateMock).not.toHaveBeenCalled()
+  })
+
+  it('navigates to the new member id after org unit reassignment', async () => {
+    const user = userEvent.setup()
+    memberFixture = completeDraftMember()
+    saveAdminMemberMock.mockResolvedValue({
+      member: { ...completeDraftMember(), id: 'gd-ii_tang_001099012345' },
+      mode: 'updated',
+    } as never)
+    renderForm({ mode: 'edit' })
+
+    await screen.findByRole('button', { name: m.admin_members_complete() })
+    await user.click(
+      screen.getByRole('button', { name: m.admin_members_complete() }),
+    )
+
+    await vi.waitFor(() =>
+      expect(navigateMock).toHaveBeenCalledWith({
+        to: '/admin/members/$id',
+        params: { id: 'gd-ii_tang_001099012345' },
+      }),
+    )
   })
 })

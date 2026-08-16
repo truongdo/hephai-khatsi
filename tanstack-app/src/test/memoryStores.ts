@@ -444,19 +444,38 @@ export function createMemoryMemberStore(
     async updateDraftById(
       memberId: string,
       patch: MemberProfilePatch,
-      options?: { allowWhenLocked?: boolean; audit?: AuditActor },
+      options?: {
+        allowWhenLocked?: boolean
+        allowOrgUnitChange?: boolean
+        orgUnitId?: string
+        audit?: AuditActor
+      },
     ) {
       const existing = members.get(memberId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
       if (existing.status === 'locked' && !options?.allowWhenLocked) {
         throw new DomainError('RECORD_LOCKED', 'Member is locked')
       }
+      const nextOrgUnitId = options?.orgUnitId ?? existing.orgUnitId
+      const orgChanged = nextOrgUnitId !== existing.orgUnitId
+      if (orgChanged && !options?.allowOrgUnitChange) {
+        throw new DomainError('FORBIDDEN', 'Cannot change member org unit')
+      }
+      const nextId = orgChanged
+        ? memberCccdIndexId(nextOrgUnitId, existing.sanghaType, existing.cccd)
+        : existing.id
+      if (orgChanged && members.has(nextId)) {
+        throw new DomainError(
+          'ALREADY_EXISTS',
+          'A member with this CCCD already exists in the target org unit',
+        )
+      }
       const now = '2026-07-19T00:00:00.000Z'
       const member: Member = {
         ...existing,
         ...patch,
-        id: existing.id,
-        orgUnitId: existing.orgUnitId,
+        id: nextId,
+        orgUnitId: nextOrgUnitId,
         sanghaType: existing.sanghaType,
         status: existing.status,
         cccd: existing.cccd,
@@ -468,12 +487,30 @@ export function createMemoryMemberStore(
         editRequestedBy: existing.editRequestedBy,
         updatedAt: now,
       }
-      members.set(memberId, member)
+      if (orgChanged) {
+        members.delete(memberId)
+        index.delete(
+          memberCccdIndexId(existing.orgUnitId, existing.sanghaType, existing.cccd),
+        )
+        removeFromPhoneIndex(phoneIndex, existing)
+        const previousLogs =
+          auditLogs.get(auditParentKey({ collection: 'members', id: memberId })) ??
+          []
+        auditLogs.set(
+          auditParentKey({ collection: 'members', id: nextId }),
+          previousLogs.map((entry) => ({ ...entry })),
+        )
+      }
+      members.set(nextId, member)
+      index.set(
+        memberCccdIndexId(member.orgUnitId, member.sanghaType, member.cccd),
+        member.id,
+      )
       appendPhoneIndex(phoneIndex, member)
       if (options?.audit) {
         maybeMemoryAppendAuditFromDiff(
           auditLogs,
-          { collection: 'members', id: memberId },
+          { collection: 'members', id: nextId },
           {
             action: 'updated',
             actor: options.audit,

@@ -1,4 +1,8 @@
-import { canAccessOrgUnit, type AuthClaims } from '#/domain/authClaims'
+import {
+  canAccessOrgUnit,
+  isHePhaiAdmin,
+  type AuthClaims,
+} from '#/domain/authClaims'
 import { DomainError } from '#/domain/errors'
 import type { AuditActor } from '#/domain/auditLog'
 import { normalizeEmail } from '#/domain/gmail'
@@ -74,14 +78,24 @@ export async function saveAdminMember(
     if (!existing) {
       throw new DomainError('NOT_FOUND', 'Member not found')
     }
-    if (
-      existing.orgUnitId !== input.orgUnitId ||
-      existing.sanghaType !== input.sanghaType
-    ) {
+    if (existing.sanghaType !== input.sanghaType) {
       throw new DomainError(
         'FORBIDDEN',
         'Member does not belong to this org unit or sangha type',
       )
+    }
+
+    const orgChanged = existing.orgUnitId !== input.orgUnitId
+    if (orgChanged) {
+      if (!isHePhaiAdmin(claims) || existing.status !== 'draft') {
+        throw new DomainError('FORBIDDEN', 'Cannot change member org unit')
+      }
+      if (existing.directoryRole) {
+        throw new DomainError(
+          'FORBIDDEN',
+          'Revoke Thư ký before changing org unit',
+        )
+      }
     }
 
     if (
@@ -98,7 +112,12 @@ export async function saveAdminMember(
     const member = await memberStore.updateDraftById(
       input.memberId,
       sanitizePatch(input.patch),
-      { allowWhenLocked: true, audit },
+      {
+        allowWhenLocked: true,
+        allowOrgUnitChange: orgChanged,
+        orgUnitId: input.orgUnitId,
+        audit,
+      },
     )
     return { member, mode: 'updated' }
   }

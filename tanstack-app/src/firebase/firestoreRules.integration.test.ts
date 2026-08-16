@@ -470,6 +470,38 @@ describe('members', () => {
     const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
     await assertSucceeds(deleteDoc(doc(admin, 'members', memberId)))
   })
+
+  it('allows he_phai_admin to move a draft member to a new org unit document', async () => {
+    const env = await getTestEnv()
+    const newId = 'gd-ii_tang_012345678901'
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'members', memberId), memberDraft())
+    })
+    const admin = env.authenticatedContext('admin-uid', { admin: true }).firestore()
+    const batch = writeBatch(admin)
+    batch.delete(doc(admin, 'members', memberId))
+    batch.set(
+      doc(admin, 'members', newId),
+      memberDraft({
+        orgUnitId: 'gd-ii',
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+    await assertSucceeds(batch.commit())
+  })
+
+  it('denies he_phai_secretary from creating a draft member that keeps inviteId', async () => {
+    const env = await getTestEnv()
+    const sec = env.authenticatedContext('sec-uid', {
+      role: 'he_phai_secretary',
+    }).firestore()
+    await assertFails(
+      setDoc(
+        doc(sec, 'members', 'gd-ii_tang_012345678901'),
+        memberDraft({ orgUnitId: 'gd-ii' }),
+      ),
+    )
+  })
 })
 
 describe('temples', () => {

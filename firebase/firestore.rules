@@ -205,7 +205,8 @@ service cloud.firestore {
         && request.resource.data.createdAt is string
         && request.resource.data.updatedAt is string
         && (
-          (canWriteDirectory() && directoryOrgOk(request.resource.data.orgUnitId) && request.resource.data.inviteId == null && isAdminCreateShape())
+          (isHePhaiAdmin() && directoryOrgOk(request.resource.data.orgUnitId) && isAdminCreateShape())
+          || (canWriteDirectory() && directoryOrgOk(request.resource.data.orgUnitId) && request.resource.data.inviteId == null && isAdminCreateShape())
           || (validInviteScope(request.resource.data) && !isKiemSoat() && isFillerCreateShape())
         );
 

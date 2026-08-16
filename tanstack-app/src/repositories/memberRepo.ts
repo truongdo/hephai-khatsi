@@ -40,6 +40,8 @@ import type {
 } from '#/repositories/adminListTypes'
 import {
   maybeAppendAuditFromDiff,
+  copyAuditLogDocsInTransaction,
+  listAuditLogDocsForCopy,
 } from '#/repositories/auditLogRepo'
 
 export type MemberProfilePatch = Partial<
@@ -94,7 +96,12 @@ export type MemberStore = {
   updateDraftById(
     memberId: string,
     patch: MemberProfilePatch,
-    options?: { allowWhenLocked?: boolean; audit?: AuditActor },
+    options?: {
+      allowWhenLocked?: boolean
+      allowOrgUnitChange?: boolean
+      orgUnitId?: string
+      audit?: AuditActor
+    },
   ): Promise<Member>
   getByCccd(input: MemberLookupInput): Promise<Member | null>
   getById(memberId: string): Promise<Member | null>
@@ -371,10 +378,26 @@ async function requestEdit(memberId: string, phone: string): Promise<Member> {
 async function updateDraftById(
   memberId: string,
   patch: MemberProfilePatch,
-  options?: { allowWhenLocked?: boolean; audit?: AuditActor },
+  options?: {
+    allowWhenLocked?: boolean
+    allowOrgUnitChange?: boolean
+    orgUnitId?: string
+    audit?: AuditActor
+  },
 ): Promise<Member> {
   const db = requireDb()
   const memberRef = doc(db, COLLECTIONS.members, memberId)
+
+  let logsToCopy: Array<{ id: string; data: Record<string, unknown> }> = []
+  if (options?.allowOrgUnitChange && options.orgUnitId) {
+    const peek = await getDoc(memberRef)
+    if (peek.exists() && peek.data()?.orgUnitId !== options.orgUnitId) {
+      logsToCopy = await listAuditLogDocsForCopy({
+        collection: 'members',
+        id: memberId,
+      })
+    }
+  }
 
   return runTransaction(db, async (transaction) => {
     const snap = await transaction.get(memberRef)
@@ -387,12 +410,35 @@ async function updateDraftById(
       throw new DomainError('RECORD_LOCKED', 'Member is locked')
     }
 
+    const nextOrgUnitId = options?.orgUnitId ?? existing.orgUnitId
+    const orgChanged = nextOrgUnitId !== existing.orgUnitId
+    if (orgChanged && !options?.allowOrgUnitChange) {
+      throw new DomainError('FORBIDDEN', 'Cannot change member org unit')
+    }
+
+    const nextId = orgChanged
+      ? memberDocId(nextOrgUnitId, existing.sanghaType, existing.cccd)
+      : existing.id
+    const nextRef = orgChanged
+      ? doc(db, COLLECTIONS.members, nextId)
+      : memberRef
+
+    if (orgChanged) {
+      const nextSnap = await transaction.get(nextRef)
+      if (nextSnap.exists()) {
+        throw new DomainError(
+          'ALREADY_EXISTS',
+          'A member with this CCCD already exists in the target org unit',
+        )
+      }
+    }
+
     const now = new Date().toISOString()
     const member: Member = {
       ...existing,
       ...patch,
-      id: existing.id,
-      orgUnitId: existing.orgUnitId,
+      id: nextId,
+      orgUnitId: nextOrgUnitId,
       sanghaType: existing.sanghaType,
       status: existing.status,
       cccd: existing.cccd,
@@ -406,20 +452,40 @@ async function updateDraftById(
     }
 
     // Firestore transactions require all reads before any writes.
-    const phoneIndex = await readPhoneIndexForTransaction(
+    const newPhoneIndex = await readPhoneIndexForTransaction(
       transaction,
       member.orgUnitId,
       member.sanghaType,
       member.dienThoai,
     )
+    const oldPhoneIndex =
+      orgChanged
+        ? await readPhoneIndexForTransaction(
+            transaction,
+            existing.orgUnitId,
+            existing.sanghaType,
+            existing.dienThoai,
+          )
+        : null
 
-    transaction.set(memberRef, memberData(member))
-    writePhoneIndex(transaction, phoneIndex, member.id)
+    if (orgChanged) {
+      transaction.delete(memberRef)
+      copyAuditLogDocsInTransaction(
+        transaction,
+        { collection: 'members', id: nextId },
+        logsToCopy,
+      )
+    }
+    transaction.set(nextRef, memberData(member))
+    if (oldPhoneIndex) {
+      shrinkPhoneIndex(transaction, oldPhoneIndex, existing.id)
+    }
+    writePhoneIndex(transaction, newPhoneIndex, member.id)
 
     if (options?.audit) {
       maybeAppendAuditFromDiff(
         transaction,
-        { collection: 'members', id: memberId },
+        { collection: 'members', id: nextId },
         {
           action: 'updated',
           actor: options.audit,

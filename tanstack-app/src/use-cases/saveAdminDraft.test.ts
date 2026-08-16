@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { AuthClaims } from '#/domain/authClaims'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
+import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
 import { ADMIN_AUDIT } from '#/test/auditActors'
 import { createMemoryMemberStore, createMemoryTempleStore } from '#/test/memoryStores'
 import { saveAdminMember } from './saveAdminMember'
@@ -185,7 +186,7 @@ describe('saveAdminMember', () => {
     ).rejects.toMatchObject({ code: 'RECORD_LOCKED' })
   })
 
-  it('rejects update when org unit or sangha type mismatches', async () => {
+  it('rejects update when sangha type mismatches', async () => {
     const store = createMemoryMemberStore([
       {
         id: 'm1',
@@ -208,7 +209,133 @@ describe('saveAdminMember', () => {
       saveAdminMember(
         {
           memberId: 'm1',
-          orgUnitId: 'other-org',
+          orgUnitId: 'gd-i',
+          sanghaType: 'ni',
+          patch: {},
+        },
+        ADMIN_AUDIT,
+        HE_PHAI_CLAIMS,
+        store,
+      ),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' })
+  })
+
+  it('reassigns orgUnitId for he_phai_admin on draft and moves the member id', async () => {
+    const store = createMemoryMemberStore([
+      {
+        id: 'gd-i_tang_001099012345',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        status: 'draft',
+        cccd: '001099012345',
+        dienThoai: '0901234567',
+        inviteId: 'inv-1',
+        currentTempleId: null,
+        photoPath: 'members/gd-i_tang_001099012345/photo.jpg',
+        phapDanh: 'Old',
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: null,
+        lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
+      },
+    ])
+    const { member } = await saveAdminMember(
+      {
+        memberId: 'gd-i_tang_001099012345',
+        orgUnitId: 'gd-ii',
+        sanghaType: 'tang',
+        patch: { phapDanh: 'New' },
+      },
+      ADMIN_AUDIT,
+      HE_PHAI_CLAIMS,
+      store,
+    )
+    expect(member.id).toBe('gd-ii_tang_001099012345')
+    expect(member.orgUnitId).toBe('gd-ii')
+    expect(member.phapDanh).toBe('New')
+    expect(member.inviteId).toBe('inv-1')
+    expect(member.photoPath).toBe('members/gd-i_tang_001099012345/photo.jpg')
+    expect(store.members.get('gd-i_tang_001099012345')).toBeUndefined()
+    expect(
+      store.phoneIndex.get(memberPhoneIndexId('gd-i', 'tang', '0901234567')) ??
+        [],
+    ).not.toContain('gd-i_tang_001099012345')
+    expect(
+      store.phoneIndex.get(memberPhoneIndexId('gd-ii', 'tang', '0901234567')),
+    ).toContain('gd-ii_tang_001099012345')
+  })
+
+  it('carries audit history to the new member id after org reassignment', async () => {
+    const store = createMemoryMemberStore([
+      {
+        id: 'gd-i_tang_001099012345',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        status: 'draft',
+        cccd: '001099012345',
+        inviteId: null,
+        currentTempleId: null,
+        photoPath: null,
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: null,
+        lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
+      },
+    ])
+    store.memoryAppendAudit('members:gd-i_tang_001099012345', {
+      action: 'created',
+      at: '2026-07-18T00:00:00.000Z',
+      actorType: 'filler',
+      actorId: '0901234567',
+      changes: [{ path: 'phapDanh', before: undefined, after: 'Old' }],
+      summary: '1',
+    })
+
+    await saveAdminMember(
+      {
+        memberId: 'gd-i_tang_001099012345',
+        orgUnitId: 'gd-ii',
+        sanghaType: 'tang',
+        patch: { phapDanh: 'New' },
+      },
+      ADMIN_AUDIT,
+      HE_PHAI_CLAIMS,
+      store,
+    )
+
+    const moved = store.auditLogs.get('members:gd-ii_tang_001099012345') ?? []
+    expect(moved.some((entry) => entry.action === 'created')).toBe(true)
+    expect(moved.some((entry) => entry.action === 'updated')).toBe(true)
+  })
+
+  it('rejects member org reassignment when locked', async () => {
+    const store = createMemoryMemberStore([
+      {
+        id: 'm1',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        status: 'locked',
+        cccd: '001099012345',
+        inviteId: null,
+        currentTempleId: null,
+        photoPath: null,
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: '2026-07-19T01:00:00.000Z',
+        lockedBy: 'admin-1',
+        editRequestedAt: null,
+        editRequestedBy: null,
+      },
+    ])
+    await expect(
+      saveAdminMember(
+        {
+          memberId: 'm1',
+          orgUnitId: 'gd-ii',
           sanghaType: 'tang',
           patch: {},
         },
@@ -217,12 +344,68 @@ describe('saveAdminMember', () => {
         store,
       ),
     ).rejects.toMatchObject({ code: 'FORBIDDEN' })
+  })
+
+  it('rejects member org reassignment for he_phai_secretary', async () => {
+    const store = createMemoryMemberStore([
+      {
+        id: 'm1',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        status: 'draft',
+        cccd: '001099012345',
+        inviteId: null,
+        currentTempleId: null,
+        photoPath: null,
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: null,
+        lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
+      },
+    ])
     await expect(
       saveAdminMember(
         {
           memberId: 'm1',
-          orgUnitId: 'gd-i',
-          sanghaType: 'ni',
+          orgUnitId: 'gd-ii',
+          sanghaType: 'tang',
+          patch: {},
+        },
+        ADMIN_AUDIT,
+        { role: 'he_phai_secretary', orgUnitId: null },
+        store,
+      ),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' })
+  })
+
+  it('rejects member org reassignment when directoryRole is set', async () => {
+    const store = createMemoryMemberStore([
+      {
+        id: 'm1',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        status: 'draft',
+        cccd: '001099012345',
+        inviteId: null,
+        currentTempleId: null,
+        photoPath: null,
+        directoryRole: 'giao_doan_admin',
+        createdAt: '2026-07-19T00:00:00.000Z',
+        updatedAt: '2026-07-19T00:00:00.000Z',
+        lockedAt: null,
+        lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
+      },
+    ])
+    await expect(
+      saveAdminMember(
+        {
+          memberId: 'm1',
+          orgUnitId: 'gd-ii',
+          sanghaType: 'tang',
           patch: {},
         },
         ADMIN_AUDIT,
