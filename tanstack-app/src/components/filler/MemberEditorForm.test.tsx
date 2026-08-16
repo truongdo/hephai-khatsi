@@ -605,7 +605,7 @@ describe('MemberEditorForm', () => {
     ).toBeTruthy()
   })
 
-  it('hydrates legacy noiSinh string without showing line field in city-only UI', () => {
+  it('hydrates legacy noiSinh string into city-only field', () => {
     renderForm({
       initial: {
         noiSinh: 'Cũ nơi sinh' as unknown as Member['noiSinh'],
@@ -613,8 +613,7 @@ describe('MemberEditorForm', () => {
     })
     expect(
       screen.getByRole('combobox', { name: m.filler_field_noi_sinh() }),
-    ).toBeTruthy()
-    expect(screen.queryByDisplayValue('Cũ nơi sinh')).toBeNull()
+    ).toHaveValue('Cũ nơi sinh')
   })
 
   it('blocks save when portrait, family, or nơi xuất gia line missing', async () => {

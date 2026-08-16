@@ -28,7 +28,12 @@ export type AddressValidationResult = {
 }
 
 export function isAddressBlank(draft: AddressDraft): boolean {
-  return !draft.cityCode && !draft.wardCode && !draft.line.trim()
+  return (
+    !draft.cityCode &&
+    !draft.cityName.trim() &&
+    !draft.wardCode &&
+    !draft.line.trim()
+  )
 }
 
 export function validateAddressDraft(
@@ -53,7 +58,11 @@ export function validateAddressDraft(
     return { valid: true, errors: {} }
   }
   const errors: AddressValidationResult['errors'] = {}
-  if (!draft.cityCode) errors.city = 'REQUIRED'
+  if (cityOnly) {
+    if (!draft.cityCode && !draft.cityName.trim()) errors.city = 'REQUIRED'
+  } else if (!draft.cityCode) {
+    errors.city = 'REQUIRED'
+  }
   if (!cityOnly && !draft.wardCode) errors.ward = 'REQUIRED'
   if (!cityOnly && lineRequired && !draft.line.trim()) errors.line = 'REQUIRED'
   return { valid: Object.keys(errors).length === 0, errors }
@@ -61,9 +70,13 @@ export function validateAddressDraft(
 
 export function hydrateAddress(
   value: string | AddressValue | undefined,
+  options?: { cityOnly?: boolean },
 ): AddressDraft {
   if (!value) return { ...EMPTY_ADDRESS_DRAFT }
   if (typeof value === 'string') {
+    if (options?.cityOnly) {
+      return { ...EMPTY_ADDRESS_DRAFT, cityName: value }
+    }
     return { ...EMPTY_ADDRESS_DRAFT, line: value }
   }
   return {
@@ -80,10 +93,11 @@ export function addressDraftToValue(
   options?: { cityOnly?: boolean },
 ): AddressValue | undefined {
   if (options?.cityOnly) {
-    if (!draft.cityCode) return undefined
+    const cityName = draft.cityName.trim()
+    if (!draft.cityCode && !cityName) return undefined
     return {
       cityCode: draft.cityCode,
-      cityName: draft.cityName,
+      cityName: cityName || draft.cityName,
       wardCode: '',
       wardName: '',
     }

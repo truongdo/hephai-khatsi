@@ -20,6 +20,13 @@ describe('hydrateAddress', () => {
     })
   })
 
+  it('maps legacy string to cityName when cityOnly', () => {
+    expect(hydrateAddress('Cũ nơi sinh', { cityOnly: true })).toEqual({
+      ...EMPTY_ADDRESS_DRAFT,
+      cityName: 'Cũ nơi sinh',
+    })
+  })
+
   it('maps structured value', () => {
     expect(
       hydrateAddress({
@@ -198,6 +205,18 @@ describe('validateAddressDraft cityOnly', () => {
     })
   })
 
+  it('accepts custom city name without code when cityOnly', () => {
+    expect(
+      validateAddressDraft(
+        {
+          ...EMPTY_ADDRESS_DRAFT,
+          cityName: 'Campuchia',
+        },
+        { required: true, cityOnly: true },
+      ),
+    ).toEqual({ valid: true, errors: {} })
+  })
+
   it('accepts city without ward when cityOnly', () => {
     expect(
       validateAddressDraft(
@@ -242,6 +261,23 @@ describe('addressDraftToValue cityOnly', () => {
     ).toEqual({
       cityCode: '01',
       cityName: 'Hà Nội',
+      wardCode: '',
+      wardName: '',
+    })
+  })
+
+  it('emits custom city name without code when cityOnly', () => {
+    expect(
+      addressDraftToValue(
+        {
+          ...EMPTY_ADDRESS_DRAFT,
+          cityName: 'Campuchia',
+        },
+        { cityOnly: true },
+      ),
+    ).toEqual({
+      cityCode: '',
+      cityName: 'Campuchia',
       wardCode: '',
       wardName: '',
     })

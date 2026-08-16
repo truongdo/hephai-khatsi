@@ -1,4 +1,4 @@
-import { Select, SimpleGrid, Stack, TextInput } from '@mantine/core'
+import { Autocomplete, Select, SimpleGrid, Stack, TextInput } from '@mantine/core'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { cities, getWards } from '#/data/vietnam-locations'
 import type { Ward } from '#/data/vietnam-locations'
@@ -149,33 +149,32 @@ export const VietnamAddressFields = memo(function VietnamAddressFields({
     onChangeRef.current({ ...location, line: valueRef.current.line })
   }, [])
 
-  const cityOptions = useMemo(
-    () =>
-      cities.map((city) => ({
-        value: city.code,
-        label: city.fullName,
-      })),
+  const cityOnlyOptions = useMemo(
+    () => cities.map((city) => city.fullName),
     [],
   )
 
   if (cityOnly) {
+    const selectedCity = cities.find((item) => item.code === value.cityCode)
+    const displayValue = selectedCity?.fullName ?? value.cityName
     return (
-      <Select
+      <Autocomplete
         label={label ?? m.filler_field_city()}
         placeholder={m.filler_ph_city()}
-        data={cityOptions}
-        value={value.cityCode || null}
-        onChange={(nextCityCode) => {
-          const city = cities.find((item) => item.code === nextCityCode)
+        data={cityOnlyOptions}
+        value={displayValue}
+        onChange={(next) => {
+          const city = cities.find(
+            (item) => item.fullName === next || item.name === next,
+          )
           onChange({
-            cityCode: nextCityCode ?? '',
-            cityName: city?.name ?? '',
+            cityCode: city?.code ?? '',
+            cityName: city?.name ?? next,
             wardCode: '',
             wardName: '',
             line: '',
           })
         }}
-        searchable
         disabled={disabled}
         required={required}
         error={errors?.city}

@@ -156,7 +156,7 @@ export function emptyMemberDraft(initial: Partial<Member> = {}): MemberDraft {
     theDanh: initial.theDanh ?? '',
     phapDanh: initial.phapDanh ?? '',
     ngaySinh: initial.ngaySinh ?? '',
-    noiSinh: hydrateAddress(initial.noiSinh),
+    noiSinh: hydrateAddress(initial.noiSinh, { cityOnly: true }),
     nguyenQuan: initial.nguyenQuan ?? '',
     cccdMeta: {
       ngayCap: initial.cccdMeta?.ngayCap ?? '',

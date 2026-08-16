@@ -177,6 +177,19 @@ describe('validateMemberRequiredFields', () => {
     })
   })
 
+  it('accepts noiSinh with a custom city name', () => {
+    expect(
+      validateMemberRequiredFields(
+        filledDraft({
+          noiSinh: {
+            ...EMPTY_ADDRESS_DRAFT,
+            cityName: 'Campuchia',
+          },
+        }),
+      ),
+    ).toEqual({ valid: true, errors: {} })
+  })
+
   it('accepts noiSinh with city only', () => {
     expect(
       validateMemberRequiredFields(

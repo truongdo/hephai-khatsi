@@ -1,4 +1,5 @@
 import { MantineProvider } from '@mantine/core'
+import { useState } from 'react'
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -256,5 +257,40 @@ describe('VietnamAddressFields', () => {
     expect(
       screen.queryByRole('combobox', { name: m.filler_field_city() }),
     ).toBeNull()
+  })
+
+  it('accepts a city-only value not in the list', async () => {
+    const user = userEvent.setup()
+    const onChange = vi.fn()
+    function Harness() {
+      const [value, setValue] = useState(EMPTY_ADDRESS_DRAFT)
+      return (
+        <VietnamAddressFields
+          label={m.filler_field_noi_sinh()}
+          value={value}
+          cityOnly
+          onChange={(next) => {
+            onChange(next)
+            setValue(next)
+          }}
+        />
+      )
+    }
+    render(
+      <MantineProvider theme={theme} defaultColorScheme="light">
+        <Harness />
+      </MantineProvider>,
+    )
+    await user.type(
+      screen.getByRole('combobox', { name: m.filler_field_noi_sinh() }),
+      'Campuchia',
+    )
+    expect(onChange).toHaveBeenCalledWith({
+      cityCode: '',
+      cityName: 'Campuchia',
+      wardCode: '',
+      wardName: '',
+      line: '',
+    })
   })
 })
