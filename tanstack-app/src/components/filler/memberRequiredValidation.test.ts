@@ -313,12 +313,12 @@ describe('validateMemberRequiredFields', () => {
     expect(missingHePhai.errors.giaoPhamGiaoHoi).toBeUndefined()
   })
 
-  it('requires phanDoan when orgUnitKind is ni_gioi', () => {
+  it('does not require phanDoan when orgUnitKind is ni_gioi', () => {
     const result = validateMemberRequiredFields(
       filledDraft({ orgUnitKind: 'ni_gioi', phanDoan: '' }),
     )
-    expect(result.valid).toBe(false)
-    expect(result.errors.phanDoan).toBe('REQUIRED')
+    expect(result.errors.phanDoan).toBeUndefined()
+    expect(result.valid).toBe(true)
   })
 
   it('accepts allowed phanDoan for ni_gioi', () => {

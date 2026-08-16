@@ -413,7 +413,6 @@ export function MemberFormFields({
               value={draft.phanDoan || null}
               onChange={(value) => updateDraft('phanDoan', value ?? '')}
               disabled={disabled}
-              required
               clearable
               error={mapRequiredError(fieldErrors.phanDoan)}
             />

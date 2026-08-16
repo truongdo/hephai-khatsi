@@ -163,7 +163,12 @@ export function validateMemberRequiredFields(draft: MemberRequiredDraft): {
   const gpHePhaiRank = requireText(draft.giaoPhamHePhai.rank)
   if (gpHePhaiRank) errors.giaoPhamHePhai = { rank: gpHePhaiRank }
 
-  if (draft.orgUnitKind === 'ni_gioi' && !isPhanDoanValue(draft.phanDoan.trim())) {
+  const phanDoan = draft.phanDoan.trim()
+  if (
+    draft.orgUnitKind === 'ni_gioi' &&
+    phanDoan.length > 0 &&
+    !isPhanDoanValue(phanDoan)
+  ) {
     errors.phanDoan = 'REQUIRED'
   }
 
