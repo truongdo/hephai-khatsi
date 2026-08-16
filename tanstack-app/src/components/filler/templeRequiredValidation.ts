@@ -34,7 +34,7 @@ export type TempleRequiredFieldErrors = {
   truTriHienNay?: {
     phapDanh?: 'REQUIRED'
     dienThoai?: 'REQUIRED' | 'INVALID'
-    email?: 'REQUIRED' | 'INVALID'
+    email?: 'INVALID'
   }
   truTriTienNhiem?: 'REQUIRED' | Array<{ phapDanh?: 'REQUIRED' } | undefined>
   tangSoHienTru?: {
@@ -90,8 +90,7 @@ export function validateTempleRequiredFields(draft: TempleRequiredDraft): {
   const dienThoai = requireVnPhone(draft.truTriHienNay.dienThoai)
   if (dienThoai) truTri.dienThoai = dienThoai
   const emailTrimmed = draft.truTriHienNay.email.trim()
-  if (!emailTrimmed) truTri.email = 'REQUIRED'
-  else if (!isBasicEmail(emailTrimmed)) truTri.email = 'INVALID'
+  if (emailTrimmed && !isBasicEmail(emailTrimmed)) truTri.email = 'INVALID'
   if (Object.keys(truTri).length > 0) errors.truTriHienNay = truTri
 
   const extraPhone = requireVnPhone(draft.extraManagerPhone ?? '', {

@@ -284,7 +284,6 @@ export const TempleTruTriSection = memo(function TempleTruTriSection({
               },
             }))
           }}
-          required
           error={errors?.truTriHienNay?.email}
           disabled={disabled}
         />

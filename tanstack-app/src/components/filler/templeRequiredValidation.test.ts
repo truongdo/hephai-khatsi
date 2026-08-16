@@ -65,7 +65,6 @@ describe('validateTempleRequiredFields', () => {
     expect(result.errors.truTriHienNay).toEqual({
       phapDanh: 'REQUIRED',
       dienThoai: 'REQUIRED',
-      email: 'REQUIRED',
     })
     expect(result.errors.truTriTienNhiem).toBe('REQUIRED')
     expect(result.errors.tangSoHienTru).toEqual({
@@ -92,6 +91,20 @@ describe('validateTempleRequiredFields', () => {
     expect(
       validateTempleRequiredFields(
         filledDraft({ qdCongNhanTrangThai: 'chua_cong_nhan' }),
+      ),
+    ).toEqual({ valid: true, errors: {} })
+  })
+
+  it('allows blank tru tri email', () => {
+    expect(
+      validateTempleRequiredFields(
+        filledDraft({
+          truTriHienNay: {
+            phapDanh: 'Thích A',
+            dienThoai: '0901234567',
+            email: '',
+          },
+        }),
       ),
     ).toEqual({ valid: true, errors: {} })
   })
