@@ -560,7 +560,6 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
               },
             }))
           }
-          required
           error={errors?.tangSoHienTru?.thucXoaMaNa}
           disabled={disabled}
           min={0}
@@ -579,7 +578,6 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
               },
             }))
           }
-          required
           error={errors?.tangSoHienTru?.saDi}
           disabled={disabled}
           min={0}
@@ -598,7 +596,6 @@ export const TempleTangSoSection = memo(function TempleTangSoSection({
               },
             }))
           }
-          required
           error={errors?.tangSoHienTru?.tapSu}
           disabled={disabled}
           min={0}

@@ -5,6 +5,20 @@ import {
   hydrateDiaChiCu,
 } from '#/components/filler/templeDraft'
 
+describe('emptyTempleDraft counts', () => {
+  it('defaults tang so and phat tu counts to 0', () => {
+    const draft = emptyTempleDraft({})
+    expect(draft.tangSoHienTru).toEqual({
+      tyKheo: 0,
+      thucXoaMaNa: 0,
+      saDi: 0,
+      tapSu: 0,
+    })
+    expect(draft.soPhatTuQuyY).toBe(0)
+    expect(draft.soPhatTuThuongXuyen).toBe(0)
+  })
+})
+
 describe('hydrateDiaChiCu', () => {
   it('keeps legacy strings and blanks structured values', () => {
     expect(hydrateDiaChiCu('123 Đường Láng')).toBe('123 Đường Láng')

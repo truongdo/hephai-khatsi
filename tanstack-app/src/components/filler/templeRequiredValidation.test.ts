@@ -69,9 +69,6 @@ describe('validateTempleRequiredFields', () => {
     expect(result.errors.truTriTienNhiem).toBe('REQUIRED')
     expect(result.errors.tangSoHienTru).toEqual({
       tyKheo: 'REQUIRED',
-      thucXoaMaNa: 'REQUIRED',
-      saDi: 'REQUIRED',
-      tapSu: 'REQUIRED',
     })
     expect(result.errors.soPhatTuQuyY).toBe('REQUIRED')
     expect(result.errors.soPhatTuThuongXuyen).toBe('REQUIRED')
@@ -166,6 +163,21 @@ describe('validateTempleRequiredFields', () => {
       valid: true,
       errors: {},
     })
+  })
+
+  it('allows blank thuc-xoa-ma-na, sa-di, and tap su', () => {
+    expect(
+      validateTempleRequiredFields(
+        filledDraft({
+          tangSoHienTru: {
+            tyKheo: 0,
+            thucXoaMaNa: '',
+            saDi: '',
+            tapSu: '',
+          },
+        }),
+      ),
+    ).toEqual({ valid: true, errors: {} })
   })
 
   it('requires photo when hasPhoto is false', () => {

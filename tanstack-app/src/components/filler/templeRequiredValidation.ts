@@ -39,9 +39,6 @@ export type TempleRequiredFieldErrors = {
   truTriTienNhiem?: 'REQUIRED' | Array<{ phapDanh?: 'REQUIRED' } | undefined>
   tangSoHienTru?: {
     tyKheo?: 'REQUIRED'
-    thucXoaMaNa?: 'REQUIRED'
-    saDi?: 'REQUIRED'
-    tapSu?: 'REQUIRED'
   }
   soPhatTuQuyY?: 'REQUIRED'
   soPhatTuThuongXuyen?: 'REQUIRED'
@@ -108,16 +105,8 @@ export function validateTempleRequiredFields(draft: TempleRequiredDraft): {
     if (rowErrors.some(Boolean)) errors.truTriTienNhiem = rowErrors
   }
 
-  const tangSo: NonNullable<TempleRequiredFieldErrors['tangSoHienTru']> = {}
   const tyKheo = requireNumber(draft.tangSoHienTru.tyKheo)
-  if (tyKheo) tangSo.tyKheo = tyKheo
-  const thucXoaMaNa = requireNumber(draft.tangSoHienTru.thucXoaMaNa)
-  if (thucXoaMaNa) tangSo.thucXoaMaNa = thucXoaMaNa
-  const saDi = requireNumber(draft.tangSoHienTru.saDi)
-  if (saDi) tangSo.saDi = saDi
-  const tapSu = requireNumber(draft.tangSoHienTru.tapSu)
-  if (tapSu) tangSo.tapSu = tapSu
-  if (Object.keys(tangSo).length > 0) errors.tangSoHienTru = tangSo
+  if (tyKheo) errors.tangSoHienTru = { tyKheo }
 
   const soPhatTuQuyY = requireNumber(draft.soPhatTuQuyY)
   if (soPhatTuQuyY) errors.soPhatTuQuyY = soPhatTuQuyY

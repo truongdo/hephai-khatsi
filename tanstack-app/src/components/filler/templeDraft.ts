@@ -59,6 +59,10 @@ function numberOrBlank(value?: number): NumericValue {
   return typeof value === 'number' ? value : ''
 }
 
+function numberOrZero(value?: number): number {
+  return typeof value === 'number' ? value : 0
+}
+
 function numberOrUndefined(value: NumericValue | DecimalValue): number | undefined {
   if (typeof value === 'number') {
     return Number.isFinite(value) ? value : undefined
@@ -132,13 +136,13 @@ export function emptyTempleDraft(
       EMPTY_BAN_QUAN_TRI,
     ),
     tangSoHienTru: {
-      tyKheo: numberOrBlank(initial.tangSoHienTru?.tyKheo),
-      thucXoaMaNa: numberOrBlank(initial.tangSoHienTru?.thucXoaMaNa),
-      saDi: numberOrBlank(initial.tangSoHienTru?.saDi),
-      tapSu: numberOrBlank(initial.tangSoHienTru?.tapSu),
+      tyKheo: numberOrZero(initial.tangSoHienTru?.tyKheo),
+      thucXoaMaNa: numberOrZero(initial.tangSoHienTru?.thucXoaMaNa),
+      saDi: numberOrZero(initial.tangSoHienTru?.saDi),
+      tapSu: numberOrZero(initial.tangSoHienTru?.tapSu),
     },
-    soPhatTuQuyY: numberOrBlank(initial.soPhatTuQuyY),
-    soPhatTuThuongXuyen: numberOrBlank(initial.soPhatTuThuongXuyen),
+    soPhatTuQuyY: numberOrZero(initial.soPhatTuQuyY),
+    soPhatTuThuongXuyen: numberOrZero(initial.soPhatTuThuongXuyen),
     hoatDongPhatSu: withAtLeastOne(
       initial.hoatDongPhatSu?.map((row) => ({
         ten: row.ten ?? '',
