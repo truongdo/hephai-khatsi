@@ -57,3 +57,18 @@ body {
 a.admin-nav-link:hover {
   background-color: var(--teal-soft);
 }
+
+/*
+ * Combobox option lists (Select, Autocomplete, …): make overflow obvious.
+ * Mantine ScrollArea thumbs are otherwise easy to miss on parchment.
+ */
+.mantine-Combobox-dropdown .mantine-ScrollArea-scrollbar {
+  background-color: color-mix(in srgb, var(--line) 70%, transparent);
+}
+.mantine-Combobox-dropdown .mantine-ScrollArea-thumb {
+  background-color: var(--ink-soft);
+  opacity: 0.7;
+}
+.mantine-Combobox-dropdown .mantine-ScrollArea-thumb:hover {
+  opacity: 0.9;
+}

@@ -83,6 +83,18 @@ const ink: MantineColorsTuple = [
   '#23302b', // ink
 ]
 
+/** Show a real scrollbar when the options list overflows (macOS overlay bars hide otherwise). */
+const overflowDropdown = {
+  defaultProps: {
+    maxDropdownHeight: 248,
+    scrollAreaProps: {
+      type: 'auto' as const,
+      offsetScrollbars: 'present' as const,
+      scrollbarSize: 10,
+    },
+  },
+}
+
 export const theme = createTheme({
   colors: { teal, saffron, jade, clay, gold, ink },
   primaryColor: 'saffron',
@@ -145,6 +157,10 @@ export const theme = createTheme({
         content: { backgroundColor: 'var(--paper)' },
       },
     },
+    Select: overflowDropdown,
+    Autocomplete: overflowDropdown,
+    MultiSelect: overflowDropdown,
+    TagsInput: overflowDropdown,
   },
   other: {
     parchment: 'var(--parchment)',
