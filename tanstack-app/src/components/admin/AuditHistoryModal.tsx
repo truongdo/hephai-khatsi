@@ -4,11 +4,19 @@ import { useEffect, useState } from 'react'
 import type { AuditAction, AuditLogEntry } from '#/domain/auditLog'
 import { isoToGmt7Date } from '#/domain/gmt7Date'
 import { m } from '#/paraglide/messages'
-import { listAuditLogs, type AuditParent } from '#/repositories/auditLogRepo'
+import { adminKeys } from '#/query/adminKeys'
+import {
+  directorySecretariesQuery,
+  hePhaiSecretariesQuery,
+} from '#/query/adminQueries'
 import {
   memberAuditLogsQuery,
   templeAuditLogsQuery,
 } from '#/query/auditLogQueries'
+import { listAuditLogs, type AuditParent } from '#/repositories/auditLogRepo'
+import { memberRepo } from '#/repositories/memberRepo'
+import { templeRepo } from '#/repositories/templeRepo'
+import { auditActorDisplayName } from './auditActorDisplayName'
 
 export type AuditHistoryModalProps = {
   opened: boolean
@@ -49,13 +57,13 @@ function actionLabel(action: AuditAction): string {
 
 function actorLabel(
   actorType: AuditLogEntry['actorType'],
-  actorId: string,
+  displayName: string,
 ): string {
   const label =
     actorType === 'admin'
       ? m.admin_audit_actor_admin()
       : m.admin_audit_actor_filler()
-  return `${label} · ${actorId}`
+  return `${label} · ${displayName}`
 }
 
 function auditLogsQuery(parent: AuditParent) {
@@ -74,6 +82,30 @@ export function AuditHistoryModal({
     ...auditLogsQuery(parent),
     enabled: opened && !!parent.id,
   })
+  const parentMemberQuery = useQuery({
+    queryKey: [...adminKeys.member(parent.id), 'auditActor'],
+    queryFn: () => memberRepo.getById(parent.id),
+    enabled: opened && parent.collection === 'members' && !!parent.id,
+    staleTime: 60_000,
+  })
+  const parentTempleQuery = useQuery({
+    queryKey: [...adminKeys.temple(parent.id), 'auditActor'],
+    queryFn: () => templeRepo.getById(parent.id),
+    enabled: opened && parent.collection === 'temples' && !!parent.id,
+    staleTime: 60_000,
+  })
+  const directorySecretaries = useQuery({
+    ...directorySecretariesQuery(),
+    enabled: opened,
+  })
+  const hePhaiSecretaries = useQuery({
+    ...hePhaiSecretariesQuery(),
+    enabled: opened,
+  })
+  const directoryMembers = [
+    ...(directorySecretaries.data ?? []),
+    ...(hePhaiSecretaries.data ?? []),
+  ]
 
   const [extraEntries, setExtraEntries] = useState<AuditLogEntry[]>([])
   const [nextStartAfterAt, setNextStartAfterAt] = useState<string | null>(null)
@@ -117,6 +149,7 @@ export function AuditHistoryModal({
       opened={opened}
       onClose={onClose}
       title={`${m.admin_audit_modal_title()} — ${title}`}
+      size="lg"
     >
       <Stack gap="sm">
         {isLoading && <Loader size="sm" />}
@@ -135,7 +168,16 @@ export function AuditHistoryModal({
             </Text>
             <Text size="xs" c="dimmed">
               {formatAuditDate(entry.at)} ·{' '}
-              {actorLabel(entry.actorType, entry.actorId)}
+              {actorLabel(
+                entry.actorType,
+                auditActorDisplayName({
+                  actorType: entry.actorType,
+                  actorId: entry.actorId,
+                  parentMember: parentMemberQuery.data,
+                  parentTemple: parentTempleQuery.data,
+                  directoryMembers,
+                }),
+              )}
             </Text>
             {entry.changes.map((change) => (
               <Box key={change.path} mt="xs">

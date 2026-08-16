@@ -6,6 +6,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AuditLogEntry } from '#/domain/auditLog'
 import { m } from '#/paraglide/messages'
 import { listAuditLogs } from '#/repositories/auditLogRepo'
+import { memberRepo } from '#/repositories/memberRepo'
 import { theme } from '../../theme'
 import { AuditHistoryModal, type AuditHistoryModalProps } from './AuditHistoryModal'
 
@@ -13,6 +14,20 @@ const listAuditLogsMock = vi.mocked(listAuditLogs)
 
 vi.mock('#/repositories/auditLogRepo', () => ({
   listAuditLogs: vi.fn(),
+}))
+
+vi.mock('#/repositories/memberRepo', () => ({
+  memberRepo: {
+    getById: vi.fn(async () => null),
+    listDirectorySecretaries: vi.fn(async () => []),
+    listHePhaiSecretaries: vi.fn(async () => []),
+  },
+}))
+
+vi.mock('#/repositories/templeRepo', () => ({
+  templeRepo: {
+    getById: vi.fn(async () => null),
+  },
 }))
 
 beforeAll(() => {
@@ -33,6 +48,12 @@ beforeAll(() => {
 
 beforeEach(() => {
   listAuditLogsMock.mockReset()
+  vi.mocked(memberRepo.getById).mockReset()
+  vi.mocked(memberRepo.listDirectorySecretaries).mockReset()
+  vi.mocked(memberRepo.listHePhaiSecretaries).mockReset()
+  vi.mocked(memberRepo.getById).mockResolvedValue(null)
+  vi.mocked(memberRepo.listDirectorySecretaries).mockResolvedValue([])
+  vi.mocked(memberRepo.listHePhaiSecretaries).mockResolvedValue([])
 })
 
 function renderModal(overrides: Partial<AuditHistoryModalProps> = {}) {
@@ -85,6 +106,36 @@ describe('AuditHistoryModal', () => {
     expect(screen.getByText(/New/)).toBeTruthy()
     expect(screen.getByText(m.admin_audit_action_updated())).toBeTruthy()
     expect(screen.getByText(/Admin · admin-1/)).toBeTruthy()
+  })
+
+  it('prefers actor phapDanh over actorId', async () => {
+    vi.mocked(memberRepo.listDirectorySecretaries).mockResolvedValueOnce([
+      {
+        id: 'sec1',
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        cccd: '001099012345',
+        status: 'locked',
+        inviteId: null,
+        currentTempleId: null,
+        photoPath: null,
+        createdAt: '2026-07-19T10:00:00.000Z',
+        updatedAt: '2026-07-19T10:00:00.000Z',
+        lockedAt: null,
+        lockedBy: null,
+        editRequestedAt: null,
+        editRequestedBy: null,
+        directoryAuthUid: 'admin-1',
+        phapDanh: 'Thích Minh',
+      },
+    ])
+    listAuditLogsMock.mockResolvedValue({
+      entries: [updatedEntry],
+      nextStartAfterAt: null,
+    })
+    renderModal()
+    expect(await screen.findByText(/Admin · Thích Minh/)).toBeTruthy()
+    expect(screen.queryByText(/Admin · admin-1/)).toBeNull()
   })
 
   it('load more appends', async () => {
