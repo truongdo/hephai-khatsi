@@ -7,6 +7,10 @@ import {
 } from '#/test/memoryStores'
 import { deleteTemples } from './deleteTemples'
 
+vi.mock('#/search/notifySearchIndex', () => ({
+  notifyTempleDelete: vi.fn().mockResolvedValue(undefined),
+}))
+
 const HE_PHAI_CLAIMS: AuthClaims = { role: 'he_phai_admin', orgUnitId: null }
 const GIAO_DOAN_CLAIMS: AuthClaims = {
   role: 'giao_doan_admin',

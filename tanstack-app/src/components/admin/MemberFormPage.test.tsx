@@ -161,6 +161,16 @@ vi.mock('#/query/adminQueries', () => ({
     queryFn: async () => mockOrgUnits,
     staleTime: 0,
   }),
+  directorySecretariesQuery: () => ({
+    queryKey: ['admin', 'directorySecretaries'],
+    queryFn: async () => [],
+    staleTime: 60_000,
+  }),
+  hePhaiSecretariesQuery: () => ({
+    queryKey: ['admin', 'hePhaiSecretaries'],
+    queryFn: async () => [],
+    staleTime: 60_000,
+  }),
 }))
 
 vi.mock('#/directoryRole/directoryRoleApiClient', () => ({
@@ -188,6 +198,12 @@ vi.mock('#/use-cases/uploadMemberDocument', () => ({
       diep_sa_di: { filePath: 'members/created-member/docs/diep_sa_di/file.pdf' },
     },
   })),
+}))
+vi.mock('#/search/notifySearchIndex', () => ({
+  notifyMemberUpsert: vi.fn().mockResolvedValue(undefined),
+  notifyMemberDelete: vi.fn().mockResolvedValue(undefined),
+  notifyTempleUpsert: vi.fn().mockResolvedValue(undefined),
+  notifyTempleDelete: vi.fn().mockResolvedValue(undefined),
 }))
 vi.mock('#/repositories/auditLogRepo', () => ({
   listAuditLogs: vi.fn(async () => ({ entries: [], nextStartAfterAt: null })),

@@ -1,6 +1,7 @@
 import { canAccessOrgUnit, type AuthClaims } from '#/domain/authClaims'
 import { DomainError } from '#/domain/errors'
 import { memberRepo, type MemberStore } from '#/repositories/memberRepo'
+import { notifyMemberDelete } from '#/search/notifySearchIndex'
 import { deleteMemberDocumentsPrefix } from '#/photos/docsApiClient'
 import { deleteMemberPhotoObject } from '#/photos/photosApiClient'
 
@@ -21,6 +22,9 @@ export async function deleteMembers(
   }
 
   await memberStore.deleteMany(input.ids)
+  for (const id of input.ids) {
+    void notifyMemberDelete(id, input.idToken)
+  }
   await Promise.allSettled(
     input.ids.flatMap((id) => [deletePhoto(id), deleteDocsPrefix(id)]),
   )

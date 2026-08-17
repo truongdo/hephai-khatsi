@@ -2,6 +2,7 @@ import type { Env } from './worker/env'
 import { handleDirectoryRoleApi } from './worker/directoryRoleApi'
 import { handleDocsApi } from './worker/docsApi'
 import { handlePhotosApi } from './worker/photosApi'
+import { handleSearchApi } from './worker/searchApi'
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -17,6 +18,10 @@ export default {
     }
     if (url.pathname.startsWith('/api/admin/directory-role')) {
       return handleDirectoryRoleApi(request, env)
+    }
+    const searchResponse = await handleSearchApi(request, env)
+    if (searchResponse !== null) {
+      return searchResponse
     }
     if (url.pathname.startsWith('/api/')) {
       return new Response('Not found', { status: 404 })

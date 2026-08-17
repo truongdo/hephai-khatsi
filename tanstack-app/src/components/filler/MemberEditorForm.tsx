@@ -10,6 +10,7 @@ import { m } from '#/paraglide/messages'
 import { fillerKeys } from '#/query/fillerKeys'
 import { fillerOrgUnitsQuery } from '#/query/fillerQueries'
 import type { DocumentSide, DocumentTypeId } from '#/domain/memberDocumentTypes'
+import { notifyMemberUpsert } from '#/search/notifySearchIndex'
 import { requestMemberEdit } from '#/use-cases/requestMemberEdit'
 import { saveAndLockMember } from '#/use-cases/saveAndLockMember'
 import { uploadMemberDocument } from '#/use-cases/uploadMemberDocument'
@@ -220,6 +221,7 @@ export function MemberEditorForm({
         savedMember = saveResult.member
 
         if (saveResult.mode !== 'created') {
+          void notifyMemberUpsert(savedMember, { inviteToken: token })
           setSaveSuccess(m.filler_save_success())
           queryClient.setQueryData(fillerKeys.member(savedMember.id), savedMember)
           return
@@ -300,6 +302,7 @@ export function MemberEditorForm({
 
         setSaveSuccess(m.filler_save_redirecting())
         queryClient.setQueryData(fillerKeys.member(savedMember.id), savedMember)
+        void notifyMemberUpsert(savedMember, { inviteToken: token })
         await onCreated(savedMember.id)
       }
     } catch {

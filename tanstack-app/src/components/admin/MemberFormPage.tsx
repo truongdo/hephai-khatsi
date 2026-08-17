@@ -43,6 +43,7 @@ import {
 } from '#/directoryRole/directoryRoleApiClient'
 import { adminKeys } from '#/query/adminKeys'
 import { memberQuery, orgUnitsQuery } from '#/query/adminQueries'
+import { notifyMemberUpsert } from '#/search/notifySearchIndex'
 import { lockMember } from '#/use-cases/lockMember'
 import { saveAdminMember } from '#/use-cases/saveAdminMember'
 import { unlockMember } from '#/use-cases/unlockMember'
@@ -279,6 +280,10 @@ export function MemberFormPage({
   const saveMutation = useMutation({
     mutationFn: performSave,
     onSuccess: async (result) => {
+      if (user) {
+        const idToken = await user.getIdToken()
+        void notifyMemberUpsert(result.member, { idToken })
+      }
       setSaveSuccess(m.filler_save_success())
       clear()
       await queryClient.invalidateQueries({
@@ -310,7 +315,11 @@ export function MemberFormPage({
         audit: { actorType: 'admin', actorId: claim.uid },
       })
     },
-    onSuccess: async () => {
+    onSuccess: async (member) => {
+      if (user) {
+        const idToken = await user.getIdToken()
+        void notifyMemberUpsert(member, { idToken })
+      }
       await queryClient.invalidateQueries({
         queryKey: [...adminKeys.all, 'members'],
       })

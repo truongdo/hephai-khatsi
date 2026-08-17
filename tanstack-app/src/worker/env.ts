@@ -7,5 +7,6 @@ export type Env = {
   R2_BUCKET_NAME: string
   FIREBASE_PROJECT_ID: string
   FIREBASE_SERVICE_ACCOUNT_JSON: string
-  // optional: VITE_ not available on worker — use worker vars
+  TYPESENSE_API_KEY: string
+  TYPESENSE_HOST?: string
 }

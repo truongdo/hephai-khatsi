@@ -53,6 +53,7 @@ function makeEnv(overrides: Partial<Env> = {}): Env {
     R2_SECRET_ACCESS_KEY: 'secret',
     R2_BUCKET_NAME: 'photos',
     FIREBASE_PROJECT_ID: PROJECT_ID,
+    TYPESENSE_API_KEY: 'test-typesense-key',
     ...overrides,
   }
 }
@@ -115,7 +116,7 @@ describe('handlePhotosApi', () => {
 
     it('returns 404 when member is missing', async () => {
       getMemberDocument.mockResolvedValue(null)
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
       const { handlePhotosApi } = await import('./photosApi')
 
       const response = await handlePhotosApi(
@@ -139,7 +140,7 @@ describe('handlePhotosApi', () => {
 
     it('returns 403 when normalized CCCD does not match', async () => {
       getMemberDocument.mockResolvedValue(draftMember)
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
       const { handlePhotosApi } = await import('./photosApi')
 
       const response = await handlePhotosApi(
@@ -163,7 +164,7 @@ describe('handlePhotosApi', () => {
 
     it('returns uploadUrl for admin bearer auth on locked member', async () => {
       getMemberDocument.mockResolvedValue({ ...draftMember, status: 'locked' })
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
       const env = makeEnv()
       const { handlePhotosApi } = await import('./photosApi')
 
@@ -245,7 +246,7 @@ describe('handlePhotosApi', () => {
 
     it('returns uploadUrl and photoPath for admin bearer auth', async () => {
       getMemberDocument.mockResolvedValue(draftMember)
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
       const env = makeEnv()
       const { handlePhotosApi } = await import('./photosApi')
 
@@ -349,7 +350,7 @@ describe('handlePhotosApi', () => {
     })
 
     it('deletes the member photo and returns ok for admin', async () => {
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
       const deleteFn = vi.fn(async () => undefined)
       const env = makeEnv({
         PHOTOS: { delete: deleteFn } as unknown as R2Bucket,
@@ -464,7 +465,7 @@ describe('handlePhotosApi', () => {
 
     it('returns 400 when contentType is not an image type', async () => {
       getTempleDocument.mockResolvedValue(draftTemple)
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
       const { handlePhotosApi } = await import('./photosApi')
 
       const response = await handlePhotosApi(
@@ -487,7 +488,7 @@ describe('handlePhotosApi', () => {
 
     it('returns uploadUrl for admin bearer auth on locked temple', async () => {
       getTempleDocument.mockResolvedValue({ ...draftTemple, status: 'locked' })
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
       createR2PresignedPutUrl.mockResolvedValue(
         'https://acct.r2.cloudflarestorage.com/photos/temples/t1/photo.jpg?signed=1',
       )
@@ -631,7 +632,7 @@ describe('handlePhotosApi', () => {
     })
 
     it('deletes the temple photo and returns ok for admin', async () => {
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
       const deleteFn = vi.fn(async () => undefined)
       const env = makeEnv({
         PHOTOS: { delete: deleteFn } as unknown as R2Bucket,

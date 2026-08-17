@@ -34,5 +34,10 @@ export type ListMembersExportInput = {
   status?: RecordStatus
 }
 
+export type ListTemplesExportInput = {
+  orgUnitId?: string
+  status?: RecordStatus
+}
+
 export type TempleListResult = AdminListPage<Temple>
 export type MemberListResult = AdminListPage<Member>

@@ -29,6 +29,7 @@ import {
 } from '#/components/temple/TempleFormFields'
 import { adminKeys } from '#/query/adminKeys'
 import { orgUnitsQuery, templeQuery } from '#/query/adminQueries'
+import { notifyTempleUpsert } from '#/search/notifySearchIndex'
 import { lockTemple } from '#/use-cases/lockTemple'
 import { saveAdminTemple } from '#/use-cases/saveAdminTemple'
 import { unlockTemple } from '#/use-cases/unlockTemple'
@@ -184,6 +185,10 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
   const saveMutation = useMutation({
     mutationFn: performSave,
     onSuccess: async (result) => {
+      if (user) {
+        const idToken = await user.getIdToken()
+        void notifyTempleUpsert(result.temple, { idToken })
+      }
       setSaveSuccess(m.filler_save_success())
       clear()
       await queryClient.invalidateQueries({
@@ -215,7 +220,11 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
         audit: { actorType: 'admin', actorId: claim.uid },
       })
     },
-    onSuccess: async () => {
+    onSuccess: async (temple) => {
+      if (user) {
+        const idToken = await user.getIdToken()
+        void notifyTempleUpsert(temple, { idToken })
+      }
       await queryClient.invalidateQueries({
         queryKey: [...adminKeys.all, 'temples'],
       })

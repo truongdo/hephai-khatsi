@@ -27,6 +27,7 @@
     "@mantine/core": "^9.4.1",
     "@mantine/dates": "^9.4.1",
     "@mantine/hooks": "^9.4.1",
+    "@mantine/spotlight": "^9.4.1",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-query": "^5.101.2",
     "@tanstack/react-router": "latest",

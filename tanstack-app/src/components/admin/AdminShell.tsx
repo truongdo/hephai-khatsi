@@ -22,6 +22,7 @@ import { useAuth } from '#/auth/useAuth'
 import { canManageDirectory, canManageRetreats } from '#/domain/authClaims'
 import { DharmaWheel } from '#/components/icons/DharmaWheel'
 import { AdminCopyFormLinkButton } from './AdminCopyFormLinkButton'
+import { AdminDirectorySearch } from './AdminDirectorySearch'
 import { AdminNotificationsButton } from './AdminNotificationsButton'
 import { buildAdminBreadcrumbs } from './adminBreadcrumbs'
 
@@ -90,6 +91,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
     if (item.capability === 'retreats') return canManageRetreats(claims)
     return false
   })
+
+  const showDirectorySearch =
+    claims != null && canManageDirectory(claims)
 
   return (
     <AppShell
@@ -237,6 +241,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </Breadcrumbs>
           </Group>
           <Group gap="sm" wrap="nowrap">
+            {showDirectorySearch ? <AdminDirectorySearch /> : null}
             <AdminCopyFormLinkButton />
             <AdminNotificationsButton />
           </Group>

@@ -20,7 +20,7 @@ import type { AuditActor } from '#/domain/auditLog'
 import type { Temple } from '#/domain/types'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
-import type { AdminListPage, ListTemplesAdminInput } from '#/repositories/adminListTypes'
+import type { AdminListPage, ListTemplesAdminInput, ListTemplesExportInput } from '#/repositories/adminListTypes'
 import { maybeAppendAuditFromDiff } from '#/repositories/auditLogRepo'
 import { normalizeVnPhone } from '#/domain/normalize'
 
@@ -70,6 +70,7 @@ export type TempleStore = {
   getById(templeId: string): Promise<Temple | null>
   listByOrgAndPhone(input: TemplePhoneLookupInput): Promise<Temple[]>
   list(input: ListTemplesAdminInput): Promise<AdminListPage<Temple>>
+  listAllForExport(input: ListTemplesExportInput): Promise<Temple[]>
   lock(templeId: string, lockedBy: string, audit: AuditActor): Promise<Temple>
   unlock(templeId: string, audit: AuditActor): Promise<Temple>
   setPhotoPath(
@@ -332,6 +333,25 @@ async function list(input: ListTemplesAdminInput): Promise<AdminListPage<Temple>
   return { items, nextCursor }
 }
 
+const EXPORT_PAGE_SIZE = 100
+
+async function listAllForExport(input: ListTemplesExportInput): Promise<Temple[]> {
+  const all: Temple[] = []
+  let cursor: string | undefined
+  for (;;) {
+    const page = await list({
+      orgUnitId: input.orgUnitId,
+      status: input.status,
+      limit: EXPORT_PAGE_SIZE,
+      cursor,
+    })
+    all.push(...page.items)
+    if (!page.nextCursor) break
+    cursor = page.nextCursor
+  }
+  return all
+}
+
 async function lock(
   templeId: string,
   lockedBy: string,
@@ -516,6 +536,7 @@ export const templeRepo: TempleStore = {
   getById,
   listByOrgAndPhone,
   list,
+  listAllForExport,
   lock,
   unlock,
   setPhotoPath,

@@ -9,6 +9,7 @@ import { scheduleScrollToFirstFieldError } from '#/lib/scrollToFirstFieldError'
 import { m } from '#/paraglide/messages'
 import { fillerKeys } from '#/query/fillerKeys'
 import type { TempleProfilePatch } from '#/repositories/templeRepo'
+import { notifyTempleUpsert } from '#/search/notifySearchIndex'
 import { requestTempleEdit } from '#/use-cases/requestTempleEdit'
 import { saveAndLockTemple } from '#/use-cases/saveAndLockTemple'
 import { uploadTemplePhoto } from '#/use-cases/uploadTemplePhoto'
@@ -203,6 +204,7 @@ export function TempleEditorForm({
         savedTemple = saveResult.temple
 
         if (saveResult.mode !== 'created') {
+          void notifyTempleUpsert(savedTemple, { inviteToken: token })
           setSaveSuccess(m.filler_save_success())
           queryClient.setQueryData(fillerKeys.temple(savedTemple.id), savedTemple)
           return
@@ -241,6 +243,7 @@ export function TempleEditorForm({
         }
         setSaveSuccess(m.filler_save_redirecting())
         queryClient.setQueryData(fillerKeys.temple(savedTemple.id), savedTemple)
+        void notifyTempleUpsert(savedTemple, { inviteToken: token })
         await onCreated(savedTemple.id)
       }
     } catch {

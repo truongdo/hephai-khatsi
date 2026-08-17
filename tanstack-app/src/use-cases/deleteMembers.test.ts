@@ -4,6 +4,10 @@ import type { Member } from '#/domain/types'
 import { createMemoryMemberStore } from '#/test/memoryStores'
 import { deleteMembers } from './deleteMembers'
 
+vi.mock('#/search/notifySearchIndex', () => ({
+  notifyMemberDelete: vi.fn().mockResolvedValue(undefined),
+}))
+
 const HE_PHAI_CLAIMS: AuthClaims = { role: 'he_phai_admin', orgUnitId: null }
 const GIAO_DOAN_CLAIMS: AuthClaims = {
   role: 'giao_doan_admin',

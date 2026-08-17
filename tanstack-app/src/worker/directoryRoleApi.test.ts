@@ -50,6 +50,7 @@ function makeEnv(overrides: Partial<Env> = {}): Env {
     R2_BUCKET_NAME: 'photos',
     FIREBASE_PROJECT_ID: PROJECT_ID,
     FIREBASE_SERVICE_ACCOUNT_JSON: SA_JSON,
+    TYPESENSE_API_KEY: 'test-typesense-key',
     ...overrides,
   }
 }

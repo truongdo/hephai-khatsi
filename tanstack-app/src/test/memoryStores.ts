@@ -20,6 +20,7 @@ import type {
   ListMembersAdminInput,
   ListMembersExportInput,
   ListTemplesAdminInput,
+  ListTemplesExportInput,
 } from '#/repositories/adminListTypes'
 import type {
   CreateOrUpdateMemberAndLockInput,
@@ -1128,6 +1129,10 @@ export function createMemoryTempleStore(
           (!input.status || temple.status === input.status),
         sortKey: (temple) => temple.updatedAt,
       })
+    },
+    async listAllForExport(input: ListTemplesExportInput) {
+      const page = await store.list({ ...input, limit: Number.MAX_SAFE_INTEGER })
+      return page.items
     },
     async deleteMany(ids: string[]) {
       for (const templeId of ids) {

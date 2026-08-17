@@ -50,6 +50,7 @@ function makeEnv(overrides: Partial<Env> = {}): Env {
     R2_SECRET_ACCESS_KEY: 'secret',
     R2_BUCKET_NAME: 'photos',
     FIREBASE_PROJECT_ID: PROJECT_ID,
+    TYPESENSE_API_KEY: 'test-typesense-key',
     ...overrides,
   }
 }
@@ -69,7 +70,7 @@ describe('handleDocsApi', () => {
   describe('POST /api/docs/member-upload-url', () => {
     it('returns uploadUrl for admin bearer auth', async () => {
       getMemberDocument.mockResolvedValue(draftMember)
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
       const env = makeEnv()
       const { handleDocsApi } = await import('./docsApi')
 
@@ -110,7 +111,7 @@ describe('handleDocsApi', () => {
 
     it('returns 400 when side is invalid for type', async () => {
       getMemberDocument.mockResolvedValue(draftMember)
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
       const { handleDocsApi } = await import('./docsApi')
 
       const response = await handleDocsApi(
@@ -191,7 +192,7 @@ describe('handleDocsApi', () => {
 
     it('accepts image/jpg content type', async () => {
       getMemberDocument.mockResolvedValue(draftMember)
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
       const env = makeEnv()
       const { handleDocsApi } = await import('./docsApi')
 
@@ -223,7 +224,7 @@ describe('handleDocsApi', () => {
   describe('DELETE /api/docs/member', () => {
     it('deletes listed paths and returns ok for admin', async () => {
       getMemberDocument.mockResolvedValue(draftMember)
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
       const deleteFn = vi.fn(async () => undefined)
       const env = makeEnv({
         PHOTOS: {
@@ -302,7 +303,7 @@ describe('handleDocsApi', () => {
     })
 
     it('lists prefix and deletes all objects for admin', async () => {
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1' })
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
       const deleteFn = vi.fn(async () => undefined)
       const listFn = vi.fn(async () => ({
         objects: [

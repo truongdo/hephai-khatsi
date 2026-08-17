@@ -4,6 +4,7 @@ import { DomainError } from '#/domain/errors'
 import { deleteTemplePhotoObject } from '#/photos/photosApiClient'
 import { memberRepo, type MemberStore } from '#/repositories/memberRepo'
 import { templeRepo, type TempleStore } from '#/repositories/templeRepo'
+import { notifyTempleDelete } from '#/search/notifySearchIndex'
 
 export type TempleDeleteBlocker = {
   templeId: string
@@ -69,6 +70,9 @@ export async function deleteTemples(
   }
 
   await templeStore.deleteMany(input.ids)
+  for (const id of input.ids) {
+    void notifyTempleDelete(id, input.idToken)
+  }
   await Promise.allSettled(input.ids.map((id) => deletePhoto(id)))
   return { ok: true }
 }

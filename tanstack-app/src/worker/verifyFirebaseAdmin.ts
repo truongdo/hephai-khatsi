@@ -47,14 +47,21 @@ async function verifyAdminPayload(
 export async function verifyFirebaseAdminToken(
   idToken: string,
   projectId: string,
-): Promise<{ uid: string; role: AdminRole } | null> {
+): Promise<{ uid: string; role: AdminRole; orgUnitId: string | null } | null> {
   const payload = await verifyAdminPayload(idToken, projectId)
   if (!payload) return null
 
   const role = resolveAdminRole(payload)
   if (!role) return null
 
-  return { uid: payload.sub as string, role }
+  return {
+    uid: payload.sub as string,
+    role,
+    orgUnitId:
+      typeof payload.orgUnitId === 'string' && payload.orgUnitId.length > 0
+        ? payload.orgUnitId
+        : null,
+  }
 }
 
 export async function verifyHePhaiAdminToken(

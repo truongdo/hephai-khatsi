@@ -41,6 +41,18 @@ function member(
   }
 }
 
+describe('memory temple listAllForExport', () => {
+  it('returns all temples across pages', async () => {
+    const store = createMemoryTempleStore([
+      temple({ id: 't1', updatedAt: '2026-07-19T03:00:00.000Z' }),
+      temple({ id: 't2', updatedAt: '2026-07-19T02:00:00.000Z' }),
+      temple({ id: 't3', updatedAt: '2026-07-19T01:00:00.000Z' }),
+    ])
+    const all = await store.listAllForExport({})
+    expect(all.map((t) => t.id).sort()).toEqual(['t1', 't2', 't3'])
+  })
+})
+
 describe('memory temple list', () => {
   it('filters by status and paginates with cursor', async () => {
     const store = createMemoryTempleStore([

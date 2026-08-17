@@ -4,16 +4,18 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { revokeDirectoryRole } from '#/directoryRole/directoryRoleApiClient'
+import { reindexDirectorySearch } from '#/search/reindexDirectory'
 import { m } from '#/paraglide/messages'
 import { theme } from '../../theme'
 import { OrgUnitsPage } from './OrgUnitsPage'
 
 const revokeDirectoryRoleMock = vi.mocked(revokeDirectoryRole)
+const reindexDirectorySearchMock = vi.mocked(reindexDirectorySearch)
 
 let adminClaimFixture: {
   status: 'admin'
   uid: string
-  role: 'he_phai_admin' | 'he_phai_secretary'
+  role: 'he_phai_admin' | 'he_phai_secretary' | 'giao_doan_admin'
   orgUnitId: string | null
 } = {
   status: 'admin',
@@ -34,6 +36,22 @@ vi.mock('#/auth/useAuth', () => ({
 
 vi.mock('#/directoryRole/directoryRoleApiClient', () => ({
   revokeDirectoryRole: vi.fn(),
+}))
+
+vi.mock('#/search/reindexDirectory', () => ({
+  reindexDirectorySearch: vi.fn(),
+}))
+
+vi.mock('#/repositories/memberRepo', () => ({
+  memberRepo: {
+    listAllForExport: vi.fn(),
+  },
+}))
+
+vi.mock('#/repositories/templeRepo', () => ({
+  templeRepo: {
+    listAllForExport: vi.fn(),
+  },
 }))
 
 vi.mock('#/query/adminQueries', () => ({
@@ -114,6 +132,7 @@ beforeEach(() => {
     orgUnitId: null,
   }
   revokeDirectoryRoleMock.mockReset()
+  reindexDirectorySearchMock.mockReset()
 })
 
 beforeAll(() => {
@@ -247,5 +266,54 @@ describe('OrgUnitsPage', () => {
         name: m.admin_org_units_he_phai_secretaries_title(),
       }),
     ).toBeNull()
+    expect(
+      screen.queryByRole('button', { name: m.admin_search_reindex() }),
+    ).toBeNull()
+  })
+
+  it('hides reindex button for giao_doan_admin claim', async () => {
+    adminClaimFixture = {
+      status: 'admin',
+      uid: 'gd-admin-uid',
+      role: 'giao_doan_admin',
+      orgUnitId: 'gd-i',
+    }
+    renderPage()
+
+    expect(await screen.findByText('Giáo đoàn I')).toBeTruthy()
+    expect(
+      screen.queryByRole('button', { name: m.admin_search_reindex() }),
+    ).toBeNull()
+  })
+
+  it('shows reindex button for he_phai_admin and runs reindex after confirm', async () => {
+    const user = userEvent.setup()
+    reindexDirectorySearchMock.mockResolvedValue({ members: 10, temples: 3 })
+    renderPage()
+
+    await user.click(
+      await screen.findByRole('button', { name: m.admin_search_reindex() }),
+    )
+
+    const confirmDialog = await screen.findByRole('dialog', {
+      name: m.admin_search_reindex(),
+    })
+    expect(
+      within(confirmDialog).getByText(m.admin_search_reindex_confirm()),
+    ).toBeTruthy()
+
+    const confirmButtons = within(confirmDialog).getAllByRole('button', {
+      name: m.admin_search_reindex(),
+    })
+    await user.click(confirmButtons[confirmButtons.length - 1]!)
+
+    await waitFor(() => {
+      expect(reindexDirectorySearchMock).toHaveBeenCalled()
+    })
+    expect(
+      await screen.findByText(
+        m.admin_search_reindex_success({ members: 10, temples: 3 }),
+      ),
+    ).toBeTruthy()
   })
 })

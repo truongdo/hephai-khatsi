@@ -43,6 +43,13 @@ vi.mock('#/use-cases/uploadMemberDocument', () => ({
   })),
 }))
 
+vi.mock('#/search/notifySearchIndex', () => ({
+  notifyMemberUpsert: vi.fn().mockResolvedValue(undefined),
+  notifyMemberDelete: vi.fn().mockResolvedValue(undefined),
+  notifyTempleUpsert: vi.fn().mockResolvedValue(undefined),
+  notifyTempleDelete: vi.fn().mockResolvedValue(undefined),
+}))
+
 vi.mock('#/query/fillerQueries', async (importOriginal) => {
   const actual = await importOriginal<typeof import('#/query/fillerQueries')>()
   return {

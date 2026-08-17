@@ -11,6 +11,7 @@ import 'dayjs/locale/vi'
 
 import '@mantine/core/styles.css'
 import '@mantine/dates/styles.css'
+import '@mantine/spotlight/styles.css'
 import '@fontsource/be-vietnam-pro/vietnamese-400.css'
 import '@fontsource/be-vietnam-pro/vietnamese-500.css'
 import '@fontsource/be-vietnam-pro/vietnamese-600.css'

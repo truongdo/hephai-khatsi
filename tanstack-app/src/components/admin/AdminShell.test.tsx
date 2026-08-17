@@ -16,11 +16,22 @@ const signOutMock = vi.fn()
 const useAdminClaimMock = vi.fn()
 
 vi.mock('#/auth/useAuth', () => ({
-  useAuth: () => ({ signOut: signOutMock }),
+  useAuth: () => ({
+    signOut: signOutMock,
+    user: { getIdToken: vi.fn(async () => 'admin-id-token') },
+  }),
 }))
 
 vi.mock('#/auth/useAdminClaim', () => ({
   useAdminClaim: () => useAdminClaimMock(),
+}))
+
+vi.mock('./AdminDirectorySearch', () => ({
+  AdminDirectorySearch: () => (
+    <button type="button" aria-label="Tìm kiếm">
+      Search
+    </button>
+  ),
 }))
 
 vi.mock('#/use-cases/ensurePublicInvite', () => ({
@@ -146,6 +157,23 @@ describe('AdminShell', () => {
     expect(
       within(header).getByRole('button', { name: m.admin_notifications_aria() }),
     ).toBeTruthy()
+    expect(
+      within(header).getByRole('button', { name: m.admin_search_open_aria() }),
+    ).toBeTruthy()
+  })
+
+  it('hides directory search for kiem_soat', async () => {
+    useAdminClaimMock.mockReturnValue({
+      status: 'admin',
+      uid: 'ks-uid',
+      role: 'kiem_soat',
+      orgUnitId: null,
+    })
+    renderShell()
+    const header = await screen.findByRole('banner')
+    expect(
+      within(header).queryByRole('button', { name: m.admin_search_open_aria() }),
+    ).toBeNull()
   })
 
   it('opens empty notifications popover', async () => {
