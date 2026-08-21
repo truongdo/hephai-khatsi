@@ -61,6 +61,7 @@ export type MemberDraft = {
   giaoDoanGoc: string
   phanDoan: string
   haLap: NumericValue
+  ngayHaCapHaLap: string
   gioiSaDi: PreceptRecord
   gioiTyKheo: PreceptRecord
   gioiSaDiNi: PreceptRecord
@@ -179,6 +180,7 @@ export function emptyMemberDraft(initial: Partial<Member> = {}): MemberDraft {
     giaoDoanGoc: initial.giaoDoanGoc ?? '',
     phanDoan: initial.phanDoan ?? '',
     haLap: numberOrBlank(initial.haLap),
+    ngayHaCapHaLap: initial.ngayHaCapHaLap ?? '',
     gioiSaDi: emptyPrecept(initial.gioiSaDi),
     gioiTyKheo: emptyPrecept(initial.gioiTyKheo),
     gioiSaDiNi: emptyPrecept(initial.gioiSaDiNi),
@@ -313,6 +315,7 @@ export function buildMemberPatch(draft: MemberDraft): MemberProfilePatch {
     giaoDoanGoc: textOrUndefined(draft.giaoDoanGoc),
     phanDoan: textOrUndefined(draft.phanDoan),
     haLap: numberOrUndefined(draft.haLap),
+    ngayHaCapHaLap: textOrUndefined(draft.ngayHaCapHaLap),
     gioiSaDi: buildPrecept(draft.gioiSaDi),
     gioiTyKheo: buildPrecept(draft.gioiTyKheo),
     gioiSaDiNi: buildPrecept(draft.gioiSaDiNi),

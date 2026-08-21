@@ -91,7 +91,10 @@ afterEach(() => {
   cleanup()
 })
 
-async function renderFields(orgUnitId: string) {
+async function renderFields(
+  orgUnitId: string,
+  options?: { showNgayHaCapHaLap?: boolean },
+) {
   const apiRef = { current: null }
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
@@ -106,6 +109,7 @@ async function renderFields(orgUnitId: string) {
             cccd="012345678901"
             sanghaType="ni"
             orgUnitId={orgUnitId}
+            showNgayHaCapHaLap={options?.showNgayHaCapHaLap}
           />
         </DatesProvider>
       </MantineProvider>
@@ -142,5 +146,31 @@ describe('MemberFormFields phanDoan', () => {
     expect(
       screen.queryByRole('combobox', { name: m.filler_field_phan_doan() }),
     ).toBeNull()
+  })
+})
+
+describe('MemberFormFields ngayHaCapHaLap', () => {
+  it('shows Ngày hạ cấp hạ lạp only when showNgayHaCapHaLap', async () => {
+    await renderFields('gd-i')
+    await waitFor(() => {
+      expect(
+        screen.getByRole('textbox', { name: m.filler_field_the_danh() }),
+      ).toBeTruthy()
+    })
+    expect(
+      screen.queryByRole('textbox', {
+        name: m.filler_field_ngay_ha_cap_ha_lap(),
+      }),
+    ).toBeNull()
+
+    cleanup()
+    await renderFields('gd-i', { showNgayHaCapHaLap: true })
+    await waitFor(() => {
+      expect(
+        screen.getByRole('textbox', {
+          name: m.filler_field_ngay_ha_cap_ha_lap(),
+        }),
+      ).toBeTruthy()
+    })
   })
 })

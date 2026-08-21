@@ -238,6 +238,12 @@ export const MEMBER_EXCEL_COLUMNS: MemberExcelColumnDef[] = [
     header: () => m.filler_field_ha_lap(),
     cell: (member) => (member.haLap != null ? String(member.haLap) : ''),
   },
+  {
+    id: 'ngayHaCapHaLap',
+    group: 'ordination',
+    header: () => m.filler_field_ngay_ha_cap_ha_lap(),
+    cell: (member) => cellStr(member.ngayHaCapHaLap),
+  },
   ...TANG_PRECEPTS,
   ...NI_PRECEPTS,
   {

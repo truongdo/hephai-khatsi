@@ -35,6 +35,15 @@ describe('catalogMembersExcelColumns', () => {
     expect(niIds).toContain('gioiTyKheoNi_ngayGh')
     expect(niIds).not.toContain('gioiTyKheo_ngayGh')
   })
+
+  it('includes ngayHaCapHaLap in catalog for tang and ni', () => {
+    expect(catalogMembersExcelColumns('tang').map((c) => c.id)).toContain(
+      'ngayHaCapHaLap',
+    )
+    expect(catalogMembersExcelColumns('ni').map((c) => c.id)).toContain(
+      'ngayHaCapHaLap',
+    )
+  })
 })
 
 describe('defaultMembersExcelColumnIds', () => {
@@ -96,5 +105,17 @@ describe('MEMBER_EXCEL_COLUMNS cells', () => {
   it('falls back to orgUnitId when the name map has no entry', () => {
     const mem = member({ id: 'm1', sanghaType: 'tang', orgUnitId: 'missing' })
     expect(cell('orgUnitName', mem)).toBe('missing')
+  })
+
+  it('renders ngayHaCapHaLap cell', () => {
+    const col = MEMBER_EXCEL_COLUMNS.find((c) => c.id === 'ngayHaCapHaLap')
+    expect(col).toBeTruthy()
+    expect(
+      col!.cell(
+        member({ id: 'm1', sanghaType: 'tang', ngayHaCapHaLap: '2018-06-15' }),
+        ctx,
+      ),
+    ).toBe('2018-06-15')
+    expect(col!.cell(member({ id: 'm2', sanghaType: 'tang' }), ctx)).toBe('')
   })
 })

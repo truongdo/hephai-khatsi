@@ -155,6 +155,7 @@ export type MemberFormFieldsProps = {
   onUploadError?: (message: string) => void
   onDraftChange?: (draft: MemberDraft) => void
   audit?: AuditActor
+  showNgayHaCapHaLap?: boolean
 }
 
 export function MemberFormFields({
@@ -171,6 +172,7 @@ export function MemberFormFields({
   apiRef,
   onDraftChange,
   audit,
+  showNgayHaCapHaLap = false,
 }: MemberFormFieldsProps) {
   const [draft, setDraft] = useState(() => emptyMemberDraft(initial))
   const [photoPath, setPhotoPath] = useState<string | null>(
@@ -766,6 +768,19 @@ export function MemberFormFields({
               disabled={disabled}
               min={0}
             />
+            {showNgayHaCapHaLap ? (
+              <DateInput
+                label={m.filler_field_ngay_ha_cap_ha_lap()}
+                valueFormat="DD-MM-YYYY"
+                placeholder={m.filler_ph_date_dmy()}
+                clearable
+                value={draft.ngayHaCapHaLap || null}
+                onChange={(value) =>
+                  updateDraft('ngayHaCapHaLap', value ?? '')
+                }
+                disabled={disabled}
+              />
+            ) : null}
           </SimpleGrid>
           <TextInput
             label={m.filler_field_hien_tu_hoc()}
@@ -990,6 +1005,8 @@ export function MemberFormFields({
       draft.hePhaiGoc,
       draft.giaoDoanGoc,
       draft.haLap,
+      draft.ngayHaCapHaLap,
+      showNgayHaCapHaLap,
       draft.gioiSaDi,
       draft.gioiTyKheo,
       draft.gioiSaDiNi,

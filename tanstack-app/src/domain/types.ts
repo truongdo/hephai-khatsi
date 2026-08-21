@@ -78,6 +78,7 @@ export type Member = {
   giaoPhamGiaoHoi?: GiaoPham
   giaoPhamHePhai?: GiaoPham
   haLap?: number
+  ngayHaCapHaLap?: string
   bonSu?: string
   hePhaiGoc?: string
   giaoDoanGoc?: string

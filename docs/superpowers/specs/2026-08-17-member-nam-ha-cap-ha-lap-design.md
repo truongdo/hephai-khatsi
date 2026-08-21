@@ -1,116 +1,91 @@
-# Member: Năm hạ cấp hạ lạp (`namHaCapHaLap`)
+# Member: Ngày hạ cấp hạ lạp (`ngayHaCapHaLap`)
 
-Date: 2026-08-17  
+Date: 2026-08-17 (amended 2026-08-21: default undefined, no auto-fill)  
 Status: approved for planning  
-Depends on: shared `MemberFormFields` / `memberDraft` / `buildMemberPatch`, precept `ngayHePhai`, `ngayXuatGia`, admin Excel column catalog  
-Surfaces: admin `MemberFormPage` (field visible); filler submit still auto-fills via patch (field hidden)
+Depends on: shared `MemberFormFields` / `memberDraft` / `buildMemberPatch`, admin Excel column catalog  
+Surfaces: admin `MemberFormPage` (field visible); filler form hides field (stays unset on save)
 
 ## Goal
 
-Add an optional year field **Năm hạ cấp hạ lạp** on the member record. Show it only on the admin form (editable). On filler or admin submit, if the field is empty, set it from the first available source year (Phương trượng = `ngayHePhai`, then xuất gia), ordered by sangha type.
+Add an optional date field **Ngày hạ cấp hạ lạp** on the member record. Show it only on the admin form (editable DateInput). Default is unset (`undefined`); filler submit does not auto-fill. Admin may set it manually.
 
 ## Decisions
 
 | Topic | Choice |
 |-------|--------|
-| Relation to `haLap` | **New field** `namHaCapHaLap`; keep existing `haLap` unchanged |
-| Auto-fill policy | Only when `namHaCapHaLap` is empty; never overwrite an existing number |
-| Phương trượng source | Year extracted from precept `ngayHePhai` |
-| Admin UI | Number input; editable; not required |
+| Relation to `haLap` | **New field** `ngayHaCapHaLap`; keep existing `haLap` unchanged |
+| Storage | `string` `YYYY-MM-DD` (same as `ngayXuatGia`), not a year number |
+| Auto-fill policy | **None** — default `undefined`; only set when admin enters a date |
+| Phương trượng source | N/A (no auto resolve from precept / xuất gia) |
+| Admin UI | DateInput; editable; not required |
 | Filler UI | Hidden (no control) |
 | Excel | New column in `ordination` group, next to `haLap` |
-| Where auto runs | Shared domain helper applied when building the save patch (filler + admin) |
-| `sanghaType` for resolve | Pass into patch build (draft has no `sanghaType` today) — e.g. `buildMemberPatch(draft, { sanghaType })` |
-| Backfill existing docs | Out of scope; fill on next submit when empty |
+| Where auto runs | Does not auto-run; `buildMemberPatch` only writes draft value |
+| `sanghaType` for resolve | N/A |
+| Backfill existing docs | Out of scope |
 
 ## Non-goals
 
 - Renaming, hiding, or changing meaning of `haLap`
 - Bulk Firestore migration / backfill script
-- Sorting or filtering member lists by `namHaCapHaLap`
+- Sorting or filtering member lists by `ngayHaCapHaLap`
 - Cypress E2E (Vitest only)
 - Making the field required
+- Auto-deriving from thọ giới / xuất gia dates
 
 ## Data model
 
 Add to `Member`:
 
 ```ts
-namHaCapHaLap?: number // calendar year, e.g. 2018
+ngayHaCapHaLap?: string // YYYY-MM-DD, e.g. 2018-06-15
 ```
 
-Same optional number pattern as `haLap`. Persists through existing `MemberProfilePatch` / `memberRepo` create-update paths.
-
-## Resolve helper
-
-Pure function, e.g. `resolveNamHaCapHaLap(input)` in domain:
-
-**Input:** `sanghaType`, optional precept records, `ngayXuatGia`.
-
-**Year parse:** take YYYY from date strings used by the form (typically `YYYY-MM-DD`); invalid/empty → skip that source.
-
-**Priority (first valid year wins):**
-
-| Tăng | Ni |
-|------|-----|
-| `gioiTyKheo.ngayHePhai` | `gioiTyKheoNi.ngayHePhai` |
-| `gioiSaDi.ngayHePhai` | `gioiThucXoaMaNa.ngayHePhai` |
-| `ngayXuatGia` | `gioiSaDiNi.ngayHePhai` |
-| | `ngayXuatGia` |
-
-**Output:** `number | undefined` (undefined if no source yields a year).
+Same optional date-string pattern as `ngayXuatGia`. Persists through existing `MemberProfilePatch` / `memberRepo` create-update paths.
 
 ## Update behavior
 
-1. Admin may type a year into the form; it flows through draft → patch like other numeric fields.
-2. When building the patch (extend `buildMemberPatch` to accept `sanghaType`, or equivalent thin wrapper used by both callers): if draft `namHaCapHaLap` is already a number → write that value; if empty → set `resolveNamHaCapHaLap(...)` (may remain omitted/undefined).
-3. Call sites (`MemberEditorForm`, `MemberFormPage`) already know `sanghaType` — pass it into patch build.
-4. Filler never sees the field; filler submit still gets auto-fill when empty because patch build runs.
-5. Clearing the admin input and submitting again re-runs auto-fill (empty means “fill if possible”, not “persist cleared”).
-6. Later submits do **not** recompute if a value is already stored or typed.
+1. Admin may pick a date in the form; it flows through draft → patch like other date fields.
+2. When building the patch: `ngayHaCapHaLap: textOrUndefined(draft.ngayHaCapHaLap)` — empty draft → `undefined` (not auto-filled).
+3. Filler never sees the field; filler submit leaves the field unset unless somehow already on the draft.
+4. Clearing the admin input and submitting leaves the field unset.
 
 ## UI & i18n
 
 | Piece | Behavior |
 |-------|----------|
-| Prop | `showNamHaCapHaLap?: boolean` on `MemberFormFields` (default false) |
-| Admin | Pass `showNamHaCapHaLap`; render number input near Hạ lạp |
+| Prop | `showNgayHaCapHaLap?: boolean` on `MemberFormFields` (default false) |
+| Admin | Pass `showNgayHaCapHaLap`; render DateInput near Hạ lạp (`valueFormat="DD-MM-YYYY"`) |
 | Filler | Omit prop / false — do not render |
-| Label | `filler_field_nam_ha_cap_ha_lap` → “Năm hạ cấp hạ lạp” |
+| Label | `filler_field_ngay_ha_cap_ha_lap` → “Ngày hạ cấp hạ lạp” |
 | Required | No |
 
-Draft: `emptyMemberDraft` / load-from-member / `buildMemberPatch` include `namHaCapHaLap` (same blank/number helpers as `haLap`).
+Draft: `emptyMemberDraft` / load-from-member / `buildMemberPatch` include `ngayHaCapHaLap` (same string helpers as `ngayXuatGia`).
 
 ## Excel
 
 Add catalog column:
 
-- `id: 'namHaCapHaLap'`
+- `id: 'ngayHaCapHaLap'`
 - `group: 'ordination'`
 - Header from i18n label
-- Cell: string of year or empty
+- Cell: stored date string or empty
 
 Available in admin column picker like other ordination columns.
 
 ## Architecture
 
 ```
-domain (Member.namHaCapHaLap, resolveNamHaCapHaLap)
-  → memberDraft / buildMemberPatch(draft, { sanghaType }) (fill-if-empty)
-  → MemberFormFields (admin-only number input)
-  → MemberFormPage (showNamHaCapHaLap) + MemberEditorForm (pass sanghaType only)
+domain (Member.ngayHaCapHaLap)
+  → memberDraft / buildMemberPatch(draft) (draft value only)
+  → MemberFormFields (admin-only DateInput)
+  → MemberFormPage (showNgayHaCapHaLap)
   → saveAndLockMember / saveAdminMember (unchanged APIs)
   → memberExcelColumns (new column)
 ```
 
 ## Testing (Vitest)
 
-- `resolveNamHaCapHaLap`: tang/ni priority, skip empty sources, undefined when none, year parse from `ngayHePhai` / `ngayXuatGia`
-- `buildMemberPatch`: empty → auto; existing number → preserve
-- Excel: column id present in catalog for both sangha types as applicable
-- Optional: admin form shows control when prop true; filler path does not (component test only if cheap)
-
-## Error handling
-
-- No source years: leave field unset; submit still succeeds
-- Malformed date string: treat that source as missing; try next in priority
+- `buildMemberPatch`: empty → `undefined` even when precept / xuất gia dates exist; existing date → preserve
+- Excel: column id present in catalog for both sangha types
+- Admin form shows DateInput when prop true; filler path does not

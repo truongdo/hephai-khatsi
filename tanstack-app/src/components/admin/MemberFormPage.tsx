@@ -624,6 +624,7 @@ export function MemberFormPage({
                   ? { actorType: 'admin', actorId: user.uid }
                   : undefined
               }
+              showNgayHaCapHaLap
             />
 
             <FormStickyActions
