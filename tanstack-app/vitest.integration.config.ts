@@ -6,6 +6,8 @@ export default defineConfig({
   resolve: { tsconfigPaths: true },
   test: {
     environment: 'node',
+    // Keep emulator/integration runs from hogging the machine.
+    maxWorkers: '50%',
     include: ['src/**/*.integration.test.{ts,tsx}'],
   },
 })

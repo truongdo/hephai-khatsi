@@ -15,6 +15,61 @@ pnpm install
 pnpm dev
 ```
 
+## Provision seed admin custom claims
+
+`admin@example.com` (or whatever you set as `SEED_ADMIN_EMAIL` in `.env`) only becomes a hệ phái admin after Firebase Auth **custom claims** are set on that user. The Firebase Console cannot set custom claims; use the Admin SDK (or Identity Toolkit with a service account).
+
+`khatsihephai@gmail.com` already has claims. The in-app “Thư ký” grant only covers `@gmail.com` secretary roles (`giao_doan_admin` / `he_phai_secretary`), not bootstrapping `he_phai_admin`.
+
+### What to set
+
+Either of these works (same access as the Gmail admin):
+
+| Claims | Meaning |
+|--------|---------|
+| `{ role: 'he_phai_admin' }` | Preferred |
+| `{ admin: true }` | Legacy; app and Firestore rules map it to `he_phai_admin` |
+
+### One-off script
+
+1. Ensure the email/password user exists in Firebase Auth (your `SEED_ADMIN_*` account).
+2. Use a Firebase service account JSON (same kind as `FIREBASE_SERVICE_ACCOUNT_JSON` / `*-firebase-adminsdk-*.json`). Do not commit that file (already covered by `.gitignore`).
+3. From `tanstack-app`, install Admin SDK if needed and run a one-off script:
+
+```bash
+pnpm add -D firebase-admin
+```
+
+```js
+// scripts/set-he-phai-admin.mjs
+import { readFileSync } from 'node:fs'
+import { initializeApp, cert } from 'firebase-admin/app'
+import { getAuth } from 'firebase-admin/auth'
+
+const email = process.argv[2] ?? 'admin@example.com'
+const saPath = process.argv[3] // path to service account JSON
+
+initializeApp({
+  credential: cert(JSON.parse(readFileSync(saPath, 'utf8'))),
+})
+
+const auth = getAuth()
+const user = await auth.getUserByEmail(email)
+await auth.setCustomUserClaims(user.uid, { role: 'he_phai_admin' })
+// optional: { admin: true, role: 'he_phai_admin' }
+
+console.log('OK', email, user.uid, (await auth.getUser(user.uid)).customClaims)
+```
+
+```bash
+node scripts/set-he-phai-admin.mjs admin@example.com ./path/to/hephaikhatsi-*-firebase-adminsdk-*.json
+```
+
+### After setting
+
+1. Sign out and sign in again as that user (or force-refresh the ID token with `getIdToken(true)`) so the new claims appear on the token.
+2. `/admin` should work; `pnpm seed:org-units` can also succeed because it signs in as this user and needs the claim for Firestore writes.
+
 # Building For Production
 
 To build this application for production:
