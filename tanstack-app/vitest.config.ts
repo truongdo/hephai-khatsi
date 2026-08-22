@@ -19,7 +19,7 @@ export default defineConfig({
   resolve: { tsconfigPaths: true },
   test: {
     // Default is cpus-1, which saturates the machine on full suite runs.
-    maxWorkers: '50%',
+    maxWorkers: '20%',
     projects: [
       {
         extends: true,
