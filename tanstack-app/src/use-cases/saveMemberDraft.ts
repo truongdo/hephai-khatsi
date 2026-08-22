@@ -29,6 +29,7 @@ const protectedPatchKeys = [
   'lockedBy',
   'orgUnitName',
   'giaoPhamHePhaiRankOrder',
+  'sapXepHaLap',
 ] satisfies Array<keyof Member>
 
 function sanitizePatch(patch: MemberProfilePatch): MemberProfilePatch {

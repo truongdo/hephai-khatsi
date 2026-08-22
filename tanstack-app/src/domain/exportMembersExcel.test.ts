@@ -3,8 +3,17 @@ import type { Member } from '#/domain/types'
 import {
   catalogMembersExcelColumns,
   defaultMembersExcelColumnIds,
+  membersExcelExportColumns,
 } from '#/domain/memberExcelColumns'
-import { buildMembersExcelFilename, membersToExcelRows } from '#/domain/exportMembersExcel'
+import {
+  buildMembersExcelFilename,
+  EMPTY_HA_LAP_HE_PHAI_RANK,
+  excelSheetNameForHaLapHePhaiRank,
+  membersToExcelRows,
+  orderedMembersExcelSheetGroups,
+  sanitizeExcelSheetName,
+} from '#/domain/exportMembersExcel'
+import { m } from '#/paraglide/messages'
 
 const emptyCtx = { orgUnitNameById: {} }
 
@@ -29,10 +38,16 @@ function member(overrides: Partial<Member> & Pick<Member, 'id' | 'sanghaType'>):
 describe('membersToExcelRows', () => {
   it('puts STT first then selected headers in catalog order', () => {
     const rows = membersToExcelRows([], 'tang', ['hienTuHoc', 'theDanh'], emptyCtx)
-    const cols = catalogMembersExcelColumns('tang')
+    const cols = membersExcelExportColumns('tang', ['hienTuHoc', 'theDanh'])
     const theDanh = cols.find((c) => c.id === 'theDanh')!
     const hien = cols.find((c) => c.id === 'hienTuHoc')!
-    expect(rows[0]).toEqual(['STT', theDanh.header(), hien.header()])
+    const sapXepHaLap = cols.find((c) => c.id === 'sapXepHaLap')!
+    expect(rows[0]).toEqual([
+      'STT',
+      theDanh.header(),
+      hien.header(),
+      sapXepHaLap.header(),
+    ])
   })
 
   it('maps default tang columns including gioiTyKheo_ngayGh', () => {
@@ -65,7 +80,27 @@ describe('membersToExcelRows', () => {
       'Ha Noi',
       'Tinh xa X',
       '2018-06-15',
+      '',
     ])
+  })
+
+  it('always appends sapXepHaLap as the last export column', () => {
+    const rows = membersToExcelRows(
+      [
+        member({
+          id: 'm1',
+          sanghaType: 'tang',
+          sapXepHaLap: 'ty_kheo:2010-01-01:2009-01-01:2008-01-01',
+        }),
+      ],
+      'tang',
+      ['theDanh'],
+      emptyCtx,
+    )
+    expect(rows[0]?.at(-1)).toBe(
+      membersExcelExportColumns('tang', ['theDanh']).at(-1)!.header(),
+    )
+    expect(rows[1]).toEqual([1, '', 'ty_kheo:2010-01-01:2009-01-01:2008-01-01'])
   })
 
   it('maps ni default precept column from gioiTyKheoNi', () => {
@@ -95,8 +130,112 @@ describe('membersToExcelRows', () => {
       ['nope', 'theDanh', 'cccd'],
       emptyCtx,
     )
-    expect(rows[1]).toEqual([1, '', '111'])
-    expect(rows[2]).toEqual([2, 'Only name', '222'])
+    expect(rows[1]).toEqual([1, '', '111', ''])
+    expect(rows[2]).toEqual([2, 'Only name', '222', ''])
+  })
+})
+
+describe('orderedMembersExcelSheetGroups', () => {
+  it('splits tang members by normalized he-phai rank with empty last', () => {
+    const groups = orderedMembersExcelSheetGroups(
+      [
+        member({
+          id: 'm1',
+          sanghaType: 'tang',
+          giaoPhamHePhai: { rank: 'sa_di' },
+        }),
+        member({
+          id: 'm2',
+          sanghaType: 'tang',
+          giaoPhamHePhai: { rank: 'hoa_thuong' },
+        }),
+        member({ id: 'm3', sanghaType: 'tang' }),
+      ],
+      'tang',
+    )
+
+    expect(groups.map((group) => group.rankKey)).toEqual([
+      'ty_kheo',
+      'sa_di',
+      EMPTY_HA_LAP_HE_PHAI_RANK,
+    ])
+    expect(groups[0]?.members.map((item) => item.id)).toEqual(['m2'])
+    expect(groups[1]?.members.map((item) => item.id)).toEqual(['m1'])
+    expect(groups[2]?.members.map((item) => item.id)).toEqual(['m3'])
+  })
+
+  it('orders ni sheets by canonical rank before empty', () => {
+    const groups = orderedMembersExcelSheetGroups(
+      [
+        member({
+          id: 'm1',
+          sanghaType: 'ni',
+          giaoPhamHePhai: { rank: 'sa_di_ni' },
+        }),
+        member({
+          id: 'm2',
+          sanghaType: 'ni',
+          giaoPhamHePhai: { rank: 'ni_su' },
+        }),
+        member({
+          id: 'm3',
+          sanghaType: 'ni',
+          giaoPhamHePhai: { rank: 'thuc_xoa_ma_na' },
+        }),
+        member({ id: 'm4', sanghaType: 'ni' }),
+      ],
+      'ni',
+    )
+
+    expect(groups.map((group) => group.rankKey)).toEqual([
+      'ty_kheo_ni',
+      'thuc_xoa_ma_na',
+      'sa_di_ni',
+      EMPTY_HA_LAP_HE_PHAI_RANK,
+    ])
+  })
+
+  it('sorts members within each sheet by haLap sort key ascending', () => {
+    const groups = orderedMembersExcelSheetGroups(
+      [
+        member({
+          id: 'm1',
+          sanghaType: 'tang',
+          giaoPhamHePhai: { rank: 'ty_kheo' },
+          sapXepHaLap: 'ty_kheo:2012-01-01:2010-01-01:2008-01-01',
+        }),
+        member({
+          id: 'm2',
+          sanghaType: 'tang',
+          giaoPhamHePhai: { rank: 'ty_kheo' },
+          sapXepHaLap: 'ty_kheo:2010-01-01:2009-01-01:2008-01-01',
+        }),
+        member({
+          id: 'm3',
+          sanghaType: 'tang',
+          giaoPhamHePhai: { rank: 'ty_kheo' },
+          gioiTyKheo: { ngayHePhai: '2011-01-01' },
+        }),
+      ],
+      'tang',
+    )
+
+    expect(groups[0]?.members.map((item) => item.id)).toEqual(['m2', 'm3', 'm1'])
+  })
+})
+
+describe('excel sheet naming', () => {
+  it('uses localized rank labels and empty-rank label', () => {
+    expect(excelSheetNameForHaLapHePhaiRank('ty_kheo', 'tang')).toBe(
+      m.filler_rank_ty_kheo(),
+    )
+    expect(excelSheetNameForHaLapHePhaiRank(EMPTY_HA_LAP_HE_PHAI_RANK, 'tang')).toBe(
+      m.admin_members_export_sheet_empty_rank(),
+    )
+  })
+
+  it('sanitizes invalid excel sheet characters', () => {
+    expect(sanitizeExcelSheetName('A/B?C*D[E]')).toBe('A-B-C-D-E-')
   })
 })
 

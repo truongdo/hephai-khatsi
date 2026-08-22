@@ -44,6 +44,15 @@ describe('catalogMembersExcelColumns', () => {
       'ngayHaCapHaLap',
     )
   })
+
+  it('omits append-only sapXepHaLap from the selectable catalog', () => {
+    expect(catalogMembersExcelColumns('tang').map((c) => c.id)).not.toContain(
+      'sapXepHaLap',
+    )
+    expect(catalogMembersExcelColumns('ni').map((c) => c.id)).not.toContain(
+      'sapXepHaLap',
+    )
+  })
 })
 
 describe('defaultMembersExcelColumnIds', () => {

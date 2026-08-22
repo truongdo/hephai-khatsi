@@ -81,6 +81,8 @@ export type Member = {
   giaoPhamHePhaiRankOrder?: number
   haLap?: number
   ngayHaCapHaLap?: string
+  /** Computed: rank + ordination dates for hạ-lạp sorting. */
+  sapXepHaLap?: string
   bonSu?: string
   hePhaiGoc?: string
   giaoDoanGoc?: string

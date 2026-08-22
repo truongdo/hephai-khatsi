@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app'
+import { deleteApp, initializeApp } from 'firebase/app'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 import { upsertAllOrgUnits } from '../src/repositories/orgUnitRepo'
@@ -19,11 +19,19 @@ const app = initializeApp({
   appId: requireEnv('VITE_FIREBASE_APP_ID'),
 })
 
-await signInWithEmailAndPassword(
-  getAuth(app),
-  requireEnv('SEED_ADMIN_EMAIL'),
-  requireEnv('SEED_ADMIN_PASSWORD'),
-)
+try {
+  await signInWithEmailAndPassword(
+    getAuth(app),
+    requireEnv('SEED_ADMIN_EMAIL'),
+    requireEnv('SEED_ADMIN_PASSWORD'),
+  )
 
-await upsertAllOrgUnits(undefined, getFirestore(app))
-console.log('Seeded org units')
+  await upsertAllOrgUnits(undefined, getFirestore(app))
+  console.log('Seeded org units')
+} catch (error) {
+  console.error(error)
+  process.exitCode = 1
+} finally {
+  await deleteApp(app)
+  process.exit(process.exitCode ?? 0)
+}

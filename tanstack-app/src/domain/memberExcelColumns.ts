@@ -334,6 +334,25 @@ export const MEMBER_EXCEL_COLUMNS: MemberExcelColumnDef[] = [
   },
 ]
 
+/** Always appended after user-selected export columns; not shown in the column picker. */
+export const MEMBER_EXCEL_APPEND_COLUMNS: MemberExcelColumnDef[] = [
+  {
+    id: 'sapXepHaLap',
+    group: 'system',
+    header: () => m.admin_members_col_sap_xep_ha_lap(),
+    cell: (member) => cellStr(member.sapXepHaLap),
+  },
+]
+
+export function membersExcelExportColumns(
+  sanghaType: SanghaType,
+  columnIds: string[],
+): MemberExcelColumnDef[] {
+  const selected = new Set(columnIds)
+  const columns = catalogMembersExcelColumns(sanghaType).filter((c) => selected.has(c.id))
+  return [...columns, ...MEMBER_EXCEL_APPEND_COLUMNS]
+}
+
 export function catalogMembersExcelColumns(sanghaType: SanghaType): MemberExcelColumnDef[] {
   return MEMBER_EXCEL_COLUMNS.filter((c) => !c.sangha || c.sangha === sanghaType)
 }

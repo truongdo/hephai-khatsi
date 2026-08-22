@@ -22,16 +22,23 @@ describe('list sort keys on write', () => {
     expect(temple.orgUnitName).toBe('Giáo đoàn I')
   })
 
-  it('member draft write stores rank order and orgUnitName', async () => {
+  it('member draft write stores rank order, orgUnitName, and sapXepHaLap', async () => {
     const store = createMemoryMemberStore([])
     const { member } = await store.createOrUpdateDraft({
       orgUnitId: 'gd-ii',
       sanghaType: 'tang',
       inviteId: null,
       cccd: '001234567890',
-      patch: { giaoPhamHePhai: { rank: 'sa_di' }, phapDanh: 'A' },
+      patch: {
+        giaoPhamHePhai: { rank: 'sa_di' },
+        phapDanh: 'A',
+        gioiTyKheo: { ngayHePhai: '2010-01-01' },
+        gioiSaDi: { ngayHePhai: '2009-01-01' },
+        ngayXuatGia: '2008-01-01',
+      },
     })
     expect(member.orgUnitName).toBe('Giáo đoàn II')
     expect(member.giaoPhamHePhaiRankOrder).toBe(4)
+    expect(member.sapXepHaLap).toBe('sa_di:2010-01-01:2009-01-01:2008-01-01')
   })
 })

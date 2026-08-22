@@ -17,7 +17,7 @@ import {
 } from 'firebase/firestore'
 import { DomainError } from '#/domain/errors'
 import type { AuditActor } from '#/domain/auditLog'
-import { buildMemberListSortKeys } from '#/domain/listSortKeys'
+import { buildMemberDerivedSortFields } from '#/domain/listSortKeys'
 import { ORG_UNIT_SEED } from '#/domain/orgUnitSeed'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
 import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
@@ -62,6 +62,7 @@ export type MemberProfilePatch = Partial<
     | 'lockedBy'
     | 'orgUnitName'
     | 'giaoPhamHePhaiRankOrder'
+    | 'sapXepHaLap'
   >
 >
 
@@ -241,11 +242,7 @@ function applyMemberListSortKeys(
 ): Member {
   return {
     ...member,
-    ...buildMemberListSortKeys({
-      sanghaType: member.sanghaType,
-      orgUnitName,
-      giaoPhamHePhaiRank: member.giaoPhamHePhai?.rank,
-    }),
+    ...buildMemberDerivedSortFields(member, orgUnitName),
   }
 }
 

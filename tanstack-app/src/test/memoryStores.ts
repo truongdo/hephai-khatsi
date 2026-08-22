@@ -15,7 +15,7 @@ import {
   type DocumentTypeId,
 } from '#/domain/memberDocumentTypes'
 import { MISSING_GIAO_PHAM_HE_PHAI_RANK_ORDER } from '#/domain/giaoPhamHePhaiRankOrder'
-import { buildMemberListSortKeys, buildTempleListSortKeys } from '#/domain/listSortKeys'
+import { buildMemberDerivedSortFields, buildTempleListSortKeys } from '#/domain/listSortKeys'
 import { ORG_UNIT_SEED } from '#/domain/orgUnitSeed'
 import type { Member, SanghaType, Temple } from '#/domain/types'
 import type {
@@ -58,11 +58,7 @@ function applyTempleListSortKeys(temple: Temple): Temple {
 function applyMemberListSortKeys(member: Member): Member {
   return {
     ...member,
-    ...buildMemberListSortKeys({
-      sanghaType: member.sanghaType,
-      orgUnitName: resolveMemoryOrgUnitName(member.orgUnitId),
-      giaoPhamHePhaiRank: member.giaoPhamHePhai?.rank,
-    }),
+    ...buildMemberDerivedSortFields(member, resolveMemoryOrgUnitName(member.orgUnitId)),
   }
 }
 
