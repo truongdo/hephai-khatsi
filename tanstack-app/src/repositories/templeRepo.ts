@@ -17,11 +17,14 @@ import {
 } from 'firebase/firestore'
 import { DomainError } from '#/domain/errors'
 import type { AuditActor } from '#/domain/auditLog'
+import { buildTempleListSortKeys } from '#/domain/listSortKeys'
+import { ORG_UNIT_SEED } from '#/domain/orgUnitSeed'
 import type { Temple } from '#/domain/types'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
 import type { AdminListPage, ListTemplesAdminInput, ListTemplesExportInput } from '#/repositories/adminListTypes'
 import { maybeAppendAuditFromDiff } from '#/repositories/auditLogRepo'
+import { getOrgUnitById } from '#/repositories/orgUnitRepo'
 import { normalizeVnPhone } from '#/domain/normalize'
 
 export type TempleProfilePatch = Partial<
@@ -36,6 +39,8 @@ export type TempleProfilePatch = Partial<
     | 'updatedAt'
     | 'lockedAt'
     | 'lockedBy'
+    | 'listCityName'
+    | 'orgUnitName'
   >
 >
 
@@ -109,11 +114,19 @@ function templeData(temple: Temple): Omit<Temple, 'id'> {
   return data
 }
 
+async function resolveOrgUnitName(orgUnitId: string): Promise<string> {
+  const unit = await getOrgUnitById(orgUnitId)
+  if (unit) return unit.name
+  const seeded = ORG_UNIT_SEED.find((u) => u.id === orgUnitId)
+  return seeded?.name ?? orgUnitId
+}
+
 async function createOrUpdateTemple(
   input: CreateOrUpdateTempleDraftInput,
   options: { lock: boolean },
 ): Promise<{ temple: Temple; mode: 'created' | 'updated' }> {
   const db = requireDb()
+  const orgUnitName = await resolveOrgUnitName(input.orgUnitId)
 
   return runTransaction(db, async (transaction) => {
     const now = new Date().toISOString()
@@ -194,6 +207,14 @@ async function createOrUpdateTemple(
           editRequestedAt: null,
           editRequestedBy: null,
         }
+
+    Object.assign(
+      temple,
+      buildTempleListSortKeys({
+        diaChiMoi: temple.diaChiMoi,
+        orgUnitName,
+      }),
+    )
 
     transaction.set(templeRef, templeData(temple))
 
@@ -320,7 +341,9 @@ async function list(input: ListTemplesAdminInput): Promise<AdminListPage<Temple>
   const constraints: QueryConstraint[] = []
   if (input.orgUnitId) constraints.push(where('orgUnitId', '==', input.orgUnitId))
   if (input.status) constraints.push(where('status', '==', input.status))
-  constraints.push(orderBy('updatedAt', 'desc'))
+  const sortBy = input.sortBy ?? 'updatedAt'
+  const sortDir = input.sortDir ?? 'desc'
+  constraints.push(orderBy(sortBy, sortDir))
   if (input.cursor) {
     const cursorSnap = await getDoc(doc(db, COLLECTIONS.temples, input.cursor))
     if (cursorSnap.exists()) constraints.push(startAfter(cursorSnap))

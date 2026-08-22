@@ -1,6 +1,15 @@
 import type { RetreatStatus } from '#/domain/retreat'
 import type { Member, RecordStatus, SanghaType, Temple } from '#/domain/types'
 
+export type AdminSortDir = 'asc' | 'desc'
+
+export type TempleAdminSortBy = 'listCityName' | 'orgUnitName' | 'updatedAt'
+export type MemberAdminSortBy =
+  | 'giaoPhamHePhaiRankOrder'
+  | 'orgUnitName'
+  | 'status'
+  | 'updatedAt'
+
 export type AdminListPage<T> = {
   items: T[]
   nextCursor: string | null
@@ -11,6 +20,8 @@ export type ListTemplesAdminInput = {
   status?: RecordStatus
   limit?: number
   cursor?: string
+  sortBy?: TempleAdminSortBy
+  sortDir?: AdminSortDir
 }
 
 export type ListRetreatsAdminInput = {
@@ -26,6 +37,8 @@ export type ListMembersAdminInput = {
   status?: RecordStatus
   limit?: number
   cursor?: string
+  sortBy?: MemberAdminSortBy
+  sortDir?: AdminSortDir
 }
 
 export type ListMembersExportInput = {

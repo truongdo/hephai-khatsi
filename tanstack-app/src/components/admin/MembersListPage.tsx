@@ -18,6 +18,7 @@ import { useAuth } from '#/auth/useAuth'
 import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
+import { AdminSortableTh } from '#/components/admin/AdminSortableTh'
 import { emptyCell } from '#/components/admin/emptyCell'
 import { MembersExcelColumnsModal } from '#/components/admin/MembersExcelColumnsModal'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
@@ -28,10 +29,15 @@ import {
   loadMembersExcelColumnIds,
   saveMembersExcelColumnIds,
 } from '#/domain/membersExcelColumnSelection'
+import {
+  DEFAULT_ADMIN_TABLE_SORT,
+  nextAdminTableSort,
+} from '#/domain/adminTableSort'
 import type { Member, RecordStatus, SanghaType } from '#/domain/types'
 import { canManageDirectory, isHePhaiScope } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
 import { membersQuery, orgUnitsQuery } from '#/query/adminQueries'
+import type { AdminSortDir, MemberAdminSortBy } from '#/repositories/adminListTypes'
 import { deleteMembers } from '#/use-cases/deleteMembers'
 import { exportMembersExcel } from '#/use-cases/exportMembersExcel'
 import { unlockMember } from '#/use-cases/unlockMember'
@@ -94,6 +100,12 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [exportOpen, setExportOpen] = useState(false)
   const [exportColumnIds, setExportColumnIds] = useState<string[]>([])
+  const [sortBy, setSortBy] = useState<MemberAdminSortBy>(
+    DEFAULT_ADMIN_TABLE_SORT.sortBy,
+  )
+  const [sortDir, setSortDir] = useState<AdminSortDir>(
+    DEFAULT_ADMIN_TABLE_SORT.sortDir,
+  )
 
   const serverStatusFilter =
     statusFilter === 'edit_requested' ? undefined : (statusFilter ?? undefined)
@@ -103,7 +115,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
       ? (claim.orgUnitId ?? undefined)
       : (orgUnitFilter ?? undefined)
 
-  const serverFilterKey = `${sanghaType}:${scopedOrgUnitId ?? ''}:${serverStatusFilter ?? ''}`
+  const serverFilterKey = `${sanghaType}:${scopedOrgUnitId ?? ''}:${serverStatusFilter ?? ''}:${sortBy}:${sortDir}`
 
   useEffect(() => {
     setCursor(undefined)
@@ -123,10 +135,18 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
       orgUnitId: scopedOrgUnitId,
       status: serverStatusFilter,
       cursor,
+      sortBy,
+      sortDir,
     }),
     enabled: manageDirectory,
     staleTime: 5 * 60_000,
   })
+
+  function handleSort(column: MemberAdminSortBy) {
+    const next = nextAdminTableSort({ sortBy, sortDir }, column)
+    setSortBy(next.sortBy)
+    setSortDir(next.sortDir)
+  }
 
   useEffect(() => {
     if (!members.data) return
@@ -343,13 +363,37 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
                     })}
                   />
                 </Table.Th>
-                <Table.Th>{m.admin_members_col_pham_vi_he_phai()}</Table.Th>
+                <AdminSortableTh
+                  column="giaoPhamHePhaiRankOrder"
+                  label={m.admin_members_col_pham_vi_he_phai()}
+                  sortBy={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSort}
+                />
                 <Table.Th>{m.admin_members_col_phap_danh()}</Table.Th>
                 <Table.Th>{m.admin_members_col_the_danh()}</Table.Th>
-                <Table.Th>{m.admin_members_col_giao_doan()}</Table.Th>
+                <AdminSortableTh
+                  column="orgUnitName"
+                  label={m.admin_members_col_giao_doan()}
+                  sortBy={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSort}
+                />
                 <Table.Th>{m.admin_members_col_cccd()}</Table.Th>
-                <Table.Th>{m.admin_members_col_status()}</Table.Th>
-                <Table.Th>{m.admin_members_col_updated_at()}</Table.Th>
+                <AdminSortableTh
+                  column="status"
+                  label={m.admin_members_col_status()}
+                  sortBy={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSort}
+                />
+                <AdminSortableTh
+                  column="updatedAt"
+                  label={m.admin_members_col_updated_at()}
+                  sortBy={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSort}
+                />
                 <Table.Th w={100} />
               </Table.Tr>
             </Table.Thead>

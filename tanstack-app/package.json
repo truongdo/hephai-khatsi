@@ -19,6 +19,7 @@
     "test:e2e": "start-server-and-test dev http://localhost:3000 cy:run",
     "deploy": "pnpm run build && wrangler deploy",
     "seed:org-units": "node --env-file=.env --import tsx scripts/seed-org-units.ts",
+    "backfill:list-sort-keys": "node --env-file=.env --import tsx scripts/backfill-list-sort-keys.ts",
     "split:city-wards": "tsx scripts/split-city-wards.ts"
   },
   "dependencies": {

@@ -14,6 +14,9 @@ import {
   type DocumentSide,
   type DocumentTypeId,
 } from '#/domain/memberDocumentTypes'
+import { MISSING_GIAO_PHAM_HE_PHAI_RANK_ORDER } from '#/domain/giaoPhamHePhaiRankOrder'
+import { buildMemberListSortKeys, buildTempleListSortKeys } from '#/domain/listSortKeys'
+import { ORG_UNIT_SEED } from '#/domain/orgUnitSeed'
 import type { Member, SanghaType, Temple } from '#/domain/types'
 import type {
   AdminListPage,
@@ -36,6 +39,32 @@ import type {
 } from '#/repositories/templeRepo'
 
 const PHONE_INDEX_CAP = 20
+
+function resolveMemoryOrgUnitName(orgUnitId: string): string {
+  const seeded = ORG_UNIT_SEED.find((u) => u.id === orgUnitId)
+  return seeded?.name ?? orgUnitId
+}
+
+function applyTempleListSortKeys(temple: Temple): Temple {
+  return {
+    ...temple,
+    ...buildTempleListSortKeys({
+      diaChiMoi: temple.diaChiMoi,
+      orgUnitName: resolveMemoryOrgUnitName(temple.orgUnitId),
+    }),
+  }
+}
+
+function applyMemberListSortKeys(member: Member): Member {
+  return {
+    ...member,
+    ...buildMemberListSortKeys({
+      sanghaType: member.sanghaType,
+      orgUnitName: resolveMemoryOrgUnitName(member.orgUnitId),
+      giaoPhamHePhaiRank: member.giaoPhamHePhai?.rank,
+    }),
+  }
+}
 
 export function memoryAppendAudit(
   auditLogs: Map<string, AuditLogEntry[]>,
@@ -188,12 +217,22 @@ function listInMemory<T extends { id: string }>(
   input: { limit?: number; cursor?: string },
   options: {
     filter: (item: T) => boolean
-    sortKey: (item: T) => string
+    /** Comparable value; numbers and strings supported. */
+    sortValue: (item: T) => string | number
+    sortDir: 'asc' | 'desc'
   },
 ): AdminListPage<T> {
   const limit = input.limit ?? 25
   let items = [...all].filter(options.filter)
-  items.sort((a, b) => options.sortKey(b).localeCompare(options.sortKey(a)))
+  const dir = options.sortDir === 'asc' ? 1 : -1
+  items.sort((a, b) => {
+    const av = options.sortValue(a)
+    const bv = options.sortValue(b)
+    if (typeof av === 'number' && typeof bv === 'number') {
+      return (av - bv) * dir
+    }
+    return String(av).localeCompare(String(bv)) * dir
+  })
 
   if (input.cursor) {
     const cursorIdx = items.findIndex((item) => item.id === input.cursor)
@@ -206,6 +245,36 @@ function listInMemory<T extends { id: string }>(
   const nextCursor =
     items.length > limit ? page[page.length - 1]!.id : null
   return { items: page, nextCursor }
+}
+
+function templeSortValue(
+  temple: Temple,
+  sortBy: 'listCityName' | 'orgUnitName' | 'updatedAt',
+): string | number {
+  switch (sortBy) {
+    case 'listCityName':
+      return temple.listCityName ?? ''
+    case 'orgUnitName':
+      return temple.orgUnitName ?? ''
+    case 'updatedAt':
+      return temple.updatedAt
+  }
+}
+
+function memberSortValue(
+  member: Member,
+  sortBy: 'giaoPhamHePhaiRankOrder' | 'orgUnitName' | 'status' | 'updatedAt',
+): string | number {
+  switch (sortBy) {
+    case 'giaoPhamHePhaiRankOrder':
+      return member.giaoPhamHePhaiRankOrder ?? MISSING_GIAO_PHAM_HE_PHAI_RANK_ORDER
+    case 'orgUnitName':
+      return member.orgUnitName ?? ''
+    case 'status':
+      return member.status
+    case 'updatedAt':
+      return member.updatedAt
+  }
 }
 
 export function createMemoryMemberStore(
@@ -268,14 +337,14 @@ export function createMemoryMemberStore(
         if (existing.status === 'locked') {
           throw new DomainError('RECORD_LOCKED', 'Member is locked')
         }
-        const member = {
+        const member = applyMemberListSortKeys({
           ...existing,
           ...input.patch,
           // Re-validated per the current invite token on every non-admin
           // write, matching memberRepo.ts / firebase/firestore.rules.
           inviteId: input.inviteId,
           updatedAt: now,
-        }
+        })
         members.set(existing.id, member)
         appendPhoneIndex(phoneIndex, member)
         if (input.audit) {
@@ -295,7 +364,7 @@ export function createMemoryMemberStore(
       }
 
       const id = `member-${members.size + 1}`
-      const member: Member = {
+      const member = applyMemberListSortKeys({
         id,
         orgUnitId: input.orgUnitId,
         sanghaType: input.sanghaType,
@@ -311,7 +380,7 @@ export function createMemoryMemberStore(
         editRequestedAt: null,
         editRequestedBy: null,
         ...input.patch,
-      }
+      })
       members.set(id, member)
       index.set(indexId, id)
       appendPhoneIndex(phoneIndex, member)
@@ -345,7 +414,7 @@ export function createMemoryMemberStore(
         if (existing.status === 'locked') {
           throw new DomainError('RECORD_LOCKED', 'Member is locked')
         }
-        const member: Member = {
+        const member = applyMemberListSortKeys({
           ...existing,
           ...input.patch,
           inviteId: input.inviteId,
@@ -355,7 +424,7 @@ export function createMemoryMemberStore(
           editRequestedAt: null,
           editRequestedBy: null,
           updatedAt: now,
-        }
+        })
         members.set(existing.id, member)
         appendPhoneIndex(phoneIndex, member)
         maybeMemoryAppendAuditFromDiff(
@@ -373,7 +442,7 @@ export function createMemoryMemberStore(
       }
 
       const id = `member-${members.size + 1}`
-      const member: Member = {
+      const member = applyMemberListSortKeys({
         id,
         orgUnitId: input.orgUnitId,
         sanghaType: input.sanghaType,
@@ -389,7 +458,7 @@ export function createMemoryMemberStore(
         editRequestedAt: null,
         editRequestedBy: null,
         ...input.patch,
-      }
+      })
       members.set(id, member)
       index.set(indexId, id)
       appendPhoneIndex(phoneIndex, member)
@@ -472,7 +541,7 @@ export function createMemoryMemberStore(
         )
       }
       const now = '2026-07-19T00:00:00.000Z'
-      const member: Member = {
+      const member = applyMemberListSortKeys({
         ...existing,
         ...patch,
         id: nextId,
@@ -487,7 +556,7 @@ export function createMemoryMemberStore(
         editRequestedAt: existing.editRequestedAt,
         editRequestedBy: existing.editRequestedBy,
         updatedAt: now,
-      }
+      })
       if (orgChanged) {
         members.delete(memberId)
         index.delete(
@@ -733,12 +802,15 @@ export function createMemoryMemberStore(
       return member
     },
     async list(input: ListMembersAdminInput) {
+      const sortBy = input.sortBy ?? 'updatedAt'
+      const sortDir = input.sortDir ?? 'desc'
       return listInMemory(members.values(), input, {
         filter: (member) =>
           member.sanghaType === input.sanghaType &&
           (!input.orgUnitId || member.orgUnitId === input.orgUnitId) &&
           (!input.status || member.status === input.status),
-        sortKey: (member) => member.updatedAt,
+        sortValue: (member) => memberSortValue(member, sortBy),
+        sortDir,
       })
     },
     async listAllForExport(input: ListMembersExportInput) {
@@ -836,7 +908,7 @@ export function createMemoryTempleStore(
         if (orgChanged) {
           removeTempleFromPhoneIndex(phoneIndex, existing)
         }
-        const temple: Temple = {
+        const temple = applyTempleListSortKeys({
           ...existing,
           ...input.patch,
           id: existing.id,
@@ -857,7 +929,7 @@ export function createMemoryTempleStore(
           lockedBy: existing.lockedBy,
           editRequestedAt: existing.editRequestedAt,
           editRequestedBy: existing.editRequestedBy,
-        }
+        })
         temples.set(temple.id, temple)
         appendTemplePhoneIndex(phoneIndex, temple)
         if (input.audit) {
@@ -877,7 +949,7 @@ export function createMemoryTempleStore(
       }
 
       const id = `temple-${temples.size + 1}`
-      const temple: Temple = {
+      const temple = applyTempleListSortKeys({
         ...input.patch,
         id,
         orgUnitId: input.orgUnitId,
@@ -891,7 +963,7 @@ export function createMemoryTempleStore(
         lockedBy: null,
         editRequestedAt: null,
         editRequestedBy: null,
-      }
+      })
       temples.set(id, temple)
       appendTemplePhoneIndex(phoneIndex, temple)
       if (input.audit) {
@@ -924,7 +996,7 @@ export function createMemoryTempleStore(
         if (existing.status === 'locked') {
           throw new DomainError('RECORD_LOCKED', 'Temple is locked')
         }
-        const temple: Temple = {
+        const temple = applyTempleListSortKeys({
           ...existing,
           ...input.patch,
           id: existing.id,
@@ -942,7 +1014,7 @@ export function createMemoryTempleStore(
           lockedBy: 'filler',
           editRequestedAt: null,
           editRequestedBy: null,
-        }
+        })
         temples.set(temple.id, temple)
         appendTemplePhoneIndex(phoneIndex, temple)
         maybeMemoryAppendAuditFromDiff(
@@ -960,7 +1032,7 @@ export function createMemoryTempleStore(
       }
 
       const id = `temple-${temples.size + 1}`
-      const temple: Temple = {
+      const temple = applyTempleListSortKeys({
         ...input.patch,
         id,
         orgUnitId: input.orgUnitId,
@@ -974,7 +1046,7 @@ export function createMemoryTempleStore(
         lockedBy: 'filler',
         editRequestedAt: null,
         editRequestedBy: null,
-      }
+      })
       temples.set(id, temple)
       appendTemplePhoneIndex(phoneIndex, temple)
       maybeMemoryAppendAuditFromDiff(
@@ -1123,11 +1195,14 @@ export function createMemoryTempleStore(
       return temple
     },
     async list(input: ListTemplesAdminInput) {
+      const sortBy = input.sortBy ?? 'updatedAt'
+      const sortDir = input.sortDir ?? 'desc'
       return listInMemory(temples.values(), input, {
         filter: (temple) =>
           (!input.orgUnitId || temple.orgUnitId === input.orgUnitId) &&
           (!input.status || temple.status === input.status),
-        sortKey: (temple) => temple.updatedAt,
+        sortValue: (temple) => templeSortValue(temple, sortBy),
+        sortDir,
       })
     },
     async listAllForExport(input: ListTemplesExportInput) {

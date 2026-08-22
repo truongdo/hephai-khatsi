@@ -27,6 +27,8 @@ const protectedPatchKeys = [
   'updatedAt',
   'lockedAt',
   'lockedBy',
+  'listCityName',
+  'orgUnitName',
 ] satisfies Array<keyof Temple>
 
 function sanitizePatch(patch: TempleProfilePatch): TempleProfilePatch {

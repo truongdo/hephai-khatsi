@@ -27,6 +27,8 @@ const protectedPatchKeys = [
   'updatedAt',
   'lockedAt',
   'lockedBy',
+  'orgUnitName',
+  'giaoPhamHePhaiRankOrder',
 ] satisfies Array<keyof Member>
 
 function sanitizePatch(patch: MemberProfilePatch): MemberProfilePatch {

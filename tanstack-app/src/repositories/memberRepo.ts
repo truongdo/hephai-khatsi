@@ -17,6 +17,8 @@ import {
 } from 'firebase/firestore'
 import { DomainError } from '#/domain/errors'
 import type { AuditActor } from '#/domain/auditLog'
+import { buildMemberListSortKeys } from '#/domain/listSortKeys'
+import { ORG_UNIT_SEED } from '#/domain/orgUnitSeed'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
 import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
 import { normalizeVnPhone } from '#/domain/normalize'
@@ -43,6 +45,7 @@ import {
   copyAuditLogDocsInTransaction,
   listAuditLogDocsForCopy,
 } from '#/repositories/auditLogRepo'
+import { getOrgUnitById } from '#/repositories/orgUnitRepo'
 
 export type MemberProfilePatch = Partial<
   Omit<
@@ -57,6 +60,8 @@ export type MemberProfilePatch = Partial<
     | 'updatedAt'
     | 'lockedAt'
     | 'lockedBy'
+    | 'orgUnitName'
+    | 'giaoPhamHePhaiRankOrder'
   >
 >
 
@@ -223,6 +228,27 @@ function memberData(member: Member): Omit<Member, 'id'> {
   return data
 }
 
+async function resolveOrgUnitName(orgUnitId: string): Promise<string> {
+  const unit = await getOrgUnitById(orgUnitId)
+  if (unit) return unit.name
+  const seeded = ORG_UNIT_SEED.find((u) => u.id === orgUnitId)
+  return seeded?.name ?? orgUnitId
+}
+
+function applyMemberListSortKeys(
+  member: Member,
+  orgUnitName: string,
+): Member {
+  return {
+    ...member,
+    ...buildMemberListSortKeys({
+      sanghaType: member.sanghaType,
+      orgUnitName,
+      giaoPhamHePhaiRank: member.giaoPhamHePhai?.rank,
+    }),
+  }
+}
+
 async function createOrUpdateMember(
   input: CreateOrUpdateMemberDraftInput,
   options: { lock: boolean },
@@ -230,6 +256,7 @@ async function createOrUpdateMember(
   const db = requireDb()
   const memberId = memberDocId(input.orgUnitId, input.sanghaType, input.cccd)
   const memberRef = doc(db, COLLECTIONS.members, memberId)
+  const orgUnitName = await resolveOrgUnitName(input.orgUnitId)
 
   return runTransaction(db, async (transaction) => {
     const snap = await transaction.get(memberRef)
@@ -284,6 +311,8 @@ async function createOrUpdateMember(
       }
       mode = 'created'
     }
+
+    member = applyMemberListSortKeys(member, orgUnitName)
 
     // Firestore transactions require all reads before any writes.
     const phoneIndex = await readPhoneIndexForTransaction(
@@ -388,16 +417,26 @@ async function updateDraftById(
   const db = requireDb()
   const memberRef = doc(db, COLLECTIONS.members, memberId)
 
+  const peekSnap = await getDoc(memberRef)
   let logsToCopy: Array<{ id: string; data: Record<string, unknown> }> = []
-  if (options?.allowOrgUnitChange && options.orgUnitId) {
-    const peek = await getDoc(memberRef)
-    if (peek.exists() && peek.data()?.orgUnitId !== options.orgUnitId) {
-      logsToCopy = await listAuditLogDocsForCopy({
-        collection: 'members',
-        id: memberId,
-      })
-    }
+  if (
+    options?.allowOrgUnitChange &&
+    options.orgUnitId &&
+    peekSnap.exists() &&
+    peekSnap.data()?.orgUnitId !== options.orgUnitId
+  ) {
+    logsToCopy = await listAuditLogDocsForCopy({
+      collection: 'members',
+      id: memberId,
+    })
   }
+
+  const nextOrgUnitIdForSort =
+    options?.orgUnitId ??
+    (peekSnap.exists() ? memberFromSnap(peekSnap).orgUnitId : undefined)
+  const orgUnitName = nextOrgUnitIdForSort
+    ? await resolveOrgUnitName(nextOrgUnitIdForSort)
+    : ''
 
   return runTransaction(db, async (transaction) => {
     const snap = await transaction.get(memberRef)
@@ -434,7 +473,7 @@ async function updateDraftById(
     }
 
     const now = new Date().toISOString()
-    const member: Member = {
+    let member: Member = {
       ...existing,
       ...patch,
       id: nextId,
@@ -450,6 +489,7 @@ async function updateDraftById(
       editRequestedBy: existing.editRequestedBy,
       updatedAt: now,
     }
+    member = applyMemberListSortKeys(member, orgUnitName)
 
     // Firestore transactions require all reads before any writes.
     const newPhoneIndex = await readPhoneIndexForTransaction(
@@ -552,7 +592,9 @@ async function list(input: ListMembersAdminInput): Promise<AdminListPage<Member>
   const constraints: QueryConstraint[] = [where('sanghaType', '==', input.sanghaType)]
   if (input.orgUnitId) constraints.push(where('orgUnitId', '==', input.orgUnitId))
   if (input.status) constraints.push(where('status', '==', input.status))
-  constraints.push(orderBy('updatedAt', 'desc'))
+  const sortBy = input.sortBy ?? 'updatedAt'
+  const sortDir = input.sortDir ?? 'desc'
+  constraints.push(orderBy(sortBy, sortDir))
   if (input.cursor) {
     const cursorSnap = await getDoc(doc(db, COLLECTIONS.members, input.cursor))
     if (cursorSnap.exists()) constraints.push(startAfter(cursorSnap))

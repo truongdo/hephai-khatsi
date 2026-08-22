@@ -32,8 +32,8 @@ const templeItems = [
 
 const deleteTemplesMock = vi.fn()
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
-const templesQueryMock = vi.fn(() => ({
-  queryKey: ['admin', 'temples', {}],
+const templesQueryMock = vi.fn((filters: unknown = {}) => ({
+  queryKey: ['admin', 'temples', filters],
   queryFn: async () => ({ items: templeItems, nextCursor: null }),
   staleTime: 0,
 }))
@@ -138,8 +138,8 @@ beforeEach(() => {
     role: 'he_phai_admin',
     orgUnitId: null,
   })
-  templesQueryMock.mockImplementation(() => ({
-    queryKey: ['admin', 'temples', {}],
+  templesQueryMock.mockImplementation((filters: unknown = {}) => ({
+    queryKey: ['admin', 'temples', filters],
     queryFn: async () => ({ items: templeItems, nextCursor: null }),
     staleTime: 0,
   }))
@@ -170,6 +170,74 @@ describe('TemplesListPage', () => {
     expect(await screen.findByText('TX A')).toBeTruthy()
     const link = screen.getByRole('link', { name: 'TX A' })
     expect(link.getAttribute('href')).toBe('/admin/temples/t1')
+  })
+
+  it('sorts by org unit when Giáo đoàn header is clicked', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await screen.findByText('TX A')
+    templesQueryMock.mockClear()
+
+    await user.click(
+      screen.getByRole('columnheader', { name: /Giáo đoàn/i }),
+    )
+
+    await waitFor(() => {
+      expect(templesQueryMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sortBy: 'orgUnitName',
+          sortDir: 'asc',
+        }),
+      )
+    })
+  })
+
+  it('resets accumulated rows when sort changes', async () => {
+    const page1 = [templeItems[0]]
+    const page2 = [
+      {
+        ...templeItems[0],
+        id: 't2',
+        danhHieu: 'TX B',
+      },
+    ]
+
+    templesQueryMock.mockImplementation(
+      (filters: { cursor?: string; sortBy?: string } = {}) => ({
+        queryKey: ['admin', 'temples', filters],
+        queryFn: async () => {
+          if (filters.cursor) {
+            return { items: page2, nextCursor: null }
+          }
+          return { items: page1, nextCursor: 'cursor-2' }
+        },
+        staleTime: 0,
+      }),
+    )
+
+    const user = userEvent.setup()
+    renderList()
+    await screen.findByText('TX A')
+    await user.click(screen.getByRole('button', { name: 'Tải thêm' }))
+    await screen.findByText('TX B')
+    templesQueryMock.mockClear()
+
+    await user.click(
+      screen.getByRole('columnheader', { name: /Giáo đoàn/i }),
+    )
+
+    await waitFor(() => {
+      expect(templesQueryMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sortBy: 'orgUnitName',
+          sortDir: 'asc',
+          cursor: undefined,
+        }),
+      )
+    })
+    await waitFor(() => {
+      expect(screen.queryByText('TX B')).toBeNull()
+    })
   })
 
   it('shows province and giao doan after danh hieu', async () => {

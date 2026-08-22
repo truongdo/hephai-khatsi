@@ -18,16 +18,22 @@ import { useAuth } from '#/auth/useAuth'
 import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
+import { AdminSortableTh } from '#/components/admin/AdminSortableTh'
 import { emptyCell } from '#/components/admin/emptyCell'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
 import { TempleDeleteBlockedModal } from '#/components/admin/TempleDeleteBlockedModal'
 import { useAdminListSelection } from '#/components/admin/useAdminListSelection'
 import { isStructuredAddress } from '#/domain/address'
+import {
+  DEFAULT_ADMIN_TABLE_SORT,
+  nextAdminTableSort,
+} from '#/domain/adminTableSort'
 import type { RecordStatus, Temple } from '#/domain/types'
 import { canManageDirectory, isHePhaiScope } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
 import { templesQuery, orgUnitsQuery } from '#/query/adminQueries'
+import type { AdminSortDir, TempleAdminSortBy } from '#/repositories/adminListTypes'
 import {
   deleteTemples,
   type TempleDeleteBlocker,
@@ -80,6 +86,12 @@ export function TemplesListPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [blockedOpen, setBlockedOpen] = useState(false)
   const [blockers, setBlockers] = useState<TempleDeleteBlocker[]>([])
+  const [sortBy, setSortBy] = useState<TempleAdminSortBy>(
+    DEFAULT_ADMIN_TABLE_SORT.sortBy,
+  )
+  const [sortDir, setSortDir] = useState<AdminSortDir>(
+    DEFAULT_ADMIN_TABLE_SORT.sortDir,
+  )
 
   const serverStatusFilter =
     statusFilter === 'edit_requested' ? undefined : (statusFilter ?? undefined)
@@ -89,7 +101,7 @@ export function TemplesListPage() {
       ? (claim.orgUnitId ?? undefined)
       : (orgUnitFilter ?? undefined)
 
-  const serverFilterKey = `${scopedOrgUnitId ?? ''}:${serverStatusFilter ?? ''}`
+  const serverFilterKey = `${scopedOrgUnitId ?? ''}:${serverStatusFilter ?? ''}:${sortBy}:${sortDir}`
 
   useEffect(() => {
     setCursor(undefined)
@@ -108,10 +120,18 @@ export function TemplesListPage() {
       orgUnitId: scopedOrgUnitId,
       status: serverStatusFilter,
       cursor,
+      sortBy,
+      sortDir,
     }),
     enabled: manageDirectory,
     staleTime: 5 * 60_000,
   })
+
+  function handleSort(column: TempleAdminSortBy) {
+    const next = nextAdminTableSort({ sortBy, sortDir }, column)
+    setSortBy(next.sortBy)
+    setSortDir(next.sortDir)
+  }
 
   useEffect(() => {
     if (!temples.data) return
@@ -301,11 +321,29 @@ export function TemplesListPage() {
                   />
                 </Table.Th>
                 <Table.Th>{m.admin_temples_col_danh_hieu()}</Table.Th>
-                <Table.Th>{m.admin_temples_col_tinh_thanh_pho()}</Table.Th>
-                <Table.Th>{m.admin_temples_col_giao_doan()}</Table.Th>
+                <AdminSortableTh
+                  column="listCityName"
+                  label={m.admin_temples_col_tinh_thanh_pho()}
+                  sortBy={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSort}
+                />
+                <AdminSortableTh
+                  column="orgUnitName"
+                  label={m.admin_temples_col_giao_doan()}
+                  sortBy={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSort}
+                />
                 <Table.Th>{m.admin_temples_col_phone()}</Table.Th>
                 <Table.Th>{m.admin_temples_col_status()}</Table.Th>
-                <Table.Th>{m.admin_temples_col_updated_at()}</Table.Th>
+                <AdminSortableTh
+                  column="updatedAt"
+                  label={m.admin_temples_col_updated_at()}
+                  sortBy={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSort}
+                />
                 <Table.Th w={100} />
               </Table.Tr>
             </Table.Thead>

@@ -54,6 +54,39 @@ describe('memory temple listAllForExport', () => {
 })
 
 describe('memory temple list', () => {
+  it('lists temples by listCityName asc with cursor', async () => {
+    const store = createMemoryTempleStore([
+      temple({
+        id: 't1',
+        listCityName: 'Hà Nội',
+        updatedAt: '2026-07-19T03:00:00.000Z',
+      }),
+      temple({
+        id: 't2',
+        listCityName: 'Đà Nẵng',
+        updatedAt: '2026-07-19T02:00:00.000Z',
+      }),
+      temple({
+        id: 't3',
+        listCityName: 'Cần Thơ',
+        updatedAt: '2026-07-19T01:00:00.000Z',
+      }),
+    ])
+    const page1 = await store.list({
+      sortBy: 'listCityName',
+      sortDir: 'asc',
+      limit: 2,
+    })
+    expect(page1.items.map((t) => t.id)).toEqual(['t3', 't2'])
+    const page2 = await store.list({
+      sortBy: 'listCityName',
+      sortDir: 'asc',
+      limit: 2,
+      cursor: page1.nextCursor!,
+    })
+    expect(page2.items.map((t) => t.id)).toEqual(['t1'])
+  })
+
   it('filters by status and paginates with cursor', async () => {
     const store = createMemoryTempleStore([
       temple({ id: 't1', status: 'draft', updatedAt: '2026-07-19T03:00:00.000Z' }),
@@ -70,6 +103,30 @@ describe('memory temple list', () => {
 })
 
 describe('memory member list', () => {
+  it('lists members by giaoPhamHePhaiRankOrder asc', async () => {
+    const store = createMemoryMemberStore([
+      member({
+        id: 'm1',
+        sanghaType: 'tang',
+        giaoPhamHePhaiRankOrder: 5,
+        updatedAt: '2026-07-19T03:00:00.000Z',
+      }),
+      member({
+        id: 'm2',
+        sanghaType: 'tang',
+        giaoPhamHePhaiRankOrder: 0,
+        updatedAt: '2026-07-19T02:00:00.000Z',
+      }),
+    ])
+    const page = await store.list({
+      sanghaType: 'tang',
+      sortBy: 'giaoPhamHePhaiRankOrder',
+      sortDir: 'asc',
+      limit: 25,
+    })
+    expect(page.items.map((m) => m.id)).toEqual(['m2', 'm1'])
+  })
+
   it('requires sanghaType and filters', async () => {
     const store = createMemoryMemberStore([
       member({ id: 'm1', sanghaType: 'tang' }),

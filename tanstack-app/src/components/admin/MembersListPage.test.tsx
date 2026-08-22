@@ -51,8 +51,8 @@ const deleteMembersMock = vi.fn()
 const exportMembersExcelMock = vi.fn(async () => {})
 const unlockMemberMock = vi.fn()
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
-const membersQueryMock = vi.fn(() => ({
-  queryKey: ['admin', 'members', {}],
+const membersQueryMock = vi.fn((filters: unknown = {}) => ({
+  queryKey: ['admin', 'members', filters],
   queryFn: async () => ({ items: memberItems, nextCursor: null }),
   staleTime: 0,
 }))
@@ -165,8 +165,8 @@ beforeEach(() => {
     role: 'he_phai_admin',
     orgUnitId: null,
   })
-  membersQueryMock.mockImplementation(() => ({
-    queryKey: ['admin', 'members', {}],
+  membersQueryMock.mockImplementation((filters: unknown = {}) => ({
+    queryKey: ['admin', 'members', filters],
     queryFn: async () => ({ items: memberItems, nextCursor: null }),
     staleTime: 0,
   }))
@@ -204,6 +204,74 @@ describe('MembersListPage', () => {
     expect(await screen.findByText('HT A')).toBeTruthy()
     const link = screen.getByRole('link', { name: 'HT A' })
     expect(link.getAttribute('href')).toBe('/admin/members/m1')
+  })
+
+  it('sorts by pham vi when Phẩm vị header is clicked', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await screen.findByText('HT A')
+    membersQueryMock.mockClear()
+
+    await user.click(
+      screen.getByRole('columnheader', { name: /Phẩm vị \(Hệ phái\)/i }),
+    )
+
+    await waitFor(() => {
+      expect(membersQueryMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sortBy: 'giaoPhamHePhaiRankOrder',
+          sortDir: 'asc',
+        }),
+      )
+    })
+  })
+
+  it('resets accumulated rows when sort changes', async () => {
+    const page1 = [memberItems[0]]
+    const page2 = [
+      {
+        ...memberItems[0],
+        id: 'm3',
+        phapDanh: 'HT C',
+      },
+    ]
+
+    membersQueryMock.mockImplementation(
+      (filters: { cursor?: string; sortBy?: string } = {}) => ({
+        queryKey: ['admin', 'members', filters],
+        queryFn: async () => {
+          if (filters.cursor) {
+            return { items: page2, nextCursor: null }
+          }
+          return { items: page1, nextCursor: 'cursor-2' }
+        },
+        staleTime: 0,
+      }),
+    )
+
+    const user = userEvent.setup()
+    renderList()
+    await screen.findByText('HT A')
+    await user.click(screen.getByRole('button', { name: 'Tải thêm' }))
+    await screen.findByText('HT C')
+    membersQueryMock.mockClear()
+
+    await user.click(
+      screen.getByRole('columnheader', { name: /Phẩm vị \(Hệ phái\)/i }),
+    )
+
+    await waitFor(() => {
+      expect(membersQueryMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sortBy: 'giaoPhamHePhaiRankOrder',
+          sortDir: 'asc',
+          cursor: undefined,
+        }),
+      )
+    })
+    await waitFor(() => {
+      expect(screen.queryByText('HT C')).toBeNull()
+    })
   })
 
   it('renders columns for rank, names, giao doan, and cccd', async () => {

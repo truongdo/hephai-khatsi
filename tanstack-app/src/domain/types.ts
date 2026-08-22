@@ -77,6 +77,8 @@ export type Member = {
   gioiTyKheoNi?: PreceptRecord
   giaoPhamGiaoHoi?: GiaoPham
   giaoPhamHePhai?: GiaoPham
+  orgUnitName?: string
+  giaoPhamHePhaiRankOrder?: number
   haLap?: number
   ngayHaCapHaLap?: string
   bonSu?: string
@@ -143,6 +145,8 @@ export type Member = {
 export type Temple = {
   id: string
   orgUnitId: string
+  listCityName?: string
+  orgUnitName?: string
   status: RecordStatus
   managerPhones: string[]
   inviteId: string | null
