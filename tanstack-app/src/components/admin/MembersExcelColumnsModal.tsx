@@ -1,4 +1,4 @@
-import { Button, Checkbox, Group, Modal, Stack, Text } from '@mantine/core'
+import { Button, Checkbox, Group, Modal, ScrollArea, SimpleGrid, Stack, Text } from '@mantine/core'
 import {
   catalogMembersExcelColumns,
   type MemberExcelColumnDef,
@@ -15,6 +15,8 @@ export type MembersExcelColumnsModalProps = {
   onColumnIdsChange: (ids: string[]) => void
   onConfirm: () => void
   confirmLoading?: boolean
+  title?: () => string
+  confirmLabel?: () => string
 }
 
 const GROUP_ORDER: MemberExcelColumnGroup[] = [
@@ -70,6 +72,8 @@ export function MembersExcelColumnsModal({
   onColumnIdsChange,
   onConfirm,
   confirmLoading = false,
+  title = m.admin_members_export_columns_title,
+  confirmLabel = m.admin_members_export_confirm,
 }: MembersExcelColumnsModalProps) {
   const catalog = catalogMembersExcelColumns(sanghaType)
   const grouped = groupColumns(catalog)
@@ -86,7 +90,8 @@ export function MembersExcelColumnsModal({
     <Modal
       opened={opened}
       onClose={onClose}
-      title={m.admin_members_export_columns_title()}
+      title={title()}
+      size="960px"
       closeOnClickOutside={!confirmLoading}
       closeOnEscape={!confirmLoading}
     >
@@ -103,25 +108,29 @@ export function MembersExcelColumnsModal({
         </Button>
       </Group>
 
-      <Stack gap="md">
-        {GROUP_ORDER.map((group) => {
-          const columns = grouped.get(group)
-          if (!columns?.length) return null
-          return (
-            <Stack key={group} gap="xs">
-              <Text fw={600}>{groupLabel(group)}</Text>
-              {columns.map((column) => (
-                <Checkbox
-                  key={column.id}
-                  label={column.header()}
-                  checked={columnIds.includes(column.id)}
-                  onChange={(event) => toggleColumn(column.id, event.currentTarget.checked)}
-                />
-              ))}
-            </Stack>
-          )
-        })}
-      </Stack>
+      <ScrollArea.Autosize mah="65vh" type="auto" offsetScrollbars>
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+          {GROUP_ORDER.map((group) => {
+            const columns = grouped.get(group)
+            if (!columns?.length) return null
+            return (
+              <Stack key={group} gap="xs">
+                <Text fw={600} size="sm">
+                  {groupLabel(group)}
+                </Text>
+                {columns.map((column) => (
+                  <Checkbox
+                    key={column.id}
+                    label={column.header()}
+                    checked={columnIds.includes(column.id)}
+                    onChange={(event) => toggleColumn(column.id, event.currentTarget.checked)}
+                  />
+                ))}
+              </Stack>
+            )
+          })}
+        </SimpleGrid>
+      </ScrollArea.Autosize>
 
       <Group justify="flex-end" mt="md" wrap="wrap" gap="sm">
         <Button
@@ -129,7 +138,7 @@ export function MembersExcelColumnsModal({
           disabled={columnIds.length === 0 || confirmLoading}
           loading={confirmLoading}
         >
-          {m.admin_members_export_confirm()}
+          {confirmLabel()}
         </Button>
       </Group>
     </Modal>

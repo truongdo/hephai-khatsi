@@ -66,6 +66,7 @@ function renderTabs(
         ]}
         activeTabMembers={activeTabMembers}
         orgUnitNameById={orgUnitNameById}
+        displayColumnIds={['phapDanh', 'theDanh', 'orgUnitName', 'cccd', 'status']}
         activeTab="ty_kheo"
         onActiveTabChange={onActiveTabChange}
         selectedIds={new Set()}
@@ -125,5 +126,13 @@ describe('MembersHaLapTabs', () => {
     await user.click(headerCheckbox)
 
     expect(onToggleAllInTab).toHaveBeenCalledWith(['m2', 'm1'], true)
+  })
+
+  it('hides columns not in displayColumnIds', () => {
+    renderTabs({ displayColumnIds: ['phapDanh', 'cccd'] })
+    expect(screen.getByRole('columnheader', { name: 'Pháp danh' })).toBeTruthy()
+    expect(screen.getByRole('columnheader', { name: 'CCCD' })).toBeTruthy()
+    expect(screen.queryByRole('columnheader', { name: 'Thế danh' })).toBeNull()
+    expect(screen.queryByRole('columnheader', { name: 'Giáo đoàn' })).toBeNull()
   })
 })

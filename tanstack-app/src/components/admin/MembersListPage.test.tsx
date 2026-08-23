@@ -328,6 +328,24 @@ describe('MembersListPage', () => {
     expect(input.orgUnitNameById['gd-i']).toBe('Giáo đoàn I')
   })
 
+  it('opens display column modal and hides deselected columns on save', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await screen.findByText('HT A')
+    expect(screen.getByRole('columnheader', { name: 'Thế danh' })).toBeTruthy()
+
+    await user.click(screen.getByRole('button', { name: 'Chọn cột' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Chọn cột hiển thị' })
+    await user.click(within(dialog).getByRole('checkbox', { name: 'Thế danh' }))
+    await user.click(within(dialog).getByRole('button', { name: 'Lưu' }))
+
+    await waitFor(() => {
+      expect(screen.queryByRole('columnheader', { name: 'Thế danh' })).toBeNull()
+    })
+    expect(screen.queryByText('Nguyễn Văn A')).toBeNull()
+    expect(screen.getByRole('columnheader', { name: 'Pháp danh' })).toBeTruthy()
+  })
+
   it('filters to edit-requested rows client-side', async () => {
     const user = userEvent.setup()
     renderList()

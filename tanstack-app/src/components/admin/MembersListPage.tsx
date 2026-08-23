@@ -16,6 +16,10 @@ import {
   loadMembersExcelColumnIds,
   saveMembersExcelColumnIds,
 } from '#/domain/membersExcelColumnSelection'
+import {
+  loadMembersTableColumnIds,
+  saveMembersTableColumnIds,
+} from '#/domain/membersTableColumnSelection'
 import { canonicalHaLapTabRankKeys } from '#/domain/membersHaLapGroups'
 import type { Member, RecordStatus, SanghaType } from '#/domain/types'
 import { canManageDirectory, isHePhaiScope } from '#/domain/authClaims'
@@ -110,7 +114,15 @@ export function MembersListPage({
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [exportOpen, setExportOpen] = useState(false)
   const [exportColumnIds, setExportColumnIds] = useState<string[]>([])
+  const [displayColumnsOpen, setDisplayColumnsOpen] = useState(false)
+  const [displayColumnIds, setDisplayColumnIds] = useState<string[]>(() =>
+    loadMembersTableColumnIds(sanghaType),
+  )
   const lastFilterKeyRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    setDisplayColumnIds(loadMembersTableColumnIds(sanghaType))
+  }, [sanghaType])
 
   const isGiaoDoanAdmin =
     claim.status === 'admin' && claim.role === 'giao_doan_admin'
@@ -368,6 +380,15 @@ export function MembersListPage({
         <Group wrap="wrap">
           <Button
             variant="default"
+            onClick={() => {
+              setDisplayColumnIds(loadMembersTableColumnIds(sanghaType))
+              setDisplayColumnsOpen(true)
+            }}
+          >
+            {m.admin_members_table_columns()}
+          </Button>
+          <Button
+            variant="default"
             loading={exportMutation.isPending}
             disabled={exportMutation.isPending}
             onClick={() => {
@@ -453,6 +474,7 @@ export function MembersListPage({
               tabs={tabSummaries}
               activeTabMembers={activeTabMembers}
               orgUnitNameById={orgUnitNameById}
+              displayColumnIds={displayColumnIds}
               activeTab={resolvedActiveTab}
               onActiveTabChange={(rankKey) => onActiveTabChange?.(rankKey)}
               selectedIds={selection.selectedIds}
@@ -493,6 +515,21 @@ export function MembersListPage({
           saveMembersExcelColumnIds(sanghaType, exportColumnIds)
           setExportOpen(false)
           exportMutation.mutate(exportColumnIds)
+        }}
+      />
+
+      <MembersExcelColumnsModal
+        opened={displayColumnsOpen}
+        onClose={() => setDisplayColumnsOpen(false)}
+        sanghaType={sanghaType}
+        columnIds={displayColumnIds}
+        onColumnIdsChange={setDisplayColumnIds}
+        title={m.admin_members_table_columns_title}
+        confirmLabel={m.admin_members_table_columns_save}
+        onConfirm={() => {
+          if (displayColumnIds.length === 0) return
+          saveMembersTableColumnIds(sanghaType, displayColumnIds)
+          setDisplayColumnsOpen(false)
         }}
       />
     </Stack>

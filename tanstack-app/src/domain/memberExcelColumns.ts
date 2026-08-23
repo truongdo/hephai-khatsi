@@ -374,3 +374,16 @@ export function defaultMembersExcelColumnIds(sanghaType: SanghaType): string[] {
     'hienTuHoc',
   ]
 }
+
+/** Default visible columns on the admin members table (hạ-lạp tabs). */
+export function defaultMembersTableColumnIds(_sanghaType: SanghaType): string[] {
+  return ['phapDanh', 'theDanh', 'orgUnitName', 'cccd', 'status']
+}
+
+export function membersTableDisplayColumns(
+  sanghaType: SanghaType,
+  columnIds: string[],
+): MemberExcelColumnDef[] {
+  const selected = new Set(columnIds)
+  return catalogMembersExcelColumns(sanghaType).filter((c) => selected.has(c.id))
+}

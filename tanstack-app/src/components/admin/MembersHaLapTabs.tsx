@@ -1,21 +1,20 @@
 import {
-  Badge,
   Button,
   Checkbox,
-  Group,
   Stack,
   Table,
   Tabs,
-  Text,
 } from '@mantine/core'
-import { Link } from '@tanstack/react-router'
 import { useMemo } from 'react'
-import { m } from '#/paraglide/messages'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
-import { emptyCell } from '#/components/admin/emptyCell'
-import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
+import {
+  renderMemberTableActions,
+  renderMemberTableCell,
+} from '#/components/admin/memberTableCell'
+import { membersTableDisplayColumns } from '#/domain/memberExcelColumns'
 import { haLapTabLabel } from '#/domain/membersHaLapGroups'
-import type { Member, RecordStatus, SanghaType } from '#/domain/types'
+import type { Member, SanghaType } from '#/domain/types'
+import { m } from '#/paraglide/messages'
 
 export type HaLapTabSummary = {
   rankKey: string
@@ -28,6 +27,7 @@ export type MembersHaLapTabsProps = {
   tabs: HaLapTabSummary[]
   activeTabMembers: Member[]
   orgUnitNameById: Map<string, string>
+  displayColumnIds: string[]
   activeTab: string
   onActiveTabChange: (rankKey: string) => void
   selectedIds: Set<string>
@@ -41,22 +41,15 @@ export type MembersHaLapTabsProps = {
   isFetchingMore?: boolean
 }
 
-function statusLabel(status: RecordStatus): string {
-  switch (status) {
-    case 'draft':
-      return m.admin_members_status_draft()
-    case 'locked':
-      return m.admin_members_status_locked()
-  }
-}
-
 function memberDisplayName(member: Member): string {
   return member.phapDanh ?? member.theDanh ?? member.id
 }
 
 type HaLapMemberTableProps = {
+  sanghaType: SanghaType
   members: Member[]
   orgUnitNameById: Map<string, string>
+  displayColumnIds: string[]
   tabMemberIds: string[]
   selectedIds: Set<string>
   onToggle: (id: string) => void
@@ -68,8 +61,10 @@ type HaLapMemberTableProps = {
 }
 
 function HaLapMemberTable({
+  sanghaType,
   members,
   orgUnitNameById,
+  displayColumnIds,
   tabMemberIds,
   selectedIds,
   onToggle,
@@ -79,6 +74,11 @@ function HaLapMemberTable({
   ariaLabel,
   isLoading,
 }: HaLapMemberTableProps) {
+  const displayColumns = useMemo(
+    () => membersTableDisplayColumns(sanghaType, displayColumnIds),
+    [sanghaType, displayColumnIds],
+  )
+
   const selectedInTabCount = useMemo(() => {
     let count = 0
     for (const id of tabMemberIds) {
@@ -90,6 +90,15 @@ function HaLapMemberTable({
   const allTabSelected =
     tabMemberIds.length > 0 && selectedInTabCount === tabMemberIds.length
   const someTabSelected = selectedInTabCount > 0 && !allTabSelected
+
+  const cellCtx = useMemo(
+    () => ({
+      orgUnitNameById,
+      onUnlock,
+      unlockingMemberId,
+    }),
+    [orgUnitNameById, onUnlock, unlockingMemberId],
+  )
 
   return (
     <AdminDataTable
@@ -110,11 +119,9 @@ function HaLapMemberTable({
             />
           </Table.Th>
           <Table.Th w={48}>STT</Table.Th>
-          <Table.Th>{m.admin_members_col_phap_danh()}</Table.Th>
-          <Table.Th>{m.admin_members_col_the_danh()}</Table.Th>
-          <Table.Th>{m.admin_members_col_giao_doan()}</Table.Th>
-          <Table.Th>{m.admin_members_col_cccd()}</Table.Th>
-          <Table.Th>{m.admin_members_col_status()}</Table.Th>
+          {displayColumns.map((column) => (
+            <Table.Th key={column.id}>{column.header()}</Table.Th>
+          ))}
           <Table.Th w={100} />
         </Table.Tr>
       </Table.Thead>
@@ -129,54 +136,13 @@ function HaLapMemberTable({
               />
             </Table.Td>
             <Table.Td>{index + 1}</Table.Td>
+            {displayColumns.map((column) => (
+              <Table.Td key={column.id}>
+                {renderMemberTableCell(column.id, member, cellCtx)}
+              </Table.Td>
+            ))}
             <Table.Td>
-              {member.phapDanh ? (
-                <Text
-                  component={Link}
-                  to="/admin/members/$id"
-                  params={{ id: member.id }}
-                  c="teal.7"
-                  fw={600}
-                >
-                  {member.phapDanh}
-                </Text>
-              ) : (
-                emptyCell(member.phapDanh)
-              )}
-            </Table.Td>
-            <Table.Td>{emptyCell(member.theDanh)}</Table.Td>
-            <Table.Td>
-              {emptyCell(
-                orgUnitNameById.get(member.orgUnitId) ?? member.orgUnitId,
-              )}
-            </Table.Td>
-            <Table.Td>{member.cccd}</Table.Td>
-            <Table.Td>
-              <Group gap="xs">
-                <RecordStatusBadge
-                  status={member.status}
-                  label={statusLabel(member.status)}
-                />
-                {member.editRequestedAt != null && (
-                  <Badge color="orange" variant="light" radius="sm">
-                    {m.admin_edit_requested_badge()}
-                  </Badge>
-                )}
-              </Group>
-            </Table.Td>
-            <Table.Td>
-              {member.status === 'locked' && (
-                <Button
-                  size="compact-xs"
-                  variant={
-                    member.editRequestedAt != null ? 'filled' : 'light'
-                  }
-                  loading={unlockingMemberId === member.id}
-                  onClick={() => onUnlock(member.id)}
-                >
-                  {m.admin_members_unlock_row()}
-                </Button>
-              )}
+              {renderMemberTableActions(member, cellCtx)}
             </Table.Td>
           </Table.Tr>
         ))}
@@ -190,6 +156,7 @@ export function MembersHaLapTabs({
   tabs,
   activeTabMembers,
   orgUnitNameById,
+  displayColumnIds,
   activeTab,
   onActiveTabChange,
   selectedIds,
@@ -232,8 +199,10 @@ export function MembersHaLapTabs({
         </Tabs.List>
         <Tabs.Panel value={activeTab}>
           <HaLapMemberTable
+            sanghaType={sanghaType}
             members={activeTabMembers}
             orgUnitNameById={orgUnitNameById}
+            displayColumnIds={displayColumnIds}
             tabMemberIds={activeTabMemberIds}
             selectedIds={selectedIds}
             onToggle={onToggle}
