@@ -33,3 +33,28 @@ describe('memberDraft ngayHaCapHaLap', () => {
     expect(buildMemberPatch(draft).ngayHaCapHaLap).toBe('1999-12-31')
   })
 })
+
+describe('memberDraft theDanh / phapDanh', () => {
+  it('hydrates and patches uppercase values', () => {
+    const draft = emptyMemberDraft({
+      theDanh: 'nguyễn văn a',
+      phapDanh: 'minh tâm',
+    })
+    expect(draft.theDanh).toBe('NGUYỄN VĂN A')
+    expect(draft.phapDanh).toBe('MINH TÂM')
+    expect(buildMemberPatch(draft)).toMatchObject({
+      theDanh: 'NGUYỄN VĂN A',
+      phapDanh: 'MINH TÂM',
+    })
+  })
+
+  it('trims whitespace before uppercasing on save', () => {
+    const draft = emptyMemberDraft()
+    draft.theDanh = '  nguyễn văn a  '
+    draft.phapDanh = '  minh tâm  '
+    expect(buildMemberPatch(draft)).toMatchObject({
+      theDanh: 'NGUYỄN VĂN A',
+      phapDanh: 'MINH TÂM',
+    })
+  })
+})

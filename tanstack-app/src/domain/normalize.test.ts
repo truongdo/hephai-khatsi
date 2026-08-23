@@ -1,8 +1,26 @@
 import { describe, expect, it } from 'vitest'
-import { normalizeCccd, normalizeVnPhone } from './normalize'
+import { normalizeCccd, normalizeMemberDanh, normalizeMemberDanhForStorage, normalizeVnPhone } from './normalize'
 import { memberCccdIndexId } from './memberCccdIndex'
 import { memberPhoneIndexId } from './memberPhoneIndex'
 import { buildManagerPhones, mergeManagerPhones } from './templePhones'
+
+describe('normalizeMemberDanh', () => {
+  it('uppercases Vietnamese text while typing', () => {
+    expect(normalizeMemberDanh('Nguyễn Văn A')).toBe('NGUYỄN VĂN A')
+    expect(normalizeMemberDanh('minh tâm')).toBe('MINH TÂM')
+  })
+})
+
+describe('normalizeMemberDanhForStorage', () => {
+  it('trims and uppercases non-empty values', () => {
+    expect(normalizeMemberDanhForStorage('  nguyễn văn a  ')).toBe('NGUYỄN VĂN A')
+  })
+
+  it('returns undefined for blank values', () => {
+    expect(normalizeMemberDanhForStorage('')).toBeUndefined()
+    expect(normalizeMemberDanhForStorage('   ')).toBeUndefined()
+  })
+})
 
 describe('normalizeCccd', () => {
   it('strips non-digits', () => {

@@ -9,6 +9,19 @@ export function normalizeCccd(raw: string): string {
   return digits
 }
 
+/** Uppercase Thế danh / Pháp danh on blur or save. */
+export function normalizeMemberDanh(raw: string): string {
+  return raw.toLocaleUpperCase('vi-VN')
+}
+
+/** Trim and uppercase Thế danh / Pháp danh for Firestore storage. */
+export function normalizeMemberDanhForStorage(
+  raw: string,
+): string | undefined {
+  const trimmed = raw.trim()
+  return trimmed ? trimmed.toLocaleUpperCase('vi-VN') : undefined
+}
+
 export function normalizeVnPhone(raw: string): string {
   let digits = raw.replace(/\D/g, '')
   if (digits.startsWith('84') && digits.length >= 11) {

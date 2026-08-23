@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useCallback, useMemo, useState, useEffect } from 'react'
 import { VietnamAddressFields } from '#/components/address/VietnamAddressFields'
 import type { AddressDraft } from '#/domain/address'
+import { normalizeMemberDanh } from '#/domain/normalize'
 import type { MemberDocuments } from '#/domain/memberDocumentTypes'
 import type { AuditActor } from '#/domain/auditLog'
 import { phanDoanSelectData } from '#/domain/phanDoan'
@@ -393,6 +394,12 @@ export function MemberFormFields({
             onChange={(event) =>
               updateDraft('theDanh', event.currentTarget.value)
             }
+            onBlur={(event) =>
+              updateDraft(
+                'theDanh',
+                normalizeMemberDanh(event.currentTarget.value),
+              )
+            }
             disabled={disabled}
             required
             error={mapRequiredError(fieldErrors.theDanh)}
@@ -403,6 +410,12 @@ export function MemberFormFields({
             value={draft.phapDanh}
             onChange={(event) =>
               updateDraft('phapDanh', event.currentTarget.value)
+            }
+            onBlur={(event) =>
+              updateDraft(
+                'phapDanh',
+                normalizeMemberDanh(event.currentTarget.value),
+              )
             }
             disabled={disabled}
             required

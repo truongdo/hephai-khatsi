@@ -3,6 +3,7 @@ import {
   hydrateAddress,
   type AddressDraft,
 } from '#/domain/address'
+import { normalizeMemberDanh, normalizeMemberDanhForStorage } from '#/domain/normalize'
 import type { GiaoPham, Member, PreceptRecord } from '#/domain/types'
 import type { MemberProfilePatch } from '#/repositories/memberRepo'
 
@@ -154,8 +155,8 @@ function emptyFamilyPerson(
 
 export function emptyMemberDraft(initial: Partial<Member> = {}): MemberDraft {
   return {
-    theDanh: initial.theDanh ?? '',
-    phapDanh: initial.phapDanh ?? '',
+    theDanh: normalizeMemberDanh(initial.theDanh ?? ''),
+    phapDanh: normalizeMemberDanh(initial.phapDanh ?? ''),
     ngaySinh: initial.ngaySinh ?? '',
     noiSinh: hydrateAddress(initial.noiSinh, { cityOnly: true }),
     nguyenQuan: initial.nguyenQuan ?? '',
@@ -289,8 +290,8 @@ function buildFamilyPerson(
 
 export function buildMemberPatch(draft: MemberDraft): MemberProfilePatch {
   return {
-    theDanh: textOrUndefined(draft.theDanh),
-    phapDanh: textOrUndefined(draft.phapDanh),
+    theDanh: normalizeMemberDanhForStorage(draft.theDanh),
+    phapDanh: normalizeMemberDanhForStorage(draft.phapDanh),
     ngaySinh: textOrUndefined(draft.ngaySinh),
     noiSinh: addressDraftToValue(draft.noiSinh, { cityOnly: true }),
     nguyenQuan: textOrUndefined(draft.nguyenQuan),
