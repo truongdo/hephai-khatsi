@@ -991,6 +991,46 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "members",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sanghaType", "order": "ASCENDING" },
+        { "fieldPath": "haLapTabRank", "order": "ASCENDING" },
+        { "fieldPath": "sapXepHaLap", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "members",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgUnitId", "order": "ASCENDING" },
+        { "fieldPath": "sanghaType", "order": "ASCENDING" },
+        { "fieldPath": "haLapTabRank", "order": "ASCENDING" },
+        { "fieldPath": "sapXepHaLap", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "members",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sanghaType", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "haLapTabRank", "order": "ASCENDING" },
+        { "fieldPath": "sapXepHaLap", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "members",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "orgUnitId", "order": "ASCENDING" },
+        { "fieldPath": "sanghaType", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "haLapTabRank", "order": "ASCENDING" },
+        { "fieldPath": "sapXepHaLap", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

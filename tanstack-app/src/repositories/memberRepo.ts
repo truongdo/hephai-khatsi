@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getCountFromServer,
   getDoc,
   getDocs,
   limit as fbLimit,
@@ -16,6 +17,10 @@ import {
   type Transaction,
 } from 'firebase/firestore'
 import { DomainError } from '#/domain/errors'
+import {
+  memberHaLapTabRank,
+  sortMembersByHaLapSortKey,
+} from '#/domain/haLapSortKey'
 import type { AuditActor } from '#/domain/auditLog'
 import { buildMemberDerivedSortFields } from '#/domain/listSortKeys'
 import { ORG_UNIT_SEED } from '#/domain/orgUnitSeed'
@@ -37,7 +42,9 @@ import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
 import type {
   AdminListPage,
+  CountMembersByHaLapTabInput,
   ListMembersAdminInput,
+  ListMembersByHaLapTabInput,
   ListMembersExportInput,
 } from '#/repositories/adminListTypes'
 import {
@@ -63,6 +70,7 @@ export type MemberProfilePatch = Partial<
     | 'orgUnitName'
     | 'giaoPhamHePhaiRankOrder'
     | 'sapXepHaLap'
+    | 'haLapTabRank'
   >
 >
 
@@ -113,6 +121,8 @@ export type MemberStore = {
   getById(memberId: string): Promise<Member | null>
   listByOrgSanghaAndPhone(input: MemberPhoneLookupInput): Promise<Member[]>
   list(input: ListMembersAdminInput): Promise<AdminListPage<Member>>
+  listByHaLapTab(input: ListMembersByHaLapTabInput): Promise<AdminListPage<Member>>
+  countByHaLapTab(input: CountMembersByHaLapTabInput): Promise<number>
   listAllForExport(input: ListMembersExportInput): Promise<Member[]>
   listByCurrentTempleIds(templeIds: string[]): Promise<Member[]>
   deleteMany(ids: string[]): Promise<void>
@@ -604,7 +614,149 @@ async function list(input: ListMembersAdminInput): Promise<AdminListPage<Member>
   return { items, nextCursor }
 }
 
-const EXPORT_PAGE_SIZE = 100
+function isFirestoreIndexError(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    (error as { code: string }).code === 'failed-precondition'
+  )
+}
+
+async function listByHaLapTabIndexed(
+  input: ListMembersByHaLapTabInput,
+): Promise<AdminListPage<Member>> {
+  const db = requireDb()
+  const limitValue = input.limit ?? 25
+  const constraints: QueryConstraint[] = [
+    where('sanghaType', '==', input.sanghaType),
+    where('haLapTabRank', '==', input.haLapTabRank),
+  ]
+  if (input.orgUnitId) constraints.push(where('orgUnitId', '==', input.orgUnitId))
+  if (input.status) constraints.push(where('status', '==', input.status))
+  constraints.push(orderBy('sapXepHaLap', 'asc'))
+  if (input.cursor) {
+    const cursorSnap = await getDoc(doc(db, COLLECTIONS.members, input.cursor))
+    if (cursorSnap.exists()) constraints.push(startAfter(cursorSnap))
+  }
+  constraints.push(fbLimit(limitValue))
+
+  const snap = await getDocs(query(collection(db, COLLECTIONS.members), ...constraints))
+  const items = snap.docs.map(memberFromSnap)
+  const nextCursor = snap.docs.length === limitValue ? snap.docs[snap.docs.length - 1]!.id : null
+  return { items, nextCursor }
+}
+
+const EXPORT_PAGE_SIZE = 500
+
+async function fetchMembersForHaLapTabFallback(
+  input: Pick<ListMembersByHaLapTabInput, 'sanghaType' | 'orgUnitId' | 'status'>,
+): Promise<Member[]> {
+  const all: Member[] = []
+  let cursor: string | undefined
+  for (;;) {
+    const page = await list({
+      sanghaType: input.sanghaType,
+      orgUnitId: input.orgUnitId,
+      status: input.status,
+      limit: EXPORT_PAGE_SIZE,
+      cursor,
+    })
+    all.push(...page.items)
+    if (!page.nextCursor) break
+    cursor = page.nextCursor
+  }
+  return all
+}
+
+async function listByHaLapTabFromComputed(
+  input: ListMembersByHaLapTabInput,
+): Promise<AdminListPage<Member>> {
+  const limitValue = input.limit ?? 25
+  const all = await fetchMembersForHaLapTabFallback(input)
+  const filtered = all.filter(
+    (member) =>
+      (member.haLapTabRank ?? memberHaLapTabRank(member)) === input.haLapTabRank,
+  )
+  const sorted = sortMembersByHaLapSortKey(filtered)
+
+  let startIndex = 0
+  if (input.cursor) {
+    const cursorIndex = sorted.findIndex((member) => member.id === input.cursor)
+    startIndex = cursorIndex >= 0 ? cursorIndex + 1 : 0
+  }
+
+  const items = sorted.slice(startIndex, startIndex + limitValue)
+  const nextCursor =
+    startIndex + limitValue < sorted.length
+      ? (items[items.length - 1]?.id ?? null)
+      : null
+  return { items, nextCursor }
+}
+
+async function listByHaLapTab(
+  input: ListMembersByHaLapTabInput,
+): Promise<AdminListPage<Member>> {
+  try {
+    const result = await listByHaLapTabIndexed(input)
+    if (
+      !input.cursor &&
+      result.items.length === 0 &&
+      result.nextCursor === null
+    ) {
+      const fallback = await listByHaLapTabFromComputed(input)
+      if (fallback.items.length > 0) return fallback
+    }
+    return result
+  } catch (error) {
+    if (isFirestoreIndexError(error)) {
+      return listByHaLapTabFromComputed(input)
+    }
+    throw error
+  }
+}
+
+async function countByHaLapTabIndexed(
+  input: CountMembersByHaLapTabInput,
+): Promise<number> {
+  const db = requireDb()
+  const constraints: QueryConstraint[] = [
+    where('sanghaType', '==', input.sanghaType),
+    where('haLapTabRank', '==', input.haLapTabRank),
+  ]
+  if (input.orgUnitId) constraints.push(where('orgUnitId', '==', input.orgUnitId))
+  if (input.status) constraints.push(where('status', '==', input.status))
+  const snap = await getCountFromServer(
+    query(collection(db, COLLECTIONS.members), ...constraints),
+  )
+  return snap.data().count
+}
+
+async function countByHaLapTabFromComputed(
+  input: CountMembersByHaLapTabInput,
+): Promise<number> {
+  const all = await fetchMembersForHaLapTabFallback(input)
+  return all.filter(
+    (member) =>
+      (member.haLapTabRank ?? memberHaLapTabRank(member)) === input.haLapTabRank,
+  ).length
+}
+
+async function countByHaLapTab(input: CountMembersByHaLapTabInput): Promise<number> {
+  try {
+    const count = await countByHaLapTabIndexed(input)
+    if (count === 0) {
+      const fallback = await countByHaLapTabFromComputed(input)
+      if (fallback > 0) return fallback
+    }
+    return count
+  } catch (error) {
+    if (isFirestoreIndexError(error)) {
+      return countByHaLapTabFromComputed(input)
+    }
+    throw error
+  }
+}
 
 async function listAllForExport(input: ListMembersExportInput): Promise<Member[]> {
   const all: Member[] = []
@@ -939,6 +1091,8 @@ export const memberRepo: MemberStore = {
   getById,
   listByOrgSanghaAndPhone,
   list,
+  listByHaLapTab,
+  countByHaLapTab,
   listAllForExport,
   listByCurrentTempleIds,
   deleteMany,

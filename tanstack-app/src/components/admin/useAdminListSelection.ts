@@ -47,6 +47,18 @@ export function useAdminListSelection(itemIds: string[]) {
     })
   }, [itemIds])
 
+  const toggleAllInTab = useCallback((ids: string[], select: boolean) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (select) {
+        for (const id of ids) next.add(id)
+      } else {
+        for (const id of ids) next.delete(id)
+      }
+      return next
+    })
+  }, [])
+
   const clear = useCallback(() => {
     setSelectedIds(new Set())
   }, [])
@@ -58,6 +70,7 @@ export function useAdminListSelection(itemIds: string[]) {
     someSelected,
     toggle,
     toggleAllLoaded,
+    toggleAllInTab,
     clear,
   }
 }

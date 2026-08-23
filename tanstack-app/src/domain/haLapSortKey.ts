@@ -83,6 +83,17 @@ export function memberHaLapHePhaiRank(
   return normalizeHaLapHePhaiRank(member.giaoPhamHePhai?.rank, member.sanghaType)
 }
 
+/** Stored on member docs for admin hạ-lạp tab queries. */
+export const EMPTY_HA_LAP_TAB_RANK = '__empty__'
+
+export function memberHaLapTabRank(
+  member: Pick<Member, 'sapXepHaLap' | 'giaoPhamHePhai' | 'sanghaType'>,
+): string {
+  const rawRank = memberHaLapHePhaiRank(member)
+  const normalized = normalizeHaLapHePhaiRank(rawRank, member.sanghaType)
+  return normalized || EMPTY_HA_LAP_TAB_RANK
+}
+
 export function memberHaLapSortKeyForExport(
   member: Pick<
     Member,

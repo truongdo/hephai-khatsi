@@ -15,12 +15,15 @@ import {
   type DocumentTypeId,
 } from '#/domain/memberDocumentTypes'
 import { MISSING_GIAO_PHAM_HE_PHAI_RANK_ORDER } from '#/domain/giaoPhamHePhaiRankOrder'
+import { memberHaLapTabRank } from '#/domain/haLapSortKey'
 import { buildMemberDerivedSortFields, buildTempleListSortKeys } from '#/domain/listSortKeys'
 import { ORG_UNIT_SEED } from '#/domain/orgUnitSeed'
 import type { Member, SanghaType, Temple } from '#/domain/types'
 import type {
   AdminListPage,
   ListMembersAdminInput,
+  ListMembersByHaLapTabInput,
+  CountMembersByHaLapTabInput,
   ListMembersExportInput,
   ListTemplesAdminInput,
   ListTemplesExportInput,
@@ -808,6 +811,25 @@ export function createMemoryMemberStore(
         sortValue: (member) => memberSortValue(member, sortBy),
         sortDir,
       })
+    },
+    async listByHaLapTab(input: ListMembersByHaLapTabInput) {
+      return listInMemory(members.values(), input, {
+        filter: (member) =>
+          member.sanghaType === input.sanghaType &&
+          (member.haLapTabRank ?? memberHaLapTabRank(member)) ===
+            input.haLapTabRank &&
+          (!input.orgUnitId || member.orgUnitId === input.orgUnitId) &&
+          (!input.status || member.status === input.status),
+        sortValue: (member) => member.sapXepHaLap ?? '',
+        sortDir: 'asc',
+      })
+    },
+    async countByHaLapTab(input: CountMembersByHaLapTabInput) {
+      const page = await store.listByHaLapTab({
+        ...input,
+        limit: Number.MAX_SAFE_INTEGER,
+      })
+      return page.items.length
     },
     async listAllForExport(input: ListMembersExportInput) {
       const page = await store.list({ ...input, limit: Number.MAX_SAFE_INTEGER })

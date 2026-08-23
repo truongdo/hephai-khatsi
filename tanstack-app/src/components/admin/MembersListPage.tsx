@@ -1,14 +1,4 @@
-import {
-  Badge,
-  Button,
-  Checkbox,
-  Group,
-  Select,
-  Stack,
-  Table,
-  Text,
-  Title,
-} from '@mantine/core'
+import { Button, Group, Select, Stack, Text, Title } from '@mantine/core'
 import { Link } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -18,43 +8,43 @@ import { useAuth } from '#/auth/useAuth'
 import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
-import { AdminSortableTh } from '#/components/admin/AdminSortableTh'
-import { emptyCell } from '#/components/admin/emptyCell'
 import { MembersExcelColumnsModal } from '#/components/admin/MembersExcelColumnsModal'
+import { MembersHaLapTabs } from '#/components/admin/MembersHaLapTabs'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
-import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
 import { useAdminListSelection } from '#/components/admin/useAdminListSelection'
-import { rankLabel } from '#/components/filler/fillerFormOptions'
 import {
   loadMembersExcelColumnIds,
   saveMembersExcelColumnIds,
 } from '#/domain/membersExcelColumnSelection'
-import {
-  DEFAULT_ADMIN_TABLE_SORT,
-  nextAdminTableSort,
-} from '#/domain/adminTableSort'
+import { canonicalHaLapTabRankKeys } from '#/domain/membersHaLapGroups'
 import type { Member, RecordStatus, SanghaType } from '#/domain/types'
 import { canManageDirectory, isHePhaiScope } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
-import { membersQuery, orgUnitsQuery } from '#/query/adminQueries'
-import type { AdminSortDir, MemberAdminSortBy } from '#/repositories/adminListTypes'
+import { membersByHaLapTabQuery, membersHaLapTabCountsQuery, orgUnitsQuery } from '#/query/adminQueries'
 import { deleteMembers } from '#/use-cases/deleteMembers'
 import { exportMembersExcel } from '#/use-cases/exportMembersExcel'
 import { unlockMember } from '#/use-cases/unlockMember'
 
 type MembersListPageProps = {
   sanghaType: SanghaType
+  activeTab?: string
+  onActiveTabChange?: (rankKey: string) => void
 }
 
 type StatusFilterValue = RecordStatus | 'edit_requested'
 
-function statusLabel(status: RecordStatus): string {
-  switch (status) {
-    case 'draft':
-      return m.admin_members_status_draft()
-    case 'locked':
-      return m.admin_members_status_locked()
-  }
+type TabLoadState = {
+  items: Member[]
+  nextCursor: string | null
+  cursor: string | undefined
+  lastAppendKey: string | null
+}
+
+const EMPTY_TAB_STATE: TabLoadState = {
+  items: [],
+  nextCursor: null,
+  cursor: undefined,
+  lastAppendKey: null,
 }
 
 const STATUS_OPTIONS: { value: StatusFilterValue; label: () => string }[] = [
@@ -63,15 +53,36 @@ const STATUS_OPTIONS: { value: StatusFilterValue; label: () => string }[] = [
   { value: 'edit_requested', label: () => m.admin_filter_edit_requested() },
 ]
 
-function memberDisplayName(member: Member): string {
-  return member.phapDanh ?? member.theDanh ?? member.id
-}
-
 function listTitle(sanghaType: SanghaType): string {
   return sanghaType === 'tang' ? m.admin_nav_tang() : m.admin_nav_ni()
 }
 
-export function MembersListPage({ sanghaType }: MembersListPageProps) {
+function filterTabMembers(
+  items: Member[],
+  statusFilter: StatusFilterValue | null,
+): Member[] {
+  if (statusFilter === 'edit_requested') {
+    return items.filter((member) => member.editRequestedAt != null)
+  }
+  return items
+}
+
+function dedupeMembersById(items: Member[]): Member[] {
+  const seen = new Set<string>()
+  const result: Member[] = []
+  for (const item of items) {
+    if (seen.has(item.id)) continue
+    seen.add(item.id)
+    result.push(item)
+  }
+  return result
+}
+
+export function MembersListPage({
+  sanghaType,
+  activeTab,
+  onActiveTabChange,
+}: MembersListPageProps) {
   const claim = useAdminClaim()
   const { user } = useAuth()
   const queryClient = useQueryClient()
@@ -93,35 +104,50 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue | null>(
     null,
   )
-  const [cursor, setCursor] = useState<string | undefined>(undefined)
-  const [allItems, setAllItems] = useState<Member[]>([])
-  const [nextCursor, setNextCursor] = useState<string | null>(null)
-  const lastAppendedKeyRef = useRef<string | null>(null)
+  const [tabStateByRank, setTabStateByRank] = useState<
+    Record<string, TabLoadState>
+  >({})
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [exportOpen, setExportOpen] = useState(false)
   const [exportColumnIds, setExportColumnIds] = useState<string[]>([])
-  const [sortBy, setSortBy] = useState<MemberAdminSortBy>(
-    DEFAULT_ADMIN_TABLE_SORT.sortBy,
-  )
-  const [sortDir, setSortDir] = useState<AdminSortDir>(
-    DEFAULT_ADMIN_TABLE_SORT.sortDir,
-  )
+  const lastFilterKeyRef = useRef<string | null>(null)
+
+  const isGiaoDoanAdmin =
+    claim.status === 'admin' && claim.role === 'giao_doan_admin'
+
+  const scopedOrgUnitId = isGiaoDoanAdmin
+    ? (claim.orgUnitId ?? undefined)
+    : (orgUnitFilter ?? undefined)
 
   const serverStatusFilter =
     statusFilter === 'edit_requested' ? undefined : (statusFilter ?? undefined)
 
-  const scopedOrgUnitId =
-    claim.status === 'admin' && claim.role === 'giao_doan_admin'
-      ? (claim.orgUnitId ?? undefined)
-      : (orgUnitFilter ?? undefined)
+  const exportStatusFilter =
+    statusFilter === 'draft' || statusFilter === 'locked'
+      ? statusFilter
+      : undefined
 
-  const serverFilterKey = `${sanghaType}:${scopedOrgUnitId ?? ''}:${serverStatusFilter ?? ''}:${sortBy}:${sortDir}`
+  const serverFilterKey = `${sanghaType}:${scopedOrgUnitId ?? ''}:${serverStatusFilter ?? ''}`
+
+  const canonicalTabs = useMemo(
+    () => canonicalHaLapTabRankKeys(sanghaType),
+    [sanghaType],
+  )
+
+  const resolvedActiveTab = useMemo(() => {
+    if (activeTab && canonicalTabs.includes(activeTab)) {
+      return activeTab
+    }
+    if (activeTab) return activeTab
+    return canonicalTabs[0] ?? ''
+  }, [activeTab, canonicalTabs])
+
+  const activeTabState = tabStateByRank[resolvedActiveTab] ?? EMPTY_TAB_STATE
 
   useEffect(() => {
-    setCursor(undefined)
-    setAllItems([])
-    setNextCursor(null)
-    lastAppendedKeyRef.current = null
+    if (lastFilterKeyRef.current === serverFilterKey) return
+    lastFilterKeyRef.current = serverFilterKey
+    setTabStateByRank({})
   }, [serverFilterKey])
 
   const orgUnits = useQuery({
@@ -130,49 +156,95 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
   })
 
   const members = useQuery({
-    ...membersQuery({
+    ...membersByHaLapTabQuery({
       sanghaType,
+      haLapTabRank: resolvedActiveTab,
       orgUnitId: scopedOrgUnitId,
       status: serverStatusFilter,
-      cursor,
-      sortBy,
-      sortDir,
+      cursor: activeTabState.cursor,
     }),
-    enabled: manageDirectory,
+    enabled: manageDirectory && !!resolvedActiveTab,
     staleTime: 5 * 60_000,
   })
 
-  function handleSort(column: MemberAdminSortBy) {
-    const next = nextAdminTableSort({ sortBy, sortDir }, column)
-    setSortBy(next.sortBy)
-    setSortDir(next.sortDir)
-  }
+  const tabCounts = useQuery({
+    ...membersHaLapTabCountsQuery({
+      sanghaType,
+      orgUnitId: scopedOrgUnitId,
+      status: serverStatusFilter,
+      tabRanks: canonicalTabs,
+    }),
+    enabled: manageDirectory && statusFilter !== 'edit_requested',
+    staleTime: 5 * 60_000,
+  })
 
   useEffect(() => {
-    if (!members.data) return
-    const appendKey = `${cursor ?? 'start'}:${members.dataUpdatedAt}`
-    if (lastAppendedKeyRef.current === appendKey) return
-    lastAppendedKeyRef.current = appendKey
-    if (cursor) {
-      setAllItems((prev) => [...prev, ...members.data.items])
-    } else {
-      setAllItems(members.data.items)
-    }
-    setNextCursor(members.data.nextCursor)
-  }, [members.data, members.dataUpdatedAt, cursor])
+    if (!members.data || !resolvedActiveTab) return
+    setTabStateByRank((prev) => {
+      const current = prev[resolvedActiveTab] ?? EMPTY_TAB_STATE
+      const appendKey = `${current.cursor ?? 'start'}:${members.dataUpdatedAt}`
+      if (current.lastAppendKey === appendKey) return prev
+      const nextItems = dedupeMembersById(
+        current.cursor
+          ? [...current.items, ...members.data!.items]
+          : members.data!.items,
+      )
+      return {
+        ...prev,
+        [resolvedActiveTab]: {
+          items: nextItems,
+          nextCursor: members.data!.nextCursor,
+          cursor: current.cursor,
+          lastAppendKey: appendKey,
+        },
+      }
+    })
+  }, [members.data, members.dataUpdatedAt, resolvedActiveTab])
 
-  const displayItems = useMemo(() => {
-    if (statusFilter === 'edit_requested') {
-      return allItems.filter((member) => member.editRequestedAt != null)
-    }
-    return allItems
-  }, [allItems, statusFilter])
-
-  const itemIds = useMemo(
-    () => displayItems.map((member) => member.id),
-    [displayItems],
+  const activeTabMembers = useMemo(
+    () =>
+      filterTabMembers(
+        tabStateByRank[resolvedActiveTab]?.items ?? [],
+        statusFilter,
+      ),
+    [tabStateByRank, resolvedActiveTab, statusFilter],
   )
+
+  const tabSummaries = useMemo(() => {
+    const rankKeys = new Set(canonicalTabs)
+    if (resolvedActiveTab) rankKeys.add(resolvedActiveTab)
+
+    const ordered = [
+      ...canonicalTabs,
+      ...[...rankKeys].filter((key) => !canonicalTabs.includes(key)).sort(),
+    ]
+
+    return ordered.map((rankKey) => ({
+      rankKey,
+      loadedCount: filterTabMembers(
+        tabStateByRank[rankKey]?.items ?? [],
+        statusFilter,
+      ).length,
+      totalCount: tabCounts.data?.[rankKey],
+    }))
+  }, [canonicalTabs, resolvedActiveTab, tabStateByRank, statusFilter, tabCounts.data])
+
+  const itemIds = useMemo(() => {
+    const ids: string[] = []
+    for (const state of Object.values(tabStateByRank)) {
+      for (const member of filterTabMembers(state.items, statusFilter)) {
+        ids.push(member.id)
+      }
+    }
+    return ids
+  }, [tabStateByRank, statusFilter])
+
   const selection = useAdminListSelection(itemIds)
+
+  function resetTabState() {
+    setTabStateByRank({})
+    lastFilterKeyRef.current = null
+  }
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
@@ -186,16 +258,25 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     onSuccess: () => {
       selection.clear()
       setConfirmOpen(false)
-      setCursor(undefined)
-      setAllItems([])
-      setNextCursor(null)
-      lastAppendedKeyRef.current = null
+      resetTabState()
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, 'membersByHaLapTab'],
+      })
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, 'membersHaLapTabCounts'],
+      })
       void queryClient.invalidateQueries({
         queryKey: [...adminKeys.all, 'members'],
       })
     },
     onError: () => {
       setConfirmOpen(false)
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, 'membersByHaLapTab'],
+      })
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, 'membersHaLapTabCounts'],
+      })
       void queryClient.invalidateQueries({
         queryKey: [...adminKeys.all, 'members'],
       })
@@ -215,7 +296,7 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
       exportMembersExcel({
         sanghaType,
         orgUnitId: scopedOrgUnitId,
-        status: serverStatusFilter,
+        status: exportStatusFilter,
         columnIds,
         orgUnitNameById: Object.fromEntries(orgUnitNameById),
       }),
@@ -230,10 +311,13 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
       })
     },
     onSuccess: () => {
-      setCursor(undefined)
-      setAllItems([])
-      setNextCursor(null)
-      lastAppendedKeyRef.current = null
+      resetTabState()
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, 'membersByHaLapTab'],
+      })
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, 'membersHaLapTabCounts'],
+      })
       void queryClient.invalidateQueries({
         queryKey: [...adminKeys.all, 'members'],
       })
@@ -258,7 +342,20 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
     [],
   )
 
-  const isLoading = members.isPending && allItems.length === 0
+  const isInitialLoading =
+    members.isPending && activeTabState.items.length === 0
+
+  function handleLoadMore() {
+    const nextCursor = tabStateByRank[resolvedActiveTab]?.nextCursor
+    if (!nextCursor) return
+    setTabStateByRank((prev) => ({
+      ...prev,
+      [resolvedActiveTab]: {
+        ...(prev[resolvedActiveTab] ?? EMPTY_TAB_STATE),
+        cursor: nextCursor,
+      },
+    }))
+  }
 
   if (claim.status === 'admin' && !manageDirectory) {
     return <AdminDenied />
@@ -346,139 +443,32 @@ export function MembersListPage({ sanghaType }: MembersListPageProps) {
       )}
       {!members.isError && (
         <>
-          <AdminDataTable
-            loading={isLoading}
-            empty={!isLoading && displayItems.length === 0}
-            aria-label={listTitle(sanghaType)}
-          >
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th w={40}>
-                  <Checkbox
-                    checked={selection.allLoadedSelected}
-                    indeterminate={selection.someSelected}
-                    onChange={selection.toggleAllLoaded}
-                    aria-label={m.admin_bulk_selected({
-                      count: selection.selectedCount,
-                    })}
-                  />
-                </Table.Th>
-                <AdminSortableTh
-                  column="giaoPhamHePhaiRankOrder"
-                  label={m.admin_members_col_pham_vi_he_phai()}
-                  sortBy={sortBy}
-                  sortDir={sortDir}
-                  onSort={handleSort}
-                />
-                <Table.Th>{m.admin_members_col_phap_danh()}</Table.Th>
-                <Table.Th>{m.admin_members_col_the_danh()}</Table.Th>
-                <AdminSortableTh
-                  column="orgUnitName"
-                  label={m.admin_members_col_giao_doan()}
-                  sortBy={sortBy}
-                  sortDir={sortDir}
-                  onSort={handleSort}
-                />
-                <Table.Th>{m.admin_members_col_cccd()}</Table.Th>
-                <AdminSortableTh
-                  column="status"
-                  label={m.admin_members_col_status()}
-                  sortBy={sortBy}
-                  sortDir={sortDir}
-                  onSort={handleSort}
-                />
-                <AdminSortableTh
-                  column="updatedAt"
-                  label={m.admin_members_col_updated_at()}
-                  sortBy={sortBy}
-                  sortDir={sortDir}
-                  onSort={handleSort}
-                />
-                <Table.Th w={100} />
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {displayItems.map((member) => (
-                <Table.Tr key={member.id}>
-                  <Table.Td>
-                    <Checkbox
-                      checked={selection.selectedIds.has(member.id)}
-                      onChange={() => selection.toggle(member.id)}
-                      aria-label={memberDisplayName(member)}
-                    />
-                  </Table.Td>
-                  <Table.Td>
-                    {emptyCell(
-                      rankLabel(member.giaoPhamHePhai?.rank, sanghaType),
-                    )}
-                  </Table.Td>
-                  <Table.Td>
-                    {member.phapDanh ? (
-                      <Text
-                        component={Link}
-                        to="/admin/members/$id"
-                        params={{ id: member.id }}
-                        c="teal.7"
-                        fw={600}
-                      >
-                        {member.phapDanh}
-                      </Text>
-                    ) : (
-                      emptyCell(member.phapDanh)
-                    )}
-                  </Table.Td>
-                  <Table.Td>{emptyCell(member.theDanh)}</Table.Td>
-                  <Table.Td>
-                    {emptyCell(
-                      orgUnitNameById.get(member.orgUnitId) ?? member.orgUnitId,
-                    )}
-                  </Table.Td>
-                  <Table.Td>{member.cccd}</Table.Td>
-                  <Table.Td>
-                    <Group gap="xs">
-                      <RecordStatusBadge
-                        status={member.status}
-                        label={statusLabel(member.status)}
-                      />
-                      {member.editRequestedAt != null && (
-                        <Badge color="orange" variant="light" radius="sm">
-                          {m.admin_edit_requested_badge()}
-                        </Badge>
-                      )}
-                    </Group>
-                  </Table.Td>
-                  <Table.Td>
-                    {new Date(member.updatedAt).toLocaleString('vi-VN')}
-                  </Table.Td>
-                  <Table.Td>
-                    {member.status === 'locked' && (
-                      <Button
-                        size="compact-xs"
-                        variant={
-                          member.editRequestedAt != null ? 'filled' : 'light'
-                        }
-                        loading={
-                          unlockMutation.isPending &&
-                          unlockMutation.variables === member.id
-                        }
-                        onClick={() => unlockMutation.mutate(member.id)}
-                      >
-                        {m.admin_members_unlock_row()}
-                      </Button>
-                    )}
-                  </Table.Td>
-                </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </AdminDataTable>
-          {nextCursor && (
-            <Button
-              variant="light"
-              loading={members.isFetching}
-              onClick={() => setCursor(nextCursor)}
-            >
-              {m.admin_members_load_more()}
-            </Button>
+          {isInitialLoading ? (
+            <AdminDataTable loading aria-label={listTitle(sanghaType)}>
+              <></>
+            </AdminDataTable>
+          ) : (
+            <MembersHaLapTabs
+              sanghaType={sanghaType}
+              tabs={tabSummaries}
+              activeTabMembers={activeTabMembers}
+              orgUnitNameById={orgUnitNameById}
+              activeTab={resolvedActiveTab}
+              onActiveTabChange={(rankKey) => onActiveTabChange?.(rankKey)}
+              selectedIds={selection.selectedIds}
+              onToggle={selection.toggle}
+              onToggleAllInTab={selection.toggleAllInTab}
+              onUnlock={(memberId) => unlockMutation.mutate(memberId)}
+              unlockingMemberId={
+                unlockMutation.isPending ? unlockMutation.variables : undefined
+              }
+              isLoading={members.isFetching && activeTabState.items.length === 0}
+              hasMore={!!tabStateByRank[resolvedActiveTab]?.nextCursor}
+              onLoadMore={handleLoadMore}
+              isFetchingMore={
+                members.isFetching && activeTabState.items.length > 0
+              }
+            />
           )}
         </>
       )}

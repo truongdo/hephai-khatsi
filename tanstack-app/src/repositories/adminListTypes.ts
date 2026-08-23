@@ -47,6 +47,22 @@ export type ListMembersExportInput = {
   status?: RecordStatus
 }
 
+export type ListMembersByHaLapTabInput = {
+  orgUnitId?: string
+  sanghaType: SanghaType
+  haLapTabRank: string
+  status?: RecordStatus
+  limit?: number
+  cursor?: string
+}
+
+export type CountMembersByHaLapTabInput = {
+  orgUnitId?: string
+  sanghaType: SanghaType
+  haLapTabRank: string
+  status?: RecordStatus
+}
+
 export type ListTemplesExportInput = {
   orgUnitId?: string
   status?: RecordStatus

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   buildMemberHaLapSortKey,
   memberHaLapHePhaiRank,
+  memberHaLapTabRank,
   normalizeHaLapHePhaiRank,
 } from './haLapSortKey'
 
@@ -92,5 +93,25 @@ describe('memberHaLapHePhaiRank', () => {
         giaoPhamHePhai: { rank: 'tap_su' },
       }),
     ).toBe('sa_di_ni')
+  })
+})
+
+describe('memberHaLapTabRank', () => {
+  it('stores canonical tab keys, not raw senior ranks', () => {
+    expect(
+      memberHaLapTabRank({
+        sanghaType: 'tang',
+        sapXepHaLap: 'hoa_thuong:2010-01-01::',
+        giaoPhamHePhai: { rank: 'hoa_thuong' },
+      }),
+    ).toBe('ty_kheo')
+  })
+
+  it('uses empty sentinel when no rank is available', () => {
+    expect(
+      memberHaLapTabRank({
+        sanghaType: 'tang',
+      }),
+    ).toBe('__empty__')
   })
 })

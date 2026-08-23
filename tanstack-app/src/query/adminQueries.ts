@@ -1,7 +1,7 @@
 import { queryOptions } from '@tanstack/react-query'
 import { DomainError } from '#/domain/errors'
 import type { Retreat } from '#/domain/retreat'
-import type { Member, Temple } from '#/domain/types'
+import type { Member, RecordStatus, SanghaType, Temple } from '#/domain/types'
 import { memberRepo } from '#/repositories/memberRepo'
 import { memberStatsRepo } from '#/repositories/memberStatsRepo'
 import { listOrgUnits } from '#/repositories/orgUnitRepo'
@@ -10,6 +10,8 @@ import { retreatRepo } from '#/repositories/retreatRepo'
 import { templeRepo } from '#/repositories/templeRepo'
 import type {
   ListMembersAdminInput,
+  ListMembersByHaLapTabInput,
+  ListMembersExportInput,
   ListRetreatsAdminInput,
   ListTemplesAdminInput,
 } from '#/repositories/adminListTypes'
@@ -48,6 +50,51 @@ export function membersQuery(filters: ListMembersAdminInput) {
   return queryOptions({
     queryKey: adminKeys.members(filters),
     queryFn: () => memberRepo.list(filters),
+    retry: 3,
+  })
+}
+
+export function membersByHaLapTabQuery(filters: ListMembersByHaLapTabInput) {
+  return queryOptions({
+    queryKey: adminKeys.membersByHaLapTab(filters),
+    queryFn: () => memberRepo.listByHaLapTab(filters),
+    staleTime: 5 * 60_000,
+    retry: 3,
+  })
+}
+
+export function membersHaLapTabCountsQuery(filters: {
+  sanghaType: SanghaType
+  orgUnitId?: string
+  status?: RecordStatus
+  tabRanks: readonly string[]
+}) {
+  return queryOptions({
+    queryKey: adminKeys.membersHaLapTabCounts(filters),
+    queryFn: async (): Promise<Record<string, number>> => {
+      const entries = await Promise.all(
+        filters.tabRanks.map(async (haLapTabRank) => {
+          const count = await memberRepo.countByHaLapTab({
+            sanghaType: filters.sanghaType,
+            haLapTabRank,
+            orgUnitId: filters.orgUnitId,
+            status: filters.status,
+          })
+          return [haLapTabRank, count] as const
+        }),
+      )
+      return Object.fromEntries(entries)
+    },
+    staleTime: 5 * 60_000,
+    retry: 3,
+  })
+}
+
+export function membersAllQuery(filters: ListMembersExportInput) {
+  return queryOptions({
+    queryKey: adminKeys.membersAll(filters),
+    queryFn: () => memberRepo.listAllForExport(filters),
+    staleTime: 5 * 60_000,
     retry: 3,
   })
 }

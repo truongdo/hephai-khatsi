@@ -1,7 +1,7 @@
 import type { AddressValue } from './address'
 import { isStructuredAddress } from './address'
 import { giaoPhamHePhaiRankOrder } from './giaoPhamHePhaiRankOrder'
-import { buildMemberHaLapSortKeyFromMember } from './haLapSortKey'
+import { buildMemberHaLapSortKeyFromMember, memberHaLapTabRank } from './haLapSortKey'
 import type { Member, SanghaType } from './types'
 
 export function listCityNameFromDiaChiMoi(
@@ -41,7 +41,7 @@ export function buildMemberListSortKeys(input: {
 export function buildMemberDerivedSortFields(
   member: Member,
   orgUnitName: string,
-): Pick<Member, 'orgUnitName' | 'giaoPhamHePhaiRankOrder' | 'sapXepHaLap'> {
+): Pick<Member, 'orgUnitName' | 'giaoPhamHePhaiRankOrder' | 'sapXepHaLap' | 'haLapTabRank'> {
   return {
     ...buildMemberListSortKeys({
       sanghaType: member.sanghaType,
@@ -49,5 +49,6 @@ export function buildMemberDerivedSortFields(
       giaoPhamHePhaiRank: member.giaoPhamHePhai?.rank,
     }),
     sapXepHaLap: buildMemberHaLapSortKeyFromMember(member),
+    haLapTabRank: memberHaLapTabRank(member),
   }
 }

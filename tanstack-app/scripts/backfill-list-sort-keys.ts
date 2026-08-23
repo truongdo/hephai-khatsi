@@ -15,9 +15,12 @@ import {
   writeBatch,
   type Firestore,
   type QueryConstraint,
+  type QueryDocumentSnapshot,
   type WriteBatch,
 } from 'firebase/firestore'
+import { normalizeHaLapHePhaiRank } from '../src/domain/haLapSortKey'
 import {
+  buildMemberDerivedSortFields,
   buildMemberListSortKeys,
   buildTempleListSortKeys,
 } from '../src/domain/listSortKeys'
@@ -27,6 +30,9 @@ import { COLLECTIONS } from '../src/firebase/collections'
 
 const BATCH_LIMIT = 400
 const EXPORT_PAGE_SIZE = 100
+
+const args = process.argv.slice(2)
+const force = args.includes('--force')
 
 function requireEnv(name: string): string {
   const value = process.env[name]
@@ -62,6 +68,11 @@ function memberFromSnap(snap: { id: string; data: () => unknown }): Member {
     ...data,
     photoPath: data.photoPath ?? null,
   }
+}
+
+type MemberDoc = {
+  member: Member
+  raw: Record<string, unknown>
 }
 
 async function listOrgUnitNameMap(db: Firestore): Promise<Map<string, string>> {
@@ -104,11 +115,11 @@ async function listAllTemplesForExport(db: Firestore): Promise<Temple[]> {
   return all
 }
 
-async function listAllMembersForExport(
+async function listAllMemberDocs(
   db: Firestore,
   sanghaType: SanghaType,
-): Promise<Member[]> {
-  const all: Member[] = []
+): Promise<MemberDoc[]> {
+  const all: MemberDoc[] = []
   let cursor: string | undefined
   for (;;) {
     const constraints: QueryConstraint[] = [
@@ -122,8 +133,12 @@ async function listAllMembersForExport(
     constraints.push(fbLimit(EXPORT_PAGE_SIZE))
 
     const snap = await getDocs(query(collection(db, COLLECTIONS.members), ...constraints))
-    const items = snap.docs.map(memberFromSnap)
-    all.push(...items)
+    for (const docSnap of snap.docs as QueryDocumentSnapshot[]) {
+      all.push({
+        member: memberFromSnap(docSnap),
+        raw: docSnap.data() as Record<string, unknown>,
+      })
+    }
     if (snap.docs.length < EXPORT_PAGE_SIZE) break
     cursor = snap.docs[snap.docs.length - 1]!.id
   }
@@ -163,14 +178,25 @@ function templeSortKeysMatch(temple: Temple, expected: ReturnType<typeof buildTe
   )
 }
 
-function memberSortKeysMatch(
+function memberNeedsSortKeyBackfill(
   member: Member,
-  expected: ReturnType<typeof buildMemberListSortKeys>,
+  raw: Record<string, unknown>,
+  expected: ReturnType<typeof buildMemberDerivedSortFields>,
 ): boolean {
-  return (
-    (member.orgUnitName ?? '') === expected.orgUnitName &&
-    (member.giaoPhamHePhaiRankOrder ?? null) === expected.giaoPhamHePhaiRankOrder
-  )
+  if ((member.orgUnitName ?? '') !== expected.orgUnitName) return true
+  if ((member.giaoPhamHePhaiRankOrder ?? null) !== expected.giaoPhamHePhaiRankOrder) {
+    return true
+  }
+  if ((member.sapXepHaLap ?? '') !== expected.sapXepHaLap) return true
+
+  if (!('haLapTabRank' in raw)) return true
+
+  const stored = member.haLapTabRank ?? ''
+  if (stored !== expected.haLapTabRank) return true
+
+  const normalizedStored =
+    normalizeHaLapHePhaiRank(stored, member.sanghaType) || stored
+  return normalizedStored !== expected.haLapTabRank
 }
 
 async function backfillTempleSortKeys(
@@ -186,7 +212,7 @@ async function backfillTempleSortKeys(
       orgUnitName: resolveOrgUnitName(temple.orgUnitId, orgUnitNames),
     })
 
-    if (templeSortKeysMatch(temple, sortKeys)) {
+    if (!force && templeSortKeysMatch(temple, sortKeys)) {
       counts.skipped++
       continue
     }
@@ -207,14 +233,13 @@ async function backfillMemberSortKeys(
   const writer = new BatchWriter(db)
   const counts: BackfillCounts = { updated: 0, skipped: 0 }
 
-  for (const member of await listAllMembersForExport(db, sanghaType)) {
-    const sortKeys = buildMemberListSortKeys({
-      sanghaType: member.sanghaType,
-      orgUnitName: resolveOrgUnitName(member.orgUnitId, orgUnitNames),
-      giaoPhamHePhaiRank: member.giaoPhamHePhai?.rank,
-    })
+  for (const { member, raw } of await listAllMemberDocs(db, sanghaType)) {
+    const sortKeys = buildMemberDerivedSortFields(
+      member,
+      resolveOrgUnitName(member.orgUnitId, orgUnitNames),
+    )
 
-    if (memberSortKeysMatch(member, sortKeys)) {
+    if (!force && !memberNeedsSortKeyBackfill(member, raw, sortKeys)) {
       counts.skipped++
       continue
     }
@@ -227,37 +252,50 @@ async function backfillMemberSortKeys(
   return counts
 }
 
-const app = initializeApp({
-  apiKey: requireEnv('VITE_FIREBASE_API_KEY'),
-  authDomain: requireEnv('VITE_FIREBASE_AUTH_DOMAIN'),
-  projectId: requireEnv('VITE_FIREBASE_PROJECT_ID'),
-  appId: requireEnv('VITE_FIREBASE_APP_ID'),
-})
+async function main(): Promise<void> {
+  if (force) {
+    console.log('Running with --force: rewriting all list-sort keys')
+  }
 
-await signInWithEmailAndPassword(
-  getAuth(app),
-  requireEnv('SEED_ADMIN_EMAIL'),
-  requireEnv('SEED_ADMIN_PASSWORD'),
-)
+  const app = initializeApp({
+    apiKey: requireEnv('VITE_FIREBASE_API_KEY'),
+    authDomain: requireEnv('VITE_FIREBASE_AUTH_DOMAIN'),
+    projectId: requireEnv('VITE_FIREBASE_PROJECT_ID'),
+    appId: requireEnv('VITE_FIREBASE_APP_ID'),
+  })
 
-const db = initFirestore(app)
-const orgUnitNames = await listOrgUnitNameMap(db)
+  await signInWithEmailAndPassword(
+    getAuth(app),
+    requireEnv('SEED_ADMIN_EMAIL'),
+    requireEnv('SEED_ADMIN_PASSWORD'),
+  )
 
-const templeCounts = await backfillTempleSortKeys(db, orgUnitNames)
-const tangCounts = await backfillMemberSortKeys(db, orgUnitNames, 'tang')
-const niCounts = await backfillMemberSortKeys(db, orgUnitNames, 'ni')
+  const db = initFirestore(app)
+  const orgUnitNames = await listOrgUnitNameMap(db)
 
-console.log('Backfill list-sort keys complete')
-console.log(
-  `Temples: updated ${templeCounts.updated}, skipped ${templeCounts.skipped}`,
-)
-console.log(
-  `Members (tang): updated ${tangCounts.updated}, skipped ${tangCounts.skipped}`,
-)
-console.log(`Members (ni): updated ${niCounts.updated}, skipped ${niCounts.skipped}`)
-console.log(
-  `Total updated: ${templeCounts.updated + tangCounts.updated + niCounts.updated}`,
-)
-console.log(
-  `Total skipped: ${templeCounts.skipped + tangCounts.skipped + niCounts.skipped}`,
-)
+  const templeCounts = await backfillTempleSortKeys(db, orgUnitNames)
+  const tangCounts = await backfillMemberSortKeys(db, orgUnitNames, 'tang')
+  const niCounts = await backfillMemberSortKeys(db, orgUnitNames, 'ni')
+
+  console.log('Backfill list-sort keys complete')
+  console.log(
+    `Temples: updated ${templeCounts.updated}, skipped ${templeCounts.skipped}`,
+  )
+  console.log(
+    `Members (tang): updated ${tangCounts.updated}, skipped ${tangCounts.skipped}`,
+  )
+  console.log(`Members (ni): updated ${niCounts.updated}, skipped ${niCounts.skipped}`)
+  console.log(
+    `Total updated: ${templeCounts.updated + tangCounts.updated + niCounts.updated}`,
+  )
+  console.log(
+    `Total skipped: ${templeCounts.skipped + tangCounts.skipped + niCounts.skipped}`,
+  )
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error)
+    process.exit(1)
+  })

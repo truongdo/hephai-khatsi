@@ -15,6 +15,8 @@ const memberItems = [
     phapDanh: 'HT A',
     theDanh: 'Nguyễn Văn A',
     giaoPhamHePhai: { rank: 'ty_kheo' },
+    haLapTabRank: 'ty_kheo',
+    sapXepHaLap: 'ty_kheo:2010-01-01::',
     status: 'draft' as const,
     inviteId: null,
     currentTempleId: null,
@@ -34,6 +36,8 @@ const memberItems = [
     phapDanh: 'HT Locked',
     theDanh: 'Nguyễn Văn B',
     giaoPhamHePhai: { rank: 'hoa_thuong' },
+    haLapTabRank: 'ty_kheo',
+    sapXepHaLap: 'ty_kheo:2008-01-01::',
     status: 'locked' as const,
     inviteId: null,
     currentTempleId: null,
@@ -51,9 +55,14 @@ const deleteMembersMock = vi.fn()
 const exportMembersExcelMock = vi.fn(async () => {})
 const unlockMemberMock = vi.fn()
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
-const membersQueryMock = vi.fn((filters: unknown = {}) => ({
-  queryKey: ['admin', 'members', filters],
+const membersByHaLapTabQueryMock = vi.fn((filters: unknown = {}) => ({
+  queryKey: ['admin', 'membersByHaLapTab', filters],
   queryFn: async () => ({ items: memberItems, nextCursor: null }),
+  staleTime: 0,
+}))
+const membersHaLapTabCountsQueryMock = vi.fn((filters: unknown = {}) => ({
+  queryKey: ['admin', 'membersHaLapTabCounts', filters],
+  queryFn: async () => ({ ty_kheo: 2, sa_di: 0, __empty__: 0 }),
   staleTime: 0,
 }))
 
@@ -114,7 +123,10 @@ vi.mock('@tanstack/react-router', () => ({
 }))
 
 vi.mock('#/query/adminQueries', () => ({
-  membersQuery: (filters: unknown) => membersQueryMock(filters),
+  membersByHaLapTabQuery: (filters: unknown) =>
+    membersByHaLapTabQueryMock(filters),
+  membersHaLapTabCountsQuery: (filters: unknown) =>
+    membersHaLapTabCountsQueryMock(filters),
   orgUnitsQuery: () => ({
     queryKey: ['admin', 'orgUnits'],
     queryFn: async () => [
@@ -165,8 +177,8 @@ beforeEach(() => {
     role: 'he_phai_admin',
     orgUnitId: null,
   })
-  membersQueryMock.mockImplementation((filters: unknown = {}) => ({
-    queryKey: ['admin', 'members', filters],
+  membersByHaLapTabQueryMock.mockImplementation((filters: unknown = {}) => ({
+    queryKey: ['admin', 'membersByHaLapTab', filters],
     queryFn: async () => ({ items: memberItems, nextCursor: null }),
     staleTime: 0,
   }))
@@ -206,85 +218,28 @@ describe('MembersListPage', () => {
     expect(link.getAttribute('href')).toBe('/admin/members/m1')
   })
 
-  it('sorts by pham vi when Phẩm vị header is clicked', async () => {
-    const user = userEvent.setup()
+  it('renders hạ-lạp tab and table columns', async () => {
     renderList()
     await screen.findByText('HT A')
-    membersQueryMock.mockClear()
-
-    await user.click(
-      screen.getByRole('columnheader', { name: /Phẩm vị \(Hệ phái\)/i }),
-    )
-
-    await waitFor(() => {
-      expect(membersQueryMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          sortBy: 'giaoPhamHePhaiRankOrder',
-          sortDir: 'asc',
-        }),
-      )
-    })
-  })
-
-  it('resets accumulated rows when sort changes', async () => {
-    const page1 = [memberItems[0]]
-    const page2 = [
-      {
-        ...memberItems[0],
-        id: 'm3',
-        phapDanh: 'HT C',
-      },
-    ]
-
-    membersQueryMock.mockImplementation(
-      (filters: { cursor?: string; sortBy?: string } = {}) => ({
-        queryKey: ['admin', 'members', filters],
-        queryFn: async () => {
-          if (filters.cursor) {
-            return { items: page2, nextCursor: null }
-          }
-          return { items: page1, nextCursor: 'cursor-2' }
-        },
-        staleTime: 0,
-      }),
-    )
-
-    const user = userEvent.setup()
-    renderList()
-    await screen.findByText('HT A')
-    await user.click(screen.getByRole('button', { name: 'Tải thêm' }))
-    await screen.findByText('HT C')
-    membersQueryMock.mockClear()
-
-    await user.click(
-      screen.getByRole('columnheader', { name: /Phẩm vị \(Hệ phái\)/i }),
-    )
-
-    await waitFor(() => {
-      expect(membersQueryMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          sortBy: 'giaoPhamHePhaiRankOrder',
-          sortDir: 'asc',
-          cursor: undefined,
-        }),
-      )
-    })
-    await waitFor(() => {
-      expect(screen.queryByText('HT C')).toBeNull()
-    })
-  })
-
-  it('renders columns for rank, names, giao doan, and cccd', async () => {
-    renderList()
-    await screen.findByText('HT A')
-    expect(screen.getByRole('columnheader', { name: 'Phẩm vị (Hệ phái)' })).toBeTruthy()
+    expect(screen.getByRole('tab', { name: /Tỳ-kheo/i })).toBeTruthy()
+    expect(screen.getByRole('columnheader', { name: 'STT' })).toBeTruthy()
     expect(screen.getByRole('columnheader', { name: 'Pháp danh' })).toBeTruthy()
     expect(screen.getByRole('columnheader', { name: 'Thế danh' })).toBeTruthy()
     expect(screen.getByRole('columnheader', { name: 'Giáo đoàn' })).toBeTruthy()
-    expect(screen.getByText('Tỳ-kheo')).toBeTruthy()
     expect(screen.getByText('Nguyễn Văn A')).toBeTruthy()
     expect(screen.getAllByText('Giáo đoàn I').length).toBeGreaterThan(0)
     expect(screen.getByText('001099012345')).toBeTruthy()
+  })
+
+  it('loads active tab via membersByHaLapTab query', async () => {
+    renderList()
+    await screen.findByText('HT A')
+    expect(membersByHaLapTabQueryMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sanghaType: 'tang',
+        haLapTabRank: 'ty_kheo',
+      }),
+    )
   })
 
   it('shows bulk delete toolbar when a row is selected', async () => {
@@ -309,7 +264,7 @@ describe('MembersListPage', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Xóa' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('Delete failed')
     expect(invalidateSpy).toHaveBeenCalledWith({
-      queryKey: ['admin', 'members'],
+      queryKey: ['admin', 'membersByHaLapTab'],
     })
     await waitFor(() => {
       expect(screen.queryByRole('dialog')).toBeNull()
@@ -333,7 +288,7 @@ describe('MembersListPage', () => {
       },
     )
     expect(invalidateSpy).toHaveBeenCalledWith({
-      queryKey: ['admin', 'members'],
+      queryKey: ['admin', 'membersByHaLapTab'],
     })
     expect(screen.queryByText('Đã chọn 1')).toBeNull()
   })
@@ -350,7 +305,7 @@ describe('MembersListPage', () => {
       audit: { actorType: 'admin', actorId: 'admin-uid' },
     })
     expect(invalidateSpy).toHaveBeenCalledWith({
-      queryKey: ['admin', 'members'],
+      queryKey: ['admin', 'membersByHaLapTab'],
     })
   })
 
@@ -400,8 +355,12 @@ describe('MembersListPage', () => {
     it('scopes list query to giao doan org unit', async () => {
       renderList()
       await screen.findByText('HT A')
-      expect(membersQueryMock).toHaveBeenCalledWith(
-        expect.objectContaining({ orgUnitId: 'gd-i' }),
+      expect(membersByHaLapTabQueryMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgUnitId: 'gd-i',
+          sanghaType: 'tang',
+          haLapTabRank: 'ty_kheo',
+        }),
       )
     })
 

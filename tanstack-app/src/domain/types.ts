@@ -79,6 +79,8 @@ export type Member = {
   giaoPhamHePhai?: GiaoPham
   orgUnitName?: string
   giaoPhamHePhaiRankOrder?: number
+  /** Normalized hạ-lạp tab key for admin list queries. */
+  haLapTabRank?: string
   haLap?: number
   ngayHaCapHaLap?: string
   /** Computed: rank + ordination dates for hạ-lạp sorting. */
