@@ -25,6 +25,7 @@ import { AdminCopyFormLinkButton } from './AdminCopyFormLinkButton'
 import { AdminDirectorySearch } from './AdminDirectorySearch'
 import { AdminNotificationsButton } from './AdminNotificationsButton'
 import { buildAdminBreadcrumbs } from './adminBreadcrumbs'
+import { isAdminNavItemActive } from './adminNavActive'
 
 type NavCapability = 'directory' | 'retreats'
 
@@ -101,6 +102,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const showDirectorySearch =
     claims != null && canManageDirectory(claims)
 
+  const navTos = navItems.map((item) => item.to)
+
   return (
     <AppShell
       navbar={{
@@ -154,14 +157,14 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <ScrollArea flex={1} p="md">
             <Stack gap={4}>
               {navItems.map((item) => {
-                const active =
-                  pathname === item.to || pathname.startsWith(`${item.to}/`)
+                const active = isAdminNavItemActive(pathname, item.to, navTos)
                 const Icon = item.icon
                 return (
                   <NavLink
                     key={item.to}
                     component={Link}
                     to={item.to}
+                    activeOptions={{ exact: true }}
                     label={item.label()}
                     leftSection={<Icon size={18} />}
                     active={active}

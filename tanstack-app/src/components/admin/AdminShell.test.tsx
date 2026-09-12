@@ -144,6 +144,29 @@ describe('AdminShell', () => {
     expect(templeIdx).toBe(memberIdx + 1)
   })
 
+  it('does not mark temples list as router-active on temple stats path', async () => {
+    renderShell('/admin/temples/stats')
+    const nav = await screen.findByRole('navigation')
+    const templesLink = within(nav).getByRole('link', {
+      name: m.admin_nav_temples(),
+    })
+    const templeStatsLink = within(nav).getByRole('link', {
+      name: m.admin_nav_temple_stats(),
+    })
+    expect(templesLink.getAttribute('data-status')).not.toBe('active')
+    expect(templeStatsLink.getAttribute('data-status')).toBe('active')
+  })
+
+  it('keeps temples list mantine-active on nested temple edit path', async () => {
+    renderShell('/admin/temples/abc')
+    const nav = await screen.findByRole('navigation')
+    const templesLink = within(nav).getByRole('link', {
+      name: m.admin_nav_temples(),
+    })
+    expect(templesLink.getAttribute('data-active')).toBe('true')
+    expect(templesLink.getAttribute('data-status')).not.toBe('active')
+  })
+
   it('renders nav link text from Paraglide', async () => {
     renderShell()
     const nav = await screen.findByRole('navigation')
