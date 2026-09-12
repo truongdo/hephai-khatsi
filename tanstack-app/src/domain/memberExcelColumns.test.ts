@@ -124,7 +124,25 @@ describe('MEMBER_EXCEL_COLUMNS cells', () => {
         member({ id: 'm1', sanghaType: 'tang', ngayHaCapHaLap: '2018-06-15' }),
         ctx,
       ),
-    ).toBe('2018-06-15')
+    ).toBe('15-06-2018')
     expect(col!.cell(member({ id: 'm2', sanghaType: 'tang' }), ctx)).toBe('')
+  })
+
+  it('formats date columns as DD-MM-YYYY', () => {
+    const mem = member({
+      id: 'm1',
+      sanghaType: 'tang',
+      ngaySinh: '1990-05-01',
+      cccdMeta: { ngayCap: '2015-01-02' },
+      cntn: { ngayCap: '2016-03-04' },
+      ngayXuatGia: '2008-12-31',
+      gioiTyKheo: { ngayGh: '2018-06-15', ngayHePhai: '2019-07-20' },
+    })
+    expect(cell('ngaySinh', mem)).toBe('01-05-1990')
+    expect(cell('cccdNgayCap', mem)).toBe('02-01-2015')
+    expect(cell('cntnNgayCap', mem)).toBe('04-03-2016')
+    expect(cell('ngayXuatGia', mem)).toBe('31-12-2008')
+    expect(cell('gioiTyKheo_ngayGh', mem)).toBe('15-06-2018')
+    expect(cell('gioiTyKheo_ngayHePhai', mem)).toBe('20-07-2019')
   })
 })

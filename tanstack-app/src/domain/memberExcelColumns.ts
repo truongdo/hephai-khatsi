@@ -28,6 +28,15 @@ function cellStr(value: string | undefined): string {
   return value ?? ''
 }
 
+/** Display/export date-only values stored as YYYY-MM-DD as DD-MM-YYYY. */
+function formatDateDdMmYyyy(value: string | undefined): string {
+  if (value == null || value === '') return ''
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim())
+  if (!match) return value
+  const [, year, month, day] = match
+  return `${day}-${month}-${year}`
+}
+
 function preceptGroup(
   prefix: string,
   sangha: SanghaType,
@@ -59,7 +68,12 @@ function preceptGroup(
     group: 'precepts' as const,
     sangha,
     header: () => `${preceptHeader()} — ${subHeader()}`,
-    cell: (member) => cellStr(get(member)?.[key]),
+    cell: (member) => {
+      const raw = get(member)?.[key]
+      return key === 'ngayGh' || key === 'ngayHePhai'
+        ? formatDateDdMmYyyy(raw)
+        : cellStr(raw)
+    },
   }))
 }
 
@@ -122,7 +136,7 @@ export const MEMBER_EXCEL_COLUMNS: MemberExcelColumnDef[] = [
     id: 'ngaySinh',
     group: 'identity',
     header: () => m.filler_field_ngay_sinh(),
-    cell: (member) => cellStr(member.ngaySinh),
+    cell: (member) => formatDateDdMmYyyy(member.ngaySinh),
   },
   {
     id: 'noiSinh',
@@ -152,7 +166,7 @@ export const MEMBER_EXCEL_COLUMNS: MemberExcelColumnDef[] = [
     id: 'cccdNgayCap',
     group: 'papers',
     header: () => m.filler_field_cccd_ngay_cap(),
-    cell: (member) => cellStr(member.cccdMeta?.ngayCap),
+    cell: (member) => formatDateDdMmYyyy(member.cccdMeta?.ngayCap),
   },
   {
     id: 'cccdNoiCap',
@@ -170,7 +184,7 @@ export const MEMBER_EXCEL_COLUMNS: MemberExcelColumnDef[] = [
     id: 'cntnNgayCap',
     group: 'papers',
     header: () => m.filler_field_cntn_ngay_cap(),
-    cell: (member) => cellStr(member.cntn?.ngayCap),
+    cell: (member) => formatDateDdMmYyyy(member.cntn?.ngayCap),
   },
   {
     id: 'cntnNoiCap',
@@ -200,7 +214,7 @@ export const MEMBER_EXCEL_COLUMNS: MemberExcelColumnDef[] = [
     id: 'ngayXuatGia',
     group: 'ordination',
     header: () => m.filler_field_ngay_xuat_gia(),
-    cell: (member) => cellStr(member.ngayXuatGia),
+    cell: (member) => formatDateDdMmYyyy(member.ngayXuatGia),
   },
   {
     id: 'noiXuatGia',
@@ -242,7 +256,7 @@ export const MEMBER_EXCEL_COLUMNS: MemberExcelColumnDef[] = [
     id: 'ngayHaCapHaLap',
     group: 'ordination',
     header: () => m.filler_field_ngay_ha_cap_ha_lap(),
-    cell: (member) => cellStr(member.ngayHaCapHaLap),
+    cell: (member) => formatDateDdMmYyyy(member.ngayHaCapHaLap),
   },
   ...TANG_PRECEPTS,
   ...NI_PRECEPTS,

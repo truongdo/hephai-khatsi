@@ -69,12 +69,12 @@ describe('membersToExcelRows', () => {
       1,
       'Nguyen Van A',
       'Thich A',
-      '1990-05-01',
+      '01-05-1990',
       '001122334455',
-      '2015-01-02',
+      '02-01-2015',
       'Ha Noi',
       'Tinh xa X',
-      '2018-06-15',
+      '15-06-2018',
       '',
     ])
   })
@@ -112,7 +112,7 @@ describe('membersToExcelRows', () => {
       defaultMembersExcelColumnIds('ni'),
       emptyCtx,
     )
-    expect(rows[1]?.[8]).toBe('2020-08-20')
+    expect(rows[1]?.[8]).toBe('20-08-2020')
   })
 
   it('ignores unknown ids and sequential STT', () => {
