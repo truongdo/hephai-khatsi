@@ -37,4 +37,22 @@ describe('adminKeys', () => {
       { orgUnitId: 'gd-i', orgUnitIdsForBreakdown: [] },
     ])
   })
+
+  it('templeDirectoryStats nests under admin with scope', () => {
+    expect(
+      adminKeys.templeDirectoryStats({
+        orgUnitId: 'gd-i',
+        orgUnitIdsForBreakdown: [],
+        cityNamesForBreakdown: ['Hà Nội'],
+      }),
+    ).toEqual([
+      'admin',
+      'templeDirectoryStats',
+      {
+        orgUnitId: 'gd-i',
+        orgUnitIdsForBreakdown: [],
+        cityNamesForBreakdown: ['Hà Nội'],
+      },
+    ])
+  })
 })

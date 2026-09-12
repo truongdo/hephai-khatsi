@@ -59,6 +59,12 @@ const allNavItems: {
     capability: 'directory',
   },
   {
+    label: () => m.admin_nav_temple_stats(),
+    to: '/admin/temples/stats',
+    icon: BarChart3,
+    capability: 'directory',
+  },
+  {
     label: () => m.admin_nav_org_units(),
     to: '/admin/org-units',
     icon: List,

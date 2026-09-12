@@ -43,4 +43,9 @@ export const adminKeys = {
     orgUnitId: string | null
     orgUnitIdsForBreakdown: string[]
   }) => [...adminKeys.all, 'memberDirectoryStats', scope] as const,
+  templeDirectoryStats: (scope: {
+    orgUnitId: string | null
+    orgUnitIdsForBreakdown: string[]
+    cityNamesForBreakdown: string[]
+  }) => [...adminKeys.all, 'templeDirectoryStats', scope] as const,
 }

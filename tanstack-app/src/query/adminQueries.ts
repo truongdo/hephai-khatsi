@@ -8,6 +8,7 @@ import { listOrgUnits } from '#/repositories/orgUnitRepo'
 import { retreatRegistrationRepo } from '#/repositories/retreatRegistrationRepo'
 import { retreatRepo } from '#/repositories/retreatRepo'
 import { templeRepo } from '#/repositories/templeRepo'
+import { templeStatsRepo } from '#/repositories/templeStatsRepo'
 import type {
   ListMembersAdminInput,
   ListMembersByHaLapTabInput,
@@ -164,6 +165,19 @@ export function memberDirectoryStatsQuery(scope: {
   return queryOptions({
     queryKey: adminKeys.memberDirectoryStats(scope),
     queryFn: () => memberStatsRepo.loadDashboardStats(scope),
+    staleTime: 10 * 60_000,
+    retry: 3,
+  })
+}
+
+export function templeDirectoryStatsQuery(scope: {
+  orgUnitId: string | null
+  orgUnitIdsForBreakdown: string[]
+  cityNamesForBreakdown: string[]
+}) {
+  return queryOptions({
+    queryKey: adminKeys.templeDirectoryStats(scope),
+    queryFn: () => templeStatsRepo.loadDashboardStats(scope),
     staleTime: 10 * 60_000,
     retry: 3,
   })

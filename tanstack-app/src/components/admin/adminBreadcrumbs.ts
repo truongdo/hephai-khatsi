@@ -29,6 +29,9 @@ export function buildAdminBreadcrumbs(pathname: string): AdminBreadcrumb[] {
     if (rest.length === 0) {
       return [rootCrumb(), { title: m.admin_nav_temples() }]
     }
+    if (rest[0] === 'stats') {
+      return [rootCrumb(), { title: m.admin_nav_temple_stats() }]
+    }
     const leaf =
       rest[0] === 'new'
         ? m.admin_temples_form_title_create()

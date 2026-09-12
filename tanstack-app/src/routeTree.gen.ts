@@ -29,6 +29,7 @@ import { Route as AdminRetreatsNewRouteImport } from './routes/admin/retreats.ne
 import { Route as AdminTemplesIndexRouteImport } from './routes/admin/temples.index'
 import { Route as AdminTemplesIdRouteImport } from './routes/admin/temples.$id'
 import { Route as AdminTemplesNewRouteImport } from './routes/admin/temples.new'
+import { Route as AdminTemplesStatsRouteImport } from './routes/admin/temples.stats'
 import { Route as FTokenIndexRouteImport } from './routes/f.$token.index'
 import { Route as RTokenIndexRouteImport } from './routes/r.$token.index'
 import { Route as AdminRetreatsIdIndexRouteImport } from './routes/admin/retreats.$id.index'
@@ -142,6 +143,11 @@ const AdminTemplesNewRoute = AdminTemplesNewRouteImport.update({
   path: '/new',
   getParentRoute: () => AdminTemplesRoute,
 } as any)
+const AdminTemplesStatsRoute = AdminTemplesStatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => AdminTemplesRoute,
+} as any)
 const FTokenIndexRoute = FTokenIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -225,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/admin/retreats/new': typeof AdminRetreatsNewRoute
   '/admin/temples/$id': typeof AdminTemplesIdRoute
   '/admin/temples/new': typeof AdminTemplesNewRoute
+  '/admin/temples/stats': typeof AdminTemplesStatsRoute
   '/admin/retreats/': typeof AdminRetreatsIndexRoute
   '/admin/temples/': typeof AdminTemplesIndexRoute
   '/f/$token/': typeof FTokenIndexRoute
@@ -253,6 +260,7 @@ export interface FileRoutesByTo {
   '/admin/retreats/new': typeof AdminRetreatsNewRoute
   '/admin/temples/$id': typeof AdminTemplesIdRoute
   '/admin/temples/new': typeof AdminTemplesNewRoute
+  '/admin/temples/stats': typeof AdminTemplesStatsRoute
   '/admin/retreats': typeof AdminRetreatsIndexRoute
   '/admin/temples': typeof AdminTemplesIndexRoute
   '/f/$token': typeof FTokenIndexRoute
@@ -286,6 +294,7 @@ export interface FileRoutesById {
   '/admin/retreats/new': typeof AdminRetreatsNewRoute
   '/admin/temples/$id': typeof AdminTemplesIdRoute
   '/admin/temples/new': typeof AdminTemplesNewRoute
+  '/admin/temples/stats': typeof AdminTemplesStatsRoute
   '/admin/retreats/': typeof AdminRetreatsIndexRoute
   '/admin/temples/': typeof AdminTemplesIndexRoute
   '/f/$token/': typeof FTokenIndexRoute
@@ -322,6 +331,7 @@ export interface FileRouteTypes {
     | '/admin/retreats/new'
     | '/admin/temples/$id'
     | '/admin/temples/new'
+    | '/admin/temples/stats'
     | '/admin/retreats/'
     | '/admin/temples/'
     | '/f/$token/'
@@ -350,6 +360,7 @@ export interface FileRouteTypes {
     | '/admin/retreats/new'
     | '/admin/temples/$id'
     | '/admin/temples/new'
+    | '/admin/temples/stats'
     | '/admin/retreats'
     | '/admin/temples'
     | '/f/$token'
@@ -382,6 +393,7 @@ export interface FileRouteTypes {
     | '/admin/retreats/new'
     | '/admin/temples/$id'
     | '/admin/temples/new'
+    | '/admin/temples/stats'
     | '/admin/retreats/'
     | '/admin/temples/'
     | '/f/$token/'
@@ -548,6 +560,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTemplesNewRouteImport
       parentRoute: typeof AdminTemplesRoute
     }
+    '/admin/temples/stats': {
+      id: '/admin/temples/stats'
+      path: '/stats'
+      fullPath: '/admin/temples/stats'
+      preLoaderRoute: typeof AdminTemplesStatsRouteImport
+      parentRoute: typeof AdminTemplesRoute
+    }
     '/f/$token/': {
       id: '/f/$token/'
       path: '/'
@@ -668,12 +687,14 @@ const AdminRetreatsRouteWithChildren = AdminRetreatsRoute._addFileChildren(
 interface AdminTemplesRouteChildren {
   AdminTemplesIdRoute: typeof AdminTemplesIdRoute
   AdminTemplesNewRoute: typeof AdminTemplesNewRoute
+  AdminTemplesStatsRoute: typeof AdminTemplesStatsRoute
   AdminTemplesIndexRoute: typeof AdminTemplesIndexRoute
 }
 
 const AdminTemplesRouteChildren: AdminTemplesRouteChildren = {
   AdminTemplesIdRoute: AdminTemplesIdRoute,
   AdminTemplesNewRoute: AdminTemplesNewRoute,
+  AdminTemplesStatsRoute: AdminTemplesStatsRoute,
   AdminTemplesIndexRoute: AdminTemplesIndexRoute,
 }
 

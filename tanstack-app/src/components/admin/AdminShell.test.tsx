@@ -108,6 +108,7 @@ describe('AdminShell', () => {
     expect(within(nav).queryByText(m.admin_nav_ni())).toBeNull()
     expect(within(nav).queryByText(m.admin_nav_org_units())).toBeNull()
     expect(within(nav).queryByText(m.admin_nav_member_stats())).toBeNull()
+    expect(within(nav).queryByText(m.admin_nav_temple_stats())).toBeNull()
   })
 
   it('shows directory nav for giao_doan_admin', async () => {
@@ -125,10 +126,22 @@ describe('AdminShell', () => {
     expect(within(nav).getByText(m.admin_nav_org_units())).toBeTruthy()
   })
 
-  it('shows member stats nav for directory managers', async () => {
+  it('shows member and temple stats nav adjacent for directory managers', async () => {
     renderShell()
     const nav = await screen.findByRole('navigation')
-    expect(within(nav).getByText(m.admin_nav_member_stats())).toBeTruthy()
+    const memberStats = within(nav).getByText(m.admin_nav_member_stats())
+    const templeStats = within(nav).getByText(m.admin_nav_temple_stats())
+    expect(memberStats).toBeTruthy()
+    expect(templeStats).toBeTruthy()
+    expect(m.admin_nav_temple_stats()).toBe('Thống kê tịnh xá')
+
+    const links = within(nav)
+      .getAllByRole('link')
+      .map((el) => el.textContent?.trim())
+    const memberIdx = links.indexOf(m.admin_nav_member_stats())
+    const templeIdx = links.indexOf(m.admin_nav_temple_stats())
+    expect(memberIdx).toBeGreaterThanOrEqual(0)
+    expect(templeIdx).toBe(memberIdx + 1)
   })
 
   it('renders nav link text from Paraglide', async () => {

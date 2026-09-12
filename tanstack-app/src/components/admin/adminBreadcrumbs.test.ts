@@ -26,6 +26,13 @@ describe('buildAdminBreadcrumbs', () => {
     ])
   })
 
+  it('temple stats', () => {
+    expect(buildAdminBreadcrumbs('/admin/temples/stats')).toEqual([
+      { title: m.admin_title(), href: '/admin' },
+      { title: m.admin_nav_temple_stats() },
+    ])
+  })
+
   it('builds members tang trail', () => {
     expect(buildAdminBreadcrumbs('/admin/members/tang')).toEqual([
       { title: m.admin_title(), href: '/admin' },
