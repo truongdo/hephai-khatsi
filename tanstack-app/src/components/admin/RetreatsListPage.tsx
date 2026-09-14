@@ -16,6 +16,7 @@ import { useAdminClaim } from '#/auth/useAdminClaim'
 import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
+import { AdminLoadMoreSentinel } from '#/components/admin/AdminLoadMoreSentinel'
 import { emptyCell } from '#/components/admin/emptyCell'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { canManageRetreats, isHePhaiScope } from '#/domain/authClaims'
@@ -292,15 +293,13 @@ export function RetreatsListPage() {
               ))}
             </Table.Tbody>
           </AdminDataTable>
-          {nextCursor && (
-            <Button
-              variant="light"
-              loading={retreats.isFetching}
-              onClick={() => setCursor(nextCursor)}
-            >
-              {m.admin_retreats_load_more()}
-            </Button>
-          )}
+          <AdminLoadMoreSentinel
+            hasMore={!!nextCursor}
+            isFetching={retreats.isFetching}
+            onLoadMore={() => {
+              if (nextCursor) setCursor(nextCursor)
+            }}
+          />
         </>
       )}
 

@@ -116,6 +116,43 @@ beforeAll(() => {
   globalThis.ResizeObserver =
     ResizeObserverMock as unknown as typeof ResizeObserver
 
+  class IntersectionObserverMock {
+    readonly root = null
+    readonly rootMargin = ''
+    readonly thresholds: number[] = []
+    private readonly callback: IntersectionObserverCallback
+
+    constructor(callback: IntersectionObserverCallback) {
+      this.callback = callback
+    }
+
+    observe(target: Element) {
+      this.callback(
+        [
+          {
+            isIntersecting: true,
+            target,
+            intersectionRatio: 1,
+            boundingClientRect: {} as DOMRectReadOnly,
+            intersectionRect: {} as DOMRectReadOnly,
+            rootBounds: null,
+            time: 0,
+          },
+        ],
+        this as unknown as IntersectionObserver,
+      )
+    }
+
+    unobserve() {}
+    disconnect() {}
+    takeRecords() {
+      return []
+    }
+  }
+
+  globalThis.IntersectionObserver =
+    IntersectionObserverMock as unknown as typeof IntersectionObserver
+
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: (query: string) => ({
@@ -206,6 +243,9 @@ describe('TemplesListPage', () => {
       (filters: { cursor?: string; sortBy?: string } = {}) => ({
         queryKey: ['admin', 'temples', filters],
         queryFn: async () => {
+          if (filters.sortBy === 'orgUnitName') {
+            return { items: page1, nextCursor: null }
+          }
           if (filters.cursor) {
             return { items: page2, nextCursor: null }
           }
@@ -218,7 +258,6 @@ describe('TemplesListPage', () => {
     const user = userEvent.setup()
     renderList()
     await screen.findByText('TX A')
-    await user.click(screen.getByRole('button', { name: 'Tải thêm' }))
     await screen.findByText('TX B')
     templesQueryMock.mockClear()
 

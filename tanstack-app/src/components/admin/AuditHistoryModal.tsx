@@ -1,6 +1,6 @@
-import { Box, Button, Loader, Modal, Paper, Stack, Text } from '@mantine/core'
+import { Box, Loader, Modal, Paper, Stack, Text } from '@mantine/core'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { AuditAction, AuditLogEntry } from '#/domain/auditLog'
 import { isoToGmt7Date } from '#/domain/gmt7Date'
 import { m } from '#/paraglide/messages'
@@ -16,6 +16,7 @@ import {
 import { listAuditLogs, type AuditParent } from '#/repositories/auditLogRepo'
 import { memberRepo } from '#/repositories/memberRepo'
 import { templeRepo } from '#/repositories/templeRepo'
+import { AdminLoadMoreSentinel } from './AdminLoadMoreSentinel'
 import { auditActorDisplayName } from './auditActorDisplayName'
 
 export type AuditHistoryModalProps = {
@@ -111,11 +112,13 @@ export function AuditHistoryModal({
   const [nextStartAfterAt, setNextStartAfterAt] = useState<string | null>(null)
   const [loadingMore, setLoadingMore] = useState(false)
   const [loadMoreError, setLoadMoreError] = useState(false)
+  const loadingMoreRef = useRef(false)
 
   useEffect(() => {
     setExtraEntries([])
     setNextStartAfterAt(null)
     setLoadMoreError(false)
+    loadingMoreRef.current = false
   }, [parent.collection, parent.id])
 
   useEffect(() => {
@@ -127,7 +130,8 @@ export function AuditHistoryModal({
   const allEntries = [...(data?.entries ?? []), ...extraEntries]
 
   async function handleLoadMore() {
-    if (!nextStartAfterAt) return
+    if (!nextStartAfterAt || loadingMoreRef.current) return
+    loadingMoreRef.current = true
     setLoadingMore(true)
     setLoadMoreError(false)
     try {
@@ -140,6 +144,7 @@ export function AuditHistoryModal({
     } catch {
       setLoadMoreError(true)
     } finally {
+      loadingMoreRef.current = false
       setLoadingMore(false)
     }
   }
@@ -191,15 +196,13 @@ export function AuditHistoryModal({
             ))}
           </Paper>
         ))}
-        {nextStartAfterAt && (
-          <Button
-            variant="light"
-            onClick={handleLoadMore}
-            loading={loadingMore}
-          >
-            {m.admin_audit_load_more()}
-          </Button>
-        )}
+        <AdminLoadMoreSentinel
+          hasMore={!!nextStartAfterAt}
+          isFetching={loadingMore}
+          onLoadMore={() => {
+            void handleLoadMore()
+          }}
+        />
         {loadMoreError && (
           <Text c="red" size="sm" role="alert">
             {m.admin_audit_load_error()}

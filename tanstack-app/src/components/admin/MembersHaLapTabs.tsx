@@ -1,5 +1,4 @@
 import {
-  Button,
   Checkbox,
   Stack,
   Table,
@@ -7,6 +6,7 @@ import {
 } from '@mantine/core'
 import { useMemo } from 'react'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
+import { AdminLoadMoreSentinel } from '#/components/admin/AdminLoadMoreSentinel'
 import {
   renderMemberTableActions,
   renderMemberTableCell,
@@ -214,11 +214,13 @@ export function MembersHaLapTabs({
           />
         </Tabs.Panel>
       </Tabs>
-      {hasMore && onLoadMore && (
-        <Button variant="light" loading={isFetchingMore} onClick={onLoadMore}>
-          {m.admin_members_load_more()}
-        </Button>
-      )}
+      <AdminLoadMoreSentinel
+        hasMore={!!hasMore && !!onLoadMore}
+        isFetching={!!isFetchingMore}
+        onLoadMore={() => {
+          onLoadMore?.()
+        }}
+      />
     </Stack>
   )
 }

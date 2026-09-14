@@ -18,6 +18,7 @@ import { useAuth } from '#/auth/useAuth'
 import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
+import { AdminLoadMoreSentinel } from '#/components/admin/AdminLoadMoreSentinel'
 import { AdminSortableTh } from '#/components/admin/AdminSortableTh'
 import { emptyCell } from '#/components/admin/emptyCell'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
@@ -418,15 +419,13 @@ export function TemplesListPage() {
               ))}
             </Table.Tbody>
           </AdminDataTable>
-          {nextCursor && (
-            <Button
-              variant="light"
-              loading={temples.isFetching}
-              onClick={() => setCursor(nextCursor)}
-            >
-              {m.admin_temples_load_more()}
-            </Button>
-          )}
+          <AdminLoadMoreSentinel
+            hasMore={!!nextCursor}
+            isFetching={temples.isFetching}
+            onLoadMore={() => {
+              if (nextCursor) setCursor(nextCursor)
+            }}
+          />
         </>
       )}
 

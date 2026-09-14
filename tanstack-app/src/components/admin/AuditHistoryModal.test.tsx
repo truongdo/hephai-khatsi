@@ -1,7 +1,6 @@
 import { MantineProvider } from '@mantine/core'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AuditLogEntry } from '#/domain/auditLog'
 import { m } from '#/paraglide/messages'
@@ -44,6 +43,43 @@ beforeAll(() => {
       dispatchEvent: () => false,
     }),
   })
+
+  class IntersectionObserverMock {
+    readonly root = null
+    readonly rootMargin = ''
+    readonly thresholds: number[] = []
+    private readonly callback: IntersectionObserverCallback
+
+    constructor(callback: IntersectionObserverCallback) {
+      this.callback = callback
+    }
+
+    observe(target: Element) {
+      this.callback(
+        [
+          {
+            isIntersecting: true,
+            target,
+            intersectionRatio: 1,
+            boundingClientRect: {} as DOMRectReadOnly,
+            intersectionRect: {} as DOMRectReadOnly,
+            rootBounds: null,
+            time: 0,
+          },
+        ],
+        this as unknown as IntersectionObserver,
+      )
+    }
+
+    unobserve() {}
+    disconnect() {}
+    takeRecords() {
+      return []
+    }
+  }
+
+  globalThis.IntersectionObserver =
+    IntersectionObserverMock as unknown as typeof IntersectionObserver
 })
 
 beforeEach(() => {
@@ -139,7 +175,6 @@ describe('AuditHistoryModal', () => {
   })
 
   it('load more appends', async () => {
-    const user = userEvent.setup()
     const firstPageEntry: AuditLogEntry = {
       id: 'e1',
       action: 'created',
@@ -171,9 +206,6 @@ describe('AuditHistoryModal', () => {
 
     renderModal()
     expect(await screen.findByText(m.admin_audit_action_created())).toBeTruthy()
-    await user.click(
-      screen.getByRole('button', { name: m.admin_audit_load_more() }),
-    )
     await waitFor(() => {
       expect(screen.getByText(m.admin_audit_action_locked())).toBeTruthy()
       expect(screen.getByText(/Filler · filler-1/)).toBeTruthy()

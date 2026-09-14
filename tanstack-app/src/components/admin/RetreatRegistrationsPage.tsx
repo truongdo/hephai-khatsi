@@ -21,6 +21,7 @@ import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
 import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
+import { AdminLoadMoreSentinel } from '#/components/admin/AdminLoadMoreSentinel'
 import { CopyRetreatRegistrationLinkButton } from '#/components/admin/CopyRetreatRegistrationLinkButton'
 import { emptyCell } from '#/components/admin/emptyCell'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
@@ -473,15 +474,13 @@ export function RetreatRegistrationsPage({ retreatId }: { retreatId: string }) {
             </Table.Tbody>
           </AdminDataTable>
 
-          {nextCursor && (
-            <Button
-              variant="light"
-              loading={registrations.isFetching}
-              onClick={() => setCursor(nextCursor)}
-            >
-              {m.admin_retreats_load_more()}
-            </Button>
-          )}
+          <AdminLoadMoreSentinel
+            hasMore={!!nextCursor}
+            isFetching={registrations.isFetching}
+            onLoadMore={() => {
+              if (nextCursor) setCursor(nextCursor)
+            }}
+          />
         </>
       )}
 
