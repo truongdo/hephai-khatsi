@@ -10,8 +10,10 @@ import {
   grantDirectoryRole,
   revokeDirectoryRole,
 } from '#/directoryRole/directoryRoleApiClient'
+import { memberPdfFilename } from '#/domain/memberPdfNames'
 import { lockMember } from '#/use-cases/lockMember'
 import { saveAdminMember } from '#/use-cases/saveAdminMember'
+import { exportMembersPdf } from '#/use-cases/exportMembersPdf'
 import { uploadMemberPhoto } from '#/use-cases/uploadMemberPhoto'
 import { uploadMemberDocument } from '#/use-cases/uploadMemberDocument'
 import { theme } from '../../theme'
@@ -180,6 +182,9 @@ vi.mock('#/directoryRole/directoryRoleApiClient', () => ({
 vi.mock('#/use-cases/saveAdminMember', () => ({
   saveAdminMember: vi.fn(),
 }))
+vi.mock('#/use-cases/exportMembersPdf', () => ({
+  exportMembersPdf: vi.fn(),
+}))
 vi.mock('#/use-cases/lockMember', () => ({
   lockMember: vi.fn(),
 }))
@@ -232,6 +237,7 @@ vi.mock('#/data/vietnam-locations', () => ({
 const grantDirectoryRoleMock = vi.mocked(grantDirectoryRole)
 const revokeDirectoryRoleMock = vi.mocked(revokeDirectoryRole)
 const saveAdminMemberMock = vi.mocked(saveAdminMember)
+const exportMembersPdfMock = vi.mocked(exportMembersPdf)
 const lockMemberMock = vi.mocked(lockMember)
 const uploadMemberPhotoMock = vi.mocked(uploadMemberPhoto)
 const uploadMemberDocumentMock = vi.mocked(uploadMemberDocument)
@@ -313,6 +319,11 @@ beforeEach(() => {
   grantDirectoryRoleMock.mockReset()
   revokeDirectoryRoleMock.mockReset()
   saveAdminMemberMock.mockReset()
+  exportMembersPdfMock.mockReset()
+  exportMembersPdfMock.mockResolvedValue({
+    filename: 'HoSo_HT_A_m1.pdf',
+    failedDocumentCount: 0,
+  })
   lockMemberMock.mockReset()
   uploadMemberPhotoMock.mockReset()
   uploadMemberDocumentMock.mockReset()
@@ -364,6 +375,30 @@ async function selectOrgUnit(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe('MemberFormPage', () => {
+  it('shows Xuất PDF in edit mode and exports merged PDF on click', async () => {
+    const user = userEvent.setup()
+    renderForm({ mode: 'edit' })
+    const exportBtn = await screen.findByRole('button', {
+      name: m.admin_members_export_pdf(),
+    })
+    await user.click(exportBtn)
+    await vi.waitFor(() => expect(exportMembersPdfMock).toHaveBeenCalledOnce())
+    expect(exportMembersPdfMock).toHaveBeenCalledWith({
+      members: [lockedMember],
+      format: 'merged_pdf',
+      orgUnitNameById: { 'gd-i': 'Giáo đoàn I', 'ni-gd-i': 'Ni giới Giáo đoàn I' },
+      filenameOverride: memberPdfFilename(lockedMember),
+    })
+  })
+
+  it('does not show Xuất PDF in create mode', async () => {
+    renderForm({ mode: 'create' })
+    await screen.findByRole('button', { name: m.admin_members_complete() })
+    expect(
+      screen.queryByRole('button', { name: m.admin_members_export_pdf() }),
+    ).toBeNull()
+  })
+
   it('shows unlock when locked', async () => {
     renderForm({ mode: 'edit' })
     expect(

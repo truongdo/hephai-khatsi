@@ -37,6 +37,7 @@ import {
   isHePhaiScope,
 } from '#/domain/authClaims'
 import { isGmailEmail } from '#/domain/gmail'
+import { memberPdfFilename } from '#/domain/memberPdfNames'
 import {
   grantDirectoryRole,
   revokeDirectoryRole,
@@ -44,6 +45,7 @@ import {
 import { adminKeys } from '#/query/adminKeys'
 import { memberQuery, orgUnitsQuery } from '#/query/adminQueries'
 import { notifyMemberUpsert } from '#/search/notifySearchIndex'
+import { exportMembersPdf } from '#/use-cases/exportMembersPdf'
 import { lockMember } from '#/use-cases/lockMember'
 import { saveAdminMember } from '#/use-cases/saveAdminMember'
 import { unlockMember } from '#/use-cases/unlockMember'
@@ -106,6 +108,8 @@ export function MemberFormPage({
   const [directoryRoleSuccess, setDirectoryRoleSuccess] = useState<string | null>(
     null,
   )
+  const [pdfExportError, setPdfExportError] = useState<string | null>(null)
+  const [pdfExportWarning, setPdfExportWarning] = useState<string | null>(null)
 
   const orgUnits = useQuery({
     ...orgUnitsQuery(),
@@ -150,6 +154,14 @@ export function MemberFormPage({
       })),
     [orgUnits.data],
   )
+
+  const orgUnitNameById = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const unit of orgUnits.data ?? []) {
+      map.set(unit.id, unit.name)
+    }
+    return map
+  }, [orgUnits.data])
 
   const sanghaTypeSelectData = useMemo(
     () =>
@@ -386,6 +398,38 @@ export function MemberFormPage({
     },
   })
 
+  const pdfExportMutation = useMutation({
+    mutationFn: async () => {
+      if (!member.data) throw new Error('Missing member')
+      setPdfExportError(null)
+      setPdfExportWarning(null)
+      return exportMembersPdf({
+        members: [member.data],
+        format: 'merged_pdf',
+        orgUnitNameById: Object.fromEntries(orgUnitNameById),
+        filenameOverride: memberPdfFilename(member.data),
+      })
+    },
+    onSuccess: (result) => {
+      if (result.failedDocumentCount > 0) {
+        setPdfExportWarning(
+          m.admin_members_export_pdf_docs_failed({
+            count: result.failedDocumentCount,
+          }),
+        )
+      }
+    },
+    onError: (error) => {
+      if (error instanceof Error && error.message === 'EMPTY_EXPORT') {
+        setPdfExportError(m.admin_members_export_pdf_empty())
+        return
+      }
+      setPdfExportError(
+        error instanceof Error ? error.message : 'Export failed',
+      )
+    },
+  })
+
   const revokeDirectoryRoleMutation = useMutation({
     mutationFn: async () => {
       if (!memberId) throw new Error('Missing member id')
@@ -456,7 +500,8 @@ export function MemberFormPage({
     lockMutation.error?.message ??
     unlockMutation.error?.message ??
     grantDirectoryRoleMutation.error?.message ??
-    revokeDirectoryRoleMutation.error?.message
+    revokeDirectoryRoleMutation.error?.message ??
+    pdfExportError
 
   const isLoading = mode === 'edit' && member.isPending
   const canSaveCreate = !!orgUnitId && !!cccd.trim()
@@ -554,6 +599,16 @@ export function MemberFormPage({
               </>
             )
           )}
+          {mode === 'edit' && member.data && (
+            <Button
+              variant="default"
+              loading={pdfExportMutation.isPending}
+              disabled={pdfExportMutation.isPending}
+              onClick={() => pdfExportMutation.mutate()}
+            >
+              {m.admin_members_export_pdf()}
+            </Button>
+          )}
           <Button
             component={Link}
             to={listPath(effectiveSanghaType)}
@@ -563,6 +618,12 @@ export function MemberFormPage({
           </Button>
         </Group>
       </Group>
+
+      {pdfExportWarning && (
+        <Text c="yellow" size="sm" role="status">
+          {pdfExportWarning}
+        </Text>
+      )}
 
       {directoryRoleSuccess && (
         <Text c="green" size="sm">{directoryRoleSuccess}</Text>
