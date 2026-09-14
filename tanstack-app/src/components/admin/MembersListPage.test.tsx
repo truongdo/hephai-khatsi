@@ -53,6 +53,10 @@ const memberItems = [
 
 const deleteMembersMock = vi.fn()
 const exportMembersExcelMock = vi.fn(async () => {})
+const exportMembersPdfMock = vi.fn(async () => ({
+  filename: 'members.pdf',
+  failedDocumentCount: 0,
+}))
 const unlockMemberMock = vi.fn()
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
 const membersByHaLapTabQueryMock = vi.fn((filters: unknown = {}) => ({
@@ -91,6 +95,10 @@ vi.mock('#/use-cases/deleteMembers', () => ({
 
 vi.mock('#/use-cases/exportMembersExcel', () => ({
   exportMembersExcel: (...args: unknown[]) => exportMembersExcelMock(...args),
+}))
+
+vi.mock('#/use-cases/exportMembersPdf', () => ({
+  exportMembersPdf: (...args: unknown[]) => exportMembersPdfMock(...args),
 }))
 
 vi.mock('#/use-cases/unlockMember', () => ({
@@ -171,6 +179,7 @@ beforeAll(() => {
 beforeEach(() => {
   localStorage.clear()
   exportMembersExcelMock.mockClear()
+  exportMembersPdfMock.mockClear()
   useAdminClaimMock.mockReturnValue({
     status: 'admin',
     uid: 'admin-uid',
@@ -307,6 +316,17 @@ describe('MembersListPage', () => {
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['admin', 'membersByHaLapTab'],
     })
+  })
+
+  it('opens PDF export modal when Xuất PDF is clicked', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await screen.findByText('HT A')
+    await user.click(screen.getByRole('button', { name: 'Xuất PDF' }))
+    expect(exportMembersPdfMock).not.toHaveBeenCalled()
+    expect(
+      await screen.findByRole('dialog', { name: 'Xuất hồ sơ PDF' }),
+    ).toBeTruthy()
   })
 
   it('opens column modal on export and exports selected columns on confirm', async () => {

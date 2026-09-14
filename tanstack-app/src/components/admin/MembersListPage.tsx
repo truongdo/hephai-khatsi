@@ -9,6 +9,7 @@ import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
 import { MembersExcelColumnsModal } from '#/components/admin/MembersExcelColumnsModal'
+import { MembersPdfExportModal } from '#/components/admin/MembersPdfExportModal'
 import { MembersHaLapTabs } from '#/components/admin/MembersHaLapTabs'
 import { QueryErrorAlert } from '#/components/admin/QueryErrorAlert'
 import { useAdminListSelection } from '#/components/admin/useAdminListSelection'
@@ -27,6 +28,10 @@ import { adminKeys } from '#/query/adminKeys'
 import { membersByHaLapTabQuery, membersHaLapTabCountsQuery, orgUnitsQuery } from '#/query/adminQueries'
 import { deleteMembers } from '#/use-cases/deleteMembers'
 import { exportMembersExcel } from '#/use-cases/exportMembersExcel'
+import {
+  exportMembersPdf,
+  type MembersPdfFormat,
+} from '#/use-cases/exportMembersPdf'
 import { unlockMember } from '#/use-cases/unlockMember'
 
 type MembersListPageProps = {
@@ -114,6 +119,13 @@ export function MembersListPage({
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [exportOpen, setExportOpen] = useState(false)
   const [exportColumnIds, setExportColumnIds] = useState<string[]>([])
+  const [pdfExportOpen, setPdfExportOpen] = useState(false)
+  const [pdfProgress, setPdfProgress] = useState<{
+    done: number
+    total: number
+  } | null>(null)
+  const [pdfExportError, setPdfExportError] = useState<string | null>(null)
+  const [pdfExportWarning, setPdfExportWarning] = useState<string | null>(null)
   const [displayColumnsOpen, setDisplayColumnsOpen] = useState(false)
   const [displayColumnIds, setDisplayColumnIds] = useState<string[]>(() =>
     loadMembersTableColumnIds(sanghaType),
@@ -251,6 +263,16 @@ export function MembersListPage({
     return ids
   }, [tabStateByRank, statusFilter])
 
+  const loadedMembersById = useMemo(() => {
+    const map = new Map<string, Member>()
+    for (const state of Object.values(tabStateByRank)) {
+      for (const member of filterTabMembers(state.items, statusFilter)) {
+        map.set(member.id, member)
+      }
+    }
+    return map
+  }, [tabStateByRank, statusFilter])
+
   const selection = useAdminListSelection(itemIds)
 
   function resetTabState() {
@@ -312,6 +334,73 @@ export function MembersListPage({
         columnIds,
         orgUnitNameById: Object.fromEntries(orgUnitNameById),
       }),
+  })
+
+  const pdfExportMutation = useMutation({
+    mutationFn: async (choice: {
+      source: 'selected' | 'filter'
+      format: MembersPdfFormat
+    }) => {
+      setPdfProgress(null)
+      setPdfExportError(null)
+      setPdfExportWarning(null)
+
+      const orgUnitNames = Object.fromEntries(orgUnitNameById)
+      const onProgress = (progress: { done: number; total: number }) => {
+        setPdfProgress(progress)
+      }
+
+      if (choice.source === 'selected') {
+        const selectedIdsOrdered = itemIds.filter((id) =>
+          selection.selectedIds.has(id),
+        )
+        const loadedMembers = selectedIdsOrdered
+          .map((id) => loadedMembersById.get(id))
+          .filter((member): member is Member => member != null)
+        const allLoaded = loadedMembers.length === selectedIdsOrdered.length
+
+        return exportMembersPdf({
+          members: allLoaded ? loadedMembers : undefined,
+          memberIds: allLoaded ? undefined : selectedIdsOrdered,
+          format: choice.format,
+          orgUnitNameById: orgUnitNames,
+          onProgress,
+        })
+      }
+
+      return exportMembersPdf({
+        listAll: {
+          sanghaType,
+          orgUnitId: scopedOrgUnitId,
+          status: exportStatusFilter,
+          haLapTabRank: resolvedActiveTab,
+        },
+        format: choice.format,
+        orgUnitNameById: orgUnitNames,
+        onProgress,
+      })
+    },
+    onSuccess: (result) => {
+      setPdfExportOpen(false)
+      setPdfProgress(null)
+      if (result.failedDocumentCount > 0) {
+        setPdfExportWarning(
+          m.admin_members_export_pdf_docs_failed({
+            count: result.failedDocumentCount,
+          }),
+        )
+      }
+    },
+    onError: (error) => {
+      setPdfProgress(null)
+      if (error instanceof Error && error.message === 'EMPTY_EXPORT') {
+        setPdfExportError(m.admin_members_export_pdf_empty())
+        return
+      }
+      setPdfExportError(
+        error instanceof Error ? error.message : 'Export failed',
+      )
+    },
   })
 
   const unlockMutation = useMutation({
@@ -399,6 +488,19 @@ export function MembersListPage({
             {m.admin_members_export_excel()}
           </Button>
           <Button
+            variant="default"
+            loading={pdfExportMutation.isPending}
+            disabled={pdfExportMutation.isPending}
+            onClick={() => {
+              setPdfExportError(null)
+              setPdfExportWarning(null)
+              setPdfProgress(null)
+              setPdfExportOpen(true)
+            }}
+          >
+            {m.admin_members_export_pdf()}
+          </Button>
+          <Button
             component={Link}
             to="/admin/members/new"
             search={{ sanghaType }}
@@ -411,6 +513,12 @@ export function MembersListPage({
       {exportMutation.error && (
         <Text c="red" size="sm" role="alert">
           {exportMutation.error.message}
+        </Text>
+      )}
+
+      {pdfExportWarning && (
+        <Text c="yellow" size="sm" role="status">
+          {pdfExportWarning}
         </Text>
       )}
 
@@ -516,6 +624,19 @@ export function MembersListPage({
           setExportOpen(false)
           exportMutation.mutate(exportColumnIds)
         }}
+      />
+
+      <MembersPdfExportModal
+        opened={pdfExportOpen}
+        onClose={() => {
+          if (pdfExportMutation.isPending) return
+          setPdfExportOpen(false)
+        }}
+        selectedCount={selection.selectedCount}
+        progress={pdfProgress}
+        loading={pdfExportMutation.isPending}
+        errorMessage={pdfExportError}
+        onConfirm={(choice) => pdfExportMutation.mutate(choice)}
       />
 
       <MembersExcelColumnsModal
