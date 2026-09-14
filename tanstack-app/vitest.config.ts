@@ -1,5 +1,28 @@
+import type { Plugin } from 'vite'
 import { defineConfig } from 'vitest/config'
 import viteReact from '@vitejs/plugin-react'
+
+/** Vitest runs react-pdf in Node; `?url` must resolve to absolute file paths. */
+function woffUrlAsFilePath(): Plugin {
+  return {
+    name: 'woff-url-as-file-path',
+    enforce: 'pre',
+    async resolveId(source, importer, options) {
+      if (!source.endsWith('.woff?url')) return
+      const resolved = await this.resolve(source.replace(/\?url$/, ''), importer, {
+        ...options,
+        skipSelf: true,
+      })
+      if (!resolved) return
+      return `${resolved.id}?url`
+    },
+    load(id) {
+      if (!id.endsWith('.woff?url')) return
+      const filePath = id.slice(0, -'?url'.length)
+      return `export default ${JSON.stringify(filePath)}`
+    },
+  }
+}
 
 const integrationExclude = 'src/**/*.integration.test.{ts,tsx}'
 
@@ -15,8 +38,9 @@ const domUnitTests = [
 ]
 
 export default defineConfig({
-  plugins: [viteReact()],
+  plugins: [woffUrlAsFilePath(), viteReact()],
   resolve: { tsconfigPaths: true },
+  assetsInclude: ['**/*.woff'],
   test: {
     // Default is cpus-1, which saturates the machine on full suite runs.
     maxWorkers: '20%',
