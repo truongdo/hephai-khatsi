@@ -262,6 +262,62 @@ describe('members', () => {
     )
   })
 
+  it('allows filler save-and-lock on an admin-created draft, adopting the invite', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'members', memberId), memberDraft({ inviteId: null }))
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(
+      updateDoc(doc(anon, 'members', memberId), {
+        theDanh: 'Nguyen Van A',
+        inviteId: INVITE_ID,
+        status: 'locked',
+        lockedAt: '2026-01-02T00:00:00.000Z',
+        lockedBy: 'filler',
+        editRequestedAt: null,
+        editRequestedBy: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('denies filler adopting an admin-created draft without locking it', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'members', memberId), memberDraft({ inviteId: null }))
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      updateDoc(doc(anon, 'members', memberId), {
+        photoPath: 'members/x/photo.jpg',
+        inviteId: INVITE_ID,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('denies filler replacing an existing invite on save-and-lock', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      const db = ctx.firestore()
+      await setDoc(doc(db, 'invites', 'other'), { token: 'other', createdAt: '2026-01-01T00:00:00.000Z', createdBy: 'admin-uid' })
+      await setDoc(doc(db, 'members', memberId), memberDraft({ inviteId: 'other' }))
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      updateDoc(doc(anon, 'members', memberId), {
+        inviteId: INVITE_ID,
+        status: 'locked',
+        lockedAt: '2026-01-02T00:00:00.000Z',
+        lockedBy: 'filler',
+        editRequestedAt: null,
+        editRequestedBy: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
   it('blocks filler profile updates on locked records', async () => {
     const env = await getTestEnv()
     await env.withSecurityRulesDisabled(async (ctx) => {
@@ -545,6 +601,62 @@ describe('temples', () => {
     await assertSucceeds(
       updateDoc(doc(anon, 'temples', 'temple-1'), {
         danhHieu: 'Chua ABC',
+        status: 'locked',
+        lockedAt: '2026-01-02T00:00:00.000Z',
+        lockedBy: 'filler',
+        editRequestedAt: null,
+        editRequestedBy: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('allows filler save-and-lock on an admin-created draft temple, adopting the invite', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'temples', 'temple-1'), templeDraft({ inviteId: null }))
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(
+      updateDoc(doc(anon, 'temples', 'temple-1'), {
+        danhHieu: 'Chua ABC',
+        inviteId: INVITE_ID,
+        status: 'locked',
+        lockedAt: '2026-01-02T00:00:00.000Z',
+        lockedBy: 'filler',
+        editRequestedAt: null,
+        editRequestedBy: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('denies filler adopting an admin-created draft temple without locking it', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'temples', 'temple-1'), templeDraft({ inviteId: null }))
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      updateDoc(doc(anon, 'temples', 'temple-1'), {
+        photoPath: 'temples/x/photo.jpg',
+        inviteId: INVITE_ID,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('denies filler replacing an existing invite on temple save-and-lock', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      const db = ctx.firestore()
+      await setDoc(doc(db, 'invites', 'other'), { token: 'other', createdAt: '2026-01-01T00:00:00.000Z', createdBy: 'admin-uid' })
+      await setDoc(doc(db, 'temples', 'temple-1'), templeDraft({ inviteId: 'other' }))
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      updateDoc(doc(anon, 'temples', 'temple-1'), {
+        inviteId: INVITE_ID,
         status: 'locked',
         lockedAt: '2026-01-02T00:00:00.000Z',
         lockedBy: 'filler',

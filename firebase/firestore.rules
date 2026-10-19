@@ -157,6 +157,14 @@ service cloud.firestore {
           );
       }
 
+      // Admin-created drafts have inviteId == null. A filler may complete one
+      // (save-and-lock), which stamps the current invite on it; otherwise the
+      // invite a record was written under stays fixed.
+      function inviteKeptOrAdopted() {
+        return request.resource.data.inviteId == resource.data.inviteId
+          || (resource.data.inviteId == null && isFillerSaveAndLock());
+      }
+
       function isFillerLockedUpdate() {
         return isFillerSaveAndLock() || isFillerEditRequest() || isFillerMediaUpdate();
       }
@@ -215,7 +223,7 @@ service cloud.firestore {
         || (canWriteDirectory() && directoryOrgOk(resource.data.orgUnitId) && !isLockTransition()
             && lockFieldsUnchanged() && request.resource.data.inviteId == resource.data.inviteId)
         || (!isStaff() && validInviteScope(request.resource.data) && !isKiemSoat()
-            && request.resource.data.inviteId == resource.data.inviteId
+            && inviteKeptOrAdopted()
             && isFillerLockedUpdate())
       );
 
@@ -314,6 +322,14 @@ service cloud.firestore {
           );
       }
 
+      // Admin-created drafts have inviteId == null. A filler may complete one
+      // (save-and-lock), which stamps the current invite on it; otherwise the
+      // invite a record was written under stays fixed.
+      function inviteKeptOrAdopted() {
+        return request.resource.data.inviteId == resource.data.inviteId
+          || (resource.data.inviteId == null && isFillerSaveAndLock());
+      }
+
       function isFillerLockedUpdate() {
         return isFillerSaveAndLock() || isFillerEditRequest() || isFillerTempleMediaUpdate();
       }
@@ -355,7 +371,7 @@ service cloud.firestore {
         (canWriteDirectory() && directoryOrgOk(resource.data.orgUnitId) && isLockTransition())
         || (canWriteDirectory() && directoryOrgOk(resource.data.orgUnitId) && !isLockTransition() && lockFieldsUnchanged())
         || (!isStaff() && validInviteScope(request.resource.data)
-            && request.resource.data.inviteId == resource.data.inviteId
+            && inviteKeptOrAdopted()
             && isFillerLockedUpdate())
       );
 
