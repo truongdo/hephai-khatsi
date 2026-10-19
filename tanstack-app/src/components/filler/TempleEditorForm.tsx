@@ -12,6 +12,7 @@ import type { TempleProfilePatch } from '#/repositories/templeRepo'
 import { notifyTempleUpsert } from '#/search/notifySearchIndex'
 import { requestTempleEdit } from '#/use-cases/requestTempleEdit'
 import { saveAndLockTemple } from '#/use-cases/saveAndLockTemple'
+import { describeFillerFailure } from '#/errorReport/fillerFailure'
 import { uploadTemplePhoto } from '#/use-cases/uploadTemplePhoto'
 import {
   TempleFormFields,
@@ -133,10 +134,16 @@ export function TempleEditorForm({
         patch,
         explicitPhones,
       }),
-    onError: () => {
+    onError: (error) => {
       setSaveSuccess(null)
       setValidationError(null)
-      setSaveError(m.filler_save_error())
+      void describeFillerFailure({
+        error,
+        form: 'temple',
+        stage: 'save',
+        orgUnitId,
+        recordId: templeId,
+      }).then(setSaveError)
     },
   })
 
@@ -230,10 +237,18 @@ export function TempleEditorForm({
             api.setPhotoPath(uploadResult.photoPath)
             api.clearPendingPhoto()
             savedTemple = { ...savedTemple, photoPath: uploadResult.photoPath }
-          } catch {
+          } catch (error) {
             setValidationError(null)
             setSaveSuccess(null)
-            setSaveError(m.filler_photo_upload_error())
+            setSaveError(
+              await describeFillerFailure({
+                error,
+                form: 'temple',
+                stage: 'photo',
+                orgUnitId,
+                recordId: savedTemple.id,
+              }),
+            )
             queryClient.setQueryData(
               fillerKeys.temple(savedTemple.id),
               savedTemple,

@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { DomainError } from '#/domain/errors'
 import type { Temple } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { saveAndLockTemple } from '#/use-cases/saveAndLockTemple'
@@ -352,10 +353,46 @@ describe('TempleEditorForm', () => {
     await user.upload(getPortraitFileInput(), file)
     await confirmSave(user)
 
-    expect(await screen.findByText(m.filler_photo_upload_error())).toBeTruthy()
+    expect(
+      await screen.findByText(m.filler_photo_upload_error(), { exact: false }),
+    ).toBeTruthy()
+    expect(screen.getByText(/Mã lỗi: [A-Z2-9]{6}/)).toBeTruthy()
     expect(onCreated).not.toHaveBeenCalled()
     expect(screen.queryByText(m.filler_save_redirecting())).toBeNull()
     expect(screen.queryByText(m.filler_save_success())).toBeNull()
+  })
+
+  it('shows the specific reason with a reference code and reports the failure', async () => {
+    const user = userEvent.setup()
+    const fetchMock = vi.fn(() => Promise.resolve(new Response(null, { status: 204 })))
+    vi.stubGlobal('fetch', fetchMock)
+    saveAndLockTempleMock.mockRejectedValue(
+      new DomainError('RECORD_LOCKED', 'Temple is locked'),
+    )
+    renderForm({ initial: requiredTempleInitial() })
+
+    await confirmSave(user)
+
+    expect(
+      await screen.findByText(m.filler_error_record_locked(), { exact: false }),
+    ).toBeTruthy()
+    const shown = screen.getByText(/Mã lỗi: [A-Z2-9]{6}/).textContent ?? ''
+    const ref = /Mã lỗi: ([A-Z2-9]{6})/.exec(shown)![1]
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/client-errors',
+      expect.objectContaining({ method: 'POST' }),
+    )
+    const calls = fetchMock.mock.calls as unknown as Array<[string, RequestInit]>
+    const body = JSON.parse(calls[0]![1].body as string)
+    expect(body).toMatchObject({
+      ref,
+      form: 'temple',
+      stage: 'save',
+      reason: 'record_locked',
+      code: 'RECORD_LOCKED',
+    })
+    vi.unstubAllGlobals()
   })
 
   it('blocks save when required temple fields are empty', async () => {

@@ -13,6 +13,7 @@ import type { DocumentSide, DocumentTypeId } from '#/domain/memberDocumentTypes'
 import { notifyMemberUpsert } from '#/search/notifySearchIndex'
 import { requestMemberEdit } from '#/use-cases/requestMemberEdit'
 import { saveAndLockMember } from '#/use-cases/saveAndLockMember'
+import { describeFillerFailure } from '#/errorReport/fillerFailure'
 import { uploadMemberDocument } from '#/use-cases/uploadMemberDocument'
 import { uploadMemberPhoto } from '#/use-cases/uploadMemberPhoto'
 import { FillerSaveConfirmModal } from './FillerSaveConfirmModal'
@@ -154,10 +155,16 @@ export function MemberEditorForm({
         cccd: resolvedCccd,
         patch,
       }),
-    onError: () => {
+    onError: (error) => {
       setSaveSuccess(null)
       setValidationError(null)
-      setSaveError(m.filler_save_error())
+      void describeFillerFailure({
+        error,
+        form: 'member',
+        stage: 'save',
+        orgUnitId,
+        sanghaType,
+      }).then(setSaveError)
     },
   })
 
@@ -248,10 +255,18 @@ export function MemberEditorForm({
             api.setPhotoPath(uploadResult.photoPath)
             api.clearPendingPhoto()
             savedMember = { ...savedMember, photoPath: uploadResult.photoPath }
-          } catch {
+          } catch (error) {
             setValidationError(null)
             setSaveSuccess(null)
-            setSaveError(m.filler_photo_upload_error())
+            setSaveError(
+              await describeFillerFailure({
+                error,
+                form: 'member',
+                stage: 'photo',
+                orgUnitId,
+                sanghaType,
+              }),
+            )
             queryClient.setQueryData(
               fillerKeys.member(savedMember.id),
               savedMember,
@@ -288,10 +303,18 @@ export function MemberEditorForm({
               }
             }
             api.clearPendingDocuments()
-          } catch {
+          } catch (error) {
             setValidationError(null)
             setSaveSuccess(null)
-            setSaveError(m.filler_doc_upload_error())
+            setSaveError(
+              await describeFillerFailure({
+                error,
+                form: 'member',
+                stage: 'documents',
+                orgUnitId,
+                sanghaType,
+              }),
+            )
             queryClient.setQueryData(
               fillerKeys.member(savedMember.id),
               savedMember,

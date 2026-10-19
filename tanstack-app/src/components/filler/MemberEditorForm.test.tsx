@@ -488,7 +488,10 @@ describe('MemberEditorForm', () => {
     await user.upload(getPortraitFileInput(), file)
     await confirmSave(user)
 
-    expect(await screen.findByText(m.filler_photo_upload_error())).toBeTruthy()
+    expect(
+      await screen.findByText(m.filler_photo_upload_error(), { exact: false }),
+    ).toBeTruthy()
+    expect(screen.getByText(/Mã lỗi: [A-Z2-9]{6}/)).toBeTruthy()
     expect(onCreated).not.toHaveBeenCalled()
     expect(screen.queryByText(m.filler_save_redirecting())).toBeNull()
     expect(screen.queryByText(m.filler_save_success())).toBeNull()

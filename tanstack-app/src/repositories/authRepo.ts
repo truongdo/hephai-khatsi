@@ -6,6 +6,7 @@ import {
   signOut,
   type User,
 } from 'firebase/auth'
+import { parseAuthClaims, type AuthClaims } from '#/domain/authClaims'
 import { getClientAuth } from '#/firebase/client'
 
 export class AuthConfigError extends Error {
@@ -48,4 +49,12 @@ export async function signInWithEmailPassword(
 export async function signOutUser(): Promise<void> {
   const auth = requireAuth()
   await signOut(auth)
+}
+
+/** Claims of the user signed in in this browser, or null when signed out. */
+export async function getCurrentUserClaims(): Promise<AuthClaims | null> {
+  const user = getClientAuth()?.currentUser
+  if (!user) return null
+  const result = await user.getIdTokenResult()
+  return parseAuthClaims(result.claims)
 }

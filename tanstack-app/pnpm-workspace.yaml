@@ -1,5 +1,6 @@
 allowBuilds:
   '@firebase/util': false
+  '@sentry/cli': true
   cypress: true
   esbuild: true
   lightningcss: true
