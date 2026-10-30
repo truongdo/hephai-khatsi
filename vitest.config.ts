@@ -34,7 +34,6 @@ const domUnitTests = [
   'src/lib/formLocalDraft.test.ts',
   // Firebase web SDK initializes only when `window` exists.
   'src/firebase/firestore.test.ts',
-  'src/firebase/storage.test.ts',
 ]
 
 export default defineConfig({

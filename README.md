@@ -3,8 +3,8 @@ Hệ phái Khất sĩ admin app — a client-only single-page app built with
 [Mantine](https://mantine.dev/), and [Firebase](https://firebase.google.com/)
 (Auth, Firestore). Member portraits are stored in [Cloudflare R2](https://developers.cloudflare.com/r2/)
 via a Cloudflare Worker (`src/worker.ts`); the browser uploads with presigned PUT URLs and reads
-public objects from `VITE_PHOTOS_PUBLIC_BASE`. Firestore security rules (see `../firebase/`) are the
-authorization boundary for data; `firebase/storage.rules` remains in the repo as legacy (unused for portraits).
+public objects from `VITE_PHOTOS_PUBLIC_BASE`. Firestore security rules (see `firebase/`) are the
+authorization boundary for data.
 
 # Getting Started
 
@@ -90,9 +90,7 @@ pnpm test
 
 ### Firebase emulator integration (optional)
 
-Requires [Java](https://www.java.com/) for the Firestore/Auth emulators. The Storage emulator is not
-started for portrait flows (portraits use R2). Legacy `firebase/storage.rules` and
-`storageRules.integration.test.ts` remain but are not part of the default emulator script.
+Requires [Java](https://www.java.com/) for the Firestore/Auth emulators.
 
 Terminal A — start the emulators from the repo root config:
 

@@ -21,7 +21,6 @@ describe('readFirebaseWebConfig', () => {
     vi.stubEnv('VITE_FIREBASE_PROJECT_ID', 'demo')
     vi.stubEnv('VITE_FIREBASE_APP_ID', '1:123:web:abc')
     vi.stubEnv('VITE_FIREBASE_MESSAGING_SENDER_ID', '')
-    vi.stubEnv('VITE_FIREBASE_STORAGE_BUCKET', '')
     const { readFirebaseWebConfig } = await import('./client')
     expect(readFirebaseWebConfig()).toEqual({
       apiKey: 'key',
@@ -29,17 +28,15 @@ describe('readFirebaseWebConfig', () => {
       projectId: 'demo',
       appId: '1:123:web:abc',
       messagingSenderId: undefined,
-      storageBucket: undefined,
     })
   })
 
-  it('returns config with optional VITE vars when set', async () => {
+  it('returns config with messagingSenderId when set', async () => {
     vi.stubEnv('VITE_FIREBASE_API_KEY', 'key')
     vi.stubEnv('VITE_FIREBASE_AUTH_DOMAIN', 'demo.firebaseapp.com')
     vi.stubEnv('VITE_FIREBASE_PROJECT_ID', 'demo')
     vi.stubEnv('VITE_FIREBASE_APP_ID', '1:123:web:abc')
     vi.stubEnv('VITE_FIREBASE_MESSAGING_SENDER_ID', '123456')
-    vi.stubEnv('VITE_FIREBASE_STORAGE_BUCKET', 'demo.appspot.com')
     const { readFirebaseWebConfig } = await import('./client')
     expect(readFirebaseWebConfig()).toEqual({
       apiKey: 'key',
@@ -47,7 +44,6 @@ describe('readFirebaseWebConfig', () => {
       projectId: 'demo',
       appId: '1:123:web:abc',
       messagingSenderId: '123456',
-      storageBucket: 'demo.appspot.com',
     })
   })
 })
