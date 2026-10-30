@@ -114,6 +114,17 @@ service cloud.firestore {
           && request.resource.data.lockedBy == resource.data.lockedBy;
       }
 
+      // tinhTrang is an admin-only field (quick-edited from the members list);
+      // fillers may neither set it on create nor change it on save-and-lock.
+      function tinhTrangUnchanged() {
+        return request.resource.data.get('tinhTrang', null)
+          == resource.data.get('tinhTrang', null);
+      }
+
+      function tinhTrangAbsent() {
+        return !('tinhTrang' in request.resource.data);
+      }
+
       function editRequestFieldsUnchanged() {
         return request.resource.data.editRequestedAt == resource.data.editRequestedAt
           && request.resource.data.editRequestedBy == resource.data.editRequestedBy;
@@ -130,7 +141,8 @@ service cloud.firestore {
           && request.resource.data.lockedBy == 'filler'
           && request.resource.data.lockedAt is string
           && request.resource.data.editRequestedAt == null
-          && request.resource.data.editRequestedBy == null;
+          && request.resource.data.editRequestedBy == null
+          && tinhTrangUnchanged();
       }
 
       function isFillerEditRequest() {
@@ -180,7 +192,8 @@ service cloud.firestore {
           && request.resource.data.lockedBy == 'filler'
           && request.resource.data.lockedAt is string
           && request.resource.data.editRequestedAt == null
-          && request.resource.data.editRequestedBy == null;
+          && request.resource.data.editRequestedBy == null
+          && tinhTrangAbsent();
       }
 
       function directoryRoleFieldsUnchanged() {

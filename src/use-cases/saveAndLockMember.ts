@@ -22,6 +22,7 @@ const protectedPatchKeys = [
   'orgUnitId',
   'sanghaType',
   'status',
+  'tinhTrang',
   'cccd',
   'inviteId',
   'createdAt',

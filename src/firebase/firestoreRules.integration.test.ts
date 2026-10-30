@@ -210,6 +210,70 @@ describe('members', () => {
     )
   })
 
+  it('denies filler create when tinhTrang is set', async () => {
+    const env = await getTestEnv()
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      setDoc(doc(anon, 'members', memberId), memberLocked({ tinhTrang: 'sinh_hoat' })),
+    )
+  })
+
+  it('denies filler save-and-lock when changing tinhTrang', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'members', memberId), memberDraft())
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      updateDoc(doc(anon, 'members', memberId), {
+        theDanh: 'Nguyen Van A',
+        tinhTrang: 'di_hoc',
+        status: 'locked',
+        lockedAt: '2026-01-02T00:00:00.000Z',
+        lockedBy: 'filler',
+        editRequestedAt: null,
+        editRequestedBy: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('allows filler save-and-lock that keeps an admin-set tinhTrang', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(
+        doc(ctx.firestore(), 'members', memberId),
+        memberDraft({ tinhTrang: 'gia_yeu' }),
+      )
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertSucceeds(
+      updateDoc(doc(anon, 'members', memberId), {
+        theDanh: 'Nguyen Van A',
+        status: 'locked',
+        lockedAt: '2026-01-02T00:00:00.000Z',
+        lockedBy: 'filler',
+        editRequestedAt: null,
+        editRequestedBy: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
+  it('allows an admin to quick-edit tinhTrang on a locked member', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'members', memberId), memberLocked())
+    })
+    const admin = env.authenticatedContext('admin-uid', { role: 'he_phai_admin' }).firestore()
+    await assertSucceeds(
+      updateDoc(doc(admin, 'members', memberId), {
+        tinhTrang: 'vien_tich',
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
   it('rejects create when the doc id does not match orgUnitId_sanghaType_cccd', async () => {
     const env = await getTestEnv()
     const anon = env.unauthenticatedContext().firestore()

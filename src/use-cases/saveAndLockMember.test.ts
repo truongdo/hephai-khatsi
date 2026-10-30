@@ -92,6 +92,7 @@ describe('saveAndLockMember', () => {
         patch: {
           orgUnitId: 'forged',
           status: 'draft',
+          tinhTrang: 'hoan_tuc',
           editRequestedAt: '2026-01-01T00:00:00.000Z',
           editRequestedBy: '0909999999',
           phapDanh: 'Minh Tam',
@@ -108,6 +109,7 @@ describe('saveAndLockMember', () => {
       editRequestedAt: null,
       editRequestedBy: null,
     })
+    expect(result.member.tinhTrang).toBeUndefined()
   })
 
   it('rejects an unknown invite token', async () => {
