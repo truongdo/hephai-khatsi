@@ -4,10 +4,7 @@ import type { Invite } from '#/domain/types'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
 
-// There is exactly one invite for the whole app — a fixed doc id, not a
-// per-registration token — so "creating an invite" is really "creating the
-// invite" (idempotent: see createInvite.ts).
-export const PUBLIC_INVITE_ID = 'public'
+export { PUBLIC_INVITE_ID } from '#/domain/invite'
 
 export type InviteStore = {
   create(invite: Invite): Promise<void>
