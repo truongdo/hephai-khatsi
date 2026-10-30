@@ -1,6 +1,7 @@
 {
   "name": "tanstack-app",
   "private": true,
+  "packageManager": "pnpm@11.9.0",
   "type": "module",
   "imports": {
     "#/*": "./src/*"
