@@ -70,7 +70,10 @@ function phoneColumn(dienThoai: string | undefined): string | null {
   }
 }
 
-/** `version` is left to the write handlers (the column defaults to 1). */
+/**
+ * `version` is left to the write handlers (the column defaults to 1). Nullable
+ * fields missing from older Firestore documents are stored as NULL.
+ */
 export function memberToRow(member: Member): MemberRow {
   const {
     id,
@@ -102,8 +105,8 @@ export function memberToRow(member: Member): MemberRow {
     cccd,
     status,
     phone: phoneColumn(data.dienThoai),
-    current_temple_id: currentTempleId,
-    invite_id: inviteId,
+    current_temple_id: toColumn(currentTempleId),
+    invite_id: toColumn(inviteId),
     ha_lap_tab_rank: toColumn(haLapTabRank),
     sap_xep_ha_lap: toColumn(sapXepHaLap),
     giao_pham_he_phai_rank: toColumn(data.giaoPhamHePhai?.rank),
@@ -112,10 +115,10 @@ export function memberToRow(member: Member): MemberRow {
     tinh_trang: toColumn(tinhTrang),
     directory_role: toColumn(directoryRole),
     directory_auth_uid: toColumn(directoryAuthUid),
-    locked_at: lockedAt,
-    locked_by: lockedBy,
-    edit_requested_at: editRequestedAt,
-    edit_requested_by: editRequestedBy,
+    locked_at: toColumn(lockedAt),
+    locked_by: toColumn(lockedBy),
+    edit_requested_at: toColumn(editRequestedAt),
+    edit_requested_by: toColumn(editRequestedBy),
     created_at: createdAt,
     updated_at: updatedAt,
     data: toDataColumn(data satisfies MemberData),

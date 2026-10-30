@@ -44,7 +44,10 @@ type TempleColumnFields =
 
 type TempleData = Omit<Temple, TempleColumnFields>
 
-/** `version` is left to the write handlers (the column defaults to 1). */
+/**
+ * `version` is left to the write handlers (the column defaults to 1). Nullable
+ * fields missing from older Firestore documents are stored as NULL.
+ */
 export function templeToRow(temple: Temple): TempleRow {
   const {
     id,
@@ -65,13 +68,13 @@ export function templeToRow(temple: Temple): TempleRow {
     id,
     org_unit_id: orgUnitId,
     status,
-    invite_id: inviteId,
+    invite_id: toColumn(inviteId),
     list_city_name: toColumn(listCityName),
     org_unit_name: toColumn(orgUnitName),
-    locked_at: lockedAt,
-    locked_by: lockedBy,
-    edit_requested_at: editRequestedAt,
-    edit_requested_by: editRequestedBy,
+    locked_at: toColumn(lockedAt),
+    locked_by: toColumn(lockedBy),
+    edit_requested_at: toColumn(editRequestedAt),
+    edit_requested_by: toColumn(editRequestedBy),
     created_at: createdAt,
     updated_at: updatedAt,
     data: toDataColumn(data satisfies TempleData),

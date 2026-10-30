@@ -75,6 +75,7 @@ export default defineConfig({
         plugins: [
           cloudflareTest(async () => ({
             miniflare: {
+              // Keep in sync with wrangler.jsonc.
               compatibilityDate: '2026-07-20',
               compatibilityFlags: ['nodejs_compat'],
               d1Databases: ['DB'],

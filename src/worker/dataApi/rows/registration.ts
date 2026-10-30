@@ -3,7 +3,7 @@ import type {
   RegistrationStatus,
   RetreatRegistration,
 } from '#/domain/retreatRegistration'
-import { fromDataColumn, toDataColumn } from './rowValues'
+import { fromDataColumn, toColumn, toDataColumn } from './rowValues'
 
 export type RegistrationRow = {
   id: string
@@ -23,34 +23,49 @@ export type RegistrationRow = {
 
 type RegistrationData = Pick<RetreatRegistration, 'extraAnswers'>
 
+/** Nullable fields missing from older Firestore documents are stored as NULL. */
 export function registrationToRow(registration: RetreatRegistration): RegistrationRow {
+  const {
+    id,
+    retreatId,
+    memberId,
+    orgUnitId,
+    status,
+    registeredVia,
+    registeredBy,
+    approvedBy,
+    approvedAt,
+    rejectionReason,
+    createdAt,
+    updatedAt,
+    ...data
+  } = registration
   return {
-    id: registration.id,
-    retreat_id: registration.retreatId,
-    member_id: registration.memberId,
-    org_unit_id: registration.orgUnitId,
-    status: registration.status,
-    registered_via: registration.registeredVia,
-    registered_by: registration.registeredBy,
-    approved_by: registration.approvedBy,
-    approved_at: registration.approvedAt,
-    rejection_reason: registration.rejectionReason,
-    created_at: registration.createdAt,
-    updated_at: registration.updatedAt,
-    data: toDataColumn({ extraAnswers: registration.extraAnswers } satisfies RegistrationData),
+    id,
+    retreat_id: retreatId,
+    member_id: memberId,
+    org_unit_id: orgUnitId,
+    status,
+    registered_via: registeredVia,
+    registered_by: toColumn(registeredBy),
+    approved_by: toColumn(approvedBy),
+    approved_at: toColumn(approvedAt),
+    rejection_reason: toColumn(rejectionReason),
+    created_at: createdAt,
+    updated_at: updatedAt,
+    data: toDataColumn(data satisfies RegistrationData),
   }
 }
 
 export function registrationFromRow(row: RegistrationRow): RetreatRegistration {
-  const { extraAnswers } = fromDataColumn<RegistrationData>(row.data)
   return {
+    ...fromDataColumn<RegistrationData>(row.data),
     id: row.id,
     retreatId: row.retreat_id,
     memberId: row.member_id,
     orgUnitId: row.org_unit_id,
     registeredVia: row.registered_via,
     registeredBy: row.registered_by,
-    extraAnswers,
     status: row.status,
     rejectionReason: row.rejection_reason,
     approvedBy: row.approved_by,

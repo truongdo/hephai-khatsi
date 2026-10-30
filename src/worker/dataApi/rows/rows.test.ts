@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { ORG_UNIT_SEED } from '#/domain/orgUnitSeed'
+import type { RetreatRegistration } from '#/domain/retreatRegistration'
 import type { Member, Temple } from '#/domain/types'
 import {
   auditLog,
@@ -65,6 +66,23 @@ describe('member rows', () => {
     expect(memberToRow(minimalMember).phone).toBeNull()
   })
 
+  it('stores nullable fields missing from older documents as NULL', () => {
+    const {
+      lockedAt: _lockedAt,
+      editRequestedAt: _editRequestedAt,
+      editRequestedBy: _editRequestedBy,
+      ...legacy
+    } = fullMember
+    const row = memberToRow(legacy as Member)
+    expect(row).toMatchObject({ locked_at: null, edit_requested_at: null, edit_requested_by: null })
+    expect(memberFromRow(row)).toEqual({
+      ...fullMember,
+      lockedAt: null,
+      editRequestedAt: null,
+      editRequestedBy: null,
+    })
+  })
+
   it('reads a cleared tinhTrang back as absent', () => {
     const cleared: Member = { ...fullMember, tinhTrang: null }
     expect(memberToRow(cleared).tinh_trang).toBeNull()
@@ -78,6 +96,11 @@ describe('temple rows', () => {
     ['full', fullTemple],
   ])('round-trips a %s temple', (_, temple) => {
     expect(templeFromRow(templeToRow(temple))).toEqual(temple)
+  })
+
+  it('stores nullable fields missing from older documents as NULL', () => {
+    const { inviteId: _inviteId, lockedBy: _lockedBy, ...legacy } = fullTemple
+    expect(templeFromRow(templeToRow(legacy as Temple))).toEqual({ ...fullTemple, inviteId: null, lockedBy: null })
   })
 
   it('defaults a missing photoPath to null', () => {
@@ -154,5 +177,12 @@ describe('registration rows', () => {
     ['rejected proxy', rejectedProxyRegistration],
   ])('round-trips a %s registration', (_, registration) => {
     expect(registrationFromRow(registrationToRow(registration))).toEqual(registration)
+  })
+
+  it('stores nullable fields missing from older documents as NULL', () => {
+    const { approvedBy: _approvedBy, approvedAt: _approvedAt, ...legacy } = pendingSelfRegistration
+    expect(registrationFromRow(registrationToRow(legacy as RetreatRegistration))).toEqual(
+      pendingSelfRegistration,
+    )
   })
 })

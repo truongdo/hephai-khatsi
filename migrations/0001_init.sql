@@ -2,6 +2,9 @@
 -- Columns hold every field that is filtered, sorted, joined or checked by
 -- authorization; `data` holds the rest of the record as JSON. Row mappers in
 -- src/worker/dataApi/rows/ convert between rows and domain types.
+-- Firestore never enforced references (records of org units outside the seed,
+-- registrations of deleted retreats), so imported tables have no foreign keys;
+-- the import verify script checks them instead.
 
 CREATE TABLE org_units (
   id TEXT PRIMARY KEY,
@@ -25,7 +28,7 @@ CREATE TABLE invites (
 
 CREATE TABLE members (
   id TEXT PRIMARY KEY,               -- {orgUnitId}_{sanghaType}_{cccd}
-  org_unit_id TEXT NOT NULL REFERENCES org_units(id),
+  org_unit_id TEXT NOT NULL,
   sangha_type TEXT NOT NULL CHECK (sangha_type IN ('tang', 'ni')),
   cccd TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('draft', 'locked')),
@@ -60,7 +63,7 @@ CREATE INDEX members_directory_role ON members(directory_role) WHERE directory_r
 
 CREATE TABLE temples (
   id TEXT PRIMARY KEY,
-  org_unit_id TEXT NOT NULL REFERENCES org_units(id),
+  org_unit_id TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('draft', 'locked')),
   invite_id TEXT,
   list_city_name TEXT,
@@ -117,7 +120,7 @@ CREATE INDEX retreats_list ON retreats(org_unit_id, status, updated_at, id);
 
 CREATE TABLE retreat_registrations (
   id TEXT PRIMARY KEY,               -- {retreatId}_{memberId}
-  retreat_id TEXT NOT NULL REFERENCES retreats(id),
+  retreat_id TEXT NOT NULL,
   member_id TEXT NOT NULL,
   org_unit_id TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('pending', 'approved', 'rejected')),

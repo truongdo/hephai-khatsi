@@ -18,7 +18,7 @@ export async function clearData(): Promise<void> {
   await env.DB.batch(DATA_TABLES.map((table) => env.DB.prepare(`DELETE FROM ${table}`)))
 }
 
-export function insertRow(table: string, row: Record<string, ColumnValue>): D1PreparedStatement {
+export function insertStatement(table: string, row: Record<string, ColumnValue>): D1PreparedStatement {
   const columns = Object.keys(row)
   return env.DB.prepare(
     `INSERT INTO ${table} (${columns.join(', ')}) VALUES (${columns.map(() => '?').join(', ')})`,

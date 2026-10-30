@@ -57,7 +57,7 @@ CREATE TABLE invites (
 
 CREATE TABLE members (
   id TEXT PRIMARY KEY,               -- keep {orgUnitId}_{sanghaType}_{cccd}
-  org_unit_id TEXT NOT NULL REFERENCES org_units(id),
+  org_unit_id TEXT NOT NULL,
   sangha_type TEXT NOT NULL CHECK (sangha_type IN ('tang','ni')),
   cccd TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('draft','locked')),
@@ -85,7 +85,7 @@ CREATE INDEX members_directory_role ON members(directory_role) WHERE directory_r
 
 CREATE TABLE temples (
   id TEXT PRIMARY KEY,
-  org_unit_id TEXT NOT NULL REFERENCES org_units(id),
+  org_unit_id TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('draft','locked')),
   invite_id TEXT, list_city_name TEXT, org_unit_name TEXT,
   locked_at TEXT, locked_by TEXT, edit_requested_at TEXT, edit_requested_by TEXT,
@@ -128,7 +128,7 @@ CREATE INDEX retreats_list ON retreats(org_unit_id, status, updated_at, id);
 
 CREATE TABLE retreat_registrations (
   id TEXT PRIMARY KEY,               -- keep {retreatId}_{memberId}
-  retreat_id TEXT NOT NULL REFERENCES retreats(id),
+  retreat_id TEXT NOT NULL,
   member_id TEXT NOT NULL, org_unit_id TEXT NOT NULL,
   status TEXT NOT NULL, registered_via TEXT NOT NULL, registered_by TEXT,
   approved_by TEXT, approved_at TEXT, rejection_reason TEXT,
@@ -140,9 +140,11 @@ CREATE INDEX retreat_registrations_list ON retreat_registrations(retreat_id, cre
 
 Notes:
 
+- No foreign keys on imported tables (only `temple_manager_phones → temples`, with cascade): Firestore never enforced references (records of org units outside the seed, registrations of deleted retreats), so `scripts/verify-d1-import.ts` reports orphans instead of the import failing.
 - Keep the existing document ids (deterministic member and registration ids, random temple/retreat ids) so R2 keys, Typesense ids, audit history and links stay valid.
 - Timestamps stay ISO strings (they already are) so sort keys and `gmt7Date` helpers keep working.
 - Denormalized sort keys (`domain/listSortKeys.ts`, `haLapSortKey.ts`) stay; they are computed in the Worker on write with the same domain functions. `org_unit_name` could later be replaced by a `JOIN org_units`, but not in this migration.
+- The indexes in `0001_init.sql` cover the org-scoped list shapes only; lists with an optional `orgUnitId` / `status` filter and the stats counts by `giao_pham_he_phai_rank` / `list_city_name` get their indexes in phase 3 (new migration), once their SQL exists.
 - The final list of list/count indexes is derived from the actual query shapes in `memberRepo.list` / `listByHaLapTab` / `templeRepo.list` / `retreatRepo.list` and checked with `EXPLAIN QUERY PLAN` in tests (no full scan on `members` / `temples`).
 - D1 limits that shape the code: max 100 bound parameters per statement (chunk `IN (...)`, like today's `IN_QUERY_LIMIT`), 2 MB per row, 10 GB per database, statements per Worker invocation capped (keep exports paginated).
 

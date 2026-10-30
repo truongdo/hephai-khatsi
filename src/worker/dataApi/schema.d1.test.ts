@@ -29,7 +29,7 @@ import {
   templeToRow,
   type TempleRow,
 } from './rows/temple'
-import { clearData, insertRow as insert } from './test/db'
+import { clearData, insertStatement as insert } from './test/db'
 
 async function selectById<T>(table: string, id: string): Promise<T> {
   const row = await env.DB.prepare(`SELECT * FROM ${table} WHERE id = ?`).bind(id).first<T>()
@@ -118,16 +118,17 @@ describe('constraints', () => {
     ).rejects.toThrow(/UNIQUE/)
   })
 
-  it('rejects a member of an unknown org unit', async () => {
-    await expect(
-      insert('members', memberToRow({ ...minimalMember, orgUnitId: 'missing' })).run(),
-    ).rejects.toThrow(/FOREIGN KEY/)
+  it('accepts a member of an org unit outside the seed (Firestore never checked it)', async () => {
+    await insert('members', memberToRow({ ...minimalMember, orgUnitId: 'legacy-unit' })).run()
+    expect(memberFromRow(await selectById<MemberRow>('members', minimalMember.id)).orgUnitId).toBe('legacy-unit')
   })
 
-  it('rejects an unknown status', async () => {
-    await expect(
-      insert('members', { ...memberToRow(minimalMember), status: 'archived' }).run(),
-    ).rejects.toThrow(/CHECK/)
+  it.each([
+    ['members', { ...memberToRow(minimalMember), status: 'archived' }],
+    ['invites', { ...inviteToRow(fillerInvite), kind: 'other' }],
+    ['retreat_registrations', { ...registrationToRow(pendingSelfRegistration), status: 'cancelled' }],
+  ])('rejects an unknown enum value in %s', async (table, row) => {
+    await expect(insert(table, row).run()).rejects.toThrow(/CHECK/)
   })
 
   it('removes manager phone rows with their temple', async () => {
