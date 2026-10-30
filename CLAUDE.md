@@ -24,11 +24,14 @@ pnpm exec vitest run -t "name of test"                  # single test by name
 pnpm emulator            # Firestore + Auth emulators (needs Java), uses ../firebase.json
 pnpm test:integration    # *.integration.test.ts against running emulators (incl. firestore rules tests)
 pnpm test:e2e            # starts dev server and runs Cypress headless (cypress/e2e/*.cy.ts)
-pnpm deploy              # build + wrangler deploy (Worker + static assets + R2 binding)
+pnpm deploy              # build + wrangler deploy (Worker + static assets + R2 + D1 bindings)
+pnpm db:migrate:local    # apply migrations/*.sql to the local D1 (wrangler dev)
+pnpm db:migrate:remote   # apply them to the production D1
 ```
 
 - `pnpm test` runs `paraglide` first; if running vitest directly and `src/paraglide` is stale after editing `messages/vi.json`, run `pnpm paraglide`.
-- Vitest has two projects (`vitest.config.ts`): `*.test.ts` run in **node**, `*.test.tsx` run in **jsdom** with `src/test/setup.ts`. A `.ts` test that needs DOM/`window` must be added to the `domUnitTests` list in `vitest.config.ts`.
+- Vitest has three projects (`vitest.config.ts`): `*.test.ts` run in **node**, `*.test.tsx` run in **jsdom** with `src/test/setup.ts`, and `src/worker/**/*.d1.test.ts` run in **workerd** (`@cloudflare/vitest-plugin`) against a local D1 with `migrations/` applied, fresh per test file (use `clearData` from `src/worker/dataApi/test/db.ts` in `beforeEach`). A `.ts` test that needs DOM/`window` must be added to the `domUnitTests` list in `vitest.config.ts`.
+- D1 migration (in progress, see `docs/superpowers/plans/2026-10-30-firestore-to-d1-migration.md`): schema in `migrations/*.sql`, row ↔ domain mappers in `src/worker/dataApi/rows/`. Firestore is still the live backend. `migrations/0002_seed_org_units.sql` is generated (`pnpm db:seed-sql:org-units`).
 - Integration tests are excluded from `pnpm test` and use `vitest.integration.config.ts`.
 - Firestore rules/indexes deploy separately from the repo root via the Firebase CLI, not with `pnpm deploy`.
 - One-off data scripts in `scripts/` (`seed:org-units`, `backfill:*`) run with `node --env-file=.env`. Admin custom claims are set via `scripts/set-he-phai-admin.mjs` (see `README.md`).

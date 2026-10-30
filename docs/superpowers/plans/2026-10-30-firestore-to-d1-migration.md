@@ -15,7 +15,7 @@ before:  routes → query → use-cases → repositories ──Firestore SDK─�
 after:   routes → query → use-cases → repositories ──fetch──▶ Worker /api/data/* (authz in TS) ──▶ D1
 ```
 
-**Tech stack:** Cloudflare D1 (SQLite), `wrangler d1 migrations`, Worker `env.DB`, `jose` (already used for Firebase ID token verification), `@cloudflare/vitest-pool-workers` for Worker + D1 tests (new dev dependency, the official way to run D1 in Vitest), `firebase-admin` (already a dev dependency) for the one-off export.
+**Tech stack:** Cloudflare D1 (SQLite), `wrangler d1 migrations`, Worker `env.DB`, `jose` (already used for Firebase ID token verification), `@cloudflare/vitest-plugin` for Worker + D1 tests (new dev dependency, the official way to run D1 in Vitest; formerly `@cloudflare/vitest-pool-workers`), `firebase-admin` (already a dev dependency) for the one-off export.
 
 ## Why this is more than a storage swap
 
@@ -57,7 +57,7 @@ CREATE TABLE invites (
 
 CREATE TABLE members (
   id TEXT PRIMARY KEY,               -- keep {orgUnitId}_{sanghaType}_{cccd}
-  org_unit_id TEXT NOT NULL REFERENCES org_units(id),
+  org_unit_id TEXT NOT NULL,
   sangha_type TEXT NOT NULL CHECK (sangha_type IN ('tang','ni')),
   cccd TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('draft','locked')),
@@ -85,7 +85,7 @@ CREATE INDEX members_directory_role ON members(directory_role) WHERE directory_r
 
 CREATE TABLE temples (
   id TEXT PRIMARY KEY,
-  org_unit_id TEXT NOT NULL REFERENCES org_units(id),
+  org_unit_id TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('draft','locked')),
   invite_id TEXT, list_city_name TEXT, org_unit_name TEXT,
   locked_at TEXT, locked_by TEXT, edit_requested_at TEXT, edit_requested_by TEXT,
@@ -103,14 +103,18 @@ CREATE TABLE temple_manager_phones (
   org_unit_id TEXT NOT NULL, phone TEXT NOT NULL,
   PRIMARY KEY (org_unit_id, phone, temple_id)
 );
+CREATE INDEX temple_manager_phones_temple ON temple_manager_phones(temple_id);
 
+-- Firestore audit log ids are unique only per parent (logs are copied with
+-- their ids when a member moves), so the key includes the parent.
 CREATE TABLE audit_logs (
-  id TEXT PRIMARY KEY,
   parent_type TEXT NOT NULL CHECK (parent_type IN ('members','temples')),
-  parent_id TEXT NOT NULL,
+  parent_id TEXT NOT NULL, id TEXT NOT NULL,
   action TEXT NOT NULL, at TEXT NOT NULL,
   actor_type TEXT NOT NULL, actor_id TEXT NOT NULL,
-  changes TEXT NOT NULL              -- JSON array
+  changes TEXT NOT NULL,             -- JSON array
+  summary TEXT,
+  PRIMARY KEY (parent_type, parent_id, id)
 );
 CREATE INDEX audit_logs_parent ON audit_logs(parent_type, parent_id, at DESC);
 
@@ -124,7 +128,7 @@ CREATE INDEX retreats_list ON retreats(org_unit_id, status, updated_at, id);
 
 CREATE TABLE retreat_registrations (
   id TEXT PRIMARY KEY,               -- keep {retreatId}_{memberId}
-  retreat_id TEXT NOT NULL REFERENCES retreats(id),
+  retreat_id TEXT NOT NULL,
   member_id TEXT NOT NULL, org_unit_id TEXT NOT NULL,
   status TEXT NOT NULL, registered_via TEXT NOT NULL, registered_by TEXT,
   approved_by TEXT, approved_at TEXT, rejection_reason TEXT,
@@ -136,9 +140,11 @@ CREATE INDEX retreat_registrations_list ON retreat_registrations(retreat_id, cre
 
 Notes:
 
+- No foreign keys on imported tables (only `temple_manager_phones → temples`, with cascade): Firestore never enforced references (records of org units outside the seed, registrations of deleted retreats), so `scripts/verify-d1-import.ts` reports orphans instead of the import failing.
 - Keep the existing document ids (deterministic member and registration ids, random temple/retreat ids) so R2 keys, Typesense ids, audit history and links stay valid.
 - Timestamps stay ISO strings (they already are) so sort keys and `gmt7Date` helpers keep working.
 - Denormalized sort keys (`domain/listSortKeys.ts`, `haLapSortKey.ts`) stay; they are computed in the Worker on write with the same domain functions. `org_unit_name` could later be replaced by a `JOIN org_units`, but not in this migration.
+- The indexes in `0001_init.sql` cover the org-scoped list shapes only; lists with an optional `orgUnitId` / `status` filter and the stats counts by `giao_pham_he_phai_rank` / `list_city_name` get their indexes in phase 3 (new migration), once their SQL exists.
 - The final list of list/count indexes is derived from the actual query shapes in `memberRepo.list` / `listByHaLapTab` / `templeRepo.list` / `retreatRepo.list` and checked with `EXPLAIN QUERY PLAN` in tests (no full scan on `members` / `temples`).
 - D1 limits that shape the code: max 100 bound parameters per statement (chunk `IN (...)`, like today's `IN_QUERY_LIMIT`), 2 MB per row, 10 GB per database, statements per Worker invocation capped (keep exports paginated).
 
@@ -177,11 +183,11 @@ Each phase is a separate PR from `main`; phases 1–3 ship with Firestore still 
 
 ### Phase 1 — Schema, binding, test harness
 
-- [ ] Add `d1_databases` binding `DB` (+ `migrations_dir: "migrations"`) to `wrangler.jsonc`; add `DB: D1Database` to `src/worker/env.ts`.
-- [ ] `migrations/0001_init.sql` (schema above) and `0002_seed_org_units.sql` generated from `domain/orgUnitSeed.ts`.
-- [ ] Add `@cloudflare/vitest-pool-workers` and a third Vitest project `worker-d1` (`src/worker/**/*.d1.test.ts`) that applies migrations to a fresh in-memory D1 per test file.
-- [ ] Row mappers `src/worker/dataApi/rows/{member,temple,retreat,registration,invite,orgUnit,auditLog}.ts`: `toRow(domain)` / `fromRow(row)`, round-trip tested with fixtures from existing tests.
-- [ ] Add scripts: `db:migrate:local` (`wrangler d1 migrations apply hephai-khatsi --local`), `db:migrate:remote`.
+- [x] Add `d1_databases` binding `DB` (+ `migrations_dir: "migrations"`) to `wrangler.jsonc`; add `DB: D1Database` to `src/worker/env.ts`. `database_id` `2cd8ee1d-a474-412c-aa19-f7088d4374a1` (database `hephai-khatsi`).
+- [x] `migrations/0001_init.sql` (schema above) and `0002_seed_org_units.sql` generated from `domain/orgUnitSeed.ts` (`pnpm db:seed-sql:org-units`; a unit test fails when they drift).
+- [x] Add `@cloudflare/vitest-plugin` and a third Vitest project `worker-d1` (`src/worker/**/*.d1.test.ts`) that applies migrations to a fresh in-memory D1 per test file (`src/worker/dataApi/test/`: setup, `clearData` for `beforeEach`, fixtures).
+- [x] Row mappers `src/worker/dataApi/rows/{member,temple,retreat,registration,invite,orgUnit,auditLog}.ts`: `toRow(domain)` / `fromRow(row)`, round-trip tested in Node and through D1. Rules: column fields are not repeated in `data`; derived columns (`members.phone`, `giao_pham_he_phai_rank`) keep their source in `data`; NULL columns of optional fields read back as absent (`tinhTrang: null` reads back as absent); an invite id must equal its token; `version` is left to the write handlers.
+- [x] Add scripts: `db:migrate:local` (`wrangler d1 migrations apply hephai-khatsi --local`), `db:migrate:remote`.
 
 ### Phase 2 — Server-side authorization (highest risk)
 
