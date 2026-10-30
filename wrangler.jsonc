@@ -21,6 +21,7 @@
     {
       "binding": "DB",
       "database_name": "hephai-khatsi",
+      "database_id": "2cd8ee1d-a474-412c-aa19-f7088d4374a1",
       "migrations_dir": "migrations"
     }
   ],

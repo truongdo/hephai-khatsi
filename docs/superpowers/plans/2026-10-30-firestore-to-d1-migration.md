@@ -183,7 +183,7 @@ Each phase is a separate PR from `main`; phases 1–3 ship with Firestore still 
 
 ### Phase 1 — Schema, binding, test harness
 
-- [x] Add `d1_databases` binding `DB` (+ `migrations_dir: "migrations"`) to `wrangler.jsonc`; add `DB: D1Database` to `src/worker/env.ts`. `database_id` is added once the phase 0 database exists.
+- [x] Add `d1_databases` binding `DB` (+ `migrations_dir: "migrations"`) to `wrangler.jsonc`; add `DB: D1Database` to `src/worker/env.ts`. `database_id` `2cd8ee1d-a474-412c-aa19-f7088d4374a1` (database `hephai-khatsi`).
 - [x] `migrations/0001_init.sql` (schema above) and `0002_seed_org_units.sql` generated from `domain/orgUnitSeed.ts` (`pnpm db:seed-sql:org-units`; a unit test fails when they drift).
 - [x] Add `@cloudflare/vitest-plugin` and a third Vitest project `worker-d1` (`src/worker/**/*.d1.test.ts`) that applies migrations to a fresh in-memory D1 per test file (`src/worker/dataApi/test/`: setup, `clearData` for `beforeEach`, fixtures).
 - [x] Row mappers `src/worker/dataApi/rows/{member,temple,retreat,registration,invite,orgUnit,auditLog}.ts`: `toRow(domain)` / `fromRow(row)`, round-trip tested in Node and through D1. Rules: column fields are not repeated in `data`; derived columns (`members.phone`, `giao_pham_he_phai_rank`) keep their source in `data`; NULL columns of optional fields read back as absent (`tinhTrang: null` reads back as absent); an invite id must equal its token; `version` is left to the write handlers.
