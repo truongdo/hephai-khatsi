@@ -1,6 +1,7 @@
 export type Env = {
   ASSETS: Fetcher
   PHOTOS: R2Bucket
+  DB: D1Database
   R2_ACCOUNT_ID: string
   R2_ACCESS_KEY_ID: string
   R2_SECRET_ACCESS_KEY: string

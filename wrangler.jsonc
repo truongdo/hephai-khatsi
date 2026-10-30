@@ -17,6 +17,13 @@
       "preview_bucket_name": "member-photos-preview"
     }
   ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hephai-khatsi",
+      "migrations_dir": "migrations"
+    }
+  ],
   "vars": {
     "R2_ACCOUNT_ID": "f263bbfd7be32d7002a58899a8dbd30b",
     "R2_BUCKET_NAME": "member-photos",

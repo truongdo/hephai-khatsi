@@ -66,6 +66,7 @@ function makeEnv(overrides: Partial<Env> = {}): Env {
   return {
     ASSETS: {} as Fetcher,
     PHOTOS: {} as R2Bucket,
+    DB: {} as D1Database,
     R2_ACCOUNT_ID: 'acct',
     R2_ACCESS_KEY_ID: 'key',
     R2_SECRET_ACCESS_KEY: 'secret',
