@@ -162,7 +162,7 @@ Request auth: `Authorization: Bearer <Firebase ID token>` for staff (generalize 
 
 Authorization lives in pure functions `src/domain/authz/{members,temples,retreats,registrations,invites,orgUnits}.ts` (`canListMembers(claims, input)`, `checkMemberWrite(claims | invite, before, after)` …) that mirror the rules one-to-one, so they are unit-tested without D1. Handlers: parse/validate body → authenticate → load row(s) → `authz` → compute with domain code → `db.batch` (row + audit log + phone rows, `version` guard) → return record. `DomainError` codes map to HTTP statuses the client already understands.
 
-Behaviour to keep from the rules (checklist for the authz port): public `get` of member/temple/registration by id (or tighten it to invite-token callers — see open questions), list only for directory writers scoped by `orgUnitId`, admin create shape (draft, not locked, `inviteId` null for giáo đoàn), filler create shape (locked by filler, no `tinhTrang`), filler update only save-and-lock / edit-request / media update (first portrait only when locked), core identity immutable, directory-role fields and secretary email immutable from the app, temple org-unit reassignment only by hệ phái admin on drafts, retreat create/status transitions/delete-only-draft, registration create shapes (self vs proxy) and review shape, audit logs append-only.
+Behaviour to keep from the rules (checklist for the authz port): public `get` of member/temple/registration by id (kept as is, see decisions), list only for directory writers scoped by `orgUnitId`, admin create shape (draft, not locked, `inviteId` null for giáo đoàn), filler create shape (locked by filler, no `tinhTrang`), filler update only save-and-lock / edit-request / media update (first portrait only when locked), core identity immutable, directory-role fields and secretary email immutable from the app, temple org-unit reassignment only by hệ phái admin on drafts, retreat create/status transitions/delete-only-draft, registration create shapes (self vs proxy) and review shape, audit logs append-only.
 
 ## Phases
 
@@ -245,8 +245,11 @@ Recommended: a short write freeze rather than dual writes (dual writes from the 
 | Search index out of sync | Reindex from D1 right after cutover; Worker-side sync afterwards |
 | Large exports hit Worker limits | Paginated export endpoint, the client already assembles pages (`listAllForExport`) |
 
-## Open questions for the requester
+## Open questions and decisions
 
-1. **Public read by id.** Firestore allows anyone to `get` a member/temple/registration by id (the id is the bearer secret). Keep that, or require the invite token on those reads in the new API (safer, small client change)?
-2. **Cutover window.** Is a short write freeze (est. under 1 hour, depending on data volume) acceptable, and when?
-3. **Typesense sync** moved into the Worker in phase 3 — OK, or keep the client-side notifications for now?
+1. **Cutover window.** Is a short write freeze (est. under 1 hour, depending on data volume) acceptable, and when?
+
+Decided (requester, 2026-10-30):
+
+- **Public read by id is kept** as today: anyone who knows a member / temple / registration id can read it (the id is the bearer secret). No invite token on those reads.
+- **Typesense sync moves into the Worker** (phase 3); the client-side search notifications are removed in phase 4.
