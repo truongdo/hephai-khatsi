@@ -6,6 +6,7 @@ via a Cloudflare Worker (`src/worker.ts`); the browser uploads with presigned PU
 public objects from `VITE_PHOTOS_PUBLIC_BASE`. Firestore security rules (see `../firebase/`) are the
 authorization boundary for data; `firebase/storage.rules` remains in the repo as legacy (unused for portraits).
 
+
 # Getting Started
 
 To run this application:

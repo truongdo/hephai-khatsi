@@ -22,3 +22,5 @@ project.inlang/cache
 !.env.example
 
 .superpowers/
+.serena/project.yml
+*.swp
