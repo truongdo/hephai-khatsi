@@ -22,6 +22,7 @@ import {
   saveMembersTableColumnIds,
 } from '#/domain/membersTableColumnSelection'
 import { canonicalHaLapTabRankKeys } from '#/domain/membersHaLapGroups'
+import type { MemberTinhTrang } from '#/domain/memberTinhTrang'
 import type { Member, RecordStatus, SanghaType } from '#/domain/types'
 import { canManageDirectory, isHePhaiScope } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
@@ -32,7 +33,9 @@ import {
   exportMembersPdf,
   type MembersPdfFormat,
 } from '#/use-cases/exportMembersPdf'
+import { setMemberTinhTrang } from '#/use-cases/setMemberTinhTrang'
 import { unlockMember } from '#/use-cases/unlockMember'
+import type { AdminListPage } from '#/repositories/adminListTypes'
 
 type MembersListPageProps = {
   sanghaType: SanghaType
@@ -74,6 +77,20 @@ function filterTabMembers(
     return items.filter((member) => member.editRequestedAt != null)
   }
   return items
+}
+
+function replaceMemberInTabs(
+  tabs: Record<string, TabLoadState>,
+  updated: Member,
+): Record<string, TabLoadState> {
+  const next: Record<string, TabLoadState> = {}
+  for (const [rankKey, state] of Object.entries(tabs)) {
+    next[rankKey] = {
+      ...state,
+      items: state.items.map((item) => (item.id === updated.id ? updated : item)),
+    }
+  }
+  return next
 }
 
 function dedupeMembersById(items: Member[]): Member[] {
@@ -425,6 +442,37 @@ export function MembersListPage({
     },
   })
 
+  // Patch the loaded rows and cached pages in place instead of refetching the list.
+  const tinhTrangMutation = useMutation({
+    mutationFn: async (input: {
+      memberId: string
+      tinhTrang: MemberTinhTrang | null
+    }) => {
+      if (claim.status !== 'admin') throw new Error('Not signed in as admin')
+      return setMemberTinhTrang({
+        ...input,
+        audit: { actorType: 'admin', actorId: claim.uid },
+      })
+    },
+    onSuccess: (updated) => {
+      setTabStateByRank((prev) => replaceMemberInTabs(prev, updated))
+      queryClient.setQueriesData<AdminListPage<Member>>(
+        { queryKey: [...adminKeys.all, 'membersByHaLapTab'] },
+        (page) =>
+          page && {
+            ...page,
+            items: page.items.map((item) =>
+              item.id === updated.id ? updated : item,
+            ),
+          },
+      )
+      queryClient.setQueryData(adminKeys.member(updated.id), updated)
+      void queryClient.invalidateQueries({
+        queryKey: adminKeys.memberAuditLogs(updated.id),
+      })
+    },
+  })
+
   const orgUnitSelectData = useMemo(
     () =>
       (orgUnits.data ?? []).map((unit) => ({
@@ -567,6 +615,12 @@ export function MembersListPage({
         </Text>
       )}
 
+      {tinhTrangMutation.error && (
+        <Text c="red" size="sm" role="alert">
+          {m.admin_members_tinh_trang_save_failed()}
+        </Text>
+      )}
+
       {members.isError && members.error && (
         <QueryErrorAlert error={members.error} />
       )}
@@ -591,6 +645,14 @@ export function MembersListPage({
               onUnlock={(memberId) => unlockMutation.mutate(memberId)}
               unlockingMemberId={
                 unlockMutation.isPending ? unlockMutation.variables : undefined
+              }
+              onTinhTrangChange={(memberId, tinhTrang) =>
+                tinhTrangMutation.mutate({ memberId, tinhTrang })
+              }
+              savingTinhTrangMemberId={
+                tinhTrangMutation.isPending
+                  ? tinhTrangMutation.variables.memberId
+                  : undefined
               }
               isLoading={members.isFetching && activeTabState.items.length === 0}
               hasMore={!!tabStateByRank[resolvedActiveTab]?.nextCursor}

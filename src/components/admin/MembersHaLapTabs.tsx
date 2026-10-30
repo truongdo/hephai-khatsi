@@ -13,6 +13,11 @@ import {
 } from '#/components/admin/memberTableCell'
 import { membersTableDisplayColumns } from '#/domain/memberExcelColumns'
 import { haLapTabLabel } from '#/domain/membersHaLapGroups'
+import {
+  MEMBER_TINH_TRANG_VALUES,
+  memberTinhTrangLabel,
+  type MemberTinhTrang,
+} from '#/domain/memberTinhTrang'
 import type { Member, SanghaType } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 
@@ -35,6 +40,8 @@ export type MembersHaLapTabsProps = {
   onToggleAllInTab: (ids: string[], select: boolean) => void
   onUnlock: (memberId: string) => void
   unlockingMemberId?: string
+  onTinhTrangChange: (memberId: string, tinhTrang: MemberTinhTrang | null) => void
+  savingTinhTrangMemberId?: string
   isLoading?: boolean
   hasMore?: boolean
   onLoadMore?: () => void
@@ -56,6 +63,8 @@ type HaLapMemberTableProps = {
   onToggleAllInTab: (ids: string[], select: boolean) => void
   onUnlock: (memberId: string) => void
   unlockingMemberId?: string
+  onTinhTrangChange: (memberId: string, tinhTrang: MemberTinhTrang | null) => void
+  savingTinhTrangMemberId?: string
   ariaLabel: string
   isLoading?: boolean
 }
@@ -71,6 +80,8 @@ function HaLapMemberTable({
   onToggleAllInTab,
   onUnlock,
   unlockingMemberId,
+  onTinhTrangChange,
+  savingTinhTrangMemberId,
   ariaLabel,
   isLoading,
 }: HaLapMemberTableProps) {
@@ -96,8 +107,20 @@ function HaLapMemberTable({
       orgUnitNameById,
       onUnlock,
       unlockingMemberId,
+      tinhTrangOptions: MEMBER_TINH_TRANG_VALUES.map((value) => ({
+        value,
+        label: memberTinhTrangLabel(value),
+      })),
+      onTinhTrangChange,
+      savingTinhTrangMemberId,
     }),
-    [orgUnitNameById, onUnlock, unlockingMemberId],
+    [
+      orgUnitNameById,
+      onUnlock,
+      unlockingMemberId,
+      onTinhTrangChange,
+      savingTinhTrangMemberId,
+    ],
   )
 
   return (
@@ -164,6 +187,8 @@ export function MembersHaLapTabs({
   onToggleAllInTab,
   onUnlock,
   unlockingMemberId,
+  onTinhTrangChange,
+  savingTinhTrangMemberId,
   isLoading,
   hasMore,
   onLoadMore,
@@ -209,6 +234,8 @@ export function MembersHaLapTabs({
             onToggleAllInTab={onToggleAllInTab}
             onUnlock={onUnlock}
             unlockingMemberId={unlockingMemberId}
+            onTinhTrangChange={onTinhTrangChange}
+            savingTinhTrangMemberId={savingTinhTrangMemberId}
             ariaLabel={activeTabLabel}
             isLoading={isLoading}
           />

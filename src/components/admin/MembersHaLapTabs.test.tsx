@@ -55,6 +55,7 @@ function renderTabs(
   const onToggleAllInTab = vi.fn()
   const onActiveTabChange = vi.fn()
   const onUnlock = vi.fn()
+  const onTinhTrangChange = vi.fn()
 
   const view = render(
     <MantineProvider theme={theme} defaultColorScheme="light">
@@ -73,15 +74,24 @@ function renderTabs(
         onToggle={onToggle}
         onToggleAllInTab={onToggleAllInTab}
         onUnlock={onUnlock}
+        onTinhTrangChange={onTinhTrangChange}
         {...props}
       />
     </MantineProvider>,
   )
 
-  return { ...view, onToggle, onToggleAllInTab, onActiveTabChange, onUnlock }
+  return {
+    ...view,
+    onToggle,
+    onToggleAllInTab,
+    onActiveTabChange,
+    onUnlock,
+    onTinhTrangChange,
+  }
 }
 
 beforeAll(() => {
+  Element.prototype.scrollIntoView = vi.fn()
   class ResizeObserverMock {
     observe() {}
     unobserve() {}
@@ -134,5 +144,34 @@ describe('MembersHaLapTabs', () => {
     expect(screen.getByRole('columnheader', { name: 'CCCD' })).toBeTruthy()
     expect(screen.queryByRole('columnheader', { name: 'Thế danh' })).toBeNull()
     expect(screen.queryByRole('columnheader', { name: 'Giáo đoàn' })).toBeNull()
+  })
+
+  it('quick-edits tình trạng from the list row', async () => {
+    const onTinhTrangChange = vi.fn()
+    const user = userEvent.setup()
+    renderTabs({
+      displayColumnIds: ['phapDanh', 'tinhTrang'],
+      activeTabMembers: [{ ...activeTabMembers[0], tinhTrang: 'sinh_hoat' }],
+      onTinhTrangChange,
+    })
+
+    expect(screen.getByRole('columnheader', { name: 'Tình trạng' })).toBeTruthy()
+    const select = screen.getByLabelText('Tình trạng', { selector: 'input' })
+    expect((select as HTMLInputElement).value).toBe('Sinh hoạt')
+
+    await user.click(select)
+    await user.click(await screen.findByText('Viên tịch'))
+
+    expect(onTinhTrangChange).toHaveBeenCalledWith('m2', 'vien_tich')
+  })
+
+  it('disables the tình trạng select while that row is saving', () => {
+    renderTabs({
+      displayColumnIds: ['phapDanh', 'tinhTrang'],
+      savingTinhTrangMemberId: 'm2',
+    })
+    const selects = screen.getAllByLabelText('Tình trạng', { selector: 'input' })
+    expect((selects[0] as HTMLInputElement).disabled).toBe(true)
+    expect((selects[1] as HTMLInputElement).disabled).toBe(false)
   })
 })

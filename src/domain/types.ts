@@ -1,5 +1,6 @@
 import type { AddressValue } from './address'
 import type { MemberDocuments } from './memberDocumentTypes'
+import type { MemberTinhTrang } from './memberTinhTrang'
 
 export type OrgUnitKind = 'giao_doan' | 'ni_gioi'
 export type SanghaType = 'tang' | 'ni'
@@ -133,6 +134,8 @@ export type Member = {
     }>
   }
   nguyenVong?: string
+  /** Set by admins from the members list (not part of the form); null when cleared. */
+  tinhTrang?: MemberTinhTrang | null
   documents?: MemberDocuments
   createdAt: string
   updatedAt: string

@@ -5,6 +5,7 @@ import { memberCccdIndexId } from '#/domain/memberCccdIndex'
 import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
 import { normalizeVnPhone } from '#/domain/normalize'
 import type { MemberDocuments } from '#/domain/memberDocumentTypes'
+import type { MemberTinhTrang } from '#/domain/memberTinhTrang'
 import {
   mergeDocumentPath,
   pathFieldForSide,
@@ -667,6 +668,30 @@ export function createMemoryMemberStore(
         updatedAt: '2026-07-19T00:00:00.000Z',
       }
       members.set(memberId, member)
+      return member
+    },
+    async setTinhTrang(
+      memberId: string,
+      tinhTrang: MemberTinhTrang | null,
+      auditActor: AuditActor,
+    ) {
+      const existing = members.get(memberId)
+      if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
+      if ((existing.tinhTrang ?? null) === tinhTrang) return existing
+      const now = '2026-07-19T00:00:00.000Z'
+      const member: Member = { ...existing, tinhTrang, updatedAt: now }
+      members.set(memberId, member)
+      maybeMemoryAppendAuditFromDiff(
+        auditLogs,
+        { collection: 'members', id: memberId },
+        {
+          action: 'updated',
+          actor: auditActor,
+          at: now,
+          before: existing,
+          after: member,
+        },
+      )
       return member
     },
     async mergeDocumentSide(

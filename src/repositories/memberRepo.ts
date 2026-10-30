@@ -37,6 +37,7 @@ import {
   type DocumentSide,
   type DocumentTypeId,
 } from '#/domain/memberDocumentTypes'
+import type { MemberTinhTrang } from '#/domain/memberTinhTrang'
 import type { Member, SanghaType } from '#/domain/types'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
@@ -71,6 +72,7 @@ export type MemberProfilePatch = Partial<
     | 'giaoPhamHePhaiRankOrder'
     | 'sapXepHaLap'
     | 'haLapTabRank'
+    | 'tinhTrang'
   >
 >
 
@@ -132,6 +134,11 @@ export type MemberStore = {
     audit: AuditActor,
   ): Promise<Member>
   setDocumentPaths(memberId: string, documents: MemberDocuments): Promise<Member>
+  setTinhTrang(
+    memberId: string,
+    tinhTrang: MemberTinhTrang | null,
+    audit: AuditActor,
+  ): Promise<Member>
   mergeDocumentSide(
     memberId: string,
     typeId: DocumentTypeId,
@@ -880,6 +887,46 @@ async function setDocumentPaths(
   })
 }
 
+// Allowed on locked records too: it is an admin-maintained field outside the form.
+async function setTinhTrang(
+  memberId: string,
+  tinhTrang: MemberTinhTrang | null,
+  audit: AuditActor,
+): Promise<Member> {
+  const db = requireDb()
+  const memberRef = doc(db, COLLECTIONS.members, memberId)
+
+  return runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(memberRef)
+    if (!snap.exists()) {
+      throw new DomainError('NOT_FOUND', 'Member not found')
+    }
+
+    const existing = memberFromSnap(snap)
+    if ((existing.tinhTrang ?? null) === tinhTrang) {
+      return existing
+    }
+
+    const now = new Date().toISOString()
+    const member: Member = { ...existing, tinhTrang, updatedAt: now }
+    transaction.set(memberRef, memberData(member))
+
+    maybeAppendAuditFromDiff(
+      transaction,
+      { collection: 'members', id: memberId },
+      {
+        action: 'updated',
+        actor: audit,
+        at: now,
+        before: existing,
+        after: member,
+      },
+    )
+
+    return member
+  })
+}
+
 async function mergeDocumentSide(
   memberId: string,
   typeId: DocumentTypeId,
@@ -1098,6 +1145,7 @@ export const memberRepo: MemberStore = {
   deleteMany,
   setPhotoPath,
   setDocumentPaths,
+  setTinhTrang,
   mergeDocumentSide,
   removeDocumentPaths,
   lock,
