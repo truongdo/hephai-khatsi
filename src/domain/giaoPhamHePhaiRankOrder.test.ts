@@ -1,8 +1,18 @@
 import { describe, expect, it } from 'vitest'
+import { NI_RANKS, TANG_RANKS } from '#/components/filler/fillerFormOptions'
 import {
+  GIAO_PHAM_HE_PHAI_RANKS,
   MISSING_GIAO_PHAM_HE_PHAI_RANK_ORDER,
   giaoPhamHePhaiRankOrder,
 } from './giaoPhamHePhaiRankOrder'
+
+describe('GIAO_PHAM_HE_PHAI_RANKS', () => {
+  // The Worker's stats use this list; the dashboards label the form options.
+  it('matches the form options', () => {
+    expect(GIAO_PHAM_HE_PHAI_RANKS.tang).toEqual(TANG_RANKS.map((option) => option.value))
+    expect(GIAO_PHAM_HE_PHAI_RANKS.ni).toEqual(NI_RANKS.map((option) => option.value))
+  })
+})
 
 describe('giaoPhamHePhaiRankOrder', () => {
   it('orders tang ranks by hierarchy', () => {
