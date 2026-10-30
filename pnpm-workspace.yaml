@@ -5,6 +5,7 @@ allowBuilds:
   esbuild: true
   lightningcss: true
   protobufjs: false
+  re2: false
   sharp: true
   workerd: true
 minimumReleaseAgeExclude:
