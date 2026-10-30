@@ -116,6 +116,14 @@ describe('MEMBER_EXCEL_COLUMNS cells', () => {
     expect(cell('orgUnitName', mem)).toBe('missing')
   })
 
+  it('renders tinhTrang as its label, empty when unset', () => {
+    expect(
+      cell('tinhTrang', member({ id: 'm1', sanghaType: 'tang', tinhTrang: 'chuyen_he_phai' })),
+    ).toBe('Chuyển hệ phái')
+    expect(cell('tinhTrang', member({ id: 'm2', sanghaType: 'tang', tinhTrang: null }))).toBe('')
+    expect(cell('tinhTrang', member({ id: 'm3', sanghaType: 'ni' }))).toBe('')
+  })
+
   it('renders ngayHaCapHaLap cell', () => {
     const col = MEMBER_EXCEL_COLUMNS.find((c) => c.id === 'ngayHaCapHaLap')
     expect(col).toBeTruthy()

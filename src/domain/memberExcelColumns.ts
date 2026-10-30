@@ -1,4 +1,5 @@
 import { formatAddressDisplay } from '#/domain/address'
+import { formatMemberTinhTrang } from '#/domain/memberTinhTrang'
 import type { Member, SanghaType } from '#/domain/types'
 import { rankLabel } from '#/components/filler/fillerFormOptions'
 import { m } from '#/paraglide/messages'
@@ -119,6 +120,12 @@ export const MEMBER_EXCEL_COLUMNS: MemberExcelColumnDef[] = [
       member.status === 'locked'
         ? m.admin_members_status_locked()
         : m.admin_members_status_draft(),
+  },
+  {
+    id: 'tinhTrang',
+    group: 'system',
+    header: () => m.admin_members_col_tinh_trang(),
+    cell: (member) => formatMemberTinhTrang(member.tinhTrang),
   },
   {
     id: 'theDanh',
@@ -391,7 +398,7 @@ export function defaultMembersExcelColumnIds(sanghaType: SanghaType): string[] {
 
 /** Default visible columns on the admin members table (hạ-lạp tabs). */
 export function defaultMembersTableColumnIds(_sanghaType: SanghaType): string[] {
-  return ['phapDanh', 'theDanh', 'orgUnitName', 'cccd', 'status']
+  return ['phapDanh', 'theDanh', 'orgUnitName', 'cccd', 'status', 'tinhTrang']
 }
 
 export function membersTableDisplayColumns(
