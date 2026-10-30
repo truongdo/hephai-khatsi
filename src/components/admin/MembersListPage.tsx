@@ -459,14 +459,19 @@ export function MembersListPage({
       queryClient.setQueriesData<AdminListPage<Member>>(
         { queryKey: [...adminKeys.all, 'membersByHaLapTab'] },
         (page) =>
-          page && {
-            ...page,
-            items: page.items.map((item) =>
-              item.id === updated.id ? updated : item,
-            ),
-          },
+          page?.items.some((item) => item.id === updated.id)
+            ? {
+                ...page,
+                items: page.items.map((item) =>
+                  item.id === updated.id ? updated : item,
+                ),
+              }
+            : page,
       )
       queryClient.setQueryData(adminKeys.member(updated.id), updated)
+      void queryClient.invalidateQueries({
+        queryKey: [...adminKeys.all, 'members'],
+      })
       void queryClient.invalidateQueries({
         queryKey: adminKeys.memberAuditLogs(updated.id),
       })
