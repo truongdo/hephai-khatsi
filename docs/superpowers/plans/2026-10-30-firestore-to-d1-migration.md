@@ -15,7 +15,7 @@ before:  routes → query → use-cases → repositories ──Firestore SDK─�
 after:   routes → query → use-cases → repositories ──fetch──▶ Worker /api/data/* (authz in TS) ──▶ D1
 ```
 
-**Tech stack:** Cloudflare D1 (SQLite), `wrangler d1 migrations`, Worker `env.DB`, `jose` (already used for Firebase ID token verification), `@cloudflare/vitest-pool-workers` for Worker + D1 tests (new dev dependency, the official way to run D1 in Vitest), `firebase-admin` (already a dev dependency) for the one-off export.
+**Tech stack:** Cloudflare D1 (SQLite), `wrangler d1 migrations`, Worker `env.DB`, `jose` (already used for Firebase ID token verification), `@cloudflare/vitest-plugin` for Worker + D1 tests (new dev dependency, the official way to run D1 in Vitest; formerly `@cloudflare/vitest-pool-workers`), `firebase-admin` (already a dev dependency) for the one-off export.
 
 ## Why this is more than a storage swap
 
@@ -103,14 +103,18 @@ CREATE TABLE temple_manager_phones (
   org_unit_id TEXT NOT NULL, phone TEXT NOT NULL,
   PRIMARY KEY (org_unit_id, phone, temple_id)
 );
+CREATE INDEX temple_manager_phones_temple ON temple_manager_phones(temple_id);
 
+-- Firestore audit log ids are unique only per parent (logs are copied with
+-- their ids when a member moves), so the key includes the parent.
 CREATE TABLE audit_logs (
-  id TEXT PRIMARY KEY,
   parent_type TEXT NOT NULL CHECK (parent_type IN ('members','temples')),
-  parent_id TEXT NOT NULL,
+  parent_id TEXT NOT NULL, id TEXT NOT NULL,
   action TEXT NOT NULL, at TEXT NOT NULL,
   actor_type TEXT NOT NULL, actor_id TEXT NOT NULL,
-  changes TEXT NOT NULL              -- JSON array
+  changes TEXT NOT NULL,             -- JSON array
+  summary TEXT,
+  PRIMARY KEY (parent_type, parent_id, id)
 );
 CREATE INDEX audit_logs_parent ON audit_logs(parent_type, parent_id, at DESC);
 
@@ -177,11 +181,11 @@ Each phase is a separate PR from `main`; phases 1–3 ship with Firestore still 
 
 ### Phase 1 — Schema, binding, test harness
 
-- [ ] Add `d1_databases` binding `DB` (+ `migrations_dir: "migrations"`) to `wrangler.jsonc`; add `DB: D1Database` to `src/worker/env.ts`.
-- [ ] `migrations/0001_init.sql` (schema above) and `0002_seed_org_units.sql` generated from `domain/orgUnitSeed.ts`.
-- [ ] Add `@cloudflare/vitest-pool-workers` and a third Vitest project `worker-d1` (`src/worker/**/*.d1.test.ts`) that applies migrations to a fresh in-memory D1 per test file.
-- [ ] Row mappers `src/worker/dataApi/rows/{member,temple,retreat,registration,invite,orgUnit,auditLog}.ts`: `toRow(domain)` / `fromRow(row)`, round-trip tested with fixtures from existing tests.
-- [ ] Add scripts: `db:migrate:local` (`wrangler d1 migrations apply hephai-khatsi --local`), `db:migrate:remote`.
+- [x] Add `d1_databases` binding `DB` (+ `migrations_dir: "migrations"`) to `wrangler.jsonc`; add `DB: D1Database` to `src/worker/env.ts`. `database_id` is added once the phase 0 database exists.
+- [x] `migrations/0001_init.sql` (schema above) and `0002_seed_org_units.sql` generated from `domain/orgUnitSeed.ts` (`pnpm db:seed-sql:org-units`; a unit test fails when they drift).
+- [x] Add `@cloudflare/vitest-plugin` and a third Vitest project `worker-d1` (`src/worker/**/*.d1.test.ts`) that applies migrations to a fresh in-memory D1 per test file (`src/worker/dataApi/test/`: setup, `clearData` for `beforeEach`, fixtures).
+- [x] Row mappers `src/worker/dataApi/rows/{member,temple,retreat,registration,invite,orgUnit,auditLog}.ts`: `toRow(domain)` / `fromRow(row)`, round-trip tested in Node and through D1. Rules: column fields are not repeated in `data`; derived columns (`members.phone`, `giao_pham_he_phai_rank`) keep their source in `data`; NULL columns of optional fields read back as absent (`tinhTrang: null` reads back as absent); an invite id must equal its token; `version` is left to the write handlers.
+- [x] Add scripts: `db:migrate:local` (`wrangler d1 migrations apply hephai-khatsi --local`), `db:migrate:remote`.
 
 ### Phase 2 — Server-side authorization (highest risk)
 
