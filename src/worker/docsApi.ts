@@ -6,7 +6,7 @@ import {
 } from '#/domain/memberDocumentTypes'
 import { normalizeCccd } from '#/domain/normalize'
 import type { Env } from './env'
-import { getMemberDocument, inviteExists } from './firestoreRest'
+import { recordSource } from './recordSource'
 import { createR2PresignedPutUrl, memberDocumentKey } from './presignR2Put'
 import { verifyFirebaseAdminToken } from './verifyFirebaseAdmin'
 
@@ -84,7 +84,7 @@ async function handleMemberUploadUrl(request: Request, env: Env): Promise<Respon
     return jsonError('Invalid side for document type', 400)
   }
 
-  const member = await getMemberDocument(env.FIREBASE_PROJECT_ID, memberId)
+  const member = await recordSource(env).getMember(memberId)
   if (!member) return jsonError('Member not found', 404)
   if (!cccdMatches(member.cccd, cccd)) return jsonError('CCCD mismatch', 403)
 
@@ -94,7 +94,7 @@ async function handleMemberUploadUrl(request: Request, env: Env): Promise<Respon
     if (!admin) return jsonError('Unauthorized', 401)
   } else if (inviteToken) {
     // Global invite has no orgUnitId — existence only (same as temple photo auth).
-    const exists = await inviteExists(env.FIREBASE_PROJECT_ID, inviteToken)
+    const exists = await recordSource(env).inviteExists(inviteToken)
     if (!exists) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)
@@ -132,7 +132,7 @@ async function handleMemberDelete(request: Request, env: Env): Promise<Response>
   const docType = getDocumentType(typeId)
   if (!docType) return jsonError('Invalid document type', 400)
 
-  const member = await getMemberDocument(env.FIREBASE_PROJECT_ID, memberId)
+  const member = await recordSource(env).getMember(memberId)
   if (!member) return jsonError('Member not found', 404)
 
   let isAdmin = false
@@ -144,7 +144,7 @@ async function handleMemberDelete(request: Request, env: Env): Promise<Response>
   } else if (inviteToken) {
     if (!cccd) return jsonError('Missing required fields', 400)
     if (!cccdMatches(member.cccd, cccd)) return jsonError('CCCD mismatch', 403)
-    const exists = await inviteExists(env.FIREBASE_PROJECT_ID, inviteToken)
+    const exists = await recordSource(env).inviteExists(inviteToken)
     if (!exists) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)
