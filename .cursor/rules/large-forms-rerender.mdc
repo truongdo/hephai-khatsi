@@ -1,6 +1,6 @@
 ---
 description: Prevent laggy large controlled forms from full-tree re-renders
-globs: tanstack-app/src/components/**/*.{ts,tsx}
+globs: src/components/**/*.{ts,tsx}
 alwaysApply: false
 ---
 

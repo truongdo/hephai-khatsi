@@ -34,7 +34,7 @@ Either of these works (same access as the Gmail admin):
 
 1. Ensure the email/password user exists in Firebase Auth (your `SEED_ADMIN_*` account).
 2. Use a Firebase service account JSON (same kind as `FIREBASE_SERVICE_ACCOUNT_JSON` / `*-firebase-adminsdk-*.json`). Do not commit that file (already covered by `.gitignore`).
-3. From `tanstack-app`, install Admin SDK if needed and run a one-off script:
+3. From the repo root, install Admin SDK if needed and run a one-off script:
 
 ```bash
 pnpm add -D firebase-admin
@@ -97,14 +97,12 @@ started for portrait flows (portraits use R2). Legacy `firebase/storage.rules` a
 Terminal A — start the emulators from the repo root config:
 
 ```bash
-cd tanstack-app
 pnpm emulator
 ```
 
 Terminal B — run the integration suite (repository logic + Firestore security rules) against them:
 
 ```bash
-cd tanstack-app
 pnpm test:integration
 ```
 
@@ -137,10 +135,9 @@ Portraits upload to R2 via presigned PUT URLs from `/api/photos/*`; the client d
 
 1. Create R2 bucket **`member-photos`** (optional preview bucket **`member-photos-preview`** — names must match `wrangler.jsonc`).
 2. Enable a **public development URL** (`*.r2.dev`) or attach a **custom domain** for the bucket; set the base (no trailing slash) as `VITE_PHOTOS_PUBLIC_BASE` in `.env` / deploy env.
-3. Create an **R2 API token** with Object Read & Write scoped to the bucket. Non-secret vars (`R2_ACCOUNT_ID`, `R2_BUCKET_NAME`, `FIREBASE_PROJECT_ID`) live in `wrangler.jsonc` under `vars` (already set for this project). Put **secrets** with Wrangler from `tanstack-app` (use `pnpm exec` — Wrangler is a local dep, not a global CLI):
+3. Create an **R2 API token** with Object Read & Write scoped to the bucket. Non-secret vars (`R2_ACCOUNT_ID`, `R2_BUCKET_NAME`, `FIREBASE_PROJECT_ID`) live in `wrangler.jsonc` under `vars` (already set for this project). Put **secrets** with Wrangler from the repo root (use `pnpm exec` — Wrangler is a local dep, not a global CLI):
 
    ```bash
-   cd tanstack-app
    pnpm exec wrangler secret put R2_ACCESS_KEY_ID
    pnpm exec wrangler secret put R2_SECRET_ACCESS_KEY
    ```
@@ -158,7 +155,6 @@ For photo upload/delete API routes, run the Worker locally and proxy from Vite (
 Terminal A — Worker (needs R2 binding + secrets in `.dev.vars`, gitignored):
 
 ```bash
-cd tanstack-app
 # .dev.vars example (secrets; plain vars come from wrangler.jsonc in prod):
 # R2_ACCESS_KEY_ID=...
 # R2_SECRET_ACCESS_KEY=...
@@ -172,7 +168,6 @@ pnpm exec wrangler dev
 Terminal B — Vite dev server:
 
 ```bash
-cd tanstack-app
 pnpm dev
 ```
 
