@@ -35,7 +35,7 @@ Do **not** add a Cypress test for every small UI change. Prefer a thin E2E suite
 | New feature critical path | **One** Cypress journey covering the path (not every UI detail) |
 | Refactor with same UX | Keep existing E2E; do not expand the suite |
 
-## Repo conventions (`tanstack-app`)
+## Repo conventions (repo root)
 
 - Component/unit: colocated `*.test.tsx` with Vitest (see `src/components/Home.test.tsx`)
 - E2E: `cypress/e2e/*.cy.ts`; run via `pnpm test:e2e` / `pnpm cy:run`

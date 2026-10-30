@@ -4,14 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository layout
 
-- `tanstack-app/` — the whole application (Hệ phái Khất sĩ admin + public filler/registration forms). All `pnpm` commands run from here.
+- Repo root — the whole application (Hệ phái Khất sĩ admin + public filler/registration forms). All `pnpm` commands run from here.
 - `firebase/` — Firestore rules + indexes (`firestore.rules` is the data authorization boundary). `storage.rules` is legacy/unused (portraits live in R2). Wired up by root `firebase.json` (project `hephaikhatsi-82658`); the `hosting` block there is legacy — the app is deployed to Cloudflare.
 - `docs/superpowers/specs/*-design.md` and `docs/superpowers/plans/*.md` — dated design specs and implementation plans for each feature; check these for the intent behind a feature before changing it.
 - `.cursor/rules/*.mdc` — project rules (summarized below).
 
 UI copy and domain vocabulary are Vietnamese (e.g. `giaoDoan`, `haLap`, `danhHieu`, `khoa tu` = retreat). Keep that naming in domain code.
 
-## Commands (run in `tanstack-app/`)
+## Commands (run in the repo root)
 
 ```bash
 pnpm dev                 # Vite on :3000; proxies /api → 127.0.0.1:8787
@@ -31,7 +31,7 @@ pnpm deploy              # build + wrangler deploy (Worker + static assets + R2 
 - Vitest has two projects (`vitest.config.ts`): `*.test.ts` run in **node**, `*.test.tsx` run in **jsdom** with `src/test/setup.ts`. A `.ts` test that needs DOM/`window` must be added to the `domUnitTests` list in `vitest.config.ts`.
 - Integration tests are excluded from `pnpm test` and use `vitest.integration.config.ts`.
 - Firestore rules/indexes deploy separately from the repo root via the Firebase CLI, not with `pnpm deploy`.
-- One-off data scripts in `scripts/` (`seed:org-units`, `backfill:*`) run with `node --env-file=.env`. Admin custom claims are set via `scripts/set-he-phai-admin.mjs` (see `tanstack-app/README.md`).
+- One-off data scripts in `scripts/` (`seed:org-units`, `backfill:*`) run with `node --env-file=.env`. Admin custom claims are set via `scripts/set-he-phai-admin.mjs` (see `README.md`).
 
 ## Architecture
 

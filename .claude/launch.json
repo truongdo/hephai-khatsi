@@ -4,7 +4,7 @@
     {
       "name": "web",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--dir", "tanstack-app", "dev"],
+      "runtimeArgs": ["dev"],
       "port": 3000
     }
   ]
