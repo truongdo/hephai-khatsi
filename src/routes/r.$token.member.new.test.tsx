@@ -1,7 +1,7 @@
 import React from 'react'
 import { MantineProvider } from '@mantine/core'
 import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { RegistrationRouteProvider } from '#/components/registration/registrationRouteContext'
 import type { Invite } from '#/domain/types'
 import { m } from '#/paraglide/messages'
@@ -77,8 +77,15 @@ beforeAll(() => {
   })
 })
 
+// Inside the fixture's registration window (dangKyMoTu..dangKyDongLuc).
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date('2026-07-20T00:00:00.000Z'))
+})
+
 afterEach(() => {
   cleanup()
+  vi.useRealTimers()
 })
 
 async function renderMemberNewRoute(

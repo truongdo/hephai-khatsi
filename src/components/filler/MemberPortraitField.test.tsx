@@ -128,6 +128,7 @@ describe('MemberPortraitField', () => {
       contentType: 'image/jpeg',
       inviteToken: 'invite-token',
       idToken: undefined,
+      audit: { actorType: 'filler', actorId: 'filler' },
     })
     expect(onPhotoPathChange).toHaveBeenCalledWith('members/m1/photo.jpg')
     expect(onPendingFileChange).not.toHaveBeenCalled()
@@ -154,6 +155,7 @@ describe('MemberPortraitField', () => {
       contentType: 'image/jpeg',
       inviteToken: undefined,
       idToken: 'admin-id-token',
+      audit: { actorType: 'filler', actorId: 'filler' },
     })
     expect(onPhotoPathChange).toHaveBeenCalledWith('members/m1/photo.jpg')
   })
@@ -241,6 +243,7 @@ describe('MemberPortraitField', () => {
       cccd: '123456789012',
       inviteToken: 'invite-token',
       idToken: undefined,
+      audit: { actorType: 'filler', actorId: 'filler' },
     })
     expect(onPhotoPathChange).toHaveBeenCalledWith(null)
   })

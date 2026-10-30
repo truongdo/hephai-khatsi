@@ -42,8 +42,9 @@ export default defineConfig({
   resolve: { tsconfigPaths: true },
   assetsInclude: ['**/*.woff'],
   test: {
-    // Default is cpus-1, which saturates the machine on full suite runs.
-    maxWorkers: '20%',
+    // Default is cpus-1, which saturates the machine; 20% (2 workers on 10 cores)
+    // made the suite ~2x slower.
+    maxWorkers: '50%',
     projects: [
       {
         extends: true,
