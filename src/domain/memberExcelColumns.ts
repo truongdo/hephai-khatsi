@@ -121,6 +121,12 @@ export const MEMBER_EXCEL_COLUMNS: MemberExcelColumnDef[] = [
         : m.admin_members_status_draft(),
   },
   {
+    id: 'tinhTrang',
+    group: 'system',
+    header: () => m.admin_members_col_tinh_trang(),
+    cell: (member) => cellStr(member.tinhTrang),
+  },
+  {
     id: 'theDanh',
     group: 'identity',
     header: () => m.filler_field_the_danh(),
@@ -391,7 +397,7 @@ export function defaultMembersExcelColumnIds(sanghaType: SanghaType): string[] {
 
 /** Default visible columns on the admin members table (hạ-lạp tabs). */
 export function defaultMembersTableColumnIds(_sanghaType: SanghaType): string[] {
-  return ['phapDanh', 'theDanh', 'orgUnitName', 'cccd', 'status']
+  return ['phapDanh', 'theDanh', 'orgUnitName', 'cccd', 'tinhTrang', 'status']
 }
 
 export function membersTableDisplayColumns(

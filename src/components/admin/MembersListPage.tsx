@@ -22,6 +22,7 @@ import {
   saveMembersTableColumnIds,
 } from '#/domain/membersTableColumnSelection'
 import { canonicalHaLapTabRankKeys } from '#/domain/membersHaLapGroups'
+import type { TinhTrangValue } from '#/domain/tinhTrang'
 import type { Member, RecordStatus, SanghaType } from '#/domain/types'
 import { canManageDirectory, isHePhaiScope } from '#/domain/authClaims'
 import { adminKeys } from '#/query/adminKeys'
@@ -33,6 +34,7 @@ import {
   type MembersPdfFormat,
 } from '#/use-cases/exportMembersPdf'
 import { unlockMember } from '#/use-cases/unlockMember'
+import { updateMemberTinhTrang } from '#/use-cases/updateMemberTinhTrang'
 
 type MembersListPageProps = {
   sanghaType: SanghaType
@@ -425,6 +427,45 @@ export function MembersListPage({
     },
   })
 
+  const tinhTrangMutation = useMutation({
+    mutationFn: async (input: {
+      memberId: string
+      tinhTrang: TinhTrangValue
+    }) => {
+      if (claim.status !== 'admin') throw new Error('Not signed in as admin')
+      return updateMemberTinhTrang(
+        input,
+        { actorType: 'admin', actorId: claim.uid },
+        { role: claim.role, orgUnitId: claim.orgUnitId },
+      )
+    },
+    onSuccess: (member) => {
+      setTabStateByRank((prev) => {
+        const next: Record<string, TabLoadState> = { ...prev }
+        for (const [rankKey, state] of Object.entries(prev)) {
+          const index = state.items.findIndex((item) => item.id === member.id)
+          if (index < 0) continue
+          const items = state.items.slice()
+          items[index] = member
+          next[rankKey] = { ...state, items }
+        }
+        return next
+      })
+      queryClient.setQueryData(adminKeys.member(member.id), member)
+      queryClient.setQueriesData<{ items: Member[]; nextCursor: string | null }>(
+        { queryKey: [...adminKeys.all, 'membersByHaLapTab'] },
+        (previous) => {
+          if (!previous) return previous
+          const index = previous.items.findIndex((item) => item.id === member.id)
+          if (index < 0) return previous
+          const items = previous.items.slice()
+          items[index] = member
+          return { ...previous, items }
+        },
+      )
+    },
+  })
+
   const orgUnitSelectData = useMemo(
     () =>
       (orgUnits.data ?? []).map((unit) => ({
@@ -567,6 +608,12 @@ export function MembersListPage({
         </Text>
       )}
 
+      {tinhTrangMutation.error && (
+        <Text c="red" size="sm" role="alert">
+          {tinhTrangMutation.error.message}
+        </Text>
+      )}
+
       {members.isError && members.error && (
         <QueryErrorAlert error={members.error} />
       )}
@@ -591,6 +638,12 @@ export function MembersListPage({
               onUnlock={(memberId) => unlockMutation.mutate(memberId)}
               unlockingMemberId={
                 unlockMutation.isPending ? unlockMutation.variables : undefined
+              }
+              onTinhTrangChange={tinhTrangMutation.mutate}
+              updatingTinhTrangMemberId={
+                tinhTrangMutation.isPending
+                  ? tinhTrangMutation.variables.memberId
+                  : undefined
               }
               isLoading={members.isFetching && activeTabState.items.length === 0}
               hasMore={!!tabStateByRank[resolvedActiveTab]?.nextCursor}

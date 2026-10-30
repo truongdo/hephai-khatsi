@@ -1,5 +1,6 @@
 import type { AddressValue } from './address'
 import type { MemberDocuments } from './memberDocumentTypes'
+import type { TinhTrangValue } from './tinhTrang'
 
 export type OrgUnitKind = 'giao_doan' | 'ni_gioi'
 export type SanghaType = 'tang' | 'ni'
@@ -51,6 +52,8 @@ export type Member = {
   orgUnitId: string
   sanghaType: SanghaType
   status: RecordStatus
+  /** Life / directory status (sinh hoạt, viên tịch, …). Edited on the list only. */
+  tinhTrang?: TinhTrangValue
   cccd: string
   inviteId: string | null
   currentTempleId: string | null

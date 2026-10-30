@@ -1,4 +1,4 @@
-import { Badge, Button, Group, Text } from '@mantine/core'
+import { Badge, Button, Group, Select, Text } from '@mantine/core'
 import { Link } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 import { emptyCell } from '#/components/admin/emptyCell'
@@ -7,6 +7,11 @@ import {
   catalogMembersExcelColumns,
   type MembersExcelRowContext,
 } from '#/domain/memberExcelColumns'
+import {
+  isTinhTrangValue,
+  tinhTrangSelectData,
+  type TinhTrangValue,
+} from '#/domain/tinhTrang'
 import type { Member, RecordStatus } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 
@@ -14,7 +19,14 @@ export type MemberTableCellContext = {
   orgUnitNameById: Map<string, string>
   onUnlock: (memberId: string) => void
   unlockingMemberId?: string
+  onTinhTrangChange?: (input: {
+    memberId: string
+    tinhTrang: TinhTrangValue
+  }) => void
+  updatingTinhTrangMemberId?: string
 }
+
+const TINH_TRANG_SELECT_DATA = tinhTrangSelectData()
 
 function statusLabel(status: RecordStatus): string {
   switch (status) {
@@ -63,6 +75,28 @@ export function renderMemberTableCell(
           </Badge>
         )}
       </Group>
+    )
+  }
+
+  if (columnId === 'tinhTrang') {
+    if (!ctx.onTinhTrangChange) {
+      return emptyCell(member.tinhTrang)
+    }
+    return (
+      <Select
+        size="xs"
+        w={160}
+        data={TINH_TRANG_SELECT_DATA}
+        value={member.tinhTrang ?? null}
+        placeholder={m.admin_members_tinh_trang_placeholder()}
+        disabled={ctx.updatingTinhTrangMemberId === member.id}
+        aria-label={m.admin_members_col_tinh_trang()}
+        onChange={(value) => {
+          if (value == null || !isTinhTrangValue(value)) return
+          if (value === member.tinhTrang) return
+          ctx.onTinhTrangChange?.({ memberId: member.id, tinhTrang: value })
+        }}
+      />
     )
   }
 

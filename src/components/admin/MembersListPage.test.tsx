@@ -58,6 +58,7 @@ const exportMembersPdfMock = vi.fn(async () => ({
   failedDocumentCount: 0,
 }))
 const unlockMemberMock = vi.fn()
+const updateMemberTinhTrangMock = vi.fn()
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
 const membersByHaLapTabQueryMock = vi.fn((filters: unknown = {}) => ({
   queryKey: ['admin', 'membersByHaLapTab', filters],
@@ -103,6 +104,11 @@ vi.mock('#/use-cases/exportMembersPdf', () => ({
 
 vi.mock('#/use-cases/unlockMember', () => ({
   unlockMember: (...args: unknown[]) => unlockMemberMock(...args),
+}))
+
+vi.mock('#/use-cases/updateMemberTinhTrang', () => ({
+  updateMemberTinhTrang: (...args: unknown[]) =>
+    updateMemberTinhTrangMock(...args),
 }))
 
 vi.mock('@tanstack/react-router', () => ({
@@ -194,6 +200,11 @@ beforeEach(() => {
   deleteMembersMock.mockReset()
   deleteMembersMock.mockResolvedValue(undefined)
   unlockMemberMock.mockReset()
+  updateMemberTinhTrangMock.mockReset()
+  updateMemberTinhTrangMock.mockResolvedValue({
+    ...memberItems[0],
+    tinhTrang: 'ĐI HỌC',
+  })
   unlockMemberMock.mockResolvedValue({
     ...memberItems[1],
     status: 'draft',
@@ -235,9 +246,28 @@ describe('MembersListPage', () => {
     expect(screen.getByRole('columnheader', { name: 'Pháp danh' })).toBeTruthy()
     expect(screen.getByRole('columnheader', { name: 'Thế danh' })).toBeTruthy()
     expect(screen.getByRole('columnheader', { name: 'Giáo đoàn' })).toBeTruthy()
+    expect(screen.getByRole('columnheader', { name: 'Tình trạng' })).toBeTruthy()
     expect(screen.getByText('Nguyễn Văn A')).toBeTruthy()
     expect(screen.getAllByText('Giáo đoàn I').length).toBeGreaterThan(0)
     expect(screen.getByText('001099012345')).toBeTruthy()
+  })
+
+  it('quick-edits tinhTrang from the list select', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await screen.findByText('HT A')
+    const selects = screen.getAllByRole('combobox', { name: 'Tình trạng' })
+    expect(selects.length).toBe(2)
+    await user.click(selects[0])
+    const options = await screen.findAllByText('ĐI HỌC')
+    await user.click(options[0])
+    await waitFor(() => {
+      expect(updateMemberTinhTrangMock).toHaveBeenCalledWith(
+        { memberId: 'm1', tinhTrang: 'ĐI HỌC' },
+        { actorType: 'admin', actorId: 'admin-uid' },
+        { role: 'he_phai_admin', orgUnitId: null },
+      )
+    })
   })
 
   it('loads active tab via membersByHaLapTab query', async () => {

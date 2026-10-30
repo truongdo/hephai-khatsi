@@ -210,6 +210,34 @@ describe('members', () => {
     )
   })
 
+  it('denies filler create when tinhTrang is set', async () => {
+    const env = await getTestEnv()
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      setDoc(doc(anon, 'members', memberId), memberLocked({ tinhTrang: 'SINH HOẠT' })),
+    )
+  })
+
+  it('denies filler save-and-lock when changing tinhTrang', async () => {
+    const env = await getTestEnv()
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'members', memberId), memberDraft())
+    })
+    const anon = env.unauthenticatedContext().firestore()
+    await assertFails(
+      updateDoc(doc(anon, 'members', memberId), {
+        theDanh: 'Nguyen Van A',
+        tinhTrang: 'ĐI HỌC',
+        status: 'locked',
+        lockedAt: '2026-01-02T00:00:00.000Z',
+        lockedBy: 'filler',
+        editRequestedAt: null,
+        editRequestedBy: null,
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      }),
+    )
+  })
+
   it('rejects create when the doc id does not match orgUnitId_sanghaType_cccd', async () => {
     const env = await getTestEnv()
     const anon = env.unauthenticatedContext().firestore()

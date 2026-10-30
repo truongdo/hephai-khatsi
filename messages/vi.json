@@ -237,6 +237,8 @@
   "admin_members_col_giao_doan": "Giáo đoàn",
   "admin_members_col_cccd": "CCCD",
   "admin_members_col_status": "Trạng thái",
+  "admin_members_col_tinh_trang": "Tình trạng",
+  "admin_members_tinh_trang_placeholder": "Chọn tình trạng",
   "admin_members_col_sap_xep_ha_lap": "Thông tin sắp xếp hạ lạp",
   "admin_members_col_updated_at": "Cập nhật",
   "admin_members_status_draft": "Nháp",

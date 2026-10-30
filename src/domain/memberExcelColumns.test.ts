@@ -104,11 +104,13 @@ describe('MEMBER_EXCEL_COLUMNS cells', () => {
       sanghaType: 'tang',
       noiSinh: { line: '1 A', wardName: 'P.1', cityName: 'HCM' },
       giaoPhamHePhai: { rank: 'ty_kheo', namTienPhong: 2010 },
+      tinhTrang: 'SINH HOẠT',
     })
     expect(cell('orgUnitName', mem)).toBe('Giáo đoàn I')
     expect(cell('noiSinh', mem)).toBe('1 A, P.1, HCM')
     expect(cell('giaoPhamHePhaiRank', mem)).toBe(m.filler_rank_ty_kheo())
     expect(cell('status', mem)).toBe(m.admin_members_status_draft())
+    expect(cell('tinhTrang', mem)).toBe('SINH HOẠT')
   })
 
   it('falls back to orgUnitId when the name map has no entry', () => {

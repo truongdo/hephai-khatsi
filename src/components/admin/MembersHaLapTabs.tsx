@@ -13,6 +13,7 @@ import {
 } from '#/components/admin/memberTableCell'
 import { membersTableDisplayColumns } from '#/domain/memberExcelColumns'
 import { haLapTabLabel } from '#/domain/membersHaLapGroups'
+import type { TinhTrangValue } from '#/domain/tinhTrang'
 import type { Member, SanghaType } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 
@@ -35,6 +36,11 @@ export type MembersHaLapTabsProps = {
   onToggleAllInTab: (ids: string[], select: boolean) => void
   onUnlock: (memberId: string) => void
   unlockingMemberId?: string
+  onTinhTrangChange?: (input: {
+    memberId: string
+    tinhTrang: TinhTrangValue
+  }) => void
+  updatingTinhTrangMemberId?: string
   isLoading?: boolean
   hasMore?: boolean
   onLoadMore?: () => void
@@ -56,6 +62,11 @@ type HaLapMemberTableProps = {
   onToggleAllInTab: (ids: string[], select: boolean) => void
   onUnlock: (memberId: string) => void
   unlockingMemberId?: string
+  onTinhTrangChange?: (input: {
+    memberId: string
+    tinhTrang: TinhTrangValue
+  }) => void
+  updatingTinhTrangMemberId?: string
   ariaLabel: string
   isLoading?: boolean
 }
@@ -71,6 +82,8 @@ function HaLapMemberTable({
   onToggleAllInTab,
   onUnlock,
   unlockingMemberId,
+  onTinhTrangChange,
+  updatingTinhTrangMemberId,
   ariaLabel,
   isLoading,
 }: HaLapMemberTableProps) {
@@ -96,8 +109,16 @@ function HaLapMemberTable({
       orgUnitNameById,
       onUnlock,
       unlockingMemberId,
+      onTinhTrangChange,
+      updatingTinhTrangMemberId,
     }),
-    [orgUnitNameById, onUnlock, unlockingMemberId],
+    [
+      orgUnitNameById,
+      onUnlock,
+      unlockingMemberId,
+      onTinhTrangChange,
+      updatingTinhTrangMemberId,
+    ],
   )
 
   return (
@@ -164,6 +185,8 @@ export function MembersHaLapTabs({
   onToggleAllInTab,
   onUnlock,
   unlockingMemberId,
+  onTinhTrangChange,
+  updatingTinhTrangMemberId,
   isLoading,
   hasMore,
   onLoadMore,
@@ -209,6 +232,8 @@ export function MembersHaLapTabs({
             onToggleAllInTab={onToggleAllInTab}
             onUnlock={onUnlock}
             unlockingMemberId={unlockingMemberId}
+            onTinhTrangChange={onTinhTrangChange}
+            updatingTinhTrangMemberId={updatingTinhTrangMemberId}
             ariaLabel={activeTabLabel}
             isLoading={isLoading}
           />
