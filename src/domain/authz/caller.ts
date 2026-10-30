@@ -45,7 +45,10 @@ export function canWriteDirectory(caller: Caller): boolean {
 /** The rules' `directoryOrgOk` / `retreatOrgOk` (identical). */
 export function directoryOrgOk(caller: Caller, orgUnitId: string): boolean {
   if (isHePhaiScope(caller)) return true
-  return isGiaoDoanAdmin(caller) && caller?.claims?.orgUnitId === orgUnitId
+  // A giáo đoàn admin token without an org unit matches nothing (the rules
+  // error on the missing claim).
+  const claimOrgUnitId = caller?.claims?.orgUnitId ?? null
+  return isGiaoDoanAdmin(caller) && claimOrgUnitId !== null && claimOrgUnitId === orgUnitId
 }
 
 /**

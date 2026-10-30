@@ -191,9 +191,17 @@ Each phase is a separate PR from `main`; phases 1–3 ship with Firestore still 
 
 ### Phase 2 — Server-side authorization (highest risk)
 
-- [ ] Port each `match` block of `firestore.rules` to `src/domain/authz/*.ts` as pure functions.
-- [ ] Port every case of `src/firebase/firestoreRules.integration.test.ts` to `src/domain/authz/*.test.ts` (same names, same allow/deny expectations). Add a table-driven test per role (`he_phai_admin`, `he_phai_secretary`, `giao_doan_admin` own / other org, `kiem_soat`, legacy `admin`, anonymous filler with and without a valid invite).
-- [ ] Have a reviewer (Opus) compare the rules file and the authz module side by side before merging.
+- [x] Port each `match` block of `firestore.rules` to `src/domain/authz/*.ts` as pure functions (`caller.ts` role predicates and `canListDirectory`; `members`, `temples`, `auditLogs`, `retreats`, `registrations`, `invites`, `orgUnits`; shared draft → locked lifecycle in `lockableRecord.ts`, field diff in `docDiff.ts`). Each takes the `Caller` (`null` = anonymous) and the record(s); writes by fillers also take `inviteExists`.
+- [x] Port every case of `src/firebase/firestoreRules.integration.test.ts` to `src/domain/authz/*.test.ts` (same names, same allow/deny expectations). Add a table-driven test per role (`roles.test.ts`). Not ported: the phone index collections and the retired `memberCccdIndex` (no D1 counterpart; the Worker rebuilds `members.phone` / `temple_manager_phones`), public get-by-id and audit-log update/delete (no check / no endpoint).
+- [x] Have a reviewer (Opus) compare the rules file and the authz module side by side before merging. No more-permissive case found; a giáo đoàn admin token without `orgUnitId` now matches no org unit.
+
+Known deviations from the rules (deliberate): an absent field equals `null` (NULL columns read back as absent); a token with both `admin: true` and a `role` takes the role (`parseAuthClaims`).
+
+Contract for the phase 3 handlers:
+- Build `after` as the stored record merged with the request, with `id` (and for members the identity) taken from the stored row / path, never from the body.
+- Pass domain records without `version` (it is not a domain field); otherwise `changedOnly` checks (edit request, media update, status transition, review) would deny every write.
+- Audit logs are insert-only; derive `inviteExists` from the invites table.
+- Carried over from the rules, to decide in phase 3: audit-log read is not org-scoped (any directory writer); self registration does not check the retreat's org unit or that it is open (the use case does).
 
 ### Phase 3 — Worker data API
 

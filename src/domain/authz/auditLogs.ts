@@ -2,7 +2,6 @@ import type { AuditAction, AuditLogWrite } from '#/domain/auditLog'
 import type { Member, Temple } from '#/domain/types'
 import {
   canWriteDirectory,
-  isKiemSoat,
   isStaff,
   type Caller,
   type InviteExists,
@@ -24,10 +23,6 @@ const AUDIT_ACTIONS: readonly AuditAction[] = [
   'document_uploaded',
   'document_deleted',
 ]
-
-export type AuditLogParent =
-  | { type: 'members'; record: Member }
-  | { type: 'temples'; record: Temple }
 
 function isValidAuditEntry(entry: AuditLogWrite): boolean {
   return (
@@ -51,17 +46,17 @@ export function canReadAuditLogs(caller: Caller): boolean {
  */
 export function canCreateAuditLog(
   caller: Caller,
-  parent: AuditLogParent,
+  parent: Member | Temple,
   entry: AuditLogWrite,
   inviteExists: InviteExists,
 ): boolean {
   if (!isValidAuditEntry(entry)) return false
   if (canWriteDirectory(caller)) return true
-  // Members let a signed-in non-directory user fill; temples exclude all staff.
-  const fillerCallerOk = parent.type === 'members' ? !isKiemSoat(caller) : !isStaff(caller)
+  // The only staff left is kiểm soát, so the rules' `!isKiemSoat()` (members)
+  // and `!isStaff()` (temples) are the same check here.
   return (
-    fillerCallerOk &&
-    hasValidInvite(parent.record, inviteExists) &&
+    !isStaff(caller) &&
+    hasValidInvite(parent, inviteExists) &&
     entry.actorType === 'filler'
   )
 }

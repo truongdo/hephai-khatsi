@@ -87,7 +87,7 @@ const ACTIONS = {
   fillerAuditLog: (c: Caller, i: InviteExists) =>
     canCreateAuditLog(
       c,
-      { type: 'members', record: memberLocked() },
+      memberLocked(),
       auditLogEntry({ actorType: 'filler', actorId: '0912345678' }),
       i,
     ),

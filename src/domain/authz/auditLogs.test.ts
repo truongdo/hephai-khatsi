@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { AuditLogWrite } from '#/domain/auditLog'
-import { canCreateAuditLog, canReadAuditLogs, type AuditLogParent } from './auditLogs'
+import type { Member, Temple } from '#/domain/types'
+import { canCreateAuditLog, canReadAuditLogs } from './auditLogs'
 import {
   anon,
   auditLogEntry,
@@ -20,16 +21,16 @@ import {
 
 const seeded = invites()
 
-const parents: Array<{ name: string; draft: AuditLogParent; locked: AuditLogParent }> = [
+const parents: Array<{ name: string; draft: Member | Temple; locked: Member | Temple }> = [
   {
     name: 'member',
-    draft: { type: 'members', record: memberDraft() },
-    locked: { type: 'members', record: memberLocked() },
+    draft: memberDraft(),
+    locked: memberLocked(),
   },
   {
     name: 'temple',
-    draft: { type: 'temples', record: templeDraft() },
-    locked: { type: 'temples', record: templeLocked() },
+    draft: templeDraft(),
+    locked: templeLocked(),
   },
 ]
 
@@ -56,8 +57,8 @@ describe.each(parents)('$name auditLogs', ({ name, draft, locked }) => {
 
   it('denies filler when the parent has no valid invite', () => {
     const entry = auditLogEntry({ actorType: 'filler', actorId: '0912345678' })
-    const noInvite = { ...draft, record: { ...draft.record, inviteId: null } } as AuditLogParent
-    const unknownInvite = { ...draft, record: { ...draft.record, inviteId: 'gone' } } as AuditLogParent
+    const noInvite = { ...draft, inviteId: null }
+    const unknownInvite = { ...draft, inviteId: 'gone' }
     expect(canCreateAuditLog(anon, noInvite, entry, seeded)).toBe(false)
     expect(canCreateAuditLog(anon, unknownInvite, entry, seeded)).toBe(false)
   })

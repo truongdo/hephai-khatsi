@@ -42,7 +42,7 @@ function isMemberFillerSaveAndLock(before: Member, after: Member): boolean {
 }
 
 function isMemberFillerCreateShape(member: Member): boolean {
-  return isFillerCreateShape(member) && !('tinhTrang' in member)
+  return isFillerCreateShape(member) && member.tinhTrang == null
 }
 
 /** Directory-role fields are written only by the directory-role Worker route. */
@@ -70,7 +70,7 @@ export function canCreateMember(
     (isHePhaiAdmin(caller) && orgOk && isAdminCreateShape(member)) ||
     (canWriteDirectory(caller) &&
       orgOk &&
-      member.inviteId === null &&
+      member.inviteId == null &&
       isAdminCreateShape(member)) ||
     (hasValidInvite(member, inviteExists) &&
       !isKiemSoat(caller) &&

@@ -18,7 +18,10 @@ import {
 } from './testFixtures'
 
 // Ported from firestoreRules.integration.test.ts (`members`, `members + temples
-// org scope`, `he_phai_secretary`).
+// org scope`, `he_phai_secretary`). Not ported: `memberPhoneIndex`,
+// `templeManagerPhoneIndex` and the retired `memberCccdIndex` — in D1 the phone
+// lookups are the `members.phone` column and the `temple_manager_phones` table,
+// rebuilt by the Worker on every write and never written by clients.
 
 const seeded = invites()
 
@@ -56,6 +59,8 @@ describe('members', () => {
 
   it('denies filler create when tinhTrang is set', () => {
     expect(canCreateMember(anon, memberLocked({ tinhTrang: 'sinh_hoat' }), seeded)).toBe(false)
+    // null is "not set" (a NULL column reads back as absent).
+    expect(canCreateMember(anon, memberLocked({ tinhTrang: null }), seeded)).toBe(true)
   })
 
   it('denies filler save-and-lock when changing tinhTrang', () => {

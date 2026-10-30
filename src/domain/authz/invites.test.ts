@@ -36,6 +36,11 @@ describe('invites', () => {
     expect(canCreateInvite(legacyAdmin, { ...fillerInvite('a', 'admin-uid'), id: 'b' })).toBe(false)
   })
 
+  it('rejects an unknown kind', () => {
+    const unknownKind = { ...fillerInvite('x', 'admin-uid'), kind: 'other' } as unknown as Invite
+    expect(canCreateInvite(legacyAdmin, unknownKind)).toBe(false)
+  })
+
   it('denies kiem_soat create', () => {
     expect(canCreateInvite(kiemSoat, fillerInvite('ks-invite', 'ks'))).toBe(false)
   })

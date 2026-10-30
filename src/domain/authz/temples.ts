@@ -58,7 +58,7 @@ export function canCreateTemple(
   return (
     (canWriteDirectory(caller) &&
       directoryOrgOk(caller, temple.orgUnitId) &&
-      temple.inviteId === null &&
+      temple.inviteId == null &&
       isAdminCreateShape(temple)) ||
     (!isStaff(caller) && hasValidInvite(temple, inviteExists) && isFillerCreateShape(temple))
   )

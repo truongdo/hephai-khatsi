@@ -56,6 +56,7 @@ describe('retreats + role claims', () => {
     expect(canUpdateRetreat(legacyAdmin, closed, patch(closed, { status: 'open' }))).toBe(true)
     expect(canUpdateRetreat(legacyAdmin, rGdI, patch(rGdI, { status: 'open' }))).toBe(true)
     expect(canUpdateRetreat(legacyAdmin, rGdI, patch(rGdI, { status: 'closed' }))).toBe(false)
+    expect(canUpdateRetreat(legacyAdmin, closed, patch(closed, { status: 'draft' }))).toBe(false)
   })
 
   it('denies a status change bundled with other edits', () => {

@@ -15,11 +15,13 @@ describe('orgUnits', () => {
     expect(canWriteOrgUnit(gdAdmin)).toBe(false)
   })
 
-  it('he_phai_secretary cannot write orgUnits', () => {
-    expect(canWriteOrgUnit(secretary)).toBe(false)
-  })
-
   it('kiem_soat cannot write orgUnits', () => {
     expect(canWriteOrgUnit(kiemSoat)).toBe(false)
+  })
+})
+
+describe('he_phai_secretary', () => {
+  it('cannot write orgUnits', () => {
+    expect(canWriteOrgUnit(secretary)).toBe(false)
   })
 })

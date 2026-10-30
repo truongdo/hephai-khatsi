@@ -23,5 +23,7 @@ export function canCreateInvite(caller: Caller, invite: Invite): boolean {
         isString(invite.orgUnitId) &&
         invite.id === retreatRegistrationInviteId(invite.retreatId)
       )
+    default:
+      return false
   }
 }
