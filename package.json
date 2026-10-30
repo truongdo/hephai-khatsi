@@ -19,6 +19,9 @@
     "cy:run": "cypress run",
     "test:e2e": "start-server-and-test dev http://localhost:3000 cy:run",
     "deploy": "pnpm run build && wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply hephai-khatsi --local",
+    "db:migrate:remote": "wrangler d1 migrations apply hephai-khatsi --remote",
+    "db:seed-sql:org-units": "tsx scripts/generate-d1-org-unit-seed.ts",
     "seed:org-units": "node --env-file=.env --import tsx scripts/seed-org-units.ts",
     "backfill:list-sort-keys": "node --env-file=.env --import tsx scripts/backfill-list-sort-keys.ts",
     "backfill:sap-xep-ha-lap": "node --env-file=.env --import tsx scripts/backfill-sap-xep-ha-lap.ts",
@@ -50,6 +53,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.4.10",
     "@firebase/rules-unit-testing": "^5.0.1",
     "@inlang/paraglide-js": "^2.22.0",
     "@sentry/vite-plugin": "5.4.1",

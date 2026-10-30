@@ -1,6 +1,7 @@
 import type { Plugin } from 'vite'
 import { defineConfig } from 'vitest/config'
 import viteReact from '@vitejs/plugin-react'
+import { cloudflareTest, readD1Migrations } from '@cloudflare/vitest-plugin'
 
 /** Vitest runs react-pdf in Node; `?url` must resolve to absolute file paths. */
 function woffUrlAsFilePath(): Plugin {
@@ -25,6 +26,9 @@ function woffUrlAsFilePath(): Plugin {
 }
 
 const integrationExclude = 'src/**/*.integration.test.{ts,tsx}'
+
+/** Worker tests against a local D1 (Miniflare), run inside workerd. */
+const d1Tests = 'src/worker/**/*.d1.test.ts'
 
 /** `.test.ts` files that need DOM APIs (jsdom). Everything else `.ts` runs in node. */
 const domUnitTests = [
@@ -51,7 +55,7 @@ export default defineConfig({
           name: 'unit',
           environment: 'node',
           include: ['src/**/*.{test,spec}.ts'],
-          exclude: [integrationExclude, ...domUnitTests],
+          exclude: [integrationExclude, d1Tests, ...domUnitTests],
           // No RTL/jsdom setup for pure unit tests.
           setupFiles: [],
         },
@@ -64,6 +68,26 @@ export default defineConfig({
           include: ['src/**/*.{test,spec}.tsx', ...domUnitTests],
           exclude: [integrationExclude],
           setupFiles: ['./src/test/setup.ts'],
+        },
+      },
+      {
+        plugins: [
+          cloudflareTest(async () => ({
+            miniflare: {
+              // Keep in sync with wrangler.jsonc.
+              compatibilityDate: '2026-07-20',
+              compatibilityFlags: ['nodejs_compat'],
+              d1Databases: ['DB'],
+              bindings: { TEST_MIGRATIONS: await readD1Migrations('migrations') },
+            },
+          })),
+        ],
+        resolve: { tsconfigPaths: true },
+        test: {
+          name: 'worker-d1',
+          include: [d1Tests],
+          // Each test file gets its own empty D1; this applies the migrations.
+          setupFiles: ['./src/worker/dataApi/test/applyMigrations.ts'],
         },
       },
     ],
