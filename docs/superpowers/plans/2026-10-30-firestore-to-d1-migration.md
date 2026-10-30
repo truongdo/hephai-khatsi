@@ -170,7 +170,7 @@ Each phase is a separate PR from `main`; phases 1–3 ship with Firestore still 
 
 ### Phase 0 — Decisions and prep (no code)
 
-- [ ] Confirm the open questions at the end of this document.
+- [ ] Read the decisions at the end of this document (all questions are settled; only the cutover date waits for the requester).
 - [ ] Create the D1 database in the APAC region: `pnpm exec wrangler d1 create hephai-khatsi --location apac`; record the id. Create a `hephai-khatsi-preview` database for `wrangler dev` / preview.
 - [ ] Run every pending `backfill:*` script against production Firestore so all denormalized fields exist before export.
 - [ ] Measure current data volume (docs per collection, largest member doc) to size the import batches.
@@ -215,7 +215,8 @@ Each phase is a separate PR from `main`; phases 1–3 ship with Firestore still 
 
 Recommended: a short write freeze rather than dual writes (dual writes from the browser cannot be atomic across two databases and would need all of phase 2 anyway).
 
-- [ ] Announce a window (form fillers and admins). Deploy a build with a maintenance banner and Firestore rules set to read-only (`allow write: if false`).
+- [ ] Get the requester's explicit go-ahead and date (freeze of up to 1 hour approved; do not start without this confirmation).
+- [ ] Announce the window (form fillers and admins). Deploy a build with a maintenance banner and Firestore rules set to read-only (`allow write: if false`).
 - [ ] Export → import → verify (phase 5 scripts).
 - [ ] Set `VITE_DATA_BACKEND=d1` / Worker `DATA_BACKEND=d1`, `pnpm deploy`, reindex Typesense from D1, smoke test (login per role, filler lookup by phone/CCCD, save-and-lock, photo upload, retreat registration, export Excel/PDF, stats).
 - [ ] Rollback plan: redeploy the previous build and restore Firestore write rules (Firestore data is untouched while frozen). Writes made to D1 after cutover would be lost on rollback, so decide go / no-go within the window.
@@ -245,11 +246,8 @@ Recommended: a short write freeze rather than dual writes (dual writes from the 
 | Search index out of sync | Reindex from D1 right after cutover; Worker-side sync afterwards |
 | Large exports hit Worker limits | Paginated export endpoint, the client already assembles pages (`listAllForExport`) |
 
-## Open questions and decisions
+## Decisions (requester, 2026-10-30)
 
-1. **Cutover window.** Is a short write freeze (est. under 1 hour, depending on data volume) acceptable, and when?
-
-Decided (requester, 2026-10-30):
-
+- **Cutover write freeze of up to 1 hour is acceptable** (data volume is small, so it should be shorter). The date is **not** fixed: phase 6 starts only after the requester explicitly confirms it. Phases 0–5 proceed without waiting.
 - **Public read by id is kept** as today: anyone who knows a member / temple / registration id can read it (the id is the bearer secret). No invite token on those reads.
 - **Typesense sync moves into the Worker** (phase 3); the client-side search notifications are removed in phase 4.
