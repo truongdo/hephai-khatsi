@@ -50,6 +50,7 @@ import {
   MAX_BOUND_PARAMS,
   chunk,
   conflictGuard,
+  deleteVersionedRowsStatements,
   deleteVersionedStatement,
   insertNewStatement,
   placeholders,
@@ -65,8 +66,13 @@ import {
   authorizePhoneLookup,
   directoryListScope,
   optionalActorField,
+  isNullableString,
+  isObject,
+  isRankRecord,
+  isString,
   patchField,
   RECORD_STATUSES,
+  type PatchFieldChecks,
   SORT_DIRS,
 } from './shared'
 
@@ -105,7 +111,29 @@ const PROTECTED_PATCH_FIELDS = [
   'sapXepHaLap',
   'haLapTabRank',
   'tinhTrang',
+  'editRequestedAt',
+  'editRequestedBy',
+  // Granted only by the directory-role route.
+  'directoryRole',
+  'directoryAuthUid',
+  'directoryRoleGrantedAt',
+  'directoryRoleGrantedBy',
 ]
+
+const PATCH_FIELD_CHECKS: PatchFieldChecks = {
+  dienThoai: isString,
+  email: isString,
+  currentTempleId: isNullableString,
+  photoPath: isNullableString,
+  documents: isObject,
+  giaoPhamHePhai: isRankRecord,
+  giaoPhamGiaoHoi: isRankRecord,
+  gioiSaDi: isObject,
+  gioiSaDiNi: isObject,
+  gioiThucXoaMaNa: isObject,
+  gioiTyKheo: isObject,
+  gioiTyKheoNi: isObject,
+}
 
 type StoredMember = { member: Member; version: number }
 
@@ -190,7 +218,7 @@ function parseSave(body: Body): SaveInput {
     sanghaType: enumField(body, 'sanghaType', SANGHA_TYPES),
     inviteId: nullableStringField(body, 'inviteId'),
     cccd: stringField(body, 'cccd'),
-    patch: patchField(body, PROTECTED_PATCH_FIELDS) as MemberProfilePatch,
+    patch: patchField(body, PROTECTED_PATCH_FIELDS, PATCH_FIELD_CHECKS) as MemberProfilePatch,
     audit: optionalActorField(body, 'audit'),
   }
 }
@@ -201,8 +229,10 @@ async function createOrUpdate(
   lock: boolean,
 ): Promise<{ member: Member; mode: 'created' | 'updated' }> {
   const memberId = memberCccdIndexId(input.orgUnitId, input.sanghaType, input.cccd)
-  const stored = await readMember(ctx.db, memberId)
-  const orgUnitName = await loadOrgUnitName(ctx.db, input.orgUnitId)
+  const [stored, orgUnitName] = await Promise.all([
+    readMember(ctx.db, memberId),
+    loadOrgUnitName(ctx.db, input.orgUnitId),
+  ])
   const now = ctx.now
   let member: Member
   if (stored) {
@@ -483,7 +513,7 @@ async function deleteMany(ctx: DataContext, input: { ids: string[] }): Promise<{
   for (const row of rows) authorize(canDeleteMember(caller, memberFromRow(row)))
   await runBatch(
     db,
-    rows.flatMap((row) => [deleteVersionedStatement(db, 'members', row.id, row.version), conflictGuard(db)]),
+    deleteVersionedRowsStatements(db, 'members', rows),
   )
   for (const row of rows) ctx.search.deleteMember(row.id)
   return { ok: true }
@@ -624,7 +654,7 @@ async function listSecretaries(
   const scope = directoryListScope(ctx.caller)
   const rows = await selectAll<MemberRow>(
     ctx.db,
-    `SELECT * FROM members WHERE directory_role = ?${scope.orgUnitId === null ? '' : ' AND org_unit_id = ?'} LIMIT ?`,
+    `SELECT * FROM members WHERE directory_role = ?${scope.orgUnitId === null ? '' : ' AND org_unit_id = ?'} ORDER BY id LIMIT ?`,
     scope.orgUnitId === null
       ? [input.role, SECRETARIES_LIMIT]
       : [input.role, scope.orgUnitId, SECRETARIES_LIMIT],
@@ -711,7 +741,7 @@ export const memberRoutes: Record<string, DataRoute> = {
   'members/update': route(
     (body) => ({
       memberId: stringField(body, 'memberId'),
-      patch: patchField(body, PROTECTED_PATCH_FIELDS) as MemberProfilePatch,
+      patch: patchField(body, PROTECTED_PATCH_FIELDS, PATCH_FIELD_CHECKS) as MemberProfilePatch,
       allowWhenLocked: optionalBooleanField(body, 'allowWhenLocked') ?? false,
       allowOrgUnitChange: optionalBooleanField(body, 'allowOrgUnitChange') ?? false,
       orgUnitId: optionalStringField(body, 'orgUnitId'),

@@ -50,6 +50,20 @@ function directoryRoleFieldsUnchanged(before: Member, after: Member): boolean {
   return unchanged(before, after, DIRECTORY_ROLE_FIELDS)
 }
 
+/**
+ * A new member never carries a directory role: only the directory-role route
+ * grants one, on an existing member (stricter than the rules, which did not
+ * check creates).
+ */
+function hasNoDirectoryRole(member: Member): boolean {
+  return (
+    member.directoryRole == null &&
+    member.directoryAuthUid == null &&
+    member.directoryRoleGrantedAt == null &&
+    member.directoryRoleGrantedBy == null
+  )
+}
+
 /** A secretary's email is their sign-in identity. */
 function secretaryEmailUnchanged(before: Member, after: Member): boolean {
   return before.directoryRole == null || unchanged(before, after, ['email'])
@@ -63,7 +77,7 @@ export function canCreateMember(
   if (member.id !== memberCccdIndexId(member.orgUnitId, member.sanghaType, member.cccd)) {
     return false
   }
-  if (!hasTimestamps(member)) return false
+  if (!hasTimestamps(member) || !hasNoDirectoryRole(member)) return false
   const orgOk = directoryOrgOk(caller, member.orgUnitId)
   return (
     // A hệ phái admin moving a draft to another org unit keeps its invite.

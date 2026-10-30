@@ -39,7 +39,7 @@ export function errorResponse(error: unknown): Response {
 export async function readJsonBody(request: Request): Promise<Body> {
   if (request.method === 'GET') return {}
   const text = await request.text()
-  if (text.length > MAX_BODY_BYTES) {
+  if (new TextEncoder().encode(text).length > MAX_BODY_BYTES) {
     throw new DomainError('INVALID_INPUT', 'Request body is too large')
   }
   let body: unknown

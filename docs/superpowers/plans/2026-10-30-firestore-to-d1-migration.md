@@ -218,10 +218,13 @@ Decided in phase 3:
 - Audit actors still come from the client (as with the rules): `canCreateAuditLog` decides whether the caller may write that actor.
 - Audit-log reads are now org-scoped: directory writers of the record's org unit; history of a deleted record is hệ phái scope only.
 - Self registration checks the retreat is open, the window, `quyenDangKy`, the member's org unit and extra answers on the server (the use case's checks). No invite token is required (as with the rules).
-- Phone lookups (`members/list-by-phone`, `temples/list-by-phone`) need an existing invite token or a directory writer of the org unit (Firestore's phone index docs were public by id).
+- Phone lookups (`members/list-by-phone`, `temples/list-by-phone`) need an existing invite token or a directory writer of the org unit. The filler invite is the fixed `public`, so this is no stronger than today (Firestore's phone index docs were public by id); returning less than full records is a later decision.
 - Lists the rules only allowed with an org filter (`by-temples`, `secretaries`, `list-by-retreat`) are scoped to the caller's org unit for a giáo đoàn admin instead of failing.
 - Lists skip rows whose sort column is NULL, like a Firestore `orderBy`; the hạ lạp fallback that recomputed tabs client-side is dropped (sort keys are always written by the Worker and backfilled before export).
 - Moving a member to another org unit moves its audit history (`UPDATE OR REPLACE audit_logs`); deleting a member keeps its audit rows (Firestore left the subcollection too).
+- A created member never carries directory-role fields (`canCreateMember`, stricter than the rules), and patches never set them nor `editRequested*`; as a result a member holding a directory role cannot be moved to another org unit (revoke first).
+- `delete-many` and `registrations/review` are all-or-nothing: one record the caller may not touch → 403, one changed since it was read → 409; nothing is written. Missing ids are skipped on delete (like Firestore), refused on review (`NOT_FOUND`). They write one statement per 45 rows, so 500 ids stay well under D1's per-invocation query limit.
+- Patch fields that feed columns and sort keys are type-checked (`PATCH_FIELD_CHECKS`); the rest of the profile is stored as sent, as before.
 - Directory-role patches on D1 are a service write (no authz / audit), bumping `version`, like the Firestore REST patch.
 - `ensureRetreatRegistrationInvite` re-creating a disabled invite is refused (`ALREADY_EXISTS`), as the rules refused the overwrite.
 

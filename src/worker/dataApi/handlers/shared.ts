@@ -3,7 +3,15 @@ import { canListDirectory, type Caller } from '#/domain/authz/caller'
 import { normalizeVnPhone } from '#/domain/normalize'
 import type { RecordStatus } from '#/domain/types'
 import type { AdminSortDir } from '#/repositories/adminListTypes'
-import { enumField, objectField, optionalObjectField, stringField, type Body } from '../input'
+import { DomainError } from '#/domain/errors'
+import {
+  enumField,
+  isPlainObject,
+  objectField,
+  optionalObjectField,
+  stringField,
+  type Body,
+} from '../input'
 import type { DataContext } from '../context'
 import { authorize, loadInviteExists } from '../records'
 
@@ -40,10 +48,32 @@ export function actorIdForPhone(phone: string): string {
  * A profile patch without the fields the server sets (they would be
  * overwritten anyway; dropping them keeps them out of the `data` JSON).
  */
-export function patchField(body: Body, protectedFields: readonly string[]): Body {
+export function patchField(
+  body: Body,
+  protectedFields: readonly string[],
+  fieldChecks: PatchFieldChecks,
+): Body {
   const patch = { ...objectField(body, 'patch') }
   for (const field of [...protectedFields, 'version']) delete patch[field]
+  for (const [field, isValid] of Object.entries(fieldChecks)) {
+    if (patch[field] !== undefined && !isValid(patch[field])) {
+      throw new DomainError('INVALID_INPUT', `patch.${field} has the wrong type`)
+    }
+  }
   return patch
+}
+
+/** Shape checks for the patch fields that feed columns and sort keys (the rest is stored as given). */
+export type PatchFieldChecks = Record<string, (value: unknown) => boolean>
+
+export const isString = (value: unknown): boolean => typeof value === 'string'
+export const isNullableString = (value: unknown): boolean => value === null || typeof value === 'string'
+export const isObject = (value: unknown): boolean => isPlainObject(value)
+export const isStringOrObject = (value: unknown): boolean => isString(value) || isPlainObject(value)
+
+/** `{ rank?: string, ... }` (giáo phẩm records). */
+export function isRankRecord(value: unknown): boolean {
+  return isPlainObject(value) && (value.rank === undefined || typeof value.rank === 'string')
 }
 
 /**

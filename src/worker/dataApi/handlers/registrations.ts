@@ -35,7 +35,7 @@ import {
   runBatch,
   selectByIds,
   selectFirst,
-  updateVersionedStatement,
+  updateVersionedRowsStatements,
 } from '../sql'
 import { directoryListScope } from './shared'
 
@@ -116,27 +116,36 @@ async function review(ctx: DataContext, input: ReviewInput): Promise<RetreatRegi
   if (rows.length !== new Set(input.ids).size) {
     throw new DomainError('NOT_FOUND', 'Registration not found')
   }
+  const review = {
+    status: input.status,
+    approvedBy: caller?.uid ?? null,
+    approvedAt: ctx.now,
+    rejectionReason: input.status === 'rejected' ? input.rejectionReason : null,
+    updatedAt: ctx.now,
+  }
   const reviewed = rows.map((row) => {
     const before = registrationFromRow(row)
-    const after: RetreatRegistration = {
-      ...before,
-      status: input.status,
-      approvedBy: caller?.uid ?? null,
-      approvedAt: ctx.now,
-      rejectionReason: input.status === 'rejected' ? input.rejectionReason : null,
-      updatedAt: ctx.now,
-    }
+    const after: RetreatRegistration = { ...before, ...review }
     authorize(canReviewRegistration(caller, before, after))
-    return { after, version: row.version }
+    return after
   })
+  // Review fields are all columns, so one UPDATE per chunk sets them.
   await runBatch(
     db,
-    reviewed.flatMap(({ after, version }) => [
-      updateVersionedStatement(db, 'retreat_registrations', registrationToRow(after), version),
-      conflictGuard(db),
-    ]),
+    updateVersionedRowsStatements(
+      db,
+      'retreat_registrations',
+      {
+        status: review.status,
+        approved_by: review.approvedBy,
+        approved_at: review.approvedAt,
+        rejection_reason: review.rejectionReason,
+        updated_at: review.updatedAt,
+      },
+      rows,
+    ),
   )
-  return reviewed.map(({ after }) => after)
+  return reviewed
 }
 
 async function getById(ctx: DataContext, input: { id: string }): Promise<RetreatRegistration | null> {

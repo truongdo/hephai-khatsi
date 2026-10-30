@@ -107,6 +107,40 @@ describe('members/save-draft and save-and-lock', () => {
     expect(member).not.toHaveProperty('version')
   })
 
+  it('never takes directory-role or edit-request fields from a patch', async () => {
+    await seedInvite()
+    const { member } = await callData<{ member: Member }>(
+      'members/save-and-lock',
+      {
+        ...create,
+        inviteId: 'public',
+        audit: FILLER_ACTOR,
+        patch: {
+          email: 'victim@gmail.com',
+          directoryRole: 'giao_doan_admin',
+          directoryAuthUid: 'real-admin-uid',
+          editRequestedAt: NOW,
+        },
+      },
+      anon,
+    )
+    expect(member).not.toHaveProperty('directoryRole')
+    expect(member).not.toHaveProperty('directoryAuthUid')
+    expect(member.editRequestedAt).toBeNull()
+    expect(await callData('members/secretaries', { role: 'giao_doan_admin' }, hePhaiAdmin)).toEqual([])
+  })
+
+  it.each([
+    ['giaoPhamHePhai', { rank: {} }],
+    ['dienThoai', 912345678],
+    ['currentTempleId', ['t1']],
+  ])('rejects a wrong-typed patch.%s', async (field, value) => {
+    await expectDomainError(
+      callData('members/save-draft', { ...create, patch: { [field]: value } }, gdAdmin),
+      'INVALID_INPUT',
+    )
+  })
+
   it('refuses a giáo đoàn admin of another org unit', async () => {
     await expectDomainError(
       callData('members/save-draft', { ...create, orgUnitId: 'gd-ii' }, gdAdmin),
@@ -369,6 +403,14 @@ describe('members/delete-many', () => {
     await callData('members/delete-many', { ids }, gdAdmin)
     expect(await callData('members/get', { id: ids[0] })).toBeNull()
     expect(searchCalls).toEqual(ids.map((id) => ({ action: 'deleteMember', id })))
+  })
+
+  it('deletes more members than fit in one statement', async () => {
+    const members = Array.from({ length: 100 }, (_, i) => memberDraft({ cccd: String(100000000000 + i) }))
+    await seedMembers(...members)
+    await callData('members/delete-many', { ids: members.map((m) => m.id) }, hePhaiAdmin)
+    const left = await env.DB.prepare('SELECT COUNT(*) AS n FROM members').first<number>('n')
+    expect(left).toBe(0)
   })
 
   it('deletes nothing when one member is outside the caller’s org unit', async () => {

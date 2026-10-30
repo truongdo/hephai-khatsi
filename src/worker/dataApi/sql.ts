@@ -55,9 +55,62 @@ export function deleteVersionedStatement(
   return db.prepare(`DELETE FROM ${table} WHERE id = ? AND version = ?`).bind(id, version)
 }
 
-/** Aborts the batch when the statement before it changed no row (see migrations/0003). */
-export function conflictGuard(db: D1Database): D1PreparedStatement {
-  return db.prepare('INSERT INTO write_conflicts SELECT 1 WHERE changes() = 0')
+/**
+ * Aborts the batch unless the statement before it changed `expected` rows
+ * (see migrations/0003).
+ */
+export function conflictGuard(db: D1Database, expected = 1): D1PreparedStatement {
+  return db.prepare('INSERT INTO write_conflicts SELECT 1 WHERE changes() <> ?').bind(expected)
+}
+
+export type VersionedId = { id: string; version: number }
+
+/** Rows per set-based write: two bound parameters each, under the limit with room for SET values. */
+export const VERSIONED_IDS_PER_STATEMENT = 45
+
+/** `WHERE (id, version) IN (...)` for up to VERSIONED_IDS_PER_STATEMENT rows. */
+function versionedIdsFilter(rows: readonly VersionedId[]): { sql: string; params: Array<string | number> } {
+  return {
+    sql: `(id, version) IN (VALUES ${rows.map(() => '(?, ?)').join(', ')})`,
+    params: rows.flatMap((row) => [row.id, row.version]),
+  }
+}
+
+/**
+ * Deletes rows still at their read version, one statement and guard per chunk
+ * (D1 caps the queries of one Worker invocation).
+ */
+export function deleteVersionedRowsStatements(
+  db: D1Database,
+  table: string,
+  rows: readonly VersionedId[],
+): D1PreparedStatement[] {
+  return chunk(rows, VERSIONED_IDS_PER_STATEMENT).flatMap((rowChunk) => {
+    const filter = versionedIdsFilter(rowChunk)
+    return [
+      db.prepare(`DELETE FROM ${table} WHERE ${filter.sql}`).bind(...filter.params),
+      conflictGuard(db, rowChunk.length),
+    ]
+  })
+}
+
+/** Sets the same column values on rows still at their read version (and bumps them), per chunk. */
+export function updateVersionedRowsStatements(
+  db: D1Database,
+  table: string,
+  values: Row,
+  rows: readonly VersionedId[],
+): D1PreparedStatement[] {
+  const assignments = Object.keys(values).map((column) => `${column} = ?`)
+  return chunk(rows, VERSIONED_IDS_PER_STATEMENT).flatMap((rowChunk) => {
+    const filter = versionedIdsFilter(rowChunk)
+    return [
+      db
+        .prepare(`UPDATE ${table} SET ${assignments.join(', ')}, version = version + 1 WHERE ${filter.sql}`)
+        .bind(...Object.values(values), ...filter.params),
+      conflictGuard(db, rowChunk.length),
+    ]
+  })
 }
 
 const CONFLICT_MESSAGE = 'WRITE_CONFLICT'

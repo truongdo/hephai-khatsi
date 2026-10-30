@@ -36,7 +36,7 @@ import {
 } from '../rows/temple'
 import {
   conflictGuard,
-  deleteVersionedStatement,
+  deleteVersionedRowsStatements,
   insertNewStatement,
   insertStatement,
   newRecordId,
@@ -51,8 +51,12 @@ import {
   actorIdForPhone,
   authorizePhoneLookup,
   optionalActorField,
+  isNullableString,
+  isObject,
+  isStringOrObject,
   patchField,
   RECORD_STATUSES,
+  type PatchFieldChecks,
   SORT_DIRS,
 } from './shared'
 
@@ -83,6 +87,13 @@ const PROTECTED_PATCH_FIELDS = [
   'listCityName',
   'orgUnitName',
 ]
+
+const PATCH_FIELD_CHECKS: PatchFieldChecks = {
+  photoPath: isNullableString,
+  diaChiMoi: isStringOrObject,
+  diaChiCu: isStringOrObject,
+  truTriHienNay: isObject,
+}
 
 type StoredTemple = { temple: Temple; version: number }
 
@@ -168,7 +179,7 @@ function parseSave(body: Body): SaveInput {
     inviteId: nullableStringField(body, 'inviteId'),
     managerPhones: stringArrayField(body, 'managerPhones', MAX_MANAGER_PHONES),
     templeId: optionalStringField(body, 'templeId'),
-    patch: patchField(body, PROTECTED_PATCH_FIELDS) as TempleProfilePatch,
+    patch: patchField(body, PROTECTED_PATCH_FIELDS, PATCH_FIELD_CHECKS) as TempleProfilePatch,
     allowWhenLocked: optionalBooleanField(body, 'allowWhenLocked') ?? false,
     allowOrgUnitChange: optionalBooleanField(body, 'allowOrgUnitChange') ?? false,
     audit: optionalActorField(body, 'audit'),
@@ -310,7 +321,7 @@ async function deleteMany(ctx: DataContext, input: { ids: string[] }): Promise<{
   // Manager phone rows go with their temple (ON DELETE CASCADE).
   await runBatch(
     db,
-    rows.flatMap((row) => [deleteVersionedStatement(db, 'temples', row.id, row.version), conflictGuard(db)]),
+    deleteVersionedRowsStatements(db, 'temples', rows),
   )
   for (const row of rows) ctx.search.deleteTemple(row.id)
   return { ok: true }
