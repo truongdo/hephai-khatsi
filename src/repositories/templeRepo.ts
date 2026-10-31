@@ -20,10 +20,12 @@ import type { AuditActor } from '#/domain/auditLog'
 import { buildTempleListSortKeys } from '#/domain/listSortKeys'
 import { ORG_UNIT_SEED } from '#/domain/orgUnitSeed'
 import type { Temple } from '#/domain/types'
+import { DATA_BACKEND } from '#/data/dataBackend'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
 import type { AdminListPage, ListTemplesAdminInput, ListTemplesExportInput } from '#/repositories/adminListTypes'
 import { maybeAppendAuditFromDiff } from '#/repositories/auditLogRepo'
+import { d1TempleRepo } from '#/repositories/d1/templeRepo'
 import { getOrgUnitById } from '#/repositories/orgUnitRepo'
 import { normalizeVnPhone } from '#/domain/normalize'
 
@@ -62,6 +64,8 @@ export type CreateOrUpdateTempleAndLockInput = CreateOrUpdateTempleDraftInput & 
 export type TemplePhoneLookupInput = {
   orgUnitId: string
   phone: string
+  /** The filler's invite; the D1 backend requires it unless the caller is staff. */
+  inviteToken?: string
 }
 
 export type TempleStore = {
@@ -552,7 +556,7 @@ async function unlock(templeId: string, audit: AuditActor): Promise<Temple> {
   })
 }
 
-export const templeRepo: TempleStore = {
+const firestoreTempleRepo: TempleStore = {
   createOrUpdateDraft,
   createOrUpdateAndLock,
   requestEdit,
@@ -565,3 +569,5 @@ export const templeRepo: TempleStore = {
   setPhotoPath,
   deleteMany,
 }
+
+export const templeRepo: TempleStore = DATA_BACKEND === 'd1' ? d1TempleRepo : firestoreTempleRepo

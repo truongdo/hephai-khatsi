@@ -16,9 +16,11 @@ import {
 } from 'firebase/firestore'
 import { DomainError } from '#/domain/errors'
 import type { Retreat, RetreatStatus, RetreatWritableFields } from '#/domain/retreat'
+import { DATA_BACKEND } from '#/data/dataBackend'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
 import type { AdminListPage, ListRetreatsAdminInput } from '#/repositories/adminListTypes'
+import { d1RetreatRepo } from '#/repositories/d1/retreatRepo'
 
 export type CreateRetreatInput = {
   orgUnitId: string
@@ -139,7 +141,7 @@ async function deleteRetreat(id: string): Promise<void> {
   await deleteDoc(doc(requireDb(), COLLECTIONS.retreats, id))
 }
 
-export const retreatRepo: RetreatStore = {
+const firestoreRetreatRepo: RetreatStore = {
   create,
   update,
   setStatus,
@@ -147,3 +149,5 @@ export const retreatRepo: RetreatStore = {
   list,
   delete: deleteRetreat,
 }
+
+export const retreatRepo: RetreatStore = DATA_BACKEND === 'd1' ? d1RetreatRepo : firestoreRetreatRepo

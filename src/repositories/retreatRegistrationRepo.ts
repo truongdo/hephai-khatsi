@@ -15,9 +15,11 @@ import {
   type QueryConstraint,
 } from 'firebase/firestore'
 import type { RetreatRegistration } from '#/domain/retreatRegistration'
+import { DATA_BACKEND } from '#/data/dataBackend'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
 import type { AdminListPage } from '#/repositories/adminListTypes'
+import { d1RetreatRegistrationRepo } from '#/repositories/d1/retreatRegistrationRepo'
 
 export type RegistrationReviewPatch = {
   status: 'approved' | 'rejected'
@@ -103,9 +105,12 @@ async function updateReview(
   }
 }
 
-export const retreatRegistrationRepo: RetreatRegistrationStore = {
+const firestoreRetreatRegistrationRepo: RetreatRegistrationStore = {
   create,
   getById,
   listByRetreat,
   updateReview,
 }
+
+export const retreatRegistrationRepo: RetreatRegistrationStore =
+  DATA_BACKEND === 'd1' ? d1RetreatRegistrationRepo : firestoreRetreatRegistrationRepo

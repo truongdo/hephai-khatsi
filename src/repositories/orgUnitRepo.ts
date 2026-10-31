@@ -10,8 +10,10 @@ import {
 } from 'firebase/firestore'
 import { ORG_UNIT_SEED } from '#/domain/orgUnitSeed'
 import type { OrgUnit } from '#/domain/types'
+import { DATA_BACKEND } from '#/data/dataBackend'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
+import { d1ListOrgUnits } from '#/repositories/d1/orgUnitRepo'
 
 function requireDb(): Firestore {
   const db = getClientFirestore()
@@ -39,9 +41,12 @@ export async function getOrgUnitById(id: string): Promise<OrgUnit | null> {
   return { id: snap.id, ...(snap.data() as Omit<OrgUnit, 'id'>) }
 }
 
-export async function listOrgUnits(): Promise<OrgUnit[]> {
+async function firestoreListOrgUnits(): Promise<OrgUnit[]> {
   const snap = await getDocs(
     query(collection(requireDb(), COLLECTIONS.orgUnits), orderBy('order', 'asc')),
   )
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<OrgUnit, 'id'>) }))
 }
+
+export const listOrgUnits: () => Promise<OrgUnit[]> =
+  DATA_BACKEND === 'd1' ? d1ListOrgUnits : firestoreListOrgUnits

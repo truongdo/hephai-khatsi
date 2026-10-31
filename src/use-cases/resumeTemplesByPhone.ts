@@ -20,6 +20,7 @@ export async function resumeTemplesByPhone(
   const temples = await templeStore.listByOrgAndPhone({
     orgUnitId: input.orgUnitId,
     phone,
+    inviteToken: input.token,
   })
 
   return {
