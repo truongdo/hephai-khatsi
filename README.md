@@ -1,10 +1,11 @@
 Hệ phái Khất sĩ admin app — a client-only single-page app built with
 [TanStack Router](https://tanstack.com/router), [React Query](https://tanstack.com/query),
-[Mantine](https://mantine.dev/), and [Firebase](https://firebase.google.com/)
-(Auth, Firestore). Member portraits are stored in [Cloudflare R2](https://developers.cloudflare.com/r2/)
-via a Cloudflare Worker (`src/worker.ts`); the browser uploads with presigned PUT URLs and reads
-public objects from `VITE_PHOTOS_PUBLIC_BASE`. Firestore security rules (see `firebase/`) are the
-authorization boundary for data.
+[Mantine](https://mantine.dev/), and [Firebase Auth](https://firebase.google.com/docs/auth)
+(sign-in and role claims). The data lives in [Cloudflare D1](https://developers.cloudflare.com/d1/),
+reached only through the Worker's `/api/data/*` routes (`src/worker.ts`, `src/worker/dataApi/`),
+which enforce authorization (`src/domain/authz/`). Member portraits and documents are stored in
+[Cloudflare R2](https://developers.cloudflare.com/r2/): the browser uploads with presigned PUT URLs
+and reads public objects from `VITE_PHOTOS_PUBLIC_BASE`.
 
 # Getting Started
 
@@ -28,7 +29,7 @@ Either of these works (same access as the Gmail admin):
 | Claims | Meaning |
 |--------|---------|
 | `{ role: 'he_phai_admin' }` | Preferred |
-| `{ admin: true }` | Legacy; app and Firestore rules map it to `he_phai_admin` |
+| `{ admin: true }` | Legacy; the app and the Worker map it to `he_phai_admin` |
 
 ### One-off script
 
@@ -68,7 +69,7 @@ node scripts/set-he-phai-admin.mjs admin@example.com ./path/to/hephaikhatsi-*-fi
 ### After setting
 
 1. Sign out and sign in again as that user (or force-refresh the ID token with `getIdToken(true)`) so the new claims appear on the token.
-2. `/admin` should work; `pnpm seed:org-units` can also succeed because it signs in as this user and needs the claim for Firestore writes.
+2. `/admin` should work.
 
 # Building For Production
 
@@ -88,21 +89,8 @@ This project uses [Vitest](https://vitest.dev/) and Testing Library for unit and
 pnpm test
 ```
 
-### Firebase emulator integration (optional)
-
-Requires [Java](https://www.java.com/) for the Firestore/Auth emulators.
-
-Terminal A — start the emulators from the repo root config:
-
-```bash
-pnpm emulator
-```
-
-Terminal B — run the integration suite (repository logic + Firestore security rules) against them:
-
-```bash
-pnpm test:integration
-```
+`pnpm test` also runs the Worker + D1 tests (`src/worker/**/*.d1.test.ts`) in workerd against a
+local D1 with `migrations/` applied.
 
 ### End-to-end (Cypress)
 
@@ -142,15 +130,17 @@ Portraits upload to R2 via presigned PUT URLs from `/api/photos/*`; the client d
 
 4. Deploy: `pnpm run deploy` builds the SPA (`dist/`) and publishes the Worker + Assets via Wrangler (not `pnpm deploy`: under pnpm 11 that is pnpm's own workspace command).
 
-`GET /api/health` returns `{"ok":true}` for smoke checks. Firestore security rules still deploy separately from the monorepo root (`../firebase/`).
+`GET /api/health` returns `{"ok":true}` for smoke checks.
+
+5. Database schema: new `migrations/*.sql` files are applied with `pnpm db:migrate:remote` (production D1 `hephai-khatsi`) before deploying code that needs them; `pnpm db:migrate:local` for `wrangler dev`.
 
 ### Local development (Vite + Wrangler)
 
 Copy `.env.example` → `.env` and set Firebase client vars plus `VITE_PHOTOS_PUBLIC_BASE`.
 
-For photo upload/delete API routes, run the Worker locally and proxy from Vite (`vite.config.ts` forwards `/api` → `http://127.0.0.1:8787`):
+All data goes through the Worker, so run it locally and proxy from Vite (`vite.config.ts` forwards `/api` → `http://127.0.0.1:8787`). Apply the schema to the local D1 once (and after adding a migration): `pnpm db:migrate:local`.
 
-Terminal A — Worker (needs R2 binding + secrets in `.dev.vars`, gitignored):
+Terminal A — Worker (needs the R2 / D1 bindings + secrets in `.dev.vars`, gitignored):
 
 ```bash
 # .dev.vars example (secrets; plain vars come from wrangler.jsonc in prod):
@@ -171,9 +161,10 @@ pnpm dev
 
 Alternatively, `pnpm preview` builds once and runs `wrangler dev` (serves built assets; no Vite HMR).
 
-## Deploy (Cloudflare Worker + R2)
+## Deploy (Cloudflare Worker + D1 + R2)
 
 ```bash
+pnpm db:migrate:remote   # only when migrations/ has new files
 pnpm run deploy
 ```
 
@@ -234,8 +225,9 @@ More information on layouts can be found in the [Layouts documentation](https://
 ## Data Fetching
 
 Data access goes through the repository/use-case layers in `src/repositories` and
-`src/use-cases` (thin wrappers around the Firebase client SDK), called directly from
-`src/query/*` React Query hooks — there's no server RPC layer to cross.
+`src/use-cases`, called from `src/query/*` React Query hooks. Repositories call the Worker's
+`/api/data/*` routes (`src/data/apiClient.ts` adds the Firebase ID token); the Worker checks
+authorization and runs SQL on D1.
 
 # Learn More
 

@@ -260,7 +260,7 @@ export function createMemoryMemberStore(
           ...existing,
           ...input.patch,
           // Re-validated per the current invite token on every non-admin
-          // write, matching memberRepo.ts / firebase/firestore.rules.
+          // write, matching the Worker's members handlers.
           inviteId: input.inviteId,
           updatedAt: now,
         })
@@ -856,7 +856,7 @@ export function createMemoryTempleStore(
           managerPhones: input.managerPhones,
           // Re-validated per the current invite token on non-admin writes;
           // admin writes pass inviteId: null and preserve the original,
-          // matching templeRepo.ts / firebase/firestore.rules.
+          // matching the Worker's temples handlers.
           inviteId: input.inviteId ?? existing.inviteId,
           photoPath:
             'photoPath' in input.patch

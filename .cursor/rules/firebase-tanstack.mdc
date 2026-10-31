@@ -1,47 +1,43 @@
 ---
-description: Firebase data access with TanStack Query — structure and minimize reads
+description: Data access through the Worker data API (D1) with TanStack Query — structure and minimize requests
 alwaysApply: true
 ---
 
-# Firebase + TanStack Query
+# Data API (D1) + TanStack Query
 
-Companion to `tech-stack.mdc` (Firebase required) and `frontend-tanstack.mdc` (Query/Router UI patterns).
+Companion to `tech-stack.mdc` (Cloudflare D1 behind the Worker) and `frontend-tanstack.mdc` (Query/Router UI patterns).
 
 ## Layering
 
 ```
-firebase/init → repositories (SDK only) → queryOptions / mutations → hooks / route loaders → UI
+repositories (fetch via src/data/apiClient) → /api/data/* (Worker, authz in src/domain/authz) → D1
+  → use-cases → queryOptions / mutations → hooks / route loaders → UI
 ```
 
-- One Firebase app init; export typed `db` helpers from a single module.
-- Repositories own `getDoc` / `getDocs` / writes / converters. Components and routes must not call the Firestore SDK directly.
+- The browser never talks to a database. Repositories (`src/repositories/*Repo.ts`, implementations in `src/repositories/d1/`) are the only place that calls `/api/data/*`; components and routes must not `fetch` data routes directly.
+- Authorization is enforced on the Worker by the pure functions in `src/domain/authz/`; never rely on the client hiding data or buttons.
+- Firebase stays for **Auth only** (`src/firebase/client.ts`, `authRepo`): the ID token goes in `Authorization: Bearer` on every staff request.
 - Define domain reads as `queryOptions` + key factories so loaders, hooks, and prefetch share the same key/`queryFn`/`staleTime`.
 
-## Default: one-shot reads via Query
+## Minimize requests
 
-- Prefer `getDoc` / `getDocs` in `queryFn`. Do **not** default to `onSnapshot`.
-- Use realtime only when the UX truly needs live updates. Then: one shared subscription per key, `staleTime: Infinity`, disable `refetchOnWindowFocus` / `refetchOnReconnect` for that query, and unsubscribe when observer count hits 0.
-- Never open listeners inside many components for the same path.
+- One request per screen load and one per user action; shape Worker endpoints around what the screen needs (no call per list row).
+- Always page lists with a limit and the opaque `cursor` the Worker returns. Never use offsets.
+- Counts and stats come from one Worker request (`stats/*`, `members/count-ha-lap`), not by fetching records.
+- Fetch only fields the screen needs (lean list shapes; full records on demand).
+- Seed detail cache from list data with `setQueryData` when the list already has enough — avoid an immediate duplicate `get`.
+- Writes return the updated record: update the cache from it and invalidate **targeted** keys only.
 
-## Minimize billed reads
+## Caching
 
-- Always `limit()` list queries; paginate with cursors (`startAfter` / `startAt`). Never use `offset` (skipped docs are still billed).
-- Prefer `getCountFromServer` / aggregations over fetching documents just to count or sum.
-- Fetch only fields the screen needs (lean list shapes; fat detail docs on demand).
-- Seed detail cache from list data with `setQueryData` when the list already has enough — avoid an immediate duplicate `getDoc`.
-- Denormalize small display fields onto list docs when it prevents N+1 detail reads.
-- After mutations: invalidate **targeted** keys only; prefer updating cache from the write result when safe.
-
-## Caching (Firestore-aware)
-
-- Set intentional `staleTime` (default `0` causes extra refetches → extra reads). Match data volatility.
+- Set intentional `staleTime` (default `0` causes extra refetches). Match data volatility.
 - Route loaders: `ensureQueryData` / `prefetchQuery` with the shared `queryOptions` — do not ad-hoc fetch in the loader and again in the component.
 - Use Query `select` for UI slices; keep `select` stable (module-level).
 
-## Types and rules
+## Worker and database
 
-- Use `FirestoreDataConverter` (or equivalent) for documents; keep app types and stored shapes explicit.
-- Client queries must match security rules; never rely on the client alone to hide data.
+- New list / filter / sort shapes need a matching index in a new `migrations/*.sql` and an `EXPLAIN QUERY PLAN` check in the handler's `*.d1.test.ts` (no bare `SCAN members` / `temples`).
+- Multi-row writes go in one `db.batch` guarded by `version` (conflict → `CONFLICT` / 409, the client retries once).
 
 ```typescript
 // ✅ repository + queryOptions
@@ -52,5 +48,5 @@ export const templeQuery = (id: string) =>
     staleTime: 5 * 60_000,
   })
 
-// ❌ getDocs(entireCollection) in a component / onSnapshot by default / offset pagination
+// ❌ fetch('/api/data/…') in a component / a request per row / offset pagination
 ```

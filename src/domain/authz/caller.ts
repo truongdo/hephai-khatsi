@@ -16,7 +16,7 @@ export type Caller = { uid: string; claims: AuthClaims | null } | null
 /** Whether an invite with this id exists (the rules' `exists(/invites/$(id))`). */
 export type InviteExists = (inviteId: string) => boolean
 
-// Role predicates named after the functions in `firebase/firestore.rules`.
+// Role predicates named after the functions of the former Firestore rules.
 
 export function isHePhaiAdmin(caller: Caller): boolean {
   return caller?.claims != null && claimsIsHePhaiAdmin(caller.claims)
