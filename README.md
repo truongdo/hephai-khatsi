@@ -142,7 +142,7 @@ Portraits upload to R2 via presigned PUT URLs from `/api/photos/*`; the client d
    pnpm exec wrangler secret put R2_SECRET_ACCESS_KEY
    ```
 
-4. Deploy: `pnpm deploy` builds the SPA (`dist/`) and publishes the Worker + Assets via Wrangler.
+4. Deploy: `pnpm run deploy` builds the SPA (`dist/`) and publishes the Worker + Assets via Wrangler (not `pnpm deploy`: under pnpm 11 that is pnpm's own workspace command).
 
 `GET /api/health` returns `{"ok":true}` for smoke checks. Firestore security rules still deploy separately from the monorepo root (`../firebase/`).
 
@@ -176,7 +176,7 @@ Alternatively, `pnpm preview` builds once and runs `wrangler dev` (serves built 
 ## Deploy (Cloudflare Worker + R2)
 
 ```bash
-pnpm deploy
+pnpm run deploy
 ```
 
 ## Routing

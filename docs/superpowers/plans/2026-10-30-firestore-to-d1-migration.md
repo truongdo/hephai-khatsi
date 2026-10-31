@@ -287,18 +287,18 @@ Cutover steps (requester runs them; each needs Wrangler and Firebase CLI logins 
 - [ ] Rollback plan: redeploy the previous build and restore Firestore write rules (Firestore data is untouched while frozen). Writes made to D1 after cutover would be lost on rollback, so decide go / no-go within the window.
 - [ ] Keep Firestore read-only for 30 days as a backup; D1 Time Travel gives point-in-time restore from then on.
 
-Runbook (times are for ~800 members; the phase 5 dry run fit well inside the hour):
+Runbook (times are for ~800 members; the phase 5 dry run fit well inside the hour). Deploy with `pnpm run deploy`: under pnpm 11 a bare `pnpm deploy` is pnpm's own workspace command and does not run the script. `.env` below means the env file your production builds read (Vite's production mode loads `.env`, `.env.production`, `.env.local`; a `.env.prod` is read only with `--mode prod`): check which one before the window.
 
 Before the window (any day before):
 1. `git pull` on `main`; `pnpm install`; `pnpm test` green.
-2. Production database schema: `pnpm db:migrate:remote` (applies `0001`–`0003` to `hephai-khatsi`, seeds org units). Check it holds no data rows: `pnpm exec wrangler d1 execute hephai-khatsi --remote --command "SELECT (SELECT COUNT(*) FROM members) + (SELECT COUNT(*) FROM temples) + (SELECT COUNT(*) FROM audit_logs) + (SELECT COUNT(*) FROM retreats) AS n"` must print `0` (the import has no `--replace` on production; empty it by hand if a test wrote to it).
-3. Run the pending `backfill:*` scripts against Firestore (phase 0), so no row lacks a sort column.
+2. Production database schema: `pnpm db:migrate:remote` (applies `0001`–`0003` to `hephai-khatsi`, seeds org units). Check it holds no data rows: `pnpm exec wrangler d1 execute hephai-khatsi --remote --command "SELECT (SELECT COUNT(*) FROM invites) + (SELECT COUNT(*) FROM members) + (SELECT COUNT(*) FROM temples) + (SELECT COUNT(*) FROM temple_manager_phones) + (SELECT COUNT(*) FROM audit_logs) + (SELECT COUNT(*) FROM retreats) + (SELECT COUNT(*) FROM retreat_registrations) AS n"` must print `0` (the import has no `--replace` on production; empty it by hand if a test wrote to it).
+3. Run the pending `backfill:*` scripts against Firestore (phase 0), so no row lacks a sort column. Never during the window: like the scripts below they write with the service account, which the frozen rules do not stop.
 4. `firebase login` / `pnpm exec wrangler whoami` on the machine that runs the cutover; `.env` holds `FIREBASE_SERVICE_ACCOUNT_JSON` (or `GOOGLE_APPLICATION_CREDENTIALS`) for the export.
-5. Prepare the cutover commit on a branch, not merged yet: `wrangler.jsonc` `vars.DATA_BACKEND` → `"d1"`. It is merged into `main` in step 10 so every later `pnpm deploy` keeps the D1 backend.
+5. Prepare the cutover commit on a branch, not merged yet: `wrangler.jsonc` `vars.DATA_BACKEND` → `"d1"`. It is merged into `main` in step 10 so every later `pnpm run deploy` keeps the D1 backend.
 6. Announce the date and the read-only hour to admins and form fillers.
 
 Freeze (T+0):
-7. Banner build on Firestore: in `.env` set `VITE_MAINTENANCE_MODE=true` (keep `VITE_DATA_BACKEND=firestore`), `pnpm deploy`. Open the site: the yellow banner shows.
+7. Banner build on Firestore: in `.env` set `VITE_MAINTENANCE_MODE=true` (keep `VITE_DATA_BACKEND=firestore`), `pnpm run deploy`. Open the site: the yellow banner shows.
 8. `pnpm rules:freeze`. From now on every Firestore write is refused (saves show their usual error). Do not grant or revoke directory roles in the window: that route writes Firestore with the service account, which the rules do not stop, and the change would not reach D1. Wait ~1 minute for in-flight saves.
 
 Move the data (T+5):
@@ -307,13 +307,13 @@ Move the data (T+5):
    `pnpm verify:d1-import --export .d1-migration/export-<time> --database hephai-khatsi --remote` must print `OK`. Record a restore point: `pnpm exec wrangler d1 time-travel info hephai-khatsi`.
 
 Switch (T+15):
-10. Merge the cutover commit (step 5). In `.env` set `VITE_DATA_BACKEND=d1` and remove `VITE_MAINTENANCE_MODE`; `pnpm deploy` (Worker `DATA_BACKEND=d1` and the D1 client ship together; they must match).
+10. Merge the cutover commit (step 5) and `git pull` it on the cutover machine (`pnpm run deploy` ships the local `wrangler.jsonc`). In `.env` set `VITE_DATA_BACKEND=d1` and remove `VITE_MAINTENANCE_MODE`; `pnpm run deploy` (Worker `DATA_BACKEND=d1` and the D1 client ship together; they must match).
 11. Signed in as hệ phái admin: Giáo đoàn (`/admin/org-units`) → "Tạo lại chỉ mục tìm kiếm" (now rebuilt by the Worker from D1); the counts match verify's members / temples.
 12. Smoke test, one pass each: login as hệ phái admin, giáo đoàn admin, kiểm soát; member and temple lists (tăng / ni, hạ lạp tabs, sort), search; open a record and its history; filler `/f/public`: lookup by phone and by CCCD, save-and-lock, edit request; portrait and document upload; admin lock / unlock; retreat create, invite link, `/r/<token>` self registration, review; Excel / PDF export; members and temples stats. Firestore must see no new writes (rules stay frozen).
 
 Go / no-go (by T+60):
 13. Go: keep Firestore frozen (do not run `rules:unfreeze`) for 30 days as the backup; delete `.d1-migration/export-<time>/` (personal data); announce the end of the window.
-14. No-go (rollback): revert the cutover commit, `.env` back to `VITE_DATA_BACKEND=firestore` without `VITE_MAINTENANCE_MODE`, `pnpm deploy`, `pnpm rules:unfreeze`. Firestore is as it was at the freeze; anything written to D1 after step 10 is lost, so decide before users write much. Empty `hephai-khatsi` before the next attempt (step 2).
+14. No-go (rollback): revert the cutover commit, `.env` back to `VITE_DATA_BACKEND=firestore` without `VITE_MAINTENANCE_MODE`, `pnpm run deploy`, `pnpm rules:unfreeze`, then rebuild the search index again (step 11's button, now from the Firestore lists: Typesense holds D1's changes since step 10). Firestore is as it was at the freeze; anything written to D1 after step 10 is lost, so decide before users write much. A directory role granted after step 10 keeps its Auth custom claim but not the member's role fields: revoke and grant it again. Empty `hephai-khatsi` before the next attempt (step 2).
 
 ### Phase 7 — Cleanup
 

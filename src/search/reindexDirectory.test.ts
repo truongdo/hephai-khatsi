@@ -116,6 +116,9 @@ describe('reindexDirectorySearchFromDb', () => {
     const result = await reindexDirectorySearchFromDb({ idToken: 'token-1' })
 
     expect(reindexEnsureMock).toHaveBeenCalledWith({ idToken: 'token-1' })
+    expect(reindexEnsureMock.mock.invocationCallOrder[0]).toBeLessThan(
+      reindexImportFromDbMock.mock.invocationCallOrder[0]!,
+    )
     expect(reindexImportFromDbMock.mock.calls.map(([input]) => [input.collection, input.cursor])).toEqual([
       ['members', null],
       ['members', 'm-250'],

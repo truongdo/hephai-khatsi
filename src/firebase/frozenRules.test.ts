@@ -56,6 +56,11 @@ describe('freezeFirestoreRules', () => {
     expect(() => freezeFirestoreRules('allow upsert: if true;')).toThrow(/Unknown operation/)
   })
 
+  it('refuses an allow statement without its ; instead of swallowing the next rules', () => {
+    const rules = 'match /a/{id} { allow get: if true }\nmatch /b/{id} { allow write: if true; }'
+    expect(() => freezeFirestoreRules(rules)).toThrow(/without a terminating ;/)
+  })
+
   it('matches the committed frozen rules (run pnpm rules:generate-frozen)', () => {
     expect(readRepoFile('firebase/firestore.frozen.rules')).toBe(
       freezeFirestoreRules(readRepoFile('firebase/firestore.rules')),
@@ -64,8 +69,11 @@ describe('freezeFirestoreRules', () => {
 
   it('leaves no write allowed in the committed frozen rules', () => {
     const frozen = readRepoFile('firebase/firestore.frozen.rules')
-    const writeRules = frozen.match(/allow [a-z, ]*(create|update|delete|write)[a-z, ]*:[^;]*;/g) ?? []
+    const writeRules = frozen.match(/\ballow\s[^:;]*\b(create|update|delete|write)\b[^;]*;/g) ?? []
     expect(writeRules.length).toBeGreaterThan(0)
     for (const rule of writeRules) expect(rule).toMatch(/: if false;$/)
+    // Every allow is either a kept read or one of the frozen writes.
+    const readRules = frozen.match(/\ballow\s+(get|list|read)\b[^;]*;/g) ?? []
+    expect(readRules.length + writeRules.length).toBe(frozen.match(/\ballow\s/g)?.length)
   })
 })

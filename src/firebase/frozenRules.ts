@@ -42,6 +42,10 @@ function statementEnd(source: string, i: number): number {
       continue
     }
     if (source[j] === ';') return j
+    // A missing `;` would otherwise swallow the next rules up to the next one.
+    if (source[j] === '{' || source[j] === '}') {
+      throw new Error('allow statement without a terminating ; in rules')
+    }
     j++
   }
   throw new Error('Unterminated allow statement in rules')
