@@ -34,6 +34,7 @@ const draftMember: WorkerMember = {
   orgUnitId: 'gd-i',
   cccd: '012345678901',
   status: 'draft',
+  inviteId: 'invite-1',
   photoPath: null,
 }
 
@@ -338,5 +339,111 @@ describe('handleDocsApi', () => {
       expect(deleteFn).toHaveBeenCalledWith('members/m1/docs/cccd/front.jpg')
       expect(deleteFn).toHaveBeenCalledWith('members/m1/docs/cccd/back.jpg')
     })
+  })
+
+  describe('staff of another giáo đoàn', () => {
+    const otherGiaoDoanAdmin = { uid: 'gd-admin', role: 'giao_doan_admin', orgUnitId: 'gd-ii' }
+
+    function staffRequest(path: string, method: string, body: object): Request {
+      return new Request(`https://example.com${path}`, {
+        method,
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer gd-token' },
+        body: JSON.stringify(body),
+      })
+    }
+
+    it('cannot get an upload URL', async () => {
+      getMemberDocument.mockResolvedValue(draftMember)
+      verifyFirebaseAdminToken.mockResolvedValue(otherGiaoDoanAdmin)
+      const { handleDocsApi } = await import('./docsApi')
+
+      const response = await handleDocsApi(
+        staffRequest('/api/docs/member-upload-url', 'POST', {
+          memberId: MEMBER_ID,
+          cccd: '012345678901',
+          typeId: 'cccd',
+          side: 'front',
+          contentType: 'image/jpeg',
+        }),
+        makeEnv(),
+      )
+
+      expect(response.status).toBe(403)
+      expect(createR2PresignedPutUrl).not.toHaveBeenCalled()
+    })
+
+    it('cannot delete documents', async () => {
+      getMemberDocument.mockResolvedValue(draftMember)
+      verifyFirebaseAdminToken.mockResolvedValue(otherGiaoDoanAdmin)
+      const deleteFn = vi.fn(async () => undefined)
+      const { handleDocsApi } = await import('./docsApi')
+
+      const response = await handleDocsApi(
+        staffRequest('/api/docs/member', 'DELETE', {
+          memberId: MEMBER_ID,
+          typeId: 'cccd',
+          paths: ['members/m1/docs/cccd/front.jpg'],
+        }),
+        makeEnv({ PHOTOS: { delete: deleteFn, list: vi.fn() } as unknown as R2Bucket }),
+      )
+
+      expect(response.status).toBe(403)
+      expect(deleteFn).not.toHaveBeenCalled()
+    })
+
+    it('cannot clear the documents of an existing member', async () => {
+      getMemberDocument.mockResolvedValue(draftMember)
+      verifyFirebaseAdminToken.mockResolvedValue(otherGiaoDoanAdmin)
+      const listFn = vi.fn(async () => ({ objects: [], truncated: false }))
+      const { handleDocsApi } = await import('./docsApi')
+
+      const response = await handleDocsApi(
+        staffRequest('/api/docs/member-prefix', 'DELETE', { memberId: MEMBER_ID }),
+        makeEnv({ PHOTOS: { delete: vi.fn(), list: listFn } as unknown as R2Bucket }),
+      )
+
+      expect(response.status).toBe(403)
+      expect(listFn).not.toHaveBeenCalled()
+    })
+
+    it('may clear the documents left by a deleted member', async () => {
+      getMemberDocument.mockResolvedValue(null)
+      verifyFirebaseAdminToken.mockResolvedValue(otherGiaoDoanAdmin)
+      const listFn = vi.fn(async () => ({ objects: [], truncated: false }))
+      const { handleDocsApi } = await import('./docsApi')
+
+      const response = await handleDocsApi(
+        staffRequest('/api/docs/member-prefix', 'DELETE', { memberId: MEMBER_ID }),
+        makeEnv({ PHOTOS: { delete: vi.fn(), list: listFn } as unknown as R2Bucket }),
+      )
+
+      expect(response.status).toBe(200)
+      expect(listFn).toHaveBeenCalledWith({ prefix: 'members/m1/docs/' })
+    })
+  })
+
+  it('refuses a filler upload URL on an admin-made draft (no invite yet)', async () => {
+    getMemberDocument.mockResolvedValue({ ...draftMember, inviteId: null })
+    inviteExists.mockResolvedValue(true)
+    const { handleDocsApi } = await import('./docsApi')
+
+    const response = await handleDocsApi(
+      new Request('https://example.com/api/docs/member-upload-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          memberId: MEMBER_ID,
+          cccd: '012345678901',
+          typeId: 'cccd',
+          side: 'front',
+          contentType: 'image/jpeg',
+          inviteToken: 'invite-1',
+        }),
+      }),
+      makeEnv(),
+    )
+
+    expect(response.status).toBe(403)
+    expect(createR2PresignedPutUrl).not.toHaveBeenCalled()
   })
 })

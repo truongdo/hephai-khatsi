@@ -36,6 +36,7 @@ const draftMember: WorkerMember = {
   orgUnitId: 'gd-i',
   cccd: '012345678901',
   status: 'draft',
+  inviteId: 'invite-1',
   photoPath: null,
 }
 
@@ -43,6 +44,7 @@ const draftTemple: WorkerTemple = {
   id: TEMPLE_ID,
   orgUnitId: 'gd-i',
   status: 'draft',
+  inviteId: 'invite-1',
   photoPath: null,
 }
 
@@ -701,6 +703,185 @@ describe('handlePhotosApi', () => {
       )
 
       expect(response.status).toBe(403)
+    })
+  })
+
+  describe('staff of another giáo đoàn', () => {
+    const otherGiaoDoanAdmin = { uid: 'gd-admin', role: 'giao_doan_admin', orgUnitId: 'gd-ii' }
+
+    function staffRequest(path: string, method: string, body: object): Request {
+      return new Request(`https://example.com${path}`, {
+        method,
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer gd-token' },
+        body: JSON.stringify(body),
+      })
+    }
+
+    it('cannot get a member upload URL', async () => {
+      getMemberDocument.mockResolvedValue(draftMember)
+      verifyFirebaseAdminToken.mockResolvedValue(otherGiaoDoanAdmin)
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        staffRequest('/api/photos/member-upload-url', 'POST', {
+          memberId: MEMBER_ID,
+          cccd: '012345678901',
+          contentType: 'image/jpeg',
+        }),
+        makeEnv(),
+      )
+
+      expect(response.status).toBe(403)
+      expect(createR2PresignedPutUrl).not.toHaveBeenCalled()
+    })
+
+    it('cannot delete a member photo', async () => {
+      getMemberDocument.mockResolvedValue(draftMember)
+      verifyFirebaseAdminToken.mockResolvedValue(otherGiaoDoanAdmin)
+      const deleteFn = vi.fn(async () => undefined)
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        staffRequest('/api/photos/member', 'DELETE', { memberId: MEMBER_ID }),
+        makeEnv({ PHOTOS: { delete: deleteFn } as unknown as R2Bucket }),
+      )
+
+      expect(response.status).toBe(403)
+      expect(deleteFn).not.toHaveBeenCalled()
+    })
+
+    it('cannot get a temple upload URL', async () => {
+      getTempleDocument.mockResolvedValue(draftTemple)
+      verifyFirebaseAdminToken.mockResolvedValue(otherGiaoDoanAdmin)
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        staffRequest('/api/photos/temple-upload-url', 'POST', {
+          templeId: TEMPLE_ID,
+          contentType: 'image/jpeg',
+        }),
+        makeEnv(),
+      )
+
+      expect(response.status).toBe(403)
+      expect(createR2PresignedPutUrl).not.toHaveBeenCalled()
+    })
+
+    it('cannot delete a temple photo', async () => {
+      getTempleDocument.mockResolvedValue(draftTemple)
+      verifyFirebaseAdminToken.mockResolvedValue(otherGiaoDoanAdmin)
+      const deleteFn = vi.fn(async () => undefined)
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        staffRequest('/api/photos/temple', 'DELETE', { templeId: TEMPLE_ID }),
+        makeEnv({ PHOTOS: { delete: deleteFn } as unknown as R2Bucket }),
+      )
+
+      expect(response.status).toBe(403)
+      expect(deleteFn).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('photo of a record already deleted from D1', () => {
+    it('is deleted for staff (the delete-members cleanup)', async () => {
+      getMemberDocument.mockResolvedValue(null)
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
+      const deleteFn = vi.fn(async () => undefined)
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        new Request('https://example.com/api/photos/member', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer admin-token' },
+          body: JSON.stringify({ memberId: MEMBER_ID }),
+        }),
+        makeEnv({ PHOTOS: { delete: deleteFn } as unknown as R2Bucket }),
+      )
+
+      expect(response.status).toBe(200)
+      expect(deleteFn).toHaveBeenCalledWith('members/m1/photo.jpg')
+    })
+
+    it('is deleted for staff after the temple is deleted', async () => {
+      getTempleDocument.mockResolvedValue(null)
+      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
+      const deleteFn = vi.fn(async () => undefined)
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        new Request('https://example.com/api/photos/temple', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer admin-token' },
+          body: JSON.stringify({ templeId: TEMPLE_ID }),
+        }),
+        makeEnv({ PHOTOS: { delete: deleteFn } as unknown as R2Bucket }),
+      )
+
+      expect(response.status).toBe(200)
+      expect(deleteFn).toHaveBeenCalledWith('temples/t1/photo.jpg')
+    })
+
+    it('stays 404 for a filler', async () => {
+      getMemberDocument.mockResolvedValue(null)
+      const deleteFn = vi.fn(async () => undefined)
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        new Request('https://example.com/api/photos/member', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ memberId: MEMBER_ID, cccd: '012345678901', inviteToken: 'invite-1' }),
+        }),
+        makeEnv({ PHOTOS: { delete: deleteFn } as unknown as R2Bucket }),
+      )
+
+      expect(response.status).toBe(404)
+      expect(deleteFn).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('filler on an admin-made draft (no invite yet)', () => {
+    it('cannot get a member upload URL', async () => {
+      getMemberDocument.mockResolvedValue({ ...draftMember, inviteId: null })
+      inviteExists.mockResolvedValue(true)
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        new Request('https://example.com/api/photos/member-upload-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            memberId: MEMBER_ID,
+            cccd: '012345678901',
+            contentType: 'image/jpeg',
+            inviteToken: 'invite-1',
+          }),
+        }),
+        makeEnv(),
+      )
+
+      expect(response.status).toBe(403)
+      expect(createR2PresignedPutUrl).not.toHaveBeenCalled()
+    })
+
+    it('cannot delete a temple photo', async () => {
+      getTempleDocument.mockResolvedValue({ ...draftTemple, inviteId: null })
+      inviteExists.mockResolvedValue(true)
+      const deleteFn = vi.fn(async () => undefined)
+      const { handlePhotosApi } = await import('./photosApi')
+
+      const response = await handlePhotosApi(
+        new Request('https://example.com/api/photos/temple', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ templeId: TEMPLE_ID, inviteToken: 'invite-1' }),
+        }),
+        makeEnv({ PHOTOS: { delete: deleteFn } as unknown as R2Bucket }),
+      )
+
+      expect(response.status).toBe(403)
+      expect(deleteFn).not.toHaveBeenCalled()
     })
   })
 })

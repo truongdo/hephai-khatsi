@@ -36,12 +36,14 @@ describe('recordSource', () => {
       orgUnitId: 'gd-i',
       cccd: '012345678901',
       status: 'draft',
+      inviteId: 'public',
       photoPath: 'members/p.jpg',
     })
     expect(await source.getTemple(templeLocked().id)).toEqual({
       id: templeLocked().id,
       orgUnitId: 'gd-i',
       status: 'locked',
+      inviteId: 'public',
       photoPath: 'temples/t.jpg',
     })
     expect(await source.getMember('missing')).toBeNull()

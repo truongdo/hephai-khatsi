@@ -5,6 +5,7 @@ export type WorkerMember = {
   orgUnitId: string
   cccd: string
   status: 'draft' | 'locked'
+  inviteId: string | null
   photoPath: string | null
 }
 
@@ -12,6 +13,7 @@ export type WorkerTemple = {
   id: string
   orgUnitId: string
   status: 'draft' | 'locked'
+  inviteId: string | null
   photoPath: string | null
 }
 
@@ -61,23 +63,49 @@ export function recordSource(env: Pick<Env, 'DB'>): RecordSource {
     async getMember(memberId) {
       const row = await db
         .prepare(
-          "SELECT id, org_unit_id, cccd, status, json_extract(data, '$.photoPath') AS photo_path FROM members WHERE id = ?",
+          "SELECT id, org_unit_id, cccd, status, invite_id, json_extract(data, '$.photoPath') AS photo_path FROM members WHERE id = ?",
         )
         .bind(memberId)
-        .first<{ id: string; org_unit_id: string; cccd: string; status: WorkerMember['status']; photo_path: string | null }>()
+        .first<{
+          id: string
+          org_unit_id: string
+          cccd: string
+          status: WorkerMember['status']
+          invite_id: string | null
+          photo_path: string | null
+        }>()
       return row
-        ? { id: row.id, orgUnitId: row.org_unit_id, cccd: row.cccd, status: row.status, photoPath: row.photo_path }
+        ? {
+            id: row.id,
+            orgUnitId: row.org_unit_id,
+            cccd: row.cccd,
+            status: row.status,
+            inviteId: row.invite_id,
+            photoPath: row.photo_path,
+          }
         : null
     },
     async getTemple(templeId) {
       const row = await db
         .prepare(
-          "SELECT id, org_unit_id, status, json_extract(data, '$.photoPath') AS photo_path FROM temples WHERE id = ?",
+          "SELECT id, org_unit_id, status, invite_id, json_extract(data, '$.photoPath') AS photo_path FROM temples WHERE id = ?",
         )
         .bind(templeId)
-        .first<{ id: string; org_unit_id: string; status: WorkerTemple['status']; photo_path: string | null }>()
+        .first<{
+          id: string
+          org_unit_id: string
+          status: WorkerTemple['status']
+          invite_id: string | null
+          photo_path: string | null
+        }>()
       return row
-        ? { id: row.id, orgUnitId: row.org_unit_id, status: row.status, photoPath: row.photo_path }
+        ? {
+            id: row.id,
+            orgUnitId: row.org_unit_id,
+            status: row.status,
+            inviteId: row.invite_id,
+            photoPath: row.photo_path,
+          }
         : null
     },
     async inviteExists(inviteId) {

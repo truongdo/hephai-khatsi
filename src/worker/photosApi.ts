@@ -1,5 +1,7 @@
+import { canAccessOrgUnit } from '#/domain/authClaims'
 import { normalizeCccd } from '#/domain/normalize'
 import type { Env } from './env'
+import { fillerInviteOk } from './fillerMediaAuth'
 import { recordSource } from './recordSource'
 import { createR2PresignedPutUrl, memberPhotoKey, templePhotoKey } from './presignR2Put'
 import { verifyFirebaseAdminToken } from './verifyFirebaseAdmin'
@@ -49,7 +51,6 @@ function bearerToken(request: Request): string | null {
   return authHeader.slice('Bearer '.length)
 }
 
-
 async function handleMemberUploadUrl(request: Request, env: Env): Promise<Response> {
   let body: MemberUploadUrlBody
   try {
@@ -75,11 +76,10 @@ async function handleMemberUploadUrl(request: Request, env: Env): Promise<Respon
   if (token) {
     const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
     if (!admin) return jsonError('Unauthorized', 401)
+    if (!canAccessOrgUnit(admin, member.orgUnitId)) return jsonError('Forbidden', 403)
     isAdmin = true
   } else if (inviteToken) {
-    // Global invite has no orgUnitId — existence only (same as temple photo auth).
-    const exists = await recordSource(env).inviteExists(inviteToken)
-    if (!exists) return jsonError('Forbidden', 403)
+    if (!(await fillerInviteOk(env, member.inviteId, inviteToken))) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)
   }
@@ -115,19 +115,26 @@ async function handleMemberDelete(request: Request, env: Env): Promise<Response>
   if (!memberId) return jsonError('Missing memberId', 400)
 
   const member = await recordSource(env).getMember(memberId)
-  if (!member) return jsonError('Member not found', 404)
+  const token = bearerToken(request)
+  if (!member) {
+    // Deleting members removes the D1 row first: staff then clear the photo it left.
+    if (token && (await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID))) {
+      await env.PHOTOS.delete(memberPhotoKey(memberId))
+      return Response.json({ ok: true })
+    }
+    return jsonError('Member not found', 404)
+  }
 
   let isAdmin = false
-  const token = bearerToken(request)
   if (token) {
     const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
     if (!admin) return jsonError('Unauthorized', 401)
+    if (!canAccessOrgUnit(admin, member.orgUnitId)) return jsonError('Forbidden', 403)
     isAdmin = true
   } else if (inviteToken) {
     if (!cccd) return jsonError('Missing required fields', 400)
     if (!cccdMatches(member.cccd, cccd)) return jsonError('CCCD mismatch', 403)
-    const exists = await recordSource(env).inviteExists(inviteToken)
-    if (!exists) return jsonError('Forbidden', 403)
+    if (!(await fillerInviteOk(env, member.inviteId, inviteToken))) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)
   }
@@ -164,10 +171,10 @@ async function handleTempleUploadUrl(request: Request, env: Env): Promise<Respon
   if (token) {
     const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
     if (!admin) return jsonError('Unauthorized', 401)
+    if (!canAccessOrgUnit(admin, temple.orgUnitId)) return jsonError('Forbidden', 403)
     isAdmin = true
   } else if (inviteToken) {
-    const exists = await recordSource(env).inviteExists(inviteToken)
-    if (!exists) return jsonError('Forbidden', 403)
+    if (!(await fillerInviteOk(env, temple.inviteId, inviteToken))) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)
   }
@@ -203,17 +210,24 @@ async function handleTempleDelete(request: Request, env: Env): Promise<Response>
   if (!templeId) return jsonError('Missing templeId', 400)
 
   const temple = await recordSource(env).getTemple(templeId)
-  if (!temple) return jsonError('Temple not found', 404)
+  const token = bearerToken(request)
+  if (!temple) {
+    // Deleting temples removes the D1 row first: staff then clear the photo it left.
+    if (token && (await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID))) {
+      await env.PHOTOS.delete(templePhotoKey(templeId))
+      return Response.json({ ok: true })
+    }
+    return jsonError('Temple not found', 404)
+  }
 
   let isAdmin = false
-  const token = bearerToken(request)
   if (token) {
     const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
     if (!admin) return jsonError('Unauthorized', 401)
+    if (!canAccessOrgUnit(admin, temple.orgUnitId)) return jsonError('Forbidden', 403)
     isAdmin = true
   } else if (inviteToken) {
-    const exists = await recordSource(env).inviteExists(inviteToken)
-    if (!exists) return jsonError('Forbidden', 403)
+    if (!(await fillerInviteOk(env, temple.inviteId, inviteToken))) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)
   }

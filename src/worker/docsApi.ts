@@ -1,3 +1,4 @@
+import { canAccessOrgUnit } from '#/domain/authClaims'
 import {
   extForContentType,
   getDocumentType,
@@ -6,6 +7,7 @@ import {
 } from '#/domain/memberDocumentTypes'
 import { normalizeCccd } from '#/domain/normalize'
 import type { Env } from './env'
+import { fillerInviteOk } from './fillerMediaAuth'
 import { recordSource } from './recordSource'
 import { createR2PresignedPutUrl, memberDocumentKey } from './presignR2Put'
 import { verifyFirebaseAdminToken } from './verifyFirebaseAdmin'
@@ -92,10 +94,9 @@ async function handleMemberUploadUrl(request: Request, env: Env): Promise<Respon
   if (token) {
     const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
     if (!admin) return jsonError('Unauthorized', 401)
+    if (!canAccessOrgUnit(admin, member.orgUnitId)) return jsonError('Forbidden', 403)
   } else if (inviteToken) {
-    // Global invite has no orgUnitId — existence only (same as temple photo auth).
-    const exists = await recordSource(env).inviteExists(inviteToken)
-    if (!exists) return jsonError('Forbidden', 403)
+    if (!(await fillerInviteOk(env, member.inviteId, inviteToken))) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)
   }
@@ -140,12 +141,12 @@ async function handleMemberDelete(request: Request, env: Env): Promise<Response>
   if (token) {
     const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
     if (!admin) return jsonError('Unauthorized', 401)
+    if (!canAccessOrgUnit(admin, member.orgUnitId)) return jsonError('Forbidden', 403)
     isAdmin = true
   } else if (inviteToken) {
     if (!cccd) return jsonError('Missing required fields', 400)
     if (!cccdMatches(member.cccd, cccd)) return jsonError('CCCD mismatch', 403)
-    const exists = await recordSource(env).inviteExists(inviteToken)
-    if (!exists) return jsonError('Forbidden', 403)
+    if (!(await fillerInviteOk(env, member.inviteId, inviteToken))) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)
   }
@@ -189,6 +190,9 @@ async function handleMemberPrefixDelete(request: Request, env: Env): Promise<Res
   if (!token) return jsonError('Unauthorized', 401)
   const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
   if (!admin) return jsonError('Unauthorized', 401)
+  // Deleting members removes the D1 row first; a member still there must be in scope.
+  const member = await recordSource(env).getMember(memberId)
+  if (member && !canAccessOrgUnit(admin, member.orgUnitId)) return jsonError('Forbidden', 403)
 
   await deleteAllUnderPrefix(env, memberDocsPrefix(memberId))
   return Response.json({ ok: true })
