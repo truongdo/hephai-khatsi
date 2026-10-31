@@ -26,6 +26,7 @@ export async function resumeMemberByPhone(
       orgUnitId: input.orgUnitId,
       sanghaType: input.sanghaType,
       phone,
+      inviteToken: input.token,
     })
   } else {
     const [tang, ni] = await Promise.all([
@@ -33,11 +34,13 @@ export async function resumeMemberByPhone(
         orgUnitId: input.orgUnitId,
         sanghaType: 'tang',
         phone,
+        inviteToken: input.token,
       }),
       memberStore.listByOrgSanghaAndPhone({
         orgUnitId: input.orgUnitId,
         sanghaType: 'ni',
         phone,
+        inviteToken: input.token,
       }),
     ])
     members = [...tang, ...ni]

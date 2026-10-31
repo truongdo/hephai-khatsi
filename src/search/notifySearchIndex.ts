@@ -1,3 +1,4 @@
+import { DATA_BACKEND } from '#/data/dataBackend'
 import type { Member, Temple } from '#/domain/types'
 import {
   toMemberSearchDoc,
@@ -13,6 +14,9 @@ type SearchAuth = {
   inviteToken?: string
 }
 
+// With the D1 backend the Worker updates Typesense after each write itself.
+const workerSyncsSearch = DATA_BACKEND === 'd1'
+
 function logSearchNotifyError(action: string, error: unknown): void {
   console.error(`[search-index] ${action} failed`, error)
 }
@@ -21,6 +25,7 @@ export async function notifyMemberUpsert(
   member: Member,
   auth: SearchAuth,
 ): Promise<void> {
+  if (workerSyncsSearch) return
   try {
     await upsertSearchDocument({
       collection: 'members',
@@ -37,6 +42,7 @@ export async function notifyTempleUpsert(
   temple: Temple,
   auth: SearchAuth,
 ): Promise<void> {
+  if (workerSyncsSearch) return
   try {
     await upsertSearchDocument({
       collection: 'temples',
@@ -53,6 +59,7 @@ export async function notifyMemberDelete(
   id: string,
   idToken: string,
 ): Promise<void> {
+  if (workerSyncsSearch) return
   try {
     await deleteSearchDocument({
       collection: 'members',
@@ -68,6 +75,7 @@ export async function notifyTempleDelete(
   id: string,
   idToken: string,
 ): Promise<void> {
+  if (workerSyncsSearch) return
   try {
     await deleteSearchDocument({
       collection: 'temples',

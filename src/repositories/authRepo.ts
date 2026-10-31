@@ -51,6 +51,17 @@ export async function signOutUser(): Promise<void> {
   await signOut(auth)
 }
 
+/**
+ * ID token of the signed-in user, or null when signed out. Waits for Firebase
+ * to restore the session, so a request made on page load is not anonymous.
+ */
+export async function getCurrentUserIdToken(): Promise<string | null> {
+  const auth = getClientAuth()
+  if (!auth) return null
+  await auth.authStateReady()
+  return auth.currentUser ? auth.currentUser.getIdToken() : null
+}
+
 /** Claims of the user signed in in this browser, or null when signed out. */
 export async function getCurrentUserClaims(): Promise<AuthClaims | null> {
   const user = getClientAuth()?.currentUser

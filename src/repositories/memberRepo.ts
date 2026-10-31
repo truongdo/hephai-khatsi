@@ -39,6 +39,7 @@ import {
 } from '#/domain/memberDocumentTypes'
 import type { MemberTinhTrang } from '#/domain/memberTinhTrang'
 import type { Member, SanghaType } from '#/domain/types'
+import { DATA_BACKEND } from '#/data/dataBackend'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
 import type {
@@ -53,6 +54,7 @@ import {
   copyAuditLogDocsInTransaction,
   listAuditLogDocsForCopy,
 } from '#/repositories/auditLogRepo'
+import { d1MemberRepo } from '#/repositories/d1/memberRepo'
 import { getOrgUnitById } from '#/repositories/orgUnitRepo'
 
 export type MemberProfilePatch = Partial<
@@ -99,6 +101,8 @@ export type MemberPhoneLookupInput = {
   orgUnitId: string
   sanghaType: SanghaType
   phone: string
+  /** The filler's invite; the D1 backend requires it unless the caller is staff. */
+  inviteToken?: string
 }
 
 export type MemberStore = {
@@ -1129,7 +1133,7 @@ async function unlock(memberId: string, audit: AuditActor): Promise<Member> {
   })
 }
 
-export const memberRepo: MemberStore = {
+const firestoreMemberRepo: MemberStore = {
   createOrUpdateDraft,
   createOrUpdateAndLock,
   requestEdit,
@@ -1153,3 +1157,5 @@ export const memberRepo: MemberStore = {
   listDirectorySecretaries,
   listHePhaiSecretaries,
 }
+
+export const memberRepo: MemberStore = DATA_BACKEND === 'd1' ? d1MemberRepo : firestoreMemberRepo

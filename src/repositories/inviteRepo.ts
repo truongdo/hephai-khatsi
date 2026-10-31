@@ -1,8 +1,10 @@
 import { doc, getDoc, setDoc, type Firestore } from 'firebase/firestore'
 import { parseInvite } from '#/domain/invite'
 import type { Invite } from '#/domain/types'
+import { DATA_BACKEND } from '#/data/dataBackend'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
+import { d1InviteRepo } from '#/repositories/d1/inviteRepo'
 
 export { PUBLIC_INVITE_ID } from '#/domain/invite'
 
@@ -28,4 +30,6 @@ async function getByToken(token: string): Promise<Invite | null> {
   return parseInvite(snap.id, snap.data() as Record<string, unknown>)
 }
 
-export const inviteRepo: InviteStore = { create, getByToken }
+const firestoreInviteRepo: InviteStore = { create, getByToken }
+
+export const inviteRepo: InviteStore = DATA_BACKEND === 'd1' ? d1InviteRepo : firestoreInviteRepo

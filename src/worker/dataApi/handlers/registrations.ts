@@ -1,4 +1,5 @@
 import { canCreateRegistration, canReviewRegistration } from '#/domain/authz/registrations'
+import { DATA_API_MAX_IDS as MAX_IDS, DATA_API_MAX_PAGE_SIZE as MAX_PAGE_SIZE } from '#/domain/dataApiLimits'
 import { DomainError } from '#/domain/errors'
 import type { RegisteredVia, RetreatRegistration } from '#/domain/retreatRegistration'
 import {
@@ -44,8 +45,6 @@ import { directoryListScope } from './shared'
 // rules left the retreat's state and org unit to the client).
 
 const DEFAULT_PAGE_SIZE = 25
-const MAX_PAGE_SIZE = 500
-const MAX_IDS = 500
 const MAX_EXTRA_ANSWERS = 50
 
 async function readRegistration(db: D1Database, id: string): Promise<RetreatRegistration | null> {

@@ -1,4 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+// The client notifies Typesense itself only on Firestore; pin it whatever
+// VITE_DATA_BACKEND is (the D1 case is below).
+vi.mock('#/data/dataBackend', () => ({ DATA_BACKEND: 'firestore' }))
 import type { Member, Temple } from '#/domain/types'
 import * as searchApiClient from './searchApiClient'
 import {
@@ -161,5 +165,28 @@ describe('notifyTempleDelete', () => {
     await expect(notifyTempleDelete('t1', 'bad')).resolves.toBeUndefined()
 
     expect(console.error).toHaveBeenCalled()
+  })
+})
+
+describe('with the D1 backend', () => {
+  afterEach(() => {
+    vi.doUnmock('#/data/dataBackend')
+    vi.resetModules()
+    vi.unstubAllGlobals()
+  })
+
+  it('sends nothing: the Worker syncs Typesense after its writes', async () => {
+    vi.doMock('#/data/dataBackend', () => ({ DATA_BACKEND: 'd1' }))
+    vi.resetModules()
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+    const notify = await import('./notifySearchIndex')
+
+    await notify.notifyMemberUpsert(member(), { idToken: 'token' })
+    await notify.notifyTempleUpsert(temple(), { inviteToken: 'public' })
+    await notify.notifyMemberDelete('m1', 'token')
+    await notify.notifyTempleDelete('t1', 'token')
+
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })
