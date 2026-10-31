@@ -7,7 +7,6 @@ export type FirebaseWebConfig = {
   projectId: string
   appId: string
   messagingSenderId?: string
-  storageBucket?: string
 }
 
 export function readFirebaseWebConfig(): FirebaseWebConfig | null {
@@ -18,7 +17,6 @@ export function readFirebaseWebConfig(): FirebaseWebConfig | null {
   if (!apiKey || !authDomain || !projectId || !appId) return null
 
   const messagingSenderId = import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || undefined
-  const storageBucket = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || undefined
 
   return {
     apiKey,
@@ -26,7 +24,6 @@ export function readFirebaseWebConfig(): FirebaseWebConfig | null {
     projectId,
     appId,
     messagingSenderId,
-    storageBucket,
   }
 }
 

@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Repository layout
 
 - Repo root — the whole application (Hệ phái Khất sĩ admin + public filler/registration forms). All `pnpm` commands run from here.
-- `firebase/` — Firestore rules + indexes (`firestore.rules` is the data authorization boundary). `storage.rules` is legacy/unused (portraits live in R2). Wired up by root `firebase.json` (project `hephaikhatsi-82658`); the `hosting` block there is legacy — the app is deployed to Cloudflare.
+- `firebase/` — Firestore rules + indexes (`firestore.rules` is the data authorization boundary). Wired up by root `firebase.json` (project `hephaikhatsi-82658`); the `hosting` block there is legacy — the app is deployed to Cloudflare.
 - `docs/superpowers/specs/*-design.md` and `docs/superpowers/plans/*.md` — dated design specs and implementation plans for each feature; check these for the intent behind a feature before changing it.
 - `.cursor/rules/*.mdc` — project rules (summarized below).
 
