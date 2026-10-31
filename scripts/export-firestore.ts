@@ -41,15 +41,40 @@ if (!projectId) throw new Error('Missing env VITE_FIREBASE_PROJECT_ID')
 const exportedAt = new Date().toISOString()
 const outDir = values.out ?? join(EXPORT_ROOT, `export-${exportedAt.replaceAll(':', '-')}`)
 
+/** The fields of a service account key file used here (snake_case, as downloaded). */
+type ServiceAccountKey = ServiceAccount & { project_id?: string; client_email?: string }
+
+const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON
+const serviceAccount = serviceAccountJson
+  ? (JSON.parse(serviceAccountJson) as ServiceAccountKey)
+  : null
+const account = serviceAccount?.client_email ?? 'GOOGLE_APPLICATION_CREDENTIALS'
+if (serviceAccount?.project_id && serviceAccount.project_id !== projectId) {
+  throw new Error(
+    `Service account ${account} is from project ${serviceAccount.project_id}, not ${projectId}`,
+  )
+}
+
 function credential() {
-  const json = process.env.FIREBASE_SERVICE_ACCOUNT_JSON
-  if (json) return cert(JSON.parse(json) as ServiceAccount)
+  if (serviceAccount) return cert(serviceAccount)
   if (process.env.GOOGLE_APPLICATION_CREDENTIALS) return applicationDefault()
   throw new Error('Set FIREBASE_SERVICE_ACCOUNT_JSON or GOOGLE_APPLICATION_CREDENTIALS in .env')
 }
 
 initializeApp({ credential: credential(), projectId })
 const db = getFirestore()
+
+// Fail early with what to fix: the Admin SDK skips the security rules but
+// needs an IAM role that can read Firestore.
+try {
+  await db.collection('orgUnits').limit(1).get()
+} catch (error) {
+  if ((error as { code?: number }).code !== 7) throw error
+  throw new Error(
+    `${account} may not read Firestore of ${projectId}: grant it "Cloud Datastore Viewer" ` +
+      '(roles/datastore.viewer) in Google Cloud IAM, then run again.',
+  )
+}
 
 function exportedDoc(snap: QueryDocumentSnapshot): ExportedDoc {
   return { id: snap.id, data: exportValue(snap.data(), snap.ref.path) as Record<string, unknown> }
