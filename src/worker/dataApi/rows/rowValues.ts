@@ -29,6 +29,16 @@ export function fromBooleanColumn(value: number): boolean {
   return value !== 0
 }
 
+/** A column value as an SQL literal, for generated SQL files (seed, import). */
+export function sqlLiteral(value: ColumnValue): string {
+  if (value === null) return 'NULL'
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) throw new Error(`Cannot write ${value} as SQL`)
+    return String(value)
+  }
+  return `'${value.replaceAll("'", "''")}'`
+}
+
 /** Serializes the part of a record kept in the `data` JSON column. */
 export function toDataColumn(fields: object): string {
   return JSON.stringify(fields)
