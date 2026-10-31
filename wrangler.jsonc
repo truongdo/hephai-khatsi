@@ -32,6 +32,6 @@
     "R2_BUCKET_NAME": "member-photos",
     "FIREBASE_PROJECT_ID": "hephaikhatsi-82658",
     // firestore | d1: the cutover switch (see src/worker/env.ts).
-    "DATA_BACKEND": "firestore"
+    "DATA_BACKEND": "d1"
   }
 }
