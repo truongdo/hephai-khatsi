@@ -3,7 +3,11 @@ import {
   toMemberSearchDoc,
   toTempleSearchDoc,
 } from '#/domain/searchDocs'
-import { reindexEnsure, reindexImport } from '#/search/searchApiClient'
+import {
+  reindexEnsure,
+  reindexImport,
+  reindexImportFromDb,
+} from '#/search/searchApiClient'
 
 const BATCH_SIZE = 40
 
@@ -38,4 +42,28 @@ export async function reindexDirectorySearch(input: {
   await importBatches(input.idToken, 'temples', templeDocs)
 
   return { members: memberDocs.length, temples: templeDocs.length }
+}
+
+async function importAllFromDb(
+  idToken: string,
+  collection: 'members' | 'temples',
+): Promise<number> {
+  let total = 0
+  let cursor: string | null = null
+  do {
+    const page = await reindexImportFromDb({ idToken, collection, cursor })
+    total += page.imported
+    cursor = page.nextCursor
+  } while (cursor)
+  return total
+}
+
+/** D1 backend: the Worker reads the records itself, page by page (nothing is loaded in the browser). */
+export async function reindexDirectorySearchFromDb(input: {
+  idToken: string
+}): Promise<{ members: number; temples: number }> {
+  await reindexEnsure({ idToken: input.idToken })
+  const members = await importAllFromDb(input.idToken, 'members')
+  const temples = await importAllFromDb(input.idToken, 'temples')
+  return { members, temples }
 }

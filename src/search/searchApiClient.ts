@@ -122,3 +122,27 @@ export async function reindexImport(input: {
   const body = (await response.json()) as { imported?: number }
   return { imported: body.imported ?? input.documents.length }
 }
+
+/** One page of the Worker's own reindex from D1 (`cursor` from the previous page). */
+export async function reindexImportFromDb(input: {
+  idToken: string
+  collection: SearchCollection
+  cursor: string | null
+}): Promise<{ imported: number; nextCursor: string | null }> {
+  const response = await fetch('/api/search/reindex', {
+    method: 'POST',
+    headers: authHeaders(input.idToken),
+    body: JSON.stringify({
+      phase: 'import-from-db',
+      collection: input.collection,
+      ...(input.cursor ? { cursor: input.cursor } : {}),
+    }),
+  })
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response))
+  }
+
+  const body = (await response.json()) as { imported: number; nextCursor: string | null }
+  return { imported: body.imported, nextCursor: body.nextCursor }
+}

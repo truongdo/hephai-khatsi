@@ -28,6 +28,7 @@ import '../styles.css'
 import { AuthProvider } from '#/auth/AuthProvider'
 import { RequireAuth } from '#/auth/RequireAuth'
 import { AppHeader } from '#/components/AppHeader'
+import { MAINTENANCE_MODE, MaintenanceBanner } from '#/components/MaintenanceBanner'
 import { createAppQueryClient } from '#/query/queryClient'
 import { theme } from '../theme'
 
@@ -48,6 +49,7 @@ function RootComponent() {
     <MantineProvider theme={theme} defaultColorScheme="light" deduplicateInlineStyles>
       <DatesProvider settings={{ locale: 'vi', firstDayOfWeek: 1 }}>
         <QueryClientProvider client={queryClient}>
+          {MAINTENANCE_MODE ? <MaintenanceBanner /> : null}
           <AuthProvider>
             <RequireAuth>
               {showAppHeader ? <AppHeader /> : null}
