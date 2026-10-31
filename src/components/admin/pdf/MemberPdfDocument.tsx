@@ -9,6 +9,7 @@ import {
 import type { DocumentProps } from '@react-pdf/renderer'
 import type { ReactElement } from 'react'
 import type { MemberPdfViewModel } from '#/domain/memberPdfViewModel'
+import { MEMBER_PDF_FONT_FAMILY } from './memberPdfFonts'
 
 export type MemberPdfRenderInput = {
   viewModel: MemberPdfViewModel
@@ -17,7 +18,7 @@ export type MemberPdfRenderInput = {
 
 const styles = StyleSheet.create({
   page: {
-    fontFamily: 'BeVietnamPro',
+    fontFamily: MEMBER_PDF_FONT_FAMILY,
     fontSize: 10,
     padding: 40,
   },
