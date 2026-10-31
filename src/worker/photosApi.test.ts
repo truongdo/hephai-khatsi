@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Env } from './env'
 import { handlePhotosApi } from './photosApi'
 import type { WorkerMember, WorkerTemple } from './recordSource'
+import { multipartRequest } from './test/multipartRequest'
 
 const { getMember, getTemple, inviteExists, verifyFirebaseAdminToken } = vi.hoisted(() => ({
   getMember: vi.fn(),
@@ -52,7 +53,7 @@ function makeEnv(): Env {
   } as unknown as Env
 }
 
-function upload(
+async function upload(
   path: string,
   fields: Record<string, string>,
   options: { bytes?: Uint8Array; idToken?: string } = {},
@@ -61,11 +62,11 @@ function upload(
   for (const [name, value] of Object.entries(fields)) form.append(name, value)
   form.append('file', new Blob([new Uint8Array(options.bytes ?? JPEG)], { type: 'image/jpeg' }))
   return handlePhotosApi(
-    new Request(`https://example.com${path}`, {
-      method: 'POST',
-      headers: options.idToken ? { Authorization: `Bearer ${options.idToken}` } : {},
-      body: form,
-    }),
+    await multipartRequest(
+      `https://example.com${path}`,
+      form,
+      options.idToken ? { Authorization: `Bearer ${options.idToken}` } : {},
+    ),
     makeEnv(),
   )
 }
@@ -85,8 +86,9 @@ describe('POST /api/photos/member', () => {
     const response = await upload('/api/photos/member', { ...memberFields, inviteToken: 'invite-1' })
 
     expect(response.status).toBe(200)
-    await expect(response.json()).resolves.toEqual({ photoPath: 'members/m1/photo.jpg' })
-    expect(put).toHaveBeenCalledWith('members/m1/photo.jpg', JPEG, {
+    const { photoPath } = (await response.json()) as { photoPath: string }
+    expect(photoPath).toMatch(/^members\/m1\/photo-[a-f0-9]{12}\.jpg$/)
+    expect(put).toHaveBeenCalledWith(photoPath, JPEG, {
       httpMetadata: { contentType: 'image/jpeg' },
     })
   })
@@ -199,8 +201,9 @@ describe('POST /api/photos/temple', () => {
     const response = await upload('/api/photos/temple', { templeId: TEMPLE_ID, inviteToken: 'invite-1' })
 
     expect(response.status).toBe(200)
-    await expect(response.json()).resolves.toEqual({ photoPath: 'temples/t1/photo.jpg' })
-    expect(put).toHaveBeenCalledWith('temples/t1/photo.jpg', JPEG, {
+    const { photoPath } = (await response.json()) as { photoPath: string }
+    expect(photoPath).toMatch(/^temples\/t1\/photo-[a-f0-9]{12}\.jpg$/)
+    expect(put).toHaveBeenCalledWith(photoPath, JPEG, {
       httpMetadata: { contentType: 'image/jpeg' },
     })
   })
@@ -221,6 +224,16 @@ describe('POST /api/photos/temple', () => {
 
     expect(response.status).toBe(403)
   })
+})
+
+it('refuses a body without Content-Length', async () => {
+  const form = new FormData()
+  form.append('memberId', MEMBER_ID)
+  const response = await handlePhotosApi(
+    new Request('https://example.com/api/photos/member', { method: 'POST', body: form }),
+    makeEnv(),
+  )
+  expect(response.status).toBe(411)
 })
 
 it('answers 404 for the removed presign and delete routes', async () => {

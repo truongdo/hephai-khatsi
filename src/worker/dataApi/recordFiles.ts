@@ -15,6 +15,9 @@ export function createRecordFiles(
       if (!object) return
       await bucket.put(to, object.body, { httpMetadata: object.httpMetadata })
     },
+    async exists(path) {
+      return (await bucket.head(path)) !== null
+    },
     deleteLater(paths) {
       if (paths.length === 0) return
       waitUntil(

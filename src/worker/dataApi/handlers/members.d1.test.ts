@@ -23,6 +23,7 @@ import {
   expectDomainError,
   fileCalls,
   fullTableScans,
+  missingFiles,
   queryPlansOf,
   searchCalls,
 } from '../test/callData'
@@ -264,10 +265,10 @@ describe('members lifecycle writes', () => {
     const id = memberLocked().id
     const member = await callData<Member>(
       'members/set-photo',
-      { memberId: id, photoPath: `members/${id}/portrait.jpg`, audit: FILLER_ACTOR },
+      { memberId: id, photoPath: `members/${id}/photo.jpg`, audit: FILLER_ACTOR },
       anon,
     )
-    expect(member.photoPath).toBe(`members/${id}/portrait.jpg`)
+    expect(member.photoPath).toBe(`members/${id}/photo.jpg`)
     await expectDomainError(
       callData('members/set-photo', { memberId: id, photoPath: null, audit: FILLER_ACTOR }, anon),
       'FORBIDDEN',
@@ -293,6 +294,38 @@ describe('members lifecycle writes', () => {
     const removed = await callData<Member>('members/remove-document', ref, gdAdmin)
     expect(removed.documents).toEqual({})
     expect(fileCalls.at(-1)).toEqual({ action: 'delete', paths: [`${docs}/front.pdf`] })
+  })
+
+  it('refuses a file path that is not the member’s own upload, or that was never uploaded', async () => {
+    await seedInvite()
+    const id = memberLocked().id
+    const front = `members/${id}/docs/cccd/front.jpg`
+    await seedMembers(memberLocked({ documents: { cccd: { frontPath: front } } }))
+    const ref = { memberId: id, typeId: 'cccd', side: 'front', audit: FILLER_ACTOR }
+    for (const filePath of ['x', `members/other/docs/cccd/front.pdf`, `members/${id}/docs/cccd/back.pdf`]) {
+      await expectDomainError(callData('members/merge-document', { ...ref, filePath }, anon), 'INVALID_INPUT')
+    }
+    missingFiles.add(`members/${id}/docs/cccd/front.pdf`)
+    try {
+      await expectDomainError(
+        callData('members/merge-document', { ...ref, filePath: `members/${id}/docs/cccd/front.pdf` }, anon),
+        'INVALID_INPUT',
+      )
+    } finally {
+      missingFiles.clear()
+    }
+    await expectDomainError(
+      callData('members/save-draft', {
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        cccd: '012345678909',
+        inviteId: null,
+        patch: { photoPath: `members/someone/photo.jpg` },
+      }, gdAdmin),
+      'INVALID_INPUT',
+    )
+    expect(fileCalls).toEqual([])
+    expect((await callData<Member>('members/get', { id }))?.documents).toEqual({ cccd: { frontPath: front } })
   })
 
   it('never deletes a file outside the member folder', async () => {
@@ -447,7 +480,7 @@ describe('members/update', () => {
         'members/update',
         { memberId: id, patch: { phapDanh: 'B' }, audit: ADMIN_ACTOR },
         { db: racingDb, caller: gdAdmin, now: NOW, search: { upsertMember() {}, upsertTemple() {}, deleteMember() {}, deleteTemple() {} },
-          files: { copy: async () => {}, deleteLater() {} },
+          files: { copy: async () => {}, exists: async () => true, deleteLater() {} },
         },
       ),
       'CONFLICT',

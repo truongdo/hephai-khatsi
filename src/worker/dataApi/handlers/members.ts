@@ -16,10 +16,16 @@ import {
   removeDocumentType,
   type DocumentSide,
   type DocumentTypeId,
-  type MemberDocuments,
 } from '#/domain/memberDocumentTypes'
 import { MEMBER_TINH_TRANG_VALUES } from '#/domain/memberTinhTrang'
-import { droppedFiles, memberFilePaths, memberFolder, moveMemberFiles } from '#/domain/recordFiles'
+import {
+  addedFiles,
+  droppedFiles,
+  foreignMemberFiles,
+  memberFilePaths,
+  memberFolder,
+  moveMemberFiles,
+} from '#/domain/recordFiles'
 import type { Member, SanghaType } from '#/domain/types'
 import type { MemberAdminSortBy } from '#/repositories/adminListTypes'
 import type { MemberProfilePatch } from '#/repositories/memberRepo'
@@ -27,7 +33,6 @@ import type { DataContext } from '../context'
 import {
   enumField,
   nullableStringField,
-  objectField,
   optionalBooleanField,
   optionalEnumField,
   optionalIntField,
@@ -42,6 +47,7 @@ import {
   authorize,
   loadInviteExists,
   loadOrgUnitName,
+  requireOwnUploadedFiles,
   type Versioned,
 } from '../records'
 import { route, type DataRoute } from '../route'
@@ -151,6 +157,20 @@ function withSortKeys(member: Member, orgUnitName: string): Member {
 
 type MemberAudit = { action: AuditAction; actor: AuditActor }
 
+/** `after` may add only files uploaded for `ownerId` (the id they were uploaded under). */
+function requireOwnMemberFiles(
+  ctx: DataContext,
+  before: Member | null,
+  after: Member,
+  ownerId: string,
+): Promise<void> {
+  return requireOwnUploadedFiles(
+    ctx.files,
+    foreignMemberFiles(before, after, ownerId),
+    addedFiles(before ? memberFilePaths(before) : [], memberFilePaths(after)),
+  )
+}
+
 /** The files of `before` (in its own folder) that `after` no longer references. */
 function droppedMemberFiles(before: Member, after: Member): string[] {
   return droppedFiles(memberFilePaths(before), memberFilePaths(after), memberFolder(before.id))
@@ -173,6 +193,7 @@ async function writeMember(
       ? canUpdateMember(caller, before.member, after, inviteExists)
       : canCreateMember(caller, after, inviteExists),
   )
+  await requireOwnMemberFiles(ctx, before?.member ?? null, after, after.id)
   const row = memberToRow(after)
   const statements = [
     before
@@ -344,6 +365,7 @@ async function updateById(ctx: DataContext, input: UpdateByIdInput): Promise<Mem
   const { member, moves } = moveMemberFiles(updated, existing.id, nextId)
   const inviteExists = await loadInviteExists(db, [member.inviteId])
   authorize(canDeleteMember(caller, existing) && canCreateMember(caller, member, inviteExists))
+  await requireOwnMemberFiles(ctx, existing, updated, existing.id)
   for (const { from, to } of moves) await ctx.files.copy(from, to)
   const statements = [
     deleteVersionedStatement(db, 'members', existing.id, stored.version),
@@ -436,15 +458,6 @@ function setPhotoPath(
       action: input.photoPath !== null ? 'photo_uploaded' : 'photo_deleted',
       actor: input.audit,
     },
-  }))
-}
-
-function setDocumentPaths(
-  ctx: DataContext,
-  input: { memberId: string; documents: MemberDocuments },
-): Promise<Member> {
-  return updateMember(ctx, input.memberId, (existing) => ({
-    member: { ...existing, documents: input.documents, updatedAt: ctx.now },
   }))
 }
 
@@ -768,13 +781,6 @@ export const memberRoutes: Record<string, DataRoute> = {
       audit: actorField(body, 'audit'),
     }),
     setPhotoPath,
-  ),
-  'members/set-documents': route(
-    (body) => ({
-      memberId: stringField(body, 'memberId'),
-      documents: objectField(body, 'documents') as MemberDocuments,
-    }),
-    setDocumentPaths,
   ),
   'members/set-tinh-trang': route(
     (body) => ({

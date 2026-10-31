@@ -2,7 +2,6 @@ import type { AuditActor } from '#/domain/auditLog'
 import type {
   DocumentSide,
   DocumentTypeId,
-  MemberDocuments,
 } from '#/domain/memberDocumentTypes'
 import type { MemberTinhTrang } from '#/domain/memberTinhTrang'
 import type { Member, SanghaType } from '#/domain/types'
@@ -95,7 +94,6 @@ export type MemberStore = {
     photoPath: string | null,
     audit: AuditActor,
   ): Promise<Member>
-  setDocumentPaths(memberId: string, documents: MemberDocuments): Promise<Member>
   setTinhTrang(
     memberId: string,
     tinhTrang: MemberTinhTrang | null,

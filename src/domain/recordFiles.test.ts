@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import {
   documentSidesKept,
   droppedFiles,
+  foreignMemberFiles,
+  foreignTempleFiles,
   memberFilePaths,
   moveMemberFiles,
   templeFilePaths,
@@ -85,5 +87,38 @@ describe('moveMemberFiles', () => {
       member: { photoPath: 'members/x/photo.jpg', documents: undefined },
       moves: [],
     })
+  })
+})
+
+describe('foreignMemberFiles / foreignTempleFiles', () => {
+  it('accepts only the keys the upload routes write for the owner', () => {
+    expect(
+      foreignMemberFiles(
+        null,
+        {
+          photoPath: 'members/a/photo.jpg',
+          documents: {
+            cccd: { frontPath: 'members/a/docs/cccd/front.png', backPath: 'members/a/docs/cccd/front.png' },
+            diep_sa_di: { filePath: 'members/a/docs/diep_sa_di/file.pdf' },
+          },
+        },
+        'a',
+      ),
+    ).toEqual(['members/a/docs/cccd/front.png'])
+    expect(foreignMemberFiles(null, { photoPath: 'members/b/photo.jpg' }, 'a')).toEqual(['members/b/photo.jpg'])
+    expect(foreignTempleFiles(null, { photoPath: 'temples/t/photo.jpg' }, 't')).toEqual([])
+    expect(foreignTempleFiles(null, { photoPath: 'temples/t/photo-ab12.jpg' }, 't')).toEqual([])
+    expect(foreignMemberFiles(null, { photoPath: 'members/a/photo-x/../b.jpg' }, 'a')).toEqual([
+      'members/a/photo-x/../b.jpg',
+    ])
+    expect(
+      foreignMemberFiles(null, { photoPath: null, documents: { cccd: { backPath: 'members/a/docs/cccd/back-9f.pdf' } } }, 'a'),
+    ).toEqual([])
+    expect(foreignTempleFiles(null, { photoPath: 'temples/t/x.svg' }, 't')).toEqual(['temples/t/x.svg'])
+  })
+
+  it('ignores paths the record already had (older data)', () => {
+    const legacy = { photoPath: 'members/old-id/photo.jpg' }
+    expect(foreignMemberFiles(legacy, legacy, 'a')).toEqual([])
   })
 })

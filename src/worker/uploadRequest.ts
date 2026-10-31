@@ -27,6 +27,11 @@ export function cccdMatches(memberCccd: string, providedCccd: string | undefined
   }
 }
 
+/** The per-upload part of a key (see `memberPhotoKey`). */
+export function uploadVersion(): string {
+  return crypto.randomUUID().replaceAll('-', '').slice(0, 12)
+}
+
 export type Upload = {
   field(name: string): string | undefined
   bytes: Uint8Array
@@ -38,7 +43,10 @@ export async function readUpload(
   request: Request,
   limits: { maxBytes: number; contentTypes: readonly UploadContentType[] },
 ): Promise<Upload | Response> {
-  const declaredLength = Number(request.headers.get('Content-Length') ?? 0)
+  // Browsers always send the length of a FormData body; requiring it keeps a
+  // chunked body from being buffered past the limit.
+  const declaredLength = Number(request.headers.get('Content-Length'))
+  if (!declaredLength) return jsonError('Content-Length required', 411)
   if (declaredLength > limits.maxBytes + FORM_OVERHEAD_BYTES) return jsonError('File too large', 413)
   let form: FormData
   try {

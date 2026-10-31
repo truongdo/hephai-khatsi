@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { handleDocsApi } from './docsApi'
 import type { Env } from './env'
 import type { WorkerMember } from './recordSource'
+import { multipartRequest } from './test/multipartRequest'
 
 const { getMember, inviteExists, verifyFirebaseAdminToken } = vi.hoisted(() => ({
   getMember: vi.fn(),
@@ -31,7 +32,7 @@ const draftMember: WorkerMember = {
 
 let put: ReturnType<typeof vi.fn>
 
-function upload(
+async function upload(
   fields: Record<string, string>,
   options: { bytes?: Uint8Array; idToken?: string } = {},
 ): Promise<Response> {
@@ -39,11 +40,11 @@ function upload(
   for (const [name, value] of Object.entries(fields)) form.append(name, value)
   form.append('file', new Blob([new Uint8Array(options.bytes ?? PDF)], { type: 'application/pdf' }))
   return handleDocsApi(
-    new Request('https://example.com/api/docs/member', {
-      method: 'POST',
-      headers: options.idToken ? { Authorization: `Bearer ${options.idToken}` } : {},
-      body: form,
-    }),
+    await multipartRequest(
+      'https://example.com/api/docs/member',
+      form,
+      options.idToken ? { Authorization: `Bearer ${options.idToken}` } : {},
+    ),
     { PHOTOS: { put } as unknown as R2Bucket, FIREBASE_PROJECT_ID: 'test-project' } as unknown as Env,
   )
 }
@@ -62,13 +63,18 @@ describe('POST /api/docs/member', () => {
     const response = await upload({ ...cccdFront, inviteToken: 'invite-1' })
 
     expect(response.status).toBe(200)
-    await expect(response.json()).resolves.toEqual({ filePath: 'members/m1/docs/cccd/front.pdf' })
-    expect(put).toHaveBeenCalledWith('members/m1/docs/cccd/front.pdf', PDF, {
+    const { filePath } = (await response.json()) as { filePath: string }
+    expect(filePath).toMatch(/^members\/m1\/docs\/cccd\/front-[a-f0-9]{12}\.pdf$/)
+    expect(put).toHaveBeenCalledWith(filePath, PDF, {
       httpMetadata: { contentType: 'application/pdf' },
     })
 
-    await upload({ ...cccdFront, inviteToken: 'invite-1' }, { bytes: PNG })
-    expect(put).toHaveBeenLastCalledWith('members/m1/docs/cccd/front.png', PNG, {
+    const again = (await (await upload({ ...cccdFront, inviteToken: 'invite-1' }, { bytes: PNG })).json()) as {
+      filePath: string
+    }
+    // Every upload gets its own key, so the file it replaces can be deleted safely.
+    expect(again.filePath).toMatch(/^members\/m1\/docs\/cccd\/front-[a-f0-9]{12}\.png$/)
+    expect(put).toHaveBeenLastCalledWith(again.filePath, PNG, {
       httpMetadata: { contentType: 'image/png' },
     })
   })

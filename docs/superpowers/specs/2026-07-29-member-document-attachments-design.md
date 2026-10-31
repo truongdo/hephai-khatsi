@@ -4,6 +4,8 @@ Date: 2026-07-29
 Status: draft for review  
 Depends on: `2026-07-25-r2-member-photos-design.md`, `2026-07-25-admin-member-full-form-design.md`, `2026-07-19-he-phai-khatsi-database-design.md`
 
+> **Superseded (2026-10-31):** uploads now go through the Worker (multipart `POST /api/photos/member|temple`, `POST /api/docs/member`) instead of presigned PUT URLs, and the data API deletes R2 files when a record drops them (no R2 delete routes). See `CLAUDE.md` (Worker) and `src/domain/recordFiles.ts`.
+
 ## Goal
 
 Add an optional **Giấy tờ đính kèm** section below **Nguyện vọng** on the shared member form (filler invite + admin create/edit). Users pick a document type from a dropdown and upload the matching file(s). The type list is **config-driven** so new types are one registry entry + i18n string.

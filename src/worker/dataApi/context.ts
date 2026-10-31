@@ -16,6 +16,7 @@ export type SearchSync = {
 export type RecordFiles = {
   /** Copies an object; awaited before the write that references `to`. A missing source is skipped. */
   copy(from: string, to: string): Promise<void>
+  exists(path: string): Promise<boolean>
   /** Deletes objects a committed write stopped referencing, after the response. */
   deleteLater(paths: string[]): void
 }

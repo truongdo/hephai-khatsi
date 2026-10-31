@@ -182,7 +182,7 @@ describe('temple lifecycle writes', () => {
     await seedInvite()
     await seedTemples(templeLocked())
     const id = templeLocked().id
-    await callData('temples/set-photo', { templeId: id, photoPath: 'temples/x.jpg', audit: FILLER_ACTOR }, anon)
+    await callData('temples/set-photo', { templeId: id, photoPath: `temples/${id}/photo.jpg`, audit: FILLER_ACTOR }, anon)
     await expectDomainError(
       callData('temples/set-photo', { templeId: id, photoPath: 'temples/y.jpg', audit: FILLER_ACTOR }, anon),
       'FORBIDDEN',

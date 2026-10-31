@@ -157,11 +157,14 @@ export type MemberFormFieldsProps = {
   onDraftChange?: (draft: MemberDraft) => void
   audit?: AuditActor
   showNgayHaCapHaLap?: boolean
+  /** The existing photo can be neither replaced nor removed (filler on an admin-made draft that has one). */
+  photoReadOnly?: boolean
 }
 
 export function MemberFormFields({
   initial,
   disabled = false,
+  photoReadOnly = false,
   memberId,
   cccd,
   onCccdChange,
@@ -1342,7 +1345,7 @@ export function MemberFormFields({
         getIdToken={getIdToken}
         photoPath={photoPath}
         photoUpdatedAt={initial.updatedAt ?? null}
-        disabled={disabled}
+        disabled={disabled || photoReadOnly}
         pendingFile={pendingPhoto}
         onPendingFileChange={setPendingPhoto}
         onPhotoPathChange={setPhotoPath}

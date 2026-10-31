@@ -2,14 +2,15 @@ import { canAccessOrgUnit } from '#/domain/authClaims'
 import {
   MEMBER_DOCUMENT_MAX_BYTES,
   getDocumentType,
+  extForContentType,
   isValidDocumentSide,
-  memberDocumentObjectKey,
 } from '#/domain/memberDocumentTypes'
+import { memberDocumentKey } from '#/domain/recordFiles'
 import type { UploadContentType } from '#/domain/uploadContent'
 import type { Env } from './env'
 import { fillerInviteOk } from './fillerMediaAuth'
 import { recordSource } from './recordSource'
-import { bearerToken, cccdMatches, jsonError, readUpload } from './uploadRequest'
+import { bearerToken, cccdMatches, jsonError, readUpload, uploadVersion } from './uploadRequest'
 import { verifyFirebaseAdminToken } from './verifyFirebaseAdmin'
 
 // Member document uploads (multipart: the member's fields, `typeId`, `side`
@@ -52,7 +53,13 @@ async function handleMemberUpload(request: Request, env: Env): Promise<Response>
     return jsonError('Unauthorized', 401)
   }
 
-  const filePath = memberDocumentObjectKey(memberId, docType.id, side, upload.contentType)
+  const filePath = memberDocumentKey(
+    memberId,
+    docType.id,
+    side,
+    extForContentType(upload.contentType),
+    uploadVersion(),
+  )
   await env.PHOTOS.put(filePath, upload.bytes, { httpMetadata: { contentType: upload.contentType } })
   return Response.json({ filePath })
 }

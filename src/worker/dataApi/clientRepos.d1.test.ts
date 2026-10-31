@@ -237,8 +237,6 @@ describe('admin members', () => {
     await settled()
     expect(await storedKeys(folder)).toEqual([])
 
-    const diep = { diep_sa_di: { filePath: `members/${member.id}/docs/diep_sa_di/file.pdf` } }
-    expect((await memberRepo.setDocumentPaths(member.id, diep)).documents).toEqual(diep)
   })
 
   it('lists members of temples and secretaries', async () => {
@@ -266,11 +264,12 @@ describe('admin temples', () => {
     const sorted = await templeRepo.list({ orgUnitId: 'gd-i', sortBy: 'orgUnitName', sortDir: 'asc' })
     expect(sorted.items.map((t) => t.id)).toEqual([temple.id])
 
-    const withPhoto = await templeRepo.setPhotoPath(temple.id, `temples/${temple.id}/portrait.jpg`, {
+    await env.PHOTOS.put(`temples/${temple.id}/photo.jpg`, 'x')
+    const withPhoto = await templeRepo.setPhotoPath(temple.id, `temples/${temple.id}/photo.jpg`, {
       actorType: 'admin',
       actorId: 'gd-admin',
     })
-    expect(withPhoto.photoPath).toBe(`temples/${temple.id}/portrait.jpg`)
+    expect(withPhoto.photoPath).toBe(`temples/${temple.id}/photo.jpg`)
     expect((await templeRepo.listAllForExport({ orgUnitId: 'gd-i' })).map((t) => t.id)).toEqual([temple.id])
 
     await templeRepo.deleteMany([temple.id])

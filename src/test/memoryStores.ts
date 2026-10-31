@@ -3,7 +3,6 @@ import { buildAuditChanges } from '#/domain/buildAuditChanges'
 import { DomainError } from '#/domain/errors'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
 import { normalizeVnPhone } from '#/domain/normalize'
-import type { MemberDocuments } from '#/domain/memberDocumentTypes'
 import type { MemberTinhTrang } from '#/domain/memberTinhTrang'
 import {
   mergeDocumentPath,
@@ -566,17 +565,6 @@ export function createMemoryMemberStore(
           after: member,
         },
       )
-      return member
-    },
-    async setDocumentPaths(memberId: string, documents: MemberDocuments) {
-      const existing = members.get(memberId)
-      if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
-      const member = {
-        ...existing,
-        documents,
-        updatedAt: '2026-07-19T00:00:00.000Z',
-      }
-      members.set(memberId, member)
       return member
     },
     async setTinhTrang(

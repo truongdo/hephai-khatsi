@@ -427,6 +427,8 @@ export function MemberEditorForm({
           }}
           disabled={disabled}
           memberId={filesNeedSave ? undefined : effectiveMemberId}
+          // A filler may attach the first photo of a locked record, not replace it.
+          photoReadOnly={filesNeedSave && Boolean(initial.photoPath)}
           orgUnitId={orgUnitId}
           cccd={resolvedCccd}
           onCccdChange={

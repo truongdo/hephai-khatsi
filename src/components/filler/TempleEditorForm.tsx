@@ -346,6 +346,8 @@ export function TempleEditorForm({
           initial={initial}
           disabled={disabled}
           templeId={photoNeedsSave ? undefined : effectiveTempleId}
+          // A filler may attach the first photo of a locked record, not replace it.
+          photoReadOnly={photoNeedsSave && Boolean(initial.photoPath)}
           inviteToken={token}
           audit={fillerAudit}
           onUploadError={setSaveError}

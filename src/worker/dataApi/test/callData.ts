@@ -25,7 +25,11 @@ export type FileCall = { action: 'copy'; from: string; to: string } | { action: 
 /** R2 calls the handlers made, in order. */
 export const fileCalls: FileCall[] = []
 
+/** Paths the fake bucket does not hold (every other path exists). */
+export const missingFiles = new Set<string>()
+
 const recordingFiles: RecordFiles = {
+  exists: async (path) => !missingFiles.has(path),
   copy: async (from, to) => {
     fileCalls.push({ action: 'copy', from, to })
   },

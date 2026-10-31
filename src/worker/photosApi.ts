@@ -4,7 +4,14 @@ import { PHOTO_CONTENT_TYPES, PHOTO_MAX_BYTES } from '#/domain/uploadContent'
 import type { Env } from './env'
 import { fillerInviteOk } from './fillerMediaAuth'
 import { recordSource, type WorkerMember, type WorkerTemple } from './recordSource'
-import { bearerToken, cccdMatches, jsonError, readUpload, type Upload } from './uploadRequest'
+import {
+  bearerToken,
+  cccdMatches,
+  jsonError,
+  readUpload,
+  uploadVersion,
+  type Upload,
+} from './uploadRequest'
 import { verifyFirebaseAdminToken } from './verifyFirebaseAdmin'
 
 // Portrait uploads (multipart: the record's fields and `file`). The Worker
@@ -52,7 +59,7 @@ async function handleMemberUpload(request: Request, env: Env): Promise<Response>
   const denied = await authorizePhotoWrite(request, env, member, upload)
   if (denied) return denied
 
-  const photoPath = memberPhotoKey(memberId)
+  const photoPath = memberPhotoKey(memberId, uploadVersion())
   await putPhoto(env, photoPath, upload)
   return Response.json({ photoPath })
 }
@@ -68,7 +75,7 @@ async function handleTempleUpload(request: Request, env: Env): Promise<Response>
   const denied = await authorizePhotoWrite(request, env, temple, upload)
   if (denied) return denied
 
-  const photoPath = templePhotoKey(templeId)
+  const photoPath = templePhotoKey(templeId, uploadVersion())
   await putPhoto(env, photoPath, upload)
   return Response.json({ photoPath })
 }

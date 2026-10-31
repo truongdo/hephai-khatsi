@@ -6,7 +6,7 @@ import { canCreateTemple, canDeleteTemple, canUpdateTemple } from '#/domain/auth
 import { DATA_API_MAX_IDS as MAX_IDS, DATA_API_MAX_PAGE_SIZE as MAX_PAGE_SIZE } from '#/domain/dataApiLimits'
 import { DomainError } from '#/domain/errors'
 import { buildTempleListSortKeys } from '#/domain/listSortKeys'
-import { droppedFiles, templeFilePaths, templeFolder } from '#/domain/recordFiles'
+import { addedFiles, droppedFiles, foreignTempleFiles, templeFilePaths, templeFolder } from '#/domain/recordFiles'
 import type { Temple } from '#/domain/types'
 import type { TempleAdminSortBy } from '#/repositories/adminListTypes'
 import type { TempleProfilePatch } from '#/repositories/templeRepo'
@@ -27,6 +27,7 @@ import {
   authorize,
   loadInviteExists,
   loadOrgUnitName,
+  requireOwnUploadedFiles,
   type Versioned,
 } from '../records'
 import { route, type DataRoute } from '../route'
@@ -126,6 +127,11 @@ async function writeTemple(
     before
       ? canUpdateTemple(caller, before.temple, after, inviteExists)
       : canCreateTemple(caller, after, inviteExists),
+  )
+  await requireOwnUploadedFiles(
+    ctx.files,
+    foreignTempleFiles(before?.temple ?? null, after, after.id),
+    addedFiles(before ? templeFilePaths(before.temple) : [], templeFilePaths(after)),
   )
   const row = templeToRow(after)
   const statements = [

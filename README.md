@@ -4,8 +4,8 @@ Hệ phái Khất sĩ admin app — a client-only single-page app built with
 (sign-in and role claims). The data lives in [Cloudflare D1](https://developers.cloudflare.com/d1/),
 reached only through the Worker's `/api/data/*` routes (`src/worker.ts`, `src/worker/dataApi/`),
 which enforce authorization (`src/domain/authz/`). Member portraits and documents are stored in
-[Cloudflare R2](https://developers.cloudflare.com/r2/): the browser uploads with presigned PUT URLs
-and reads public objects from `VITE_PHOTOS_PUBLIC_BASE`.
+[Cloudflare R2](https://developers.cloudflare.com/r2/): the browser uploads them through the Worker
+(which checks size and file type) and reads public objects from `VITE_PHOTOS_PUBLIC_BASE`.
 
 # Getting Started
 

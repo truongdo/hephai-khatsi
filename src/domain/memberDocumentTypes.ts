@@ -116,13 +116,3 @@ export function extForContentType(contentType: string): 'jpg' | 'png' | 'pdf' {
   if (contentType === 'application/pdf') return 'pdf'
   throw new Error(`Unsupported content type: ${contentType}`)
 }
-
-export function memberDocumentObjectKey(
-  memberId: string,
-  typeId: DocumentTypeId,
-  side: DocumentSide,
-  contentType: string,
-): string {
-  const ext = extForContentType(contentType)
-  return `members/${memberId}/docs/${typeId}/${side}.${ext}`
-}
