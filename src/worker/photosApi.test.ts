@@ -841,6 +841,64 @@ describe('handlePhotosApi', () => {
     })
   })
 
+  describe('staff in scope', () => {
+    it.each([
+      { uid: 'gd-admin', role: 'giao_doan_admin', orgUnitId: 'gd-i' },
+      { uid: 'secretary', role: 'he_phai_secretary', orgUnitId: null },
+    ])('$role may get a member upload URL and delete the photo', async (staff) => {
+      getMemberDocument.mockResolvedValue(draftMember)
+      verifyFirebaseAdminToken.mockResolvedValue(staff)
+      const deleteFn = vi.fn(async () => undefined)
+      const env = makeEnv({ PHOTOS: { delete: deleteFn } as unknown as R2Bucket })
+      const { handlePhotosApi } = await import('./photosApi')
+      const headers = { 'Content-Type': 'application/json', Authorization: 'Bearer staff-token' }
+
+      const upload = await handlePhotosApi(
+        new Request('https://example.com/api/photos/member-upload-url', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ memberId: MEMBER_ID, cccd: '012345678901', contentType: 'image/jpeg' }),
+        }),
+        env,
+      )
+      const remove = await handlePhotosApi(
+        new Request('https://example.com/api/photos/member', {
+          method: 'DELETE',
+          headers,
+          body: JSON.stringify({ memberId: MEMBER_ID }),
+        }),
+        env,
+      )
+
+      expect(upload.status).toBe(200)
+      expect(remove.status).toBe(200)
+      expect(deleteFn).toHaveBeenCalledWith('members/m1/photo.jpg')
+    })
+  })
+
+  it('refuses a filler when the record names an invite that no longer exists', async () => {
+    getMemberDocument.mockResolvedValue({ ...draftMember, inviteId: 'old-invite' })
+    inviteExists.mockImplementation(async (id: string) => id === 'invite-1')
+    const { handlePhotosApi } = await import('./photosApi')
+
+    const response = await handlePhotosApi(
+      new Request('https://example.com/api/photos/member-upload-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          memberId: MEMBER_ID,
+          cccd: '012345678901',
+          contentType: 'image/jpeg',
+          inviteToken: 'invite-1',
+        }),
+      }),
+      makeEnv(),
+    )
+
+    expect(response.status).toBe(403)
+    expect(inviteExists).toHaveBeenCalledWith('old-invite')
+  })
+
   describe('filler on an admin-made draft (no invite yet)', () => {
     it('cannot get a member upload URL', async () => {
       getMemberDocument.mockResolvedValue({ ...draftMember, inviteId: null })
