@@ -22,6 +22,7 @@ async function toError(route: string, response: Response): Promise<Error> {
     const message = 'message' in body && typeof body.message === 'string' ? body.message : body.code
     return new DomainError(body.code, message)
   }
+  // A plain-text 404 for every route means the Worker's DATA_BACKEND is not d1.
   return new Error(`Data API ${route} failed (${response.status})`)
 }
 
@@ -46,8 +47,9 @@ export function createDataApiClient(getIdToken: () => Promise<string | null>): D
       try {
         return await request<T>(route, init)
       } catch (error) {
-        // A lost race on the version guard: the Worker re-reads, so one retry
-        // behaves like a Firestore transaction retry.
+        // A lost race on the version guard: every write re-reads before its
+        // guard, so one retry behaves like a Firestore transaction retry
+        // (reads never answer CONFLICT).
         if (error instanceof DomainError && error.code === 'CONFLICT') return request<T>(route, init)
         throw error
       }

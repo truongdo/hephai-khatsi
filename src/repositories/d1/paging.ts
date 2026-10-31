@@ -1,10 +1,5 @@
 import type { AdminListPage } from '#/repositories/adminListTypes'
 
-/** The Worker's page size cap, used for exports. */
-export const MAX_PAGE_SIZE = 500
-/** The Worker's cap on ids per request (delete-many, by-temples, review). */
-export const MAX_IDS = 500
-
 export function chunk<T>(items: readonly T[], size: number): T[][] {
   const chunks: T[][] = []
   for (let i = 0; i < items.length; i += size) chunks.push(items.slice(i, i + size))

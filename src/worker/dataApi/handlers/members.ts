@@ -3,6 +3,7 @@ import { buildAuditLogWrite } from '#/domain/auditLogWrite'
 import { canListDirectory, type Caller } from '#/domain/authz/caller'
 import { canCreateAuditLog } from '#/domain/authz/auditLogs'
 import { canCreateMember, canDeleteMember, canUpdateMember } from '#/domain/authz/members'
+import { DATA_API_MAX_IDS as MAX_IDS, DATA_API_MAX_PAGE_SIZE as MAX_PAGE_SIZE } from '#/domain/dataApiLimits'
 import { DomainError } from '#/domain/errors'
 import { buildMemberDerivedSortFields } from '#/domain/listSortKeys'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
@@ -87,12 +88,9 @@ const MEMBER_SORT_COLUMNS: Record<MemberAdminSortBy, string> = {
   updatedAt: 'updated_at',
 }
 const DEFAULT_PAGE_SIZE = 25
-/** Export pages (listAllForExport) use the largest page. */
-const MAX_PAGE_SIZE = 500
 /** Same cap as the Firestore phone index. */
 const PHONE_MATCH_LIMIT = 20
 const SECRETARIES_LIMIT = 200
-const MAX_IDS = 500
 
 /** Fields the server sets: never taken from a profile patch (MemberProfilePatch). */
 const PROTECTED_PATCH_FIELDS = [

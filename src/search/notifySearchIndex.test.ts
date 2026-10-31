@@ -172,6 +172,7 @@ describe('with the D1 backend', () => {
   afterEach(() => {
     vi.doUnmock('#/data/dataBackend')
     vi.resetModules()
+    vi.unstubAllGlobals()
   })
 
   it('sends nothing: the Worker syncs Typesense after its writes', async () => {
@@ -187,6 +188,5 @@ describe('with the D1 backend', () => {
     await notify.notifyTempleDelete('t1', 'token')
 
     expect(fetchMock).not.toHaveBeenCalled()
-    vi.unstubAllGlobals()
   })
 })

@@ -29,7 +29,7 @@ const workerEnv = {
   TYPESENSE_API_KEY: 'test-key',
 } as unknown as Env
 
-const CALLERS: Record<string, NonNullable<Caller>> = { 'hp-admin': hePhaiAdmin, 'gd-admin': gdAdmin }
+const CALLERS: Record<string, Caller> = { 'hp-admin': hePhaiAdmin, 'gd-admin': gdAdmin }
 
 /** The signed-in user's token (null = filler). */
 let idToken: string | null = null
@@ -121,19 +121,20 @@ describe('filler journey', () => {
     await expect(lookup).rejects.toMatchObject({ code: 'FORBIDDEN' })
   })
 
-  it('saves a temple and finds it by manager phone', async () => {
+  it('saves a temple, finds it by manager phone and requests an edit', async () => {
     await createPublicInvite()
     const { temple } = await templeRepo.createOrUpdateAndLock({
       orgUnitId: 'gd-i',
       inviteId: 'public',
       managerPhones: ['0912345678'],
-      patch: { name: 'Tịnh xá Ngọc Viên' },
+      patch: { danhHieu: 'Tịnh xá Ngọc Viên' },
       audit: fillerAudit,
     })
     expect(temple.status).toBe('locked')
     expect(
       await templeRepo.listByOrgAndPhone({ orgUnitId: 'gd-i', phone: '0912345678', inviteToken: 'public' }),
     ).toEqual([temple])
+    expect((await templeRepo.requestEdit(temple.id, '0912345678')).editRequestedBy).toBe('0912345678')
   })
 })
 
@@ -201,6 +202,27 @@ describe('admin members', () => {
     expect(templeStats.totals).toEqual({ all: 0 })
   })
 
+  it('sets the portrait and the documents', async () => {
+    signInAs('hp-admin')
+    const member = await saveDraft('012345678901')
+
+    const withPhoto = await memberRepo.setPhotoPath(member.id, `members/${member.id}/portrait.jpg`, adminAudit)
+    expect(withPhoto.photoPath).toBe(`members/${member.id}/portrait.jpg`)
+
+    const front = `members/${member.id}/docs/cccd/front.jpg`
+    const merged = await memberRepo.mergeDocumentSide(member.id, 'cccd', 'front', front, adminAudit)
+    expect(merged.member.documents).toEqual({ cccd: { frontPath: front } })
+    expect(merged.previousPath).toBeUndefined()
+    const replaced = await memberRepo.mergeDocumentSide(member.id, 'cccd', 'front', `${front}?v2`, adminAudit)
+    expect(replaced.previousPath).toBe(front)
+
+    const removed = await memberRepo.removeDocumentPaths(member.id, 'cccd', undefined, adminAudit)
+    expect(removed.removedPaths).toEqual([`${front}?v2`])
+
+    const diep = { diep_sa_di: { filePath: `members/${member.id}/docs/diep_sa_di/file.pdf` } }
+    expect((await memberRepo.setDocumentPaths(member.id, diep)).documents).toEqual(diep)
+  })
+
   it('lists members of temples and secretaries', async () => {
     signInAs('hp-admin')
     expect(await memberRepo.listByCurrentTempleIds([])).toEqual([])
@@ -211,15 +233,21 @@ describe('admin members', () => {
 })
 
 describe('admin temples', () => {
-  it('saves a draft, sets the photo and deletes', async () => {
+  it('saves a draft, sets the photo, locks, unlocks and deletes', async () => {
     signInAs('gd-admin')
     const { temple, mode } = await templeRepo.createOrUpdateDraft({
       orgUnitId: 'gd-i',
       inviteId: null,
       managerPhones: ['0912345678'],
-      patch: { name: 'Tịnh xá A' },
+      patch: { danhHieu: 'Tịnh xá A' },
     })
     expect(mode).toBe('created')
+    const gdAudit = { actorType: 'admin', actorId: 'gd-admin' } as const
+    expect(await templeRepo.lock(temple.id, 'gd-admin', gdAudit)).toMatchObject({ status: 'locked' })
+    expect((await templeRepo.unlock(temple.id, gdAudit)).status).toBe('draft')
+    const sorted = await templeRepo.list({ orgUnitId: 'gd-i', sortBy: 'orgUnitName', sortDir: 'asc' })
+    expect(sorted.items.map((t) => t.id)).toEqual([temple.id])
+
     const withPhoto = await templeRepo.setPhotoPath(temple.id, `temples/${temple.id}/portrait.jpg`, {
       actorType: 'admin',
       actorId: 'gd-admin',
@@ -247,7 +275,7 @@ describe('retreats and registrations', () => {
     quyenDangKy: 'both',
   }
 
-  it('creates, opens, registers, reviews and deletes', async () => {
+  it('creates, opens, registers and reviews; only drafts can be deleted', async () => {
     signInAs('gd-admin')
     const retreat = await retreatRepo.create({ orgUnitId: 'gd-i', createdBy: 'ignored', fields })
     expect(retreat).toMatchObject({ status: 'draft', createdBy: 'gd-admin' })
@@ -290,6 +318,9 @@ describe('retreats and registrations', () => {
 
     expect((await retreatRepo.setStatus(retreat.id, 'closed')).status).toBe('closed')
     await expect(retreatRepo.delete(retreat.id)).rejects.toMatchObject({ code: 'FORBIDDEN' })
+    const draft = await retreatRepo.create({ orgUnitId: 'gd-i', createdBy: 'ignored', fields })
+    await retreatRepo.delete(draft.id)
+    expect(await retreatRepo.getById(draft.id)).toBeNull()
   })
 })
 

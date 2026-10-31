@@ -1,6 +1,7 @@
 import { dataApi, type DataApiClient } from '#/data/apiClient'
+import { DATA_API_MAX_IDS } from '#/domain/dataApiLimits'
 import type { RetreatRegistrationStore } from '#/repositories/retreatRegistrationRepo'
-import { MAX_IDS, chunk } from './paging'
+import { chunk } from './paging'
 
 // RetreatRegistrationStore over /api/data/registrations/*
 // (src/worker/dataApi/handlers/registrations.ts). The Worker builds the
@@ -22,7 +23,7 @@ export function createD1RetreatRegistrationRepo(
     getById: (id) => api.post('registrations/get', { id }),
     listByRetreat: (input) => api.post('registrations/list-by-retreat', input),
     async updateReview(ids, patch) {
-      for (const idChunk of chunk(ids, MAX_IDS)) {
+      for (const idChunk of chunk(ids, DATA_API_MAX_IDS)) {
         await api.post('registrations/review', {
           ids: idChunk,
           status: patch.status,

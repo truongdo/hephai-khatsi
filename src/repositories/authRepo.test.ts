@@ -35,4 +35,30 @@ describe('authRepo', () => {
     expect(typeof unsub).toBe('function')
     unsub()
   })
+
+  describe('getCurrentUserIdToken', () => {
+    it('is null when auth is not configured', async () => {
+      getClientAuth.mockReturnValue(null)
+      const { getCurrentUserIdToken } = await import('./authRepo')
+      expect(await getCurrentUserIdToken()).toBeNull()
+    })
+
+    it('is null when signed out', async () => {
+      getClientAuth.mockReturnValue({ authStateReady: async () => {}, currentUser: null })
+      const { getCurrentUserIdToken } = await import('./authRepo')
+      expect(await getCurrentUserIdToken()).toBeNull()
+    })
+
+    it('waits for the restored session before reading the user', async () => {
+      const auth: { currentUser: { getIdToken: () => Promise<string> } | null; authStateReady: () => Promise<void> } = {
+        currentUser: null,
+        authStateReady: async () => {
+          auth.currentUser = { getIdToken: async () => 'id-token' }
+        },
+      }
+      getClientAuth.mockReturnValue(auth)
+      const { getCurrentUserIdToken } = await import('./authRepo')
+      expect(await getCurrentUserIdToken()).toBe('id-token')
+    })
+  })
 })

@@ -241,6 +241,12 @@ Decided in phase 4:
 - Values the Worker sets are not sent: `createdBy` of retreats / invites, the whole server-built registration (only `retreatId`, `memberId`, `registeredVia`, `extraAnswers`), the reviewer and timestamps of a review.
 - `getOrgUnitById` stays Firestore-only: only the Firestore repositories use it (the Worker loads org unit names itself); `org-units/get` has no client caller yet.
 - The admin "reindex search" button keeps rebuilding from the client lists (works on both backends); switching it to the Worker's `import-from-db` phase is left to the cutover (phase 6).
+- The list / id caps the client pages and chunks by (500) live in `src/domain/dataApiLimits.ts`, shared with the handlers.
+
+Follow-ups after phase 4 (not blocking the cutover):
+- Calls per screen are the same as on Firestore, not fewer: `resumeMemberByPhone` makes 3 requests (invite, then tăng and ni lookups; one if `members/list-by-phone` took an optional `sanghaType`), `createRetreatRegistration` 4 and `ensureRetreatRegistrationInvite` 3, re-reading what the Worker checks again; `reviewRetreatRegistrations` reads each registration before the review. Trim these use cases once Firestore is gone.
+- Both implementations ship in every build (the ternary is not tree-shaken); phase 7 removes the Firestore side.
+- An unknown route answers `NOT_FOUND` like a missing record; consider a plain 404 for unknown routes.
 
 ### Phase 5 — Data export / import
 

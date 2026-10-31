@@ -10,4 +10,5 @@ export function parseDataBackend(value: string | undefined): DataBackend {
   return value === 'd1' ? 'd1' : 'firestore'
 }
 
-export const DATA_BACKEND: DataBackend = parseDataBackend(import.meta.env.VITE_DATA_BACKEND)
+// `?.`: scripts run under node, where `import.meta.env` does not exist.
+export const DATA_BACKEND: DataBackend = parseDataBackend(import.meta.env?.VITE_DATA_BACKEND)

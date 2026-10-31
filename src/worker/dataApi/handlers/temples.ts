@@ -3,6 +3,7 @@ import { buildAuditLogWrite } from '#/domain/auditLogWrite'
 import { canListDirectory } from '#/domain/authz/caller'
 import { canCreateAuditLog } from '#/domain/authz/auditLogs'
 import { canCreateTemple, canDeleteTemple, canUpdateTemple } from '#/domain/authz/temples'
+import { DATA_API_MAX_IDS as MAX_IDS, DATA_API_MAX_PAGE_SIZE as MAX_PAGE_SIZE } from '#/domain/dataApiLimits'
 import { DomainError } from '#/domain/errors'
 import { buildTempleListSortKeys } from '#/domain/listSortKeys'
 import type { Temple } from '#/domain/types'
@@ -68,10 +69,8 @@ const TEMPLE_SORT_COLUMNS: Record<TempleAdminSortBy, string> = {
   updatedAt: 'updated_at',
 }
 const DEFAULT_PAGE_SIZE = 25
-const MAX_PAGE_SIZE = 500
 const PHONE_MATCH_LIMIT = 20
 const MAX_MANAGER_PHONES = 20
-const MAX_IDS = 500
 
 /** Fields the server sets: never taken from a profile patch (TempleProfilePatch). */
 const PROTECTED_PATCH_FIELDS = [

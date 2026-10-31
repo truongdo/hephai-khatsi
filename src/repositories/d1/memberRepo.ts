@@ -1,8 +1,9 @@
+import { DATA_API_MAX_IDS, DATA_API_MAX_PAGE_SIZE } from '#/domain/dataApiLimits'
 import type { Member } from '#/domain/types'
 import { dataApi, type DataApiClient } from '#/data/apiClient'
 import type { AdminListPage } from '#/repositories/adminListTypes'
 import type { MemberStore } from '#/repositories/memberRepo'
-import { MAX_IDS, MAX_PAGE_SIZE, chunk, collectPages } from './paging'
+import { chunk, collectPages } from './paging'
 
 // MemberStore over /api/data/members/* (src/worker/dataApi/handlers/members.ts).
 
@@ -26,17 +27,17 @@ export function createD1MemberRepo(api: DataApiClient = dataApi): MemberStore {
       return count
     },
     listAllForExport: (input) =>
-      collectPages((cursor) => list({ ...input, limit: MAX_PAGE_SIZE, cursor })),
+      collectPages((cursor) => list({ ...input, limit: DATA_API_MAX_PAGE_SIZE, cursor })),
     async listByCurrentTempleIds(templeIds) {
       const pages = await Promise.all(
-        chunk([...new Set(templeIds)], MAX_IDS).map((ids) =>
+        chunk([...new Set(templeIds)], DATA_API_MAX_IDS).map((ids) =>
           api.post<Member[]>('members/by-temples', { templeIds: ids }),
         ),
       )
       return pages.flat()
     },
     async deleteMany(ids) {
-      for (const idChunk of chunk(ids, MAX_IDS)) {
+      for (const idChunk of chunk(ids, DATA_API_MAX_IDS)) {
         await api.post('members/delete-many', { ids: idChunk })
       }
     },

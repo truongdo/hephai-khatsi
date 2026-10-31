@@ -62,6 +62,13 @@ describe('createDataApiClient', () => {
     expect((error as Error).message).toBe('Data API members/list failed (500)')
   })
 
+  it('throws a plain Error for a non-JSON answer (data API off)', async () => {
+    fetchMock.mockResolvedValueOnce(new Response('Not found', { status: 404 }))
+    await expect(createDataApiClient(async () => null).post('members/get')).rejects.toThrow(
+      'Data API members/get failed (404)',
+    )
+  })
+
   it('retries a write once after a version conflict', async () => {
     fetchMock
       .mockResolvedValueOnce(json({ code: 'CONFLICT', message: 'changed' }, 409))
