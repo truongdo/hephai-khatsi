@@ -18,7 +18,7 @@ pnpm dev
 
 ## Provision seed admin custom claims
 
-`admin@example.com` (or whatever you set as `SEED_ADMIN_EMAIL` in `.env`) only becomes a hệ phái admin after Firebase Auth **custom claims** are set on that user. The Firebase Console cannot set custom claims; use the Admin SDK (or Identity Toolkit with a service account).
+A Firebase Auth user (e.g. `admin@example.com`) only becomes a hệ phái admin after Firebase Auth **custom claims** are set on that user. The Firebase Console cannot set custom claims; use the Admin SDK (or Identity Toolkit with a service account).
 
 `khatsihephai@gmail.com` already has claims. The in-app “Thư ký” grant only covers `@gmail.com` secretary roles (`giao_doan_admin` / `he_phai_secretary`), not bootstrapping `he_phai_admin`.
 
@@ -33,13 +33,9 @@ Either of these works (same access as the Gmail admin):
 
 ### One-off script
 
-1. Ensure the email/password user exists in Firebase Auth (your `SEED_ADMIN_*` account).
+1. Ensure the email/password user you want to promote exists in Firebase Auth.
 2. Use a Firebase service account JSON (same kind as `FIREBASE_SERVICE_ACCOUNT_JSON` / `*-firebase-adminsdk-*.json`). Do not commit that file (already covered by `.gitignore`).
-3. From the repo root, install Admin SDK if needed and run a one-off script:
-
-```bash
-pnpm add -D firebase-admin
-```
+3. From the repo root (`firebase-admin` is already a dev dependency), run the one-off script:
 
 ```js
 // scripts/set-he-phai-admin.mjs

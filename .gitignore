@@ -27,3 +27,6 @@ project.inlang/cache
 .env.prod
 .env.dev
 
+# Firestore export of the D1 migration (personal data; delete it after the cutover)
+.d1-migration/
+

@@ -222,6 +222,18 @@ describe('handleSearchApi', () => {
     })
   })
 
+  it('no longer serves the client-driven upsert and delete routes', async () => {
+    const { handleSearchApi } = await import('./searchApi')
+
+    for (const path of ['/api/search/upsert', '/api/search/delete']) {
+      const response = await handleSearchApi(
+        new Request(`https://example.com${path}`, { method: 'POST', body: '{}' }),
+        makeEnv(),
+      )
+      expect(response!.status).toBe(404)
+    }
+  })
+
   describe('POST /api/search/reindex', () => {
     function reindexRequest(body: object, token?: string): Request {
       const headers: Record<string, string> = { 'Content-Type': 'application/json' }
@@ -247,6 +259,36 @@ describe('handleSearchApi', () => {
       expect(body).toEqual({ ok: true })
       expect(recreateCollections).toHaveBeenCalled()
       expect(ensureCollections).not.toHaveBeenCalled()
+    })
+
+    it('import-from-db imports one page read from D1 and returns its cursor', async () => {
+      verifyHePhaiAdminToken.mockResolvedValue({ uid: 'hp-admin' })
+      const bind = vi.fn(() => ({ all: async () => ({ results: [] }) }))
+      const prepare = vi.fn(() => ({ bind }))
+      const { handleSearchApi } = await import('./searchApi')
+
+      const response = await handleSearchApi(
+        reindexRequest({ phase: 'import-from-db', collection: 'temples', cursor: 't-9' }, 'hp-token'),
+        makeEnv({ DB: { prepare } as unknown as D1Database }),
+      )
+
+      expect(response!.status).toBe(200)
+      expect(await response!.json()).toEqual({ ok: true, imported: 0, nextCursor: null })
+      expect(prepare.mock.calls[0]![0]).toContain('FROM temples')
+      expect(bind).toHaveBeenCalledWith('t-9', expect.any(Number))
+      expect(importDocuments).not.toHaveBeenCalled()
+    })
+
+    it('import-from-db refuses an unknown collection', async () => {
+      verifyHePhaiAdminToken.mockResolvedValue({ uid: 'hp-admin' })
+      const { handleSearchApi } = await import('./searchApi')
+
+      const response = await handleSearchApi(
+        reindexRequest({ phase: 'import-from-db', collection: 'users' }, 'hp-token'),
+        makeEnv(),
+      )
+
+      expect(response!.status).toBe(400)
     })
 
     it('refuses a phase that is not ensure or import-from-db', async () => {

@@ -88,7 +88,7 @@ const MEMBER_SORT_COLUMNS: Record<MemberAdminSortBy, string> = {
   updatedAt: 'updated_at',
 }
 const DEFAULT_PAGE_SIZE = 25
-/** Same cap as the Firestore phone index. */
+/** At most this many members share a phone in one lookup. */
 const PHONE_MATCH_LIMIT = 20
 const SECRETARIES_LIMIT = 200
 

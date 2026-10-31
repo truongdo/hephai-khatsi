@@ -34,7 +34,8 @@ import type {
   MemberProfilePatch,
   MemberStore,
 } from '#/repositories/memberRepo'
-import { auditParentKey, shouldWriteAudit } from '#/repositories/auditLogRepo'
+import { shouldWriteAudit } from '#/domain/auditLogWrite'
+import type { AuditParent } from '#/repositories/auditLogRepo'
 import type {
   CreateOrUpdateTempleAndLockInput,
   CreateOrUpdateTempleDraftInput,
@@ -43,6 +44,11 @@ import type {
 
 // Same cap as the Worker's members/list-by-phone.
 const PHONE_LOOKUP_CAP = 20
+
+/** Key of a record's history in the memory stores' `auditLogs` map. */
+export function auditParentKey(parent: AuditParent): string {
+  return `${parent.collection}:${parent.id}`
+}
 
 function resolveMemoryOrgUnitName(orgUnitId: string): string {
   const seeded = ORG_UNIT_SEED.find((u) => u.id === orgUnitId)
@@ -844,8 +850,6 @@ export function createMemoryTempleStore(
         }
         if (existing.status === 'locked' && !input.allowWhenLocked) {
           throw new DomainError('RECORD_LOCKED', 'Temple is locked')
-        }
-        if (orgChanged) {
         }
         const temple = applyTempleListSortKeys({
           ...existing,

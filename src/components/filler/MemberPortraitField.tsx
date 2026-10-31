@@ -30,7 +30,7 @@ export type MemberPortraitFieldProps = {
   /** Async admin token provider — prefer this over a stale string prop. */
   getIdToken?: () => Promise<string | undefined>
   photoPath: string | null
-  /** Firestore updatedAt — busts CDN/browser cache after replace. */
+  /** Record updatedAt — busts CDN/browser cache after replace. */
   photoUpdatedAt?: string | null
   disabled?: boolean
   pendingFile: File | null

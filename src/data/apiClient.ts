@@ -3,8 +3,8 @@ import { getCurrentUserIdToken } from '#/repositories/authRepo'
 
 // Client of the Worker's /api/data/<route> (src/worker/dataApi). Staff calls
 // carry the Firebase ID token; fillers are anonymous and name their invite
-// token in the body where a route needs it. Errors come back as the same
-// DomainError the Firestore repositories throw.
+// token in the body where a route needs it. Errors come back as the
+// DomainError the handler threw.
 
 const PREFIX = '/api/data/'
 

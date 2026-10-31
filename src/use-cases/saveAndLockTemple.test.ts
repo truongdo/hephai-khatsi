@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Invite } from '#/domain/types'
-import { auditParentKey } from '#/repositories/auditLogRepo'
 import type { InviteStore } from '#/repositories/inviteRepo'
-import { createMemoryTempleStore } from '#/test/memoryStores'
+import { auditParentKey, createMemoryTempleStore } from '#/test/memoryStores'
 import { saveAndLockTemple } from './saveAndLockTemple'
 
 function memoryInviteStore(invites: Invite[]): InviteStore {
