@@ -14,22 +14,15 @@ import {
 import type {
   AuditAction,
   AuditActor,
-  AuditChange,
   AuditLogEntry,
   AuditLogWrite,
 } from '#/domain/auditLog'
-import { buildAuditChanges } from '#/domain/buildAuditChanges'
+import { buildAuditLogWrite } from '#/domain/auditLogWrite'
 import { getClientFirestore } from '#/firebase/firestore'
 
-export type AuditParent = { collection: 'members' | 'temples'; id: string }
+export { shouldWriteAudit } from '#/domain/auditLogWrite'
 
-export function shouldWriteAudit(
-  action: AuditAction,
-  changes: AuditChange[],
-): boolean {
-  if (action === 'updated' && changes.length === 0) return false
-  return true
-}
+export type AuditParent = { collection: 'members' | 'temples'; id: string }
 
 export function auditParentKey(parent: AuditParent): string {
   return `${parent.collection}:${parent.id}`
@@ -70,17 +63,8 @@ export function maybeAppendAuditFromDiff(
     after: unknown
   },
 ): void {
-  const changes = buildAuditChanges(args.before, args.after)
-  if (!shouldWriteAudit(args.action, changes)) return
-
-  appendAuditLogInTransaction(transaction, parent, {
-    action: args.action,
-    at: args.at,
-    actorType: args.actor.actorType,
-    actorId: args.actor.actorId,
-    changes,
-    summary: changes.length === 0 ? null : String(changes.length),
-  })
+  const write = buildAuditLogWrite(args)
+  if (write) appendAuditLogInTransaction(transaction, parent, write)
 }
 
 export async function listAuditLogDocsForCopy(

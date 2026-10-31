@@ -11,6 +11,8 @@ export type DomainErrorCode =
   | 'INVALID_INPUT'
   | 'INVALID_STATUS'
   | 'ALREADY_EXISTS'
+  /** The record changed between read and write (D1 `version` guard); retry. */
+  | 'CONFLICT'
 
 export class DomainError extends Error {
   readonly code: DomainErrorCode

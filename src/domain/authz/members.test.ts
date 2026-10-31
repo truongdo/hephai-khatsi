@@ -57,6 +57,13 @@ describe('members', () => {
     ).toBe(true)
   })
 
+  it.each([
+    ['a filler', anon, memberLocked({ directoryRole: 'giao_doan_admin', directoryAuthUid: 'uid-x' })],
+    ['a hệ phái admin', hePhaiAdmin, memberDraft({ inviteId: null, directoryAuthUid: 'uid-x' })],
+  ])('denies %s creating a member with directory-role fields', (_, caller, member) => {
+    expect(canCreateMember(caller, member, seeded)).toBe(false)
+  })
+
   it('denies filler create when tinhTrang is set', () => {
     expect(canCreateMember(anon, memberLocked({ tinhTrang: 'sinh_hoat' }), seeded)).toBe(false)
     // null is "not set" (a NULL column reads back as absent).

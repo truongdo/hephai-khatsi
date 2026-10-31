@@ -1,4 +1,5 @@
 import * as jose from 'jose'
+import { parseAuthClaims, type AuthClaims } from '#/domain/authClaims'
 
 const FIREBASE_JWKS_URL =
   'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'
@@ -62,6 +63,19 @@ export async function verifyFirebaseAdminToken(
         ? payload.orgUnitId
         : null,
   }
+}
+
+/**
+ * Any signed-in Firebase user, with the staff claims `parseAuthClaims` reads
+ * (`claims` null for a user without a role). Null when the token is invalid.
+ */
+export async function verifyFirebaseUser(
+  idToken: string,
+  projectId: string,
+): Promise<{ uid: string; claims: AuthClaims | null } | null> {
+  const payload = await verifyAdminPayload(idToken, projectId)
+  if (!payload) return null
+  return { uid: payload.sub as string, claims: parseAuthClaims(payload) }
 }
 
 export async function verifyHePhaiAdminToken(

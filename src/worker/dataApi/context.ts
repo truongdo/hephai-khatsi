@@ -1,0 +1,22 @@
+import type { Caller } from '#/domain/authz/caller'
+import type { Member, Temple } from '#/domain/types'
+
+/**
+ * Typesense updates after a write. They run after the response
+ * (`ctx.waitUntil`) and never fail the save.
+ */
+export type SearchSync = {
+  upsertMember(member: Member): void
+  upsertTemple(temple: Temple): void
+  deleteMember(id: string): void
+  deleteTemple(id: string): void
+}
+
+/** What a data API handler gets besides its input. */
+export type DataContext = {
+  db: D1Database
+  caller: Caller
+  /** ISO timestamp of the request (one clock for the whole write). */
+  now: string
+  search: SearchSync
+}

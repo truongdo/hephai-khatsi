@@ -154,15 +154,16 @@ Endpoints are shaped around the existing `*Store` methods and screens (guideline
 
 | Route (POST JSON unless noted) | Replaces | Caller |
 |------|----------|--------|
-| `GET /api/data/org-units` | `listOrgUnits` (public, cacheable) | all |
-| `/api/data/invites/get`, `/create` | `inviteRepo` | admin, filler |
-| `/api/data/members/{get,list,list-ha-lap,count-ha-lap,export-page,by-temples,secretaries}` | `memberRepo` reads | admin |
-| `/api/data/members/{save-draft,save-and-lock,update,lock,unlock,set-tinh-trang,set-photo,merge-document,remove-document,delete-many,request-edit}` | `memberRepo` writes (each returns the updated `Member`) | admin, filler |
-| `/api/data/filler/members/{by-cccd,by-phone}` | `getByCccd`, `listByOrgSanghaAndPhone` (invite token required) | filler |
-| `/api/data/temples/...` | same split as members | admin, filler |
-| `/api/data/retreats/...`, `/api/data/registrations/...` | `retreatRepo`, `retreatRegistrationRepo` | admin, `/r/$token` |
-| `/api/data/audit-logs/list` | `listAuditLogs` | admin |
-| `/api/data/stats/{members,temples}` | `memberStatsRepo`, `templeStatsRepo` — **one** request returning all counts | admin |
+| `org-units/{list,get}` (`list` also on GET, cached 5 min) | `orgUnitRepo` reads (public) | all |
+| `invites/{get,create}` | `inviteRepo` (`create` builds the invite from `kind` / `retreatId`) | admin, filler |
+| `members/{get,get-by-cccd,list-by-phone}` | `getById`, `getByCccd` (public), `listByOrgSanghaAndPhone` (invite token or directory writer) | filler, admin |
+| `members/{list,list-ha-lap,count-ha-lap,by-temples,secretaries}` | `memberRepo` list reads; export = `list` with `limit` up to 500 | admin |
+| `members/{save-draft,save-and-lock,update,request-edit,lock,unlock,set-photo,set-documents,set-tinh-trang,merge-document,remove-document,delete-many}` | `memberRepo` writes (each returns what the store method returns) | admin, filler |
+| `temples/{get,list-by-phone,list,save-draft,save-and-lock,request-edit,lock,unlock,set-photo,delete-many}` | `templeRepo` | admin, filler |
+| `retreats/{get,list,create,update,set-status,delete}` | `retreatRepo` | admin |
+| `registrations/{get,list-by-retreat,create,review}` | `retreatRegistrationRepo` (`create` runs the use case's checks on the server; `review` returns the updated registrations) | admin, `/r/$token` |
+| `audit-logs/list` | `listAuditLogs` | admin |
+| `stats/{members,temples}` | `memberStatsRepo`, `templeStatsRepo` — **one** request returning all counts | admin |
 
 Request auth: `Authorization: Bearer <Firebase ID token>` for staff (generalize `verifyFirebaseAdmin.ts` into `verifyFirebaseUser` returning `AuthClaims` via `domain/authClaims.ts`, so `kiem_soat` and secretaries are covered); `inviteToken` in the body for filler / self-registration, checked against `invites` in D1.
 
@@ -201,14 +202,31 @@ Contract for the phase 3 handlers:
 - Build `after` as the stored record merged with the request, with `id` (and for members the identity) taken from the stored row / path, never from the body.
 - Pass domain records without `version` (it is not a domain field); otherwise `changedOnly` checks (edit request, media update, status transition, review) would deny every write.
 - Audit logs are insert-only; derive `inviteExists` from the invites table.
-- Carried over from the rules, to decide in phase 3: audit-log read is not org-scoped (any directory writer); self registration does not check the retreat's org unit or that it is open (the use case does).
+- Carried over from the rules, decided in phase 3 (see below): audit-log read is now org-scoped; self registration checks the retreat's org unit and that it is open on the server.
 
 ### Phase 3 — Worker data API
 
-- [ ] `src/worker/dataApi/index.ts` router mounted in `src/worker.ts` before the search routes; `verifyFirebaseUser`; body validation; error → status mapping.
-- [ ] Handlers per table (members, temples, retreats, registrations, invites, org units, audit logs, stats) with D1 tests for: happy path, each authz deny, `version` conflict → 409, pagination cursor stability, export paging, `EXPLAIN QUERY PLAN` uses an index for each list/count query.
-- [ ] Move Typesense sync into the write handlers (`ctx.waitUntil(upsert/delete)`, failures logged, never failing the save), keeping `/api/search/reindex` reading from D1.
-- [ ] Switch `photosApi.ts`, `docsApi.ts`, `searchApi.ts`, `directoryRoleApi.ts` from `firestoreRest.ts` / `firestoreAdminRest.ts` to D1 queries **behind the same flag as phase 4** (they must read the same backend as the client).
+- [x] `src/worker/dataApi/index.ts` router mounted in `src/worker.ts` before the search routes, **off unless `DATA_BACKEND=d1`** (`wrangler.jsonc` vars, default `firestore`, so nothing writes to D1 before the cutover); `verifyFirebaseUser` (any signed-in user → `Caller`, a token that does not verify → 401); body validation (`input.ts`, 1 MB cap); `DomainError` code → status (`http.ts`, new code `CONFLICT` → 409).
+- [x] Handlers per table (`handlers/*.ts`) with D1 tests (`*.d1.test.ts`): happy path, authz denies, `version` conflict → 409, cursor stability, and `EXPLAIN QUERY PLAN` of every list/count query (no bare `SCAN <table>`). Migration `0003_data_api.sql`: the conflict guard, `version` on retreats / registrations, list and stats indexes.
+- [x] Typesense sync in the write handlers (`searchSync.ts`, `ctx.waitUntil`, failures logged, never failing the save). `/api/search/reindex` gains an `import-from-db` phase (`{ collection, cursor }` → `{ imported, nextCursor }`) that builds the documents from D1.
+- [x] `photosApi.ts`, `docsApi.ts`, `searchApi.ts`, `directoryRoleApi.ts` read through `recordSource.ts` (`recordSource` / `directoryMemberSource`): Firestore REST or D1 by the same `DATA_BACKEND` flag.
+
+How writes work: read the row(s) with `version`, build `after` with the same domain code as the Firestore repo, run the phase 2 authz (and `canCreateAuditLog` for the entry), then one `db.batch`: the main write guarded by `version` (update / delete) or by "no existing row" (insert), followed by `INSERT INTO write_conflicts SELECT 1 WHERE changes() = 0`, whose trigger aborts the whole batch with `WRITE_CONFLICT` → `CONFLICT` (409). Dependent rows (audit entry, manager phones) are in the same batch.
+
+Decided in phase 3:
+- Server-set fields are built on the server: `createdBy` of retreats and invites, `registeredBy` / `approvedBy` / `approvedAt` / timestamps of registrations, ids (20-character random like Firestore auto ids for temples / retreats / audit logs). Profile patches drop the fields the store sets (`status`, lock fields, sort keys, `tinhTrang`, `version` …).
+- Audit actors still come from the client (as with the rules): `canCreateAuditLog` decides whether the caller may write that actor.
+- Audit-log reads are now org-scoped: directory writers of the record's org unit; history of a deleted record is hệ phái scope only.
+- Self registration checks the retreat is open, the window, `quyenDangKy`, the member's org unit and extra answers on the server (the use case's checks). No invite token is required (as with the rules).
+- Phone lookups (`members/list-by-phone`, `temples/list-by-phone`) need an existing invite token or a directory writer of the org unit. The filler invite is the fixed `public`, so this is no stronger than today (Firestore's phone index docs were public by id); returning less than full records is a later decision.
+- Lists the rules only allowed with an org filter (`by-temples`, `secretaries`, `list-by-retreat`) are scoped to the caller's org unit for a giáo đoàn admin instead of failing.
+- Lists skip rows whose sort column is NULL, like a Firestore `orderBy`; the hạ lạp fallback that recomputed tabs client-side is dropped (sort keys are always written by the Worker and backfilled before export).
+- Moving a member to another org unit moves its audit history (`UPDATE OR REPLACE audit_logs`); deleting a member keeps its audit rows (Firestore left the subcollection too).
+- A created member never carries directory-role fields (`canCreateMember`, stricter than the rules), and patches never set them nor `editRequested*`; as a result a member holding a directory role cannot be moved to another org unit (revoke first).
+- `delete-many` and `registrations/review` are all-or-nothing: one record the caller may not touch → 403, one changed since it was read → 409; nothing is written. Missing ids are skipped on delete (like Firestore), refused on review (`NOT_FOUND`). They write one statement per 45 rows, so 500 ids stay well under D1's per-invocation query limit.
+- Patch fields that feed columns and sort keys are type-checked (`PATCH_FIELD_CHECKS`); the rest of the profile is stored as sent, as before.
+- Directory-role patches on D1 are a service write (no authz / audit), bumping `version`, like the Firestore REST patch.
+- `ensureRetreatRegistrationInvite` re-creating a disabled invite is refused (`ALREADY_EXISTS`), as the rules refused the overwrite.
 
 ### Phase 4 — Client repositories over HTTP (behind a flag)
 

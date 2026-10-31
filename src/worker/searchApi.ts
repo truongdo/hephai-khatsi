@@ -1,11 +1,15 @@
 import {
   TYPESENSE_MEMBERS_COLLECTION,
   TYPESENSE_TEMPLES_COLLECTION,
+  toMemberSearchDoc,
+  toTempleSearchDoc,
   type MemberSearchDoc,
   type TempleSearchDoc,
 } from '#/domain/searchDocs'
-import type { Env } from './env'
-import { inviteExists } from './firestoreRest'
+import { memberFromRow, type MemberRow } from './dataApi/rows/member'
+import { templeFromRow, type TempleRow } from './dataApi/rows/temple'
+import { usesD1, type Env } from './env'
+import { recordSource } from './recordSource'
 import { createTypesenseClient } from './typesenseClient'
 import {
   verifyFirebaseAdminToken,
@@ -24,10 +28,15 @@ type UpsertBody = {
 }
 type DeleteBody = { collection?: SearchCollection; id?: string }
 type ReindexBody = {
-  phase?: 'ensure' | 'import'
+  phase?: 'ensure' | 'import' | 'import-from-db'
   collection?: SearchCollection
   documents?: object[]
+  /** `import-from-db`: the last id of the previous page. */
+  cursor?: string
 }
+
+/** Rows per `import-from-db` call (one Typesense import each). */
+const REINDEX_PAGE_SIZE = 250
 
 function jsonError(message: string, status: number): Response {
   return Response.json({ error: message }, { status })
@@ -120,7 +129,7 @@ async function handleUpsert(request: Request, env: Env): Promise<Response> {
     const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
     if (!admin) return jsonError('Unauthorized', 401)
   } else if (inviteToken) {
-    const exists = await inviteExists(env.FIREBASE_PROJECT_ID, inviteToken)
+    const exists = await recordSource(env).inviteExists(inviteToken)
     if (!exists) return jsonError('Unauthorized', 401)
   } else {
     return jsonError('Unauthorized', 401)
@@ -184,7 +193,39 @@ async function handleReindex(request: Request, env: Env): Promise<Response> {
     return Response.json({ ok: true, imported: documents.length })
   }
 
+  if (body.phase === 'import-from-db' && usesD1(env)) {
+    const { collection, cursor } = body
+    if (!isSearchCollection(collection)) {
+      return jsonError('Missing required fields', 400)
+    }
+    const page = await readSearchDocsPage(env.DB, collection, cursor ?? '')
+    if (page.documents.length > 0) {
+      await client.importDocuments(toTypesenseCollection(collection), page.documents)
+    }
+    return Response.json({ ok: true, imported: page.documents.length, nextCursor: page.nextCursor })
+  }
+
   return jsonError('Invalid phase', 400)
+}
+
+/** One page of search documents built from D1, in id order (the reindex reads the database itself). */
+export async function readSearchDocsPage(
+  db: D1Database,
+  collection: SearchCollection,
+  afterId: string,
+): Promise<{ documents: Array<MemberSearchDoc | TempleSearchDoc>; nextCursor: string | null }> {
+  const statement = db
+    .prepare(`SELECT * FROM ${collection} WHERE id > ? ORDER BY id LIMIT ?`)
+    .bind(afterId, REINDEX_PAGE_SIZE)
+  const documents =
+    collection === 'members'
+      ? (await statement.all<MemberRow>()).results.map((row) => toMemberSearchDoc(memberFromRow(row)))
+      : (await statement.all<TempleRow>()).results.map((row) => toTempleSearchDoc(templeFromRow(row)))
+  const last = documents[documents.length - 1]
+  return {
+    documents,
+    nextCursor: documents.length === REINDEX_PAGE_SIZE && last ? last.id : null,
+  }
 }
 
 export async function handleSearchApi(

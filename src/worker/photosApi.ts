@@ -1,10 +1,6 @@
 import { normalizeCccd } from '#/domain/normalize'
 import type { Env } from './env'
-import {
-  getMemberDocument,
-  getTempleDocument,
-  inviteExists,
-} from './firestoreRest'
+import { recordSource } from './recordSource'
 import { createR2PresignedPutUrl, memberPhotoKey, templePhotoKey } from './presignR2Put'
 import { verifyFirebaseAdminToken } from './verifyFirebaseAdmin'
 
@@ -70,7 +66,7 @@ async function handleMemberUploadUrl(request: Request, env: Env): Promise<Respon
     return jsonError('Invalid content type', 400)
   }
 
-  const member = await getMemberDocument(env.FIREBASE_PROJECT_ID, memberId)
+  const member = await recordSource(env).getMember(memberId)
   if (!member) return jsonError('Member not found', 404)
   if (!cccdMatches(member.cccd, cccd)) return jsonError('CCCD mismatch', 403)
 
@@ -82,7 +78,7 @@ async function handleMemberUploadUrl(request: Request, env: Env): Promise<Respon
     isAdmin = true
   } else if (inviteToken) {
     // Global invite has no orgUnitId — existence only (same as temple photo auth).
-    const exists = await inviteExists(env.FIREBASE_PROJECT_ID, inviteToken)
+    const exists = await recordSource(env).inviteExists(inviteToken)
     if (!exists) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)
@@ -118,7 +114,7 @@ async function handleMemberDelete(request: Request, env: Env): Promise<Response>
   const { memberId, cccd, inviteToken } = body
   if (!memberId) return jsonError('Missing memberId', 400)
 
-  const member = await getMemberDocument(env.FIREBASE_PROJECT_ID, memberId)
+  const member = await recordSource(env).getMember(memberId)
   if (!member) return jsonError('Member not found', 404)
 
   let isAdmin = false
@@ -130,7 +126,7 @@ async function handleMemberDelete(request: Request, env: Env): Promise<Response>
   } else if (inviteToken) {
     if (!cccd) return jsonError('Missing required fields', 400)
     if (!cccdMatches(member.cccd, cccd)) return jsonError('CCCD mismatch', 403)
-    const exists = await inviteExists(env.FIREBASE_PROJECT_ID, inviteToken)
+    const exists = await recordSource(env).inviteExists(inviteToken)
     if (!exists) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)
@@ -160,7 +156,7 @@ async function handleTempleUploadUrl(request: Request, env: Env): Promise<Respon
     return jsonError('Invalid content type', 400)
   }
 
-  const temple = await getTempleDocument(env.FIREBASE_PROJECT_ID, templeId)
+  const temple = await recordSource(env).getTemple(templeId)
   if (!temple) return jsonError('Temple not found', 404)
 
   const token = bearerToken(request)
@@ -170,7 +166,7 @@ async function handleTempleUploadUrl(request: Request, env: Env): Promise<Respon
     if (!admin) return jsonError('Unauthorized', 401)
     isAdmin = true
   } else if (inviteToken) {
-    const exists = await inviteExists(env.FIREBASE_PROJECT_ID, inviteToken)
+    const exists = await recordSource(env).inviteExists(inviteToken)
     if (!exists) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)
@@ -206,7 +202,7 @@ async function handleTempleDelete(request: Request, env: Env): Promise<Response>
   const { templeId, inviteToken } = body
   if (!templeId) return jsonError('Missing templeId', 400)
 
-  const temple = await getTempleDocument(env.FIREBASE_PROJECT_ID, templeId)
+  const temple = await recordSource(env).getTemple(templeId)
   if (!temple) return jsonError('Temple not found', 404)
 
   let isAdmin = false
@@ -216,7 +212,7 @@ async function handleTempleDelete(request: Request, env: Env): Promise<Response>
     if (!admin) return jsonError('Unauthorized', 401)
     isAdmin = true
   } else if (inviteToken) {
-    const exists = await inviteExists(env.FIREBASE_PROJECT_ID, inviteToken)
+    const exists = await recordSource(env).inviteExists(inviteToken)
     if (!exists) return jsonError('Forbidden', 403)
   } else {
     return jsonError('Unauthorized', 401)

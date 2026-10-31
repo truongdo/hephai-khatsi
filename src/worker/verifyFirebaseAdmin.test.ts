@@ -159,3 +159,29 @@ describe('verifyHePhaiAdminToken', () => {
     expect(result).toBeNull()
   })
 })
+
+describe('verifyFirebaseUser', () => {
+  it.each([
+    [{ role: 'kiem_soat' }, { role: 'kiem_soat', orgUnitId: null }],
+    [{ role: 'giao_doan_admin', orgUnitId: 'gd-i' }, { role: 'giao_doan_admin', orgUnitId: 'gd-i' }],
+    [{ admin: true }, { role: 'he_phai_admin', orgUnitId: null }],
+  ])('returns the staff claims of %o', async (claims, expected) => {
+    mockJwksFetch()
+    const token = await signToken(claims)
+    const { verifyFirebaseUser } = await import('./verifyFirebaseAdmin')
+    expect(await verifyFirebaseUser(token, PROJECT_ID)).toEqual({ uid: UID, claims: expected })
+  })
+
+  it('returns null claims for a signed-in user without a role', async () => {
+    mockJwksFetch()
+    const token = await signToken({})
+    const { verifyFirebaseUser } = await import('./verifyFirebaseAdmin')
+    expect(await verifyFirebaseUser(token, PROJECT_ID)).toEqual({ uid: UID, claims: null })
+  })
+
+  it('returns null for an invalid token', async () => {
+    mockJwksFetch()
+    const { verifyFirebaseUser } = await import('./verifyFirebaseAdmin')
+    expect(await verifyFirebaseUser('not-a-jwt', PROJECT_ID)).toBeNull()
+  })
+})
