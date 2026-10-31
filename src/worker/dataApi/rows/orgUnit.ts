@@ -1,5 +1,5 @@
 import type { OrgUnit, OrgUnitKind } from '#/domain/types'
-import { fromBooleanColumn, toBooleanColumn } from './rowValues'
+import { fromBooleanColumn, sqlLiteral, toBooleanColumn } from './rowValues'
 
 export type OrgUnitRow = {
   id: string
@@ -21,10 +21,6 @@ export function orgUnitToRow(unit: OrgUnit): OrgUnitRow {
     allows_tang: toBooleanColumn(unit.allowsTang),
     allows_ni: toBooleanColumn(unit.allowsNi),
   }
-}
-
-function sqlLiteral(value: string | number): string {
-  return typeof value === 'number' ? String(value) : `'${value.replaceAll("'", "''")}'`
 }
 
 /** Body of migrations/0002_seed_org_units.sql (see scripts/generate-d1-org-unit-seed.ts). */
