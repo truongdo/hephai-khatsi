@@ -2,6 +2,8 @@
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "app_title": "Hệ phái Khất Sĩ",
   "home_welcome": "Hệ phái Khất Sĩ",
+  "maintenance_banner_title": "Hệ thống đang bảo trì",
+  "maintenance_banner_body": "Dữ liệu đang được chuyển sang hệ thống mới. Trong thời gian này chỉ xem được, chưa lưu được thay đổi. Vui lòng quay lại sau ít phút.",
   "home_get_started": "Đăng nhập để truy cập cổng quản lý hệ phái.",
   "auth_login_title": "Đăng nhập",
   "auth_login_google": "Tiếp tục với Google",
