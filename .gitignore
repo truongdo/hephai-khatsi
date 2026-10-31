@@ -24,3 +24,6 @@ project.inlang/cache
 .superpowers/
 .serena/project.yml
 *.swp
+
+# Firestore export / D1 import of the D1 migration (scripts/export-firestore.ts)
+.d1-migration/
