@@ -7,26 +7,6 @@ import {
 import { createMemoryMemberStore } from '#/test/memoryStores'
 import { ADMIN_AUDIT } from '#/test/auditActors'
 
-describe('setDocumentPaths', () => {
-  it('writes documents map on member', async () => {
-    const store = createMemoryMemberStore()
-    const { member } = await store.createOrUpdateDraft({
-      orgUnitId: 'gd1',
-      sanghaType: 'tang',
-      inviteId: null,
-      cccd: '012345678901',
-      patch: {},
-    })
-    const updated = await store.setDocumentPaths(member.id, {
-      cccd: { frontPath: 'members/x/docs/cccd/front.jpg' },
-    })
-    expect(updated.documents?.cccd?.frontPath).toContain('front.jpg')
-    expect((await store.getById(member.id))?.documents?.cccd?.frontPath).toBe(
-      updated.documents?.cccd?.frontPath,
-    )
-  })
-})
-
 describe('mergeDocumentSide', () => {
   it('merges one side without overwriting other sides', async () => {
     const store = createMemoryMemberStore()
@@ -45,7 +25,7 @@ describe('mergeDocumentSide', () => {
       'members/x/docs/cccd/front.jpg',
       ADMIN_AUDIT,
     )
-    const { member: updated, previousPath } = await store.mergeDocumentSide(
+    const updated = await store.mergeDocumentSide(
       member.id,
       'cccd',
       'back',
@@ -53,7 +33,6 @@ describe('mergeDocumentSide', () => {
       ADMIN_AUDIT,
     )
 
-    expect(previousPath).toBeUndefined()
     expect(updated.documents).toEqual({
       cccd: {
         frontPath: 'members/x/docs/cccd/front.jpg',
@@ -62,7 +41,7 @@ describe('mergeDocumentSide', () => {
     })
   })
 
-  it('returns previous path when replacing a side', async () => {
+  it('replaces a side with the new path', async () => {
     const store = createMemoryMemberStore()
     const { member } = await store.createOrUpdateDraft({
       orgUnitId: 'gd1',
@@ -71,10 +50,15 @@ describe('mergeDocumentSide', () => {
       cccd: '012345678901',
       patch: {},
     })
-    const oldPath = 'members/x/docs/cccd/front-old.jpg'
 
-    await store.mergeDocumentSide(member.id, 'cccd', 'front', oldPath, ADMIN_AUDIT)
-    const { previousPath } = await store.mergeDocumentSide(
+    await store.mergeDocumentSide(
+      member.id,
+      'cccd',
+      'front',
+      'members/x/docs/cccd/front-old.jpg',
+      ADMIN_AUDIT,
+    )
+    const updated = await store.mergeDocumentSide(
       member.id,
       'cccd',
       'front',
@@ -82,7 +66,9 @@ describe('mergeDocumentSide', () => {
       ADMIN_AUDIT,
     )
 
-    expect(previousPath).toBe(oldPath)
+    expect(updated.documents).toEqual({
+      cccd: { frontPath: 'members/x/docs/cccd/front-new.jpg' },
+    })
   })
 })
 
@@ -96,21 +82,16 @@ describe('removeDocumentPaths', () => {
       cccd: '012345678901',
       patch: {},
     })
-    await store.setDocumentPaths(member.id, {
-      cccd: {
-        frontPath: 'members/x/docs/cccd/front.jpg',
-        backPath: 'members/x/docs/cccd/back.jpg',
-      },
-    })
+    await store.mergeDocumentSide(member.id, 'cccd', 'front', 'members/x/docs/cccd/front.jpg', ADMIN_AUDIT)
+    await store.mergeDocumentSide(member.id, 'cccd', 'back', 'members/x/docs/cccd/back.jpg', ADMIN_AUDIT)
 
-    const { member: updated, removedPaths } = await store.removeDocumentPaths(
+    const updated = await store.removeDocumentPaths(
       member.id,
       'cccd',
       'front',
       ADMIN_AUDIT,
     )
 
-    expect(removedPaths).toEqual(['members/x/docs/cccd/front.jpg'])
     expect(updated.documents).toEqual({
       cccd: { backPath: 'members/x/docs/cccd/back.jpg' },
     })

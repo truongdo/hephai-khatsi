@@ -1,23 +1,23 @@
 import { queryOptions } from '@tanstack/react-query'
-import { listAuditLogs } from '#/repositories/auditLogRepo'
+import { listAuditLogs, type AuditParent } from '#/repositories/auditLogRepo'
 import { adminKeys } from './adminKeys'
 
-export function memberAuditLogsQuery(memberId: string, pageSize = 20) {
+export function auditLogsQuery(parent: AuditParent, pageSize = 20) {
   return queryOptions({
-    queryKey: adminKeys.memberAuditLogs(memberId),
-    queryFn: () =>
-      listAuditLogs({ collection: 'members', id: memberId }, { limit: pageSize }),
+    queryKey:
+      parent.collection === 'members'
+        ? adminKeys.memberAuditLogs(parent.id)
+        : adminKeys.templeAuditLogs(parent.id),
+    queryFn: () => listAuditLogs(parent, { limit: pageSize }),
     staleTime: 60_000,
-    enabled: !!memberId,
+    enabled: !!parent.id,
   })
 }
 
+export function memberAuditLogsQuery(memberId: string, pageSize = 20) {
+  return auditLogsQuery({ collection: 'members', id: memberId }, pageSize)
+}
+
 export function templeAuditLogsQuery(templeId: string, pageSize = 20) {
-  return queryOptions({
-    queryKey: adminKeys.templeAuditLogs(templeId),
-    queryFn: () =>
-      listAuditLogs({ collection: 'temples', id: templeId }, { limit: pageSize }),
-    staleTime: 60_000,
-    enabled: !!templeId,
-  })
+  return auditLogsQuery({ collection: 'temples', id: templeId }, pageSize)
 }

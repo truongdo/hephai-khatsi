@@ -15,7 +15,7 @@ describe('scrollToFirstFieldError', () => {
     invalid.setAttribute('aria-invalid', 'true')
     const scrollIntoView = vi.fn()
     invalid.scrollIntoView = scrollIntoView
-    document.body.append(invalid)
+    document.body.appendChild(invalid)
 
     scrollToFirstFieldError(document)
 
@@ -30,7 +30,7 @@ describe('scrollToFirstFieldError', () => {
     marker.setAttribute('data-field-error', 'true')
     const scrollIntoView = vi.fn()
     marker.scrollIntoView = scrollIntoView
-    document.body.append(marker)
+    document.body.appendChild(marker)
 
     scrollToFirstFieldError(document)
 
@@ -45,7 +45,8 @@ describe('scrollToFirstFieldError', () => {
     invalid.setAttribute('aria-invalid', 'true')
     const scrollIntoView = vi.fn()
     invalid.scrollIntoView = scrollIntoView
-    document.body.append(marker, invalid)
+    document.body.appendChild(marker)
+    document.body.appendChild(invalid)
 
     scrollToFirstFieldError(document)
 
@@ -68,7 +69,7 @@ describe('scrollToFirstFieldError', () => {
     invalid.setAttribute('aria-invalid', 'true')
     const scrollIntoView = vi.fn()
     invalid.scrollIntoView = scrollIntoView
-    document.body.append(invalid)
+    document.body.appendChild(invalid)
 
     scheduleScrollToFirstFieldError(document)
     expect(scrollIntoView).not.toHaveBeenCalled()

@@ -3,6 +3,7 @@ import { MantineProvider } from '@mantine/core'
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { RegistrationRouteProvider } from '#/components/registration/registrationRouteContext'
+import type { RetreatStatus } from '#/domain/retreat'
 import type { Invite } from '#/domain/types'
 import { m } from '#/paraglide/messages'
 import { theme } from '../theme'
@@ -47,7 +48,7 @@ const openRetreat = {
   dangKyDongLuc: '2026-07-31T23:59:00.000Z',
   extraFields: [],
   quyenDangKy: 'both' as const,
-  status: 'open' as const,
+  status: 'open' as RetreatStatus,
   createdBy: 'admin-uid',
   createdAt: '2026-07-19T10:00:00.000Z',
   updatedAt: '2026-07-19T10:00:00.000Z',

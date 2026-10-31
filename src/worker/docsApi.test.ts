@@ -1,342 +1,130 @@
 // @vitest-environment node
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { handleDocsApi } from './docsApi'
 import type { Env } from './env'
 import type { WorkerMember } from './recordSource'
+import { multipartRequest } from './test/multipartRequest'
 
-const getMemberDocument = vi.fn()
-const inviteExists = vi.fn()
-const verifyFirebaseAdminToken = vi.fn()
-const createR2PresignedPutUrl = vi.fn()
+const { getMember, inviteExists, verifyFirebaseAdminToken } = vi.hoisted(() => ({
+  getMember: vi.fn(),
+  inviteExists: vi.fn(),
+  verifyFirebaseAdminToken: vi.fn(),
+}))
 
 vi.mock('./recordSource', () => ({
-  recordSource: () => ({ getMember: getMemberDocument, inviteExists }),
+  recordSource: () => ({ getMember, inviteExists }),
 }))
 
-vi.mock('./verifyFirebaseAdmin', () => ({
-  verifyFirebaseAdminToken,
-}))
+vi.mock('./verifyFirebaseAdmin', () => ({ verifyFirebaseAdminToken }))
 
-vi.mock('./presignR2Put', () => ({
-  createR2PresignedPutUrl,
-  memberDocumentKey: (
-    memberId: string,
-    typeId: string,
-    side: string,
-    ext: string,
-  ) => `members/${memberId}/docs/${typeId}/${side}.${ext}`,
-}))
-
-const PROJECT_ID = 'test-project'
-const MEMBER_ID = 'm1'
+const PDF = new TextEncoder().encode('%PDF-1.7\n...')
+const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0])
+const HTML = new TextEncoder().encode('<html><script>alert(1)</script></html>')
 
 const draftMember: WorkerMember = {
-  id: MEMBER_ID,
+  id: 'm1',
   orgUnitId: 'gd-i',
   cccd: '012345678901',
   status: 'draft',
+  inviteId: 'invite-1',
   photoPath: null,
 }
 
-function makeEnv(overrides: Partial<Env> = {}): Env {
-  return {
-    ASSETS: {} as Fetcher,
-    PHOTOS: {
-      delete: vi.fn(async () => undefined),
-      list: vi.fn(async () => ({ objects: [], truncated: false })),
-    } as unknown as R2Bucket,
-    R2_ACCOUNT_ID: 'acct',
-    R2_ACCESS_KEY_ID: 'key',
-    R2_SECRET_ACCESS_KEY: 'secret',
-    R2_BUCKET_NAME: 'photos',
-    FIREBASE_PROJECT_ID: PROJECT_ID,
-    TYPESENSE_API_KEY: 'test-typesense-key',
-    ...overrides,
-  }
+let put: ReturnType<typeof vi.fn>
+
+async function upload(
+  fields: Record<string, string>,
+  options: { bytes?: Uint8Array; idToken?: string } = {},
+): Promise<Response> {
+  const form = new FormData()
+  for (const [name, value] of Object.entries(fields)) form.append(name, value)
+  form.append('file', new Blob([new Uint8Array(options.bytes ?? PDF)], { type: 'application/pdf' }))
+  return handleDocsApi(
+    await multipartRequest(
+      'https://example.com/api/docs/member',
+      form,
+      options.idToken ? { Authorization: `Bearer ${options.idToken}` } : {},
+    ),
+    { PHOTOS: { put } as unknown as R2Bucket, FIREBASE_PROJECT_ID: 'test-project' } as unknown as Env,
+  )
 }
+
+const cccdFront = { memberId: 'm1', cccd: '012345678901', typeId: 'cccd', side: 'front' }
 
 beforeEach(() => {
   vi.clearAllMocks()
-  createR2PresignedPutUrl.mockResolvedValue(
-    'https://acct.r2.cloudflarestorage.com/photos/members/m1/docs/cccd/front.jpg?signed=1',
-  )
+  put = vi.fn(async () => null)
+  getMember.mockResolvedValue(draftMember)
+  inviteExists.mockResolvedValue(true)
 })
 
-afterEach(() => {
-  vi.resetModules()
-})
+describe('POST /api/docs/member', () => {
+  it('writes the document with the extension of its content', async () => {
+    const response = await upload({ ...cccdFront, inviteToken: 'invite-1' })
 
-describe('handleDocsApi', () => {
-  describe('POST /api/docs/member-upload-url', () => {
-    it('returns uploadUrl for admin bearer auth', async () => {
-      getMemberDocument.mockResolvedValue(draftMember)
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
-      const env = makeEnv()
-      const { handleDocsApi } = await import('./docsApi')
-
-      const response = await handleDocsApi(
-        new Request('https://example.com/api/docs/member-upload-url', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer admin-token',
-          },
-          body: JSON.stringify({
-            memberId: MEMBER_ID,
-            cccd: '012345678901',
-            typeId: 'cccd',
-            side: 'front',
-            contentType: 'image/jpeg',
-          }),
-        }),
-        env,
-      )
-
-      expect(response.status).toBe(200)
-      await expect(response.json()).resolves.toEqual({
-        uploadUrl:
-          'https://acct.r2.cloudflarestorage.com/photos/members/m1/docs/cccd/front.jpg?signed=1',
-        filePath: 'members/m1/docs/cccd/front.jpg',
-      })
-      expect(createR2PresignedPutUrl).toHaveBeenCalledWith({
-        accountId: env.R2_ACCOUNT_ID,
-        accessKeyId: env.R2_ACCESS_KEY_ID,
-        secretAccessKey: env.R2_SECRET_ACCESS_KEY,
-        bucket: env.R2_BUCKET_NAME,
-        key: 'members/m1/docs/cccd/front.jpg',
-        contentType: 'image/jpeg',
-        expiresSeconds: 300,
-      })
+    expect(response.status).toBe(200)
+    const { filePath } = (await response.json()) as { filePath: string }
+    expect(filePath).toMatch(/^members\/m1\/docs\/cccd\/front-[a-f0-9]{12}\.pdf$/)
+    expect(put).toHaveBeenCalledWith(filePath, PDF, {
+      httpMetadata: { contentType: 'application/pdf' },
     })
 
-    it('returns 400 when side is invalid for type', async () => {
-      getMemberDocument.mockResolvedValue(draftMember)
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
-      const { handleDocsApi } = await import('./docsApi')
-
-      const response = await handleDocsApi(
-        new Request('https://example.com/api/docs/member-upload-url', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer admin-token',
-          },
-          body: JSON.stringify({
-            memberId: MEMBER_ID,
-            cccd: '012345678901',
-            typeId: 'diep_sa_di',
-            side: 'front',
-            contentType: 'image/jpeg',
-          }),
-        }),
-        makeEnv(),
-      )
-
-      expect(response.status).toBe(400)
-    })
-
-    it('returns uploadUrl for filler invite when invite exists (global invite, no orgUnitId)', async () => {
-      getMemberDocument.mockResolvedValue(draftMember)
-      inviteExists.mockResolvedValue(true)
-      const env = makeEnv()
-      const { handleDocsApi } = await import('./docsApi')
-
-      const response = await handleDocsApi(
-        new Request('https://example.com/api/docs/member-upload-url', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            memberId: MEMBER_ID,
-            cccd: '012345678901',
-            typeId: 'cccd',
-            side: 'front',
-            contentType: 'image/jpeg',
-            inviteToken: 'public',
-          }),
-        }),
-        env,
-      )
-
-      expect(response.status).toBe(200)
-      expect(inviteExists).toHaveBeenCalledWith('public')
-      await expect(response.json()).resolves.toEqual({
-        uploadUrl:
-          'https://acct.r2.cloudflarestorage.com/photos/members/m1/docs/cccd/front.jpg?signed=1',
-        filePath: 'members/m1/docs/cccd/front.jpg',
-      })
-    })
-
-    it('returns uploadUrl for invite on locked member', async () => {
-      getMemberDocument.mockResolvedValue({ ...draftMember, status: 'locked' })
-      inviteExists.mockResolvedValue(true)
-      const { handleDocsApi } = await import('./docsApi')
-
-      const response = await handleDocsApi(
-        new Request('https://example.com/api/docs/member-upload-url', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            memberId: MEMBER_ID,
-            cccd: '012345678901',
-            typeId: 'cccd',
-            side: 'front',
-            contentType: 'image/jpeg',
-            inviteToken: 'invite-1',
-          }),
-        }),
-        makeEnv(),
-      )
-
-      expect(response.status).toBe(200)
-    })
-
-    it('accepts image/jpg content type', async () => {
-      getMemberDocument.mockResolvedValue(draftMember)
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
-      const env = makeEnv()
-      const { handleDocsApi } = await import('./docsApi')
-
-      const response = await handleDocsApi(
-        new Request('https://example.com/api/docs/member-upload-url', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer admin-token',
-          },
-          body: JSON.stringify({
-            memberId: MEMBER_ID,
-            cccd: '012345678901',
-            typeId: 'cccd',
-            side: 'front',
-            contentType: 'image/jpg',
-          }),
-        }),
-        env,
-      )
-
-      expect(response.status).toBe(200)
-      expect(createR2PresignedPutUrl).toHaveBeenCalledWith(
-        expect.objectContaining({ contentType: 'image/jpg' }),
-      )
+    const again = (await (await upload({ ...cccdFront, inviteToken: 'invite-1' }, { bytes: PNG })).json()) as {
+      filePath: string
+    }
+    // Every upload gets its own key, so the file it replaces can be deleted safely.
+    expect(again.filePath).toMatch(/^members\/m1\/docs\/cccd\/front-[a-f0-9]{12}\.png$/)
+    expect(put).toHaveBeenLastCalledWith(again.filePath, PNG, {
+      httpMetadata: { contentType: 'image/png' },
     })
   })
 
-  describe('DELETE /api/docs/member', () => {
-    it('deletes listed paths and returns ok for admin', async () => {
-      getMemberDocument.mockResolvedValue(draftMember)
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
-      const deleteFn = vi.fn(async () => undefined)
-      const env = makeEnv({
-        PHOTOS: {
-          delete: deleteFn,
-          list: vi.fn(async () => ({ objects: [], truncated: false })),
-        } as unknown as R2Bucket,
-      })
-      const { handleDocsApi } = await import('./docsApi')
+  it('lets a filler upload to a locked member', async () => {
+    getMember.mockResolvedValue({ ...draftMember, status: 'locked' })
 
-      const paths = [
-        'members/m1/docs/cccd/front.jpg',
-        'members/m1/docs/cccd/back.jpg',
-      ]
-
-      const response = await handleDocsApi(
-        new Request('https://example.com/api/docs/member', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer admin-token',
-          },
-          body: JSON.stringify({
-            memberId: MEMBER_ID,
-            typeId: 'cccd',
-            paths,
-          }),
-        }),
-        env,
-      )
-
-      expect(response.status).toBe(200)
-      await expect(response.json()).resolves.toEqual({ ok: true })
-      expect(deleteFn).toHaveBeenCalledTimes(2)
-      expect(deleteFn).toHaveBeenCalledWith('members/m1/docs/cccd/front.jpg')
-      expect(deleteFn).toHaveBeenCalledWith('members/m1/docs/cccd/back.jpg')
-    })
-
-    it('returns 403 for invite on locked member', async () => {
-      getMemberDocument.mockResolvedValue({ ...draftMember, status: 'locked' })
-      inviteExists.mockResolvedValue(true)
-      const { handleDocsApi } = await import('./docsApi')
-
-      const response = await handleDocsApi(
-        new Request('https://example.com/api/docs/member', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            memberId: MEMBER_ID,
-            typeId: 'cccd',
-            paths: ['members/m1/docs/cccd/front.jpg'],
-            cccd: '012345678901',
-            inviteToken: 'invite-token',
-          }),
-        }),
-        makeEnv(),
-      )
-
-      expect(response.status).toBe(403)
-    })
+    expect((await upload({ ...cccdFront, inviteToken: 'invite-1' })).status).toBe(200)
   })
 
-  describe('DELETE /api/docs/member-prefix', () => {
-    it('returns 401 without admin bearer token', async () => {
-      const { handleDocsApi } = await import('./docsApi')
+  it('refuses content that is not an image or PDF', async () => {
+    const response = await upload({ ...cccdFront, inviteToken: 'invite-1' }, { bytes: HTML })
 
-      const response = await handleDocsApi(
-        new Request('https://example.com/api/docs/member-prefix', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ memberId: MEMBER_ID }),
-        }),
-        makeEnv(),
-      )
+    expect(response.status).toBe(400)
+    expect(put).not.toHaveBeenCalled()
+  })
 
-      expect(response.status).toBe(401)
-    })
+  it('refuses a file over 10 MB', async () => {
+    const big = new Uint8Array(10 * 1024 * 1024 + 1)
+    big.set(PDF)
 
-    it('lists prefix and deletes all objects for admin', async () => {
-      verifyFirebaseAdminToken.mockResolvedValue({ uid: 'admin-1', role: 'he_phai_admin', orgUnitId: null })
-      const deleteFn = vi.fn(async () => undefined)
-      const listFn = vi.fn(async () => ({
-        objects: [
-          { key: 'members/m1/docs/cccd/front.jpg' },
-          { key: 'members/m1/docs/cccd/back.jpg' },
-        ],
-        truncated: false,
-      }))
-      const env = makeEnv({
-        PHOTOS: {
-          delete: deleteFn,
-          list: listFn,
-        } as unknown as R2Bucket,
-      })
-      const { handleDocsApi } = await import('./docsApi')
+    const response = await upload({ ...cccdFront, inviteToken: 'invite-1' }, { bytes: big })
 
-      const response = await handleDocsApi(
-        new Request('https://example.com/api/docs/member-prefix', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer admin-token',
-          },
-          body: JSON.stringify({ memberId: MEMBER_ID }),
-        }),
-        env,
-      )
+    expect(response.status).toBe(413)
+  })
 
-      expect(response.status).toBe(200)
-      await expect(response.json()).resolves.toEqual({ ok: true })
-      expect(listFn).toHaveBeenCalledWith({ prefix: 'members/m1/docs/' })
-      expect(deleteFn).toHaveBeenCalledTimes(2)
-      expect(deleteFn).toHaveBeenCalledWith('members/m1/docs/cccd/front.jpg')
-      expect(deleteFn).toHaveBeenCalledWith('members/m1/docs/cccd/back.jpg')
-    })
+  it('refuses a side the document type does not have', async () => {
+    const response = await upload({ ...cccdFront, side: 'file', inviteToken: 'invite-1' })
+
+    expect(response.status).toBe(400)
+  })
+
+  it('writes for staff of the org unit and refuses another giáo đoàn', async () => {
+    verifyFirebaseAdminToken.mockResolvedValue({ uid: 'gd', role: 'giao_doan_admin', orgUnitId: 'gd-i' })
+    expect((await upload(cccdFront, { idToken: 'staff' })).status).toBe(200)
+
+    verifyFirebaseAdminToken.mockResolvedValue({ uid: 'gd2', role: 'giao_doan_admin', orgUnitId: 'gd-ii' })
+    expect((await upload(cccdFront, { idToken: 'staff' })).status).toBe(403)
+  })
+
+  it('refuses a filler on an admin-made draft (no invite yet) or without an invite', async () => {
+    getMember.mockResolvedValue({ ...draftMember, inviteId: null })
+    expect((await upload({ ...cccdFront, inviteToken: 'invite-1' })).status).toBe(403)
+    expect((await upload(cccdFront)).status).toBe(401)
+    expect(put).not.toHaveBeenCalled()
+  })
+
+  it('refuses a CCCD that does not match', async () => {
+    const response = await upload({ ...cccdFront, cccd: '999999999999', inviteToken: 'invite-1' })
+
+    expect(response.status).toBe(403)
   })
 })

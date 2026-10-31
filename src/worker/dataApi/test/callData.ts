@@ -2,7 +2,7 @@ import { env } from 'cloudflare:workers'
 import { expect } from 'vitest'
 import type { Caller } from '#/domain/authz/caller'
 import { isDomainError, type DomainErrorCode } from '#/domain/errors'
-import type { SearchSync } from '../context'
+import type { RecordFiles, SearchSync } from '../context'
 import { runDataRoute } from '../index'
 import type { Body } from '../input'
 
@@ -20,14 +20,35 @@ const recordingSearch: SearchSync = {
   deleteTemple: (id) => searchCalls.push({ action: 'deleteTemple', id }),
 }
 
-/** Calls a data route against the test D1 as `caller`; call `searchCalls.length = 0` in beforeEach. */
+export type FileCall = { action: 'copy'; from: string; to: string } | { action: 'delete'; paths: string[] }
+
+/** R2 calls the handlers made, in order. */
+export const fileCalls: FileCall[] = []
+
+/** Paths the fake bucket does not hold (every other path exists). */
+export const missingFiles = new Set<string>()
+
+const recordingFiles: RecordFiles = {
+  exists: async (path) => !missingFiles.has(path),
+  copy: async (from, to) => {
+    fileCalls.push({ action: 'copy', from, to })
+  },
+  deleteLater: (paths) => {
+    if (paths.length > 0) fileCalls.push({ action: 'delete', paths })
+  },
+}
+
+/**
+ * Calls a data route against the test D1 as `caller`; call
+ * `searchCalls.length = 0` (and `fileCalls.length = 0`) in beforeEach.
+ */
 export function callData<T = unknown>(
   name: string,
   body: Body,
   caller: Caller = null,
   now: string = NOW,
 ): Promise<T> {
-  return runDataRoute(name, body, { db: env.DB, caller, now, search: recordingSearch }) as Promise<T>
+  return runDataRoute(name, body, { db: env.DB, caller, now, search: recordingSearch, files: recordingFiles }) as Promise<T>
 }
 
 export async function expectDomainError(promise: Promise<unknown>, code: DomainErrorCode): Promise<void> {
@@ -74,7 +95,13 @@ function loggingDb(log: LoggedQuery[]): D1Database {
  */
 export async function queryPlansOf(name: string, body: Body, caller: Caller): Promise<string[][]> {
   const log: LoggedQuery[] = []
-  await runDataRoute(name, body, { db: loggingDb(log), caller, now: NOW, search: recordingSearch })
+  await runDataRoute(name, body, {
+    db: loggingDb(log),
+    caller,
+    now: NOW,
+    search: recordingSearch,
+    files: recordingFiles,
+  })
   const plans: string[][] = []
   for (const query of log.filter((entry) => entry.sql.trimStart().startsWith('SELECT'))) {
     const { results } = await env.DB.prepare(`EXPLAIN QUERY PLAN ${query.sql}`)

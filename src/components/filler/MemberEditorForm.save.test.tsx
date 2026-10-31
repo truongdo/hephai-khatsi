@@ -113,6 +113,44 @@ describe('MemberEditorForm save', () => {
     expect(screen.getByText(m.filler_save_redirecting())).toBeTruthy()
   })
 
+  it('keeps the files of an admin-made draft (no invite yet) for after save-and-lock', async () => {
+    const user = userEvent.setup()
+    uploadMemberPhotoMock.mockResolvedValue({ photoPath: 'members/m1/photo.jpg' })
+    saveAndLockMemberMock.mockResolvedValue({
+      member: member({ id: 'm1', status: 'locked' }),
+      mode: 'updated',
+    })
+    const { onCreated } = renderForm({
+      memberId: 'm1',
+      cccd: '012345678901',
+      initial: {
+        ...requiredCoreBase,
+        id: 'm1',
+        status: 'draft',
+        inviteId: null,
+        documents: requiredCoreInitial.documents,
+      },
+    })
+    const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
+
+    await user.upload(getPortraitFileInput(), file)
+    expect(uploadMemberPhotoMock).not.toHaveBeenCalled()
+    await confirmSave(user)
+
+    await vi.waitFor(() =>
+      expect(uploadMemberPhotoMock).toHaveBeenCalledWith({
+        memberId: 'm1',
+        cccd: '012345678901',
+        bytes: expect.any(Uint8Array),
+        contentType: 'image/jpeg',
+        inviteToken: 'invite-token',
+        audit: { actorType: 'filler', actorId: '0901234567' },
+      }),
+    )
+    expect(await screen.findByText(m.filler_save_success())).toBeTruthy()
+    expect(onCreated).not.toHaveBeenCalled()
+  })
+
   it('keeps form open when portrait upload fails after create', async () => {
     const user = userEvent.setup()
     uploadMemberPhotoMock.mockRejectedValue(new Error('upload failed'))

@@ -76,6 +76,7 @@ export default defineConfig({
               compatibilityDate: '2026-07-20',
               compatibilityFlags: ['nodejs_compat'],
               d1Databases: ['DB'],
+              r2Buckets: ['PHOTOS'],
               bindings: { TEST_MIGRATIONS: await readD1Migrations('migrations') },
             },
           })),

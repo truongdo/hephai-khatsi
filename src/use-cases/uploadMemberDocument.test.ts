@@ -1,5 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
-import { DomainError } from '#/domain/errors'
+import { describe, expect, it } from 'vitest'
 import type { MemberDocuments } from '#/domain/memberDocumentTypes'
 import { MEMBER_DOCUMENT_MAX_BYTES } from '#/domain/memberDocumentTypes'
 import type { Member } from '#/domain/types'
@@ -110,7 +109,7 @@ describe('uploadMemberDocument', () => {
     )
   })
 
-  it('best-effort deletes the previous path when replacing a side', async () => {
+  it('replaces the stored path when replacing a side', async () => {
     const oldPath = 'members/member-1/docs/cccd/front.png'
     const store = createMemoryMemberStore([
       {
@@ -119,7 +118,6 @@ describe('uploadMemberDocument', () => {
       },
     ])
     const { storage } = fakeStorage()
-    const deleteObjects = vi.fn(async () => undefined)
     const current: MemberDocuments = { cccd: { frontPath: oldPath } }
 
     const result = await uploadMemberDocument(
@@ -136,19 +134,13 @@ describe('uploadMemberDocument', () => {
       },
       store,
       storage,
-      deleteObjects,
     )
 
     expect(result.documents.cccd?.frontPath).toBe(
       'members/member-1/docs/cccd/front.jpg',
     )
-    expect(deleteObjects).toHaveBeenCalledWith({
-      memberId: 'member-1',
-      typeId: 'cccd',
-      paths: [oldPath],
-      cccd: '012345678901',
-      inviteToken: 'invite-1',
-      idToken: undefined,
+    expect((await store.getById('member-1'))?.documents).toEqual({
+      cccd: { frontPath: 'members/member-1/docs/cccd/front.jpg' },
     })
   })
 

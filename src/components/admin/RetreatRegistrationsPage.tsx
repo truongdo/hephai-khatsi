@@ -14,7 +14,7 @@ import {
   TextInput,
   Title,
 } from '@mantine/core'
-import { Link } from '@tanstack/react-router'
+import { ButtonLink, TextLink } from '#/components/routing/MantineRouterLinks'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
@@ -80,8 +80,8 @@ function truncateReason(reason: string, maxLen = 60): string {
 }
 
 function memberDisplayLabel(member: {
-  phapDanh: string
-  theDanh: string
+  phapDanh?: string
+  theDanh?: string
   id: string
 }): string {
   const parts = [member.phapDanh, member.theDanh].filter(Boolean)
@@ -95,8 +95,7 @@ function RegistrationMemberCell({ memberId }: { memberId: string }) {
     return <Text size="sm">{memberId}</Text>
   }
   return (
-    <Text
-      component={Link}
+    <TextLink
       to="/admin/members/$id"
       params={{ id: memberId }}
       size="sm"
@@ -104,7 +103,7 @@ function RegistrationMemberCell({ memberId }: { memberId: string }) {
       fw={600}
     >
       {memberDisplayLabel(member.data)}
-    </Text>
+    </TextLink>
   )
 }
 
@@ -332,14 +331,13 @@ export function RetreatRegistrationsPage({ retreatId }: { retreatId: string }) {
         </Stack>
         <Group gap="sm" wrap="wrap">
           <CopyRetreatRegistrationLinkButton retreatId={retreatId} />
-          <Button
-            component={Link}
+          <ButtonLink
             to="/admin/retreats/$id"
             params={{ id: retreatId }}
             variant="subtle"
           >
             {m.admin_retreat_registrations_back()}
-          </Button>
+          </ButtonLink>
         </Group>
       </Group>
 

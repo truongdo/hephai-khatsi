@@ -6,6 +6,7 @@ import { cities } from '#/data/vietnam-locations'
 import { m } from '#/paraglide/messages'
 import { theme } from '../../theme'
 import { TemplesStatsPage } from './TemplesStatsPage'
+import type { AdminClaimState } from '#/auth/useAdminClaim'
 
 const statsData = {
   totals: { all: 100 },
@@ -20,14 +21,14 @@ const statsData = {
   ],
 }
 
-const useAdminClaimMock = vi.fn(() => ({
+const useAdminClaimMock = vi.fn<() => AdminClaimState>(() => ({
   status: 'admin' as const,
   uid: 'admin-uid',
   role: 'he_phai_admin' as const,
   orgUnitId: null,
 }))
 
-const templeDirectoryStatsQueryMock = vi.fn(() => ({
+const templeDirectoryStatsQueryMock = vi.fn((_scope: unknown) => ({
   queryKey: ['admin', 'templeDirectoryStats'],
   queryFn: async () => statsData,
   staleTime: 0,
@@ -122,8 +123,8 @@ describe('TemplesStatsPage', () => {
     useAdminClaimMock.mockReturnValue({
       status: 'admin',
       uid: 'admin-uid',
-      role: 'temple_admin',
-      orgUnitId: 't1',
+      role: 'kiem_soat',
+      orgUnitId: null,
     })
     renderStats()
     expect(await screen.findByText(m.admin_denied_title())).toBeTruthy()

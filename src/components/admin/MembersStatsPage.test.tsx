@@ -5,6 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { m } from '#/paraglide/messages'
 import { theme } from '../../theme'
 import { MembersStatsPage } from './MembersStatsPage'
+import type { AdminClaimState } from '#/auth/useAdminClaim'
 
 const statsData = {
   totals: { all: 100, tang: 60, ni: 40 },
@@ -19,14 +20,14 @@ const statsData = {
   ],
 }
 
-const useAdminClaimMock = vi.fn(() => ({
+const useAdminClaimMock = vi.fn<() => AdminClaimState>(() => ({
   status: 'admin' as const,
   uid: 'admin-uid',
   role: 'he_phai_admin' as const,
   orgUnitId: null,
 }))
 
-const memberDirectoryStatsQueryMock = vi.fn(() => ({
+const memberDirectoryStatsQueryMock = vi.fn((_scope: unknown) => ({
   queryKey: ['admin', 'memberDirectoryStats'],
   queryFn: async () => statsData,
   staleTime: 0,
@@ -112,8 +113,8 @@ describe('MembersStatsPage', () => {
     useAdminClaimMock.mockReturnValue({
       status: 'admin',
       uid: 'admin-uid',
-      role: 'temple_admin',
-      orgUnitId: 't1',
+      role: 'kiem_soat',
+      orgUnitId: null,
     })
     renderStats()
     expect(await screen.findByText(m.admin_denied_title())).toBeTruthy()

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ComponentType, ReactNode } from 'react'
 import {
   Anchor,
   AppShell,
@@ -32,7 +32,7 @@ type NavCapability = 'directory' | 'retreats'
 const allNavItems: {
   label: () => string
   to: string
-  icon: typeof Home
+  icon: ComponentType<{ size?: number | string }>
   capability: NavCapability
 }[] = [
   {

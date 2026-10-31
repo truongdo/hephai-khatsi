@@ -1,5 +1,6 @@
 import type { AuditLogWrite } from '#/domain/auditLog'
 import type { InviteExists } from '#/domain/authz/caller'
+import type { RecordFiles } from './context'
 import { DomainError } from '#/domain/errors'
 import { ORG_UNIT_SEED } from '#/domain/orgUnitSeed'
 import { auditLogToRow, type AuditLogParent } from './rows/auditLog'
@@ -38,6 +39,23 @@ export async function loadInviteExists(
   )
   const found = new Set(rows.map((row) => row.id))
   return (id) => found.has(id)
+}
+
+/**
+ * The files a write adds to a record must be its own keys (`foreign` lists
+ * the others) and already uploaded: a write that drops files deletes them,
+ * so a record never takes another record's file or a missing one.
+ */
+export async function requireOwnUploadedFiles(
+  files: RecordFiles,
+  foreign: readonly string[],
+  added: readonly string[],
+): Promise<void> {
+  if (foreign.length > 0) {
+    throw new DomainError('INVALID_INPUT', 'File path does not belong to this record')
+  }
+  const found = await Promise.all(added.map((path) => files.exists(path)))
+  if (found.includes(false)) throw new DomainError('INVALID_INPUT', 'File was not uploaded')
 }
 
 export function auditLogInsert(

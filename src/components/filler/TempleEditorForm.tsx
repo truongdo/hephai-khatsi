@@ -80,6 +80,10 @@ export function TempleEditorForm({
   const [requestEditError, setRequestEditError] = useState<string | null>(null)
   const [sessionCreatedId, setSessionCreatedId] = useState<string | undefined>()
   const effectiveTempleId = templeId ?? sessionCreatedId
+  // An admin-made draft names no invite until the filler's save-and-lock
+  // adopts one; until then the Worker refuses the filler's upload, so the
+  // picked photo waits and uploads after the save.
+  const photoNeedsSave = Boolean(templeId) && !initial.inviteId
   const disabled = status === 'view'
   const requestPhone =
     initial.seedPhone ?? initial.truTriHienNay?.dienThoai ?? ''
@@ -165,6 +169,47 @@ export function TempleEditorForm({
     },
   })
 
+  /**
+   * Uploads the photo picked before the temple could take it (a new temple,
+   * or an admin-made draft without an invite until this save-and-lock).
+   * Returns the temple with its path, or null after showing the failure.
+   */
+  const uploadPendingPhoto = async (
+    api: TempleFormFieldsApi,
+    saved: Temple,
+    saveAudit: ReturnType<typeof fillerAuditFromPhone>,
+  ): Promise<Temple | null> => {
+    const pendingPhoto = api.getPendingPhoto()
+    if (!pendingPhoto) return saved
+    try {
+      const bytes = new Uint8Array(await pendingPhoto.arrayBuffer())
+      const uploadResult = await uploadTemplePhoto({
+        templeId: saved.id,
+        bytes,
+        contentType: pendingPhoto.type,
+        inviteToken: token,
+        audit: saveAudit,
+      })
+      api.setPhotoPath(uploadResult.photoPath)
+      api.clearPendingPhoto()
+      return { ...saved, photoPath: uploadResult.photoPath }
+    } catch (error) {
+      setValidationError(null)
+      setSaveSuccess(null)
+      setSaveError(
+        await describeFillerFailure({
+          error,
+          form: 'temple',
+          stage: 'photo',
+          orgUnitId,
+          recordId: saved.id,
+        }),
+      )
+      queryClient.setQueryData(fillerKeys.temple(saved.id), saved)
+      return null
+    }
+  }
+
   const performSave = async () => {
     const api = fieldsApiRef.current
     if (!api) return
@@ -185,7 +230,6 @@ export function TempleEditorForm({
     setPostSavePending(true)
     try {
       let savedTemple: Temple
-      let createdThisSave = false
 
       if (sessionCreatedId) {
         const cached = queryClient.getQueryData<Temple>(
@@ -210,54 +254,22 @@ export function TempleEditorForm({
         savedTemple = saveResult.temple
 
         if (saveResult.mode !== 'created') {
+          const withPhoto = await uploadPendingPhoto(api, savedTemple, saveAudit)
+          if (!withPhoto) return
           setSaveSuccess(m.filler_save_success())
-          queryClient.setQueryData(fillerKeys.temple(savedTemple.id), savedTemple)
+          queryClient.setQueryData(fillerKeys.temple(withPhoto.id), withPhoto)
           return
         }
 
-        createdThisSave = true
         setSessionCreatedId(savedTemple.id)
       }
 
-      if (createdThisSave || sessionCreatedId) {
-        setSaveSuccess(m.filler_save_success())
-        const pendingPhoto = api.getPendingPhoto()
-        if (pendingPhoto) {
-          try {
-            const bytes = new Uint8Array(await pendingPhoto.arrayBuffer())
-            const uploadResult = await uploadTemplePhoto({
-              templeId: savedTemple.id,
-              bytes,
-              contentType: pendingPhoto.type,
-              inviteToken: token,
-              audit: saveAudit,
-            })
-            api.setPhotoPath(uploadResult.photoPath)
-            api.clearPendingPhoto()
-            savedTemple = { ...savedTemple, photoPath: uploadResult.photoPath }
-          } catch (error) {
-            setValidationError(null)
-            setSaveSuccess(null)
-            setSaveError(
-              await describeFillerFailure({
-                error,
-                form: 'temple',
-                stage: 'photo',
-                orgUnitId,
-                recordId: savedTemple.id,
-              }),
-            )
-            queryClient.setQueryData(
-              fillerKeys.temple(savedTemple.id),
-              savedTemple,
-            )
-            return
-          }
-        }
-        setSaveSuccess(m.filler_save_redirecting())
-        queryClient.setQueryData(fillerKeys.temple(savedTemple.id), savedTemple)
-        await onCreated(savedTemple.id)
-      }
+      setSaveSuccess(m.filler_save_success())
+      const withPhoto = await uploadPendingPhoto(api, savedTemple, saveAudit)
+      if (!withPhoto) return
+      setSaveSuccess(m.filler_save_redirecting())
+      queryClient.setQueryData(fillerKeys.temple(withPhoto.id), withPhoto)
+      await onCreated(withPhoto.id)
     } catch {
       // onError handles save failure
     } finally {
@@ -333,7 +345,9 @@ export function TempleEditorForm({
           apiRef={fieldsApiRef}
           initial={initial}
           disabled={disabled}
-          templeId={effectiveTempleId}
+          templeId={photoNeedsSave ? undefined : effectiveTempleId}
+          // A filler may attach the first photo of a locked record, not replace it.
+          photoReadOnly={photoNeedsSave && Boolean(initial.photoPath)}
           inviteToken={token}
           audit={fillerAudit}
           onUploadError={setSaveError}

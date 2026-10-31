@@ -585,7 +585,7 @@ describe('TempleEditorForm', () => {
     uploadTemplePhotoMock.mockRejectedValue(new Error('upload failed'))
     renderForm({
       templeId: 't1',
-      initial: requiredTempleInitial({ id: 't1' }),
+      initial: requiredTempleInitial({ id: 't1', inviteId: 'invite-1' }),
     })
     const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
 
@@ -593,5 +593,45 @@ describe('TempleEditorForm', () => {
 
     expect(uploadTemplePhotoMock).toHaveBeenCalledOnce()
     expect(screen.getByText(m.filler_photo_upload_error())).toBeTruthy()
+  })
+
+  it('keeps the photo of an admin-made draft (no invite yet) for after save-and-lock', async () => {
+    const user = userEvent.setup()
+    uploadTemplePhotoMock.mockResolvedValue({ photoPath: 'temples/t1/photo.jpg' })
+    saveAndLockTempleMock.mockResolvedValue({
+      temple: temple({ id: 't1', status: 'locked' }),
+      mode: 'updated',
+    })
+    const { onCreated } = renderForm({
+      templeId: 't1',
+      initial: requiredTempleInitial({ id: 't1', inviteId: null, photoPath: null }),
+    })
+    const file = new File(['jpeg'], 'portrait.jpg', { type: 'image/jpeg' })
+
+    await user.upload(getPortraitFileInput(), file)
+    expect(uploadTemplePhotoMock).not.toHaveBeenCalled()
+    await confirmSave(user)
+
+    await vi.waitFor(() =>
+      expect(uploadTemplePhotoMock).toHaveBeenCalledWith({
+        templeId: 't1',
+        bytes: expect.any(Uint8Array),
+        contentType: 'image/jpeg',
+        inviteToken: 'invite-token',
+        audit: { actorType: 'filler', actorId: '0901234567' },
+      }),
+    )
+    expect(await screen.findByText(m.filler_save_success())).toBeTruthy()
+    expect(onCreated).not.toHaveBeenCalled()
+  })
+
+  it('refuses a photo over 10 MB', async () => {
+    const user = userEvent.setup()
+    renderForm({ initial: requiredTempleInitial({ photoPath: null }) })
+    const file = new File([new Uint8Array(10 * 1024 * 1024 + 1)], 'big.jpg', { type: 'image/jpeg' })
+
+    await user.upload(getPortraitFileInput(), file)
+
+    expect(screen.getByText(m.filler_photo_too_large())).toBeTruthy()
   })
 })

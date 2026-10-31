@@ -102,7 +102,13 @@ describe('MEMBER_EXCEL_COLUMNS cells', () => {
     const mem = member({
       id: 'm1',
       sanghaType: 'tang',
-      noiSinh: { line: '1 A', wardName: 'P.1', cityName: 'HCM' },
+      noiSinh: {
+        line: '1 A',
+        wardCode: '27',
+        wardName: 'P.1',
+        cityCode: '79',
+        cityName: 'HCM',
+      },
       giaoPhamHePhai: { rank: 'ty_kheo', namTienPhong: 2010 },
     })
     expect(cell('orgUnitName', mem)).toBe('Giáo đoàn I')

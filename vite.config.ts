@@ -27,6 +27,7 @@ const config = defineConfig(({ mode }) => {
         project: './project.inlang',
         outdir: './src/paraglide',
         strategy: ['baseLocale'],
+        emitTsDeclarations: true,
       }),
       devtools(),
       tanstackRouter({ target: 'react', autoCodeSplitting: true }),

@@ -6,6 +6,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { m } from '#/paraglide/messages'
 import { theme } from '../../theme'
 import { RetreatsListPage } from './RetreatsListPage'
+import type { AdminClaimState } from '#/auth/useAdminClaim'
 
 const draftRetreat = {
   id: 'r1',
@@ -38,13 +39,13 @@ let retreatItems = [draftRetreat, openRetreat]
 
 const deleteRetreatMock = vi.fn()
 
-const retreatsQueryMock = vi.fn(() => ({
-  queryKey: ['admin', 'retreats', { orgUnitId: 'gd-i' }],
+const retreatsQueryMock = vi.fn((_filters?: unknown) => ({
+  queryKey: ['admin', 'retreats', { orgUnitId: 'gd-i' } as { orgUnitId?: string }],
   queryFn: async () => ({ items: retreatItems, nextCursor: null }),
   staleTime: 0,
 }))
 
-const useAdminClaimMock = vi.fn(() => ({
+const useAdminClaimMock = vi.fn<() => AdminClaimState>(() => ({
   status: 'admin' as const,
   uid: 'admin-uid',
   role: 'giao_doan_admin' as const,
@@ -63,8 +64,8 @@ vi.mock('#/auth/useAuth', () => ({
   }),
 }))
 
-vi.mock('@tanstack/react-router', () => ({
-  Link: ({
+vi.mock('@tanstack/react-router', () => {
+  const Link = ({
     children,
     to,
     params,
@@ -81,8 +82,12 @@ vi.mock('@tanstack/react-router', () => ({
         {children}
       </a>
     )
-  },
-}))
+  }
+  return {
+    Link,
+    createLink: () => Link,
+  }
+})
 
 vi.mock('#/query/adminQueries', () => ({
   retreatsQuery: (filters: unknown) => retreatsQueryMock(filters),

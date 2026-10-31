@@ -141,7 +141,7 @@ export function MemberFormPage({
     mode,
     member.data,
     claim.status,
-    claim.role,
+    claim.status === 'admin' ? claim.role : null,
     claim.status === 'admin' ? claim.orgUnitId : null,
   ])
 

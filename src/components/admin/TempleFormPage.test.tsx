@@ -11,6 +11,7 @@ import { uploadTemplePhoto } from '#/use-cases/uploadTemplePhoto'
 import { theme } from '../../theme'
 import * as templeRequiredValidation from '../filler/templeRequiredValidation'
 import { TempleFormPage } from './TempleFormPage'
+import type { AdminClaimState } from '#/auth/useAdminClaim'
 
 const structuredAddress: AddressValue = {
   cityCode: '01',
@@ -27,7 +28,7 @@ const lockedTemple = {
   managerPhones: ['0901234567'],
   status: 'locked' as const,
   inviteId: 'inv-1',
-  photoPath: null,
+  photoPath: null as string | null,
   diaChiMoi: '123 Đường A' as string | AddressValue,
   truTriHienNay: { dienThoai: '0901234567' },
   createdAt: '2026-07-19T10:00:00.000Z',
@@ -49,7 +50,7 @@ const draftTemple = {
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
 const navigateMock = vi.fn()
 
-const useAdminClaimMock = vi.fn(() => ({
+const useAdminClaimMock = vi.fn<() => AdminClaimState>(() => ({
   status: 'admin' as const,
   uid: 'admin-uid',
   role: 'he_phai_admin' as const,

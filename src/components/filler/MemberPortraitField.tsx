@@ -10,6 +10,7 @@ import {
 } from '@mantine/core'
 import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { PHOTO_MAX_BYTES } from '#/domain/uploadContent'
 import { m } from '#/paraglide/messages'
 import type { AuditActor } from '#/domain/auditLog'
 import { deleteMemberPhoto } from '#/use-cases/deleteMemberPhoto'
@@ -106,6 +107,10 @@ export function MemberPortraitField({
       setTypeError(m.filler_photo_invalid_type())
       return
     }
+    if (file.size > PHOTO_MAX_BYTES) {
+      setTypeError(m.filler_photo_too_large())
+      return
+    }
 
     setTypeError(null)
 
@@ -154,7 +159,6 @@ export function MemberPortraitField({
       await deleteMemberPhoto({
         memberId,
         cccd,
-        inviteToken,
         idToken,
         audit: audit ?? { actorType: 'filler', actorId: 'filler' },
       })

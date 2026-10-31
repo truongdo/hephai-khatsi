@@ -1,11 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import {
-  deleteMemberPhotoObject,
-  deleteTemplePhotoObject,
-  putToPresignedUrl,
-  requestMemberPhotoUploadUrl,
-  requestTemplePhotoUploadUrl,
-} from './photosApiClient'
+import { uploadMemberDocumentFile } from './docsApiClient'
+import { uploadMemberPhotoFile, uploadTemplePhotoFile } from './photosApiClient'
 
 const fetchMock = vi.fn()
 
@@ -18,260 +13,92 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-describe('requestMemberPhotoUploadUrl', () => {
-  it('POSTs to member-upload-url with invite token', async () => {
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        uploadUrl: 'https://r2.example/upload',
-        photoPath: 'members/m1/photo.jpg',
-      }),
-    })
+const bytes = new Uint8Array([0xff, 0xd8, 0xff])
 
-    const result = await requestMemberPhotoUploadUrl({
+function sentForm(): { headers: Record<string, string>; form: FormData } {
+  const [, init] = fetchMock.mock.calls[0] as [string, RequestInit]
+  return { headers: init.headers as Record<string, string>, form: init.body as FormData }
+}
+
+describe('uploadMemberPhotoFile', () => {
+  it('POSTs the member fields, invite token and file as multipart', async () => {
+    fetchMock.mockResolvedValueOnce(Response.json({ photoPath: 'members/m1/photo.jpg' }))
+
+    const result = await uploadMemberPhotoFile({
       memberId: 'm1',
       cccd: '012345678901',
+      bytes,
       contentType: 'image/jpeg',
       inviteToken: 'invite-token',
     })
 
-    expect(result).toEqual({
-      uploadUrl: 'https://r2.example/upload',
-      photoPath: 'members/m1/photo.jpg',
-    })
-    expect(fetchMock).toHaveBeenCalledWith('/api/photos/member-upload-url', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        memberId: 'm1',
-        cccd: '012345678901',
-        contentType: 'image/jpeg',
-        inviteToken: 'invite-token',
-      }),
-    })
+    expect(result).toEqual({ photoPath: 'members/m1/photo.jpg' })
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/photos/member')
+    const { headers, form } = sentForm()
+    expect(headers).toEqual({})
+    expect(form.get('memberId')).toBe('m1')
+    expect(form.get('cccd')).toBe('012345678901')
+    expect(form.get('inviteToken')).toBe('invite-token')
+    const file = form.get('file') as Blob
+    expect(file.type).toBe('image/jpeg')
+    expect(new Uint8Array(await file.arrayBuffer())).toEqual(bytes)
   })
 
-  it('POSTs with Authorization when idToken is provided', async () => {
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        uploadUrl: 'https://r2.example/upload',
-        photoPath: 'members/m1/photo.jpg',
-      }),
-    })
+  it('sends the admin ID token as Bearer', async () => {
+    fetchMock.mockResolvedValueOnce(Response.json({ photoPath: 'members/m1/photo.jpg' }))
 
-    await requestMemberPhotoUploadUrl({
+    await uploadMemberPhotoFile({
       memberId: 'm1',
       cccd: '012345678901',
+      bytes,
       contentType: 'image/jpeg',
       idToken: 'admin-token',
     })
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/photos/member-upload-url', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer admin-token',
-      },
-      body: JSON.stringify({
-        memberId: 'm1',
-        cccd: '012345678901',
-        contentType: 'image/jpeg',
-      }),
-    })
+    const { headers, form } = sentForm()
+    expect(headers).toEqual({ Authorization: 'Bearer admin-token' })
+    expect(form.get('inviteToken')).toBeNull()
   })
 
-  it('throws when the API response is not ok', async () => {
-    fetchMock.mockResolvedValueOnce({
-      ok: false,
-      status: 403,
-      json: async () => ({ error: 'Forbidden' }),
-    })
+  it('throws the API error', async () => {
+    fetchMock.mockResolvedValueOnce(Response.json({ error: 'File too large' }, { status: 413 }))
 
     await expect(
-      requestMemberPhotoUploadUrl({
-        memberId: 'm1',
-        cccd: '012345678901',
-        contentType: 'image/jpeg',
-        inviteToken: 'bad',
-      }),
-    ).rejects.toThrow(/Forbidden/)
+      uploadMemberPhotoFile({ memberId: 'm1', cccd: '1', bytes, contentType: 'image/jpeg' }),
+    ).rejects.toThrow(/File too large/)
   })
 })
 
-describe('putToPresignedUrl', () => {
-  it('PUTs bytes to the presigned URL with content type', async () => {
-    fetchMock.mockResolvedValueOnce({ ok: true })
-    const bytes = new Uint8Array([1, 2, 3])
-
-    await putToPresignedUrl('https://r2.example/upload', bytes, 'image/jpeg')
-
-    expect(fetchMock).toHaveBeenCalledWith('https://r2.example/upload', {
-      method: 'PUT',
-      body: bytes,
-      headers: { 'Content-Type': 'image/jpeg' },
-    })
-  })
-
-  it('throws when the PUT fails', async () => {
-    fetchMock.mockResolvedValueOnce({ ok: false, status: 500 })
+describe('uploadTemplePhotoFile', () => {
+  it('POSTs the temple id and file', async () => {
+    fetchMock.mockResolvedValueOnce(Response.json({ photoPath: 'temples/t1/photo.jpg' }))
 
     await expect(
-      putToPresignedUrl(
-        'https://r2.example/upload',
-        new Uint8Array([1]),
-        'image/jpeg',
-      ),
-    ).rejects.toThrow(/upload/)
+      uploadTemplePhotoFile({ templeId: 't1', bytes, contentType: 'image/png', inviteToken: 'i' }),
+    ).resolves.toEqual({ photoPath: 'temples/t1/photo.jpg' })
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/photos/temple')
+    expect(sentForm().form.get('templeId')).toBe('t1')
   })
 })
 
-describe('deleteMemberPhotoObject', () => {
-  it('DELETEs member photo with admin token', async () => {
-    fetchMock.mockResolvedValueOnce({ ok: true })
+describe('uploadMemberDocumentFile', () => {
+  it('POSTs the document type and side with the file', async () => {
+    fetchMock.mockResolvedValueOnce(Response.json({ filePath: 'members/m1/docs/cccd/front.jpg' }))
 
-    await deleteMemberPhotoObject({
-      memberId: 'm1',
-      idToken: 'admin-token',
-    })
-
-    expect(fetchMock).toHaveBeenCalledWith('/api/photos/member', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer admin-token',
-      },
-      body: JSON.stringify({ memberId: 'm1' }),
-    })
-  })
-
-  it('DELETEs member photo with invite token and cccd', async () => {
-    fetchMock.mockResolvedValueOnce({ ok: true })
-
-    await deleteMemberPhotoObject({
-      memberId: 'm1',
-      cccd: '012345678901',
-      inviteToken: 'invite-token',
-    })
-
-    expect(fetchMock).toHaveBeenCalledWith('/api/photos/member', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    await expect(
+      uploadMemberDocumentFile({
         memberId: 'm1',
         cccd: '012345678901',
-        inviteToken: 'invite-token',
-      }),
-    })
-  })
-
-  it('throws when delete fails', async () => {
-    fetchMock.mockResolvedValueOnce({
-      ok: false,
-      status: 401,
-      json: async () => ({ error: 'Unauthorized' }),
-    })
-
-    await expect(
-      deleteMemberPhotoObject({ memberId: 'm1', idToken: 'bad' }),
-    ).rejects.toThrow(/Unauthorized/)
-  })
-})
-
-describe('requestTemplePhotoUploadUrl', () => {
-  it('POSTs to temple-upload-url with invite token', async () => {
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        uploadUrl: 'https://r2.example/upload',
-        photoPath: 'temples/t1/photo.jpg',
-      }),
-    })
-
-    const result = await requestTemplePhotoUploadUrl({
-      templeId: 't1',
-      contentType: 'image/jpeg',
-      inviteToken: 'invite-token',
-    })
-
-    expect(result).toEqual({
-      uploadUrl: 'https://r2.example/upload',
-      photoPath: 'temples/t1/photo.jpg',
-    })
-    expect(fetchMock).toHaveBeenCalledWith('/api/photos/temple-upload-url', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        templeId: 't1',
+        typeId: 'cccd',
+        side: 'front',
+        bytes,
         contentType: 'image/jpeg',
         inviteToken: 'invite-token',
       }),
-    })
-  })
-
-  it('POSTs with Authorization when idToken is provided', async () => {
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        uploadUrl: 'https://r2.example/upload',
-        photoPath: 'temples/t1/photo.jpg',
-      }),
-    })
-
-    await requestTemplePhotoUploadUrl({
-      templeId: 't1',
-      contentType: 'image/jpeg',
-      idToken: 'admin-token',
-    })
-
-    expect(fetchMock).toHaveBeenCalledWith('/api/photos/temple-upload-url', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer admin-token',
-      },
-      body: JSON.stringify({
-        templeId: 't1',
-        contentType: 'image/jpeg',
-      }),
-    })
-  })
-})
-
-describe('deleteTemplePhotoObject', () => {
-  it('DELETEs temple photo with admin token', async () => {
-    fetchMock.mockResolvedValueOnce({ ok: true })
-
-    await deleteTemplePhotoObject({
-      templeId: 't1',
-      idToken: 'admin-token',
-    })
-
-    expect(fetchMock).toHaveBeenCalledWith('/api/photos/temple', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer admin-token',
-      },
-      body: JSON.stringify({ templeId: 't1' }),
-    })
-  })
-
-  it('DELETEs temple photo with invite token', async () => {
-    fetchMock.mockResolvedValueOnce({ ok: true })
-
-    await deleteTemplePhotoObject({
-      templeId: 't1',
-      inviteToken: 'invite-1',
-    })
-
-    expect(fetchMock).toHaveBeenCalledWith('/api/photos/temple', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        templeId: 't1',
-        inviteToken: 'invite-1',
-      }),
-    })
+    ).resolves.toEqual({ filePath: 'members/m1/docs/cccd/front.jpg' })
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/docs/member')
+    const { form } = sentForm()
+    expect(form.get('typeId')).toBe('cccd')
+    expect(form.get('side')).toBe('front')
   })
 })

@@ -12,6 +12,7 @@ import {
   Title,
 } from '@mantine/core'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { ButtonLink } from '#/components/routing/MantineRouterLinks'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { m } from '#/paraglide/messages'
@@ -119,7 +120,7 @@ export function RetreatFormPage({ mode, retreatId }: RetreatFormPageProps) {
     mode,
     retreat.data,
     claim.status,
-    claim.role,
+    claim.status === 'admin' ? claim.role : null,
     claim.status === 'admin' ? claim.orgUnitId : null,
   ])
 
@@ -154,7 +155,9 @@ export function RetreatFormPage({ mode, retreatId }: RetreatFormPageProps) {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      if (!claims) throw new Error('Not signed in as admin')
+      if (claim.status !== 'admin' || !claims) {
+        throw new Error('Not signed in as admin')
+      }
       if (mode === 'create') {
         return createRetreat(claims, {
           orgUnitId: orgUnitId ?? undefined,
@@ -292,14 +295,13 @@ export function RetreatFormPage({ mode, retreatId }: RetreatFormPageProps) {
         </Title>
         <Group gap="sm" wrap="wrap">
           {mode === 'edit' && retreatId && (
-            <Button
-              component={Link}
+            <ButtonLink
               to="/admin/retreats/$id/registrations"
               params={{ id: retreatId }}
               variant="light"
             >
               {m.admin_retreat_registrations_link()}
-            </Button>
+            </ButtonLink>
           )}
           <Button component={Link} to="/admin/retreats" variant="subtle">
             {m.admin_retreats_back()}

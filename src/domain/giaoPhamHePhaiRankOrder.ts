@@ -33,6 +33,6 @@ export function giaoPhamHePhaiRankOrder(
 ): number {
   if (!rank) return MISSING_GIAO_PHAM_HE_PHAI_RANK_ORDER
   const order = sanghaType === 'tang' ? TANG_RANK_ORDER : NI_RANK_ORDER
-  const index = order.indexOf(rank as (typeof order)[number])
+  const index = (order as readonly string[]).indexOf(rank)
   return index >= 0 ? index : MISSING_GIAO_PHAM_HE_PHAI_RANK_ORDER
 }

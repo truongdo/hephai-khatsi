@@ -241,7 +241,6 @@ describe('MemberPortraitField', () => {
     expect(deleteMemberPhotoMock).toHaveBeenCalledWith({
       memberId: 'm1',
       cccd: '123456789012',
-      inviteToken: 'invite-token',
       idToken: undefined,
       audit: { actorType: 'filler', actorId: 'filler' },
     })

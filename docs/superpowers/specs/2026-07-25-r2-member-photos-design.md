@@ -4,6 +4,8 @@ Date: 2026-07-25
 Status: approved for planning  
 Depends on: `2026-07-23-member-portrait-and-family-phone-design.md`, `2026-07-19-he-phai-khatsi-database-design.md`
 
+> **Superseded (2026-10-31):** uploads now go through the Worker (multipart `POST /api/photos/member|temple`, `POST /api/docs/member`) instead of presigned PUT URLs, and the data API deletes R2 files when a record drops them (no R2 delete routes). See `CLAUDE.md` (Worker) and `src/domain/recordFiles.ts`.
+
 ## Goal
 
 Replace **Firebase Storage** with **Cloudflare R2** for member 3×4 portraits: public read, browser upload via **presigned PUT**, Worker-authorized checks (invite or admin), and admin delete on member hard-delete.

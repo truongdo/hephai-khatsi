@@ -5,7 +5,6 @@ import {
   memberPdfZipFolder,
 } from '#/domain/memberPdfNames'
 import type { Member } from '#/domain/types'
-import type { MemberStore } from '#/repositories/memberRepo'
 import type { MemberPdfRenderInput } from '#/components/admin/pdf/renderMemberPdf'
 import {
   exportMembersPdf,

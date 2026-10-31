@@ -6,6 +6,8 @@ import {
   Text,
   View,
 } from '@react-pdf/renderer'
+import type { DocumentProps } from '@react-pdf/renderer'
+import type { ReactElement } from 'react'
 import type { MemberPdfViewModel } from '#/domain/memberPdfViewModel'
 
 export type MemberPdfRenderInput = {
@@ -128,7 +130,7 @@ export function MemberPdfDocument({
   members,
 }: {
   members: MemberPdfRenderInput[]
-}): React.ReactElement {
+}): ReactElement<DocumentProps> {
   return (
     <Document>
       {members.map((member) => (

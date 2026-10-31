@@ -1,7 +1,6 @@
 import type { SanghaType } from '#/domain/types'
 import {
   allowedMembersExcelColumnIdSet,
-  catalogMembersExcelColumns,
   defaultMembersTableColumnIds,
   membersTableDisplayColumns,
 } from '#/domain/memberExcelColumns'

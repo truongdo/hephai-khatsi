@@ -1,5 +1,5 @@
 import { List, Modal, Stack, Text } from '@mantine/core'
-import { Link } from '@tanstack/react-router'
+import { TextLink } from '#/components/routing/MantineRouterLinks'
 import { m } from '#/paraglide/messages'
 import type { TempleDeleteBlocker } from '#/use-cases/deleteTemples'
 
@@ -28,8 +28,7 @@ export function TempleDeleteBlockedModal({
             <List>
               {blocker.members.map((member) => (
                 <List.Item key={member.id}>
-                  <Text
-                    component={Link}
+                  <TextLink
                     to="/admin/members/$id"
                     params={{ id: member.id }}
                     target="_blank"
@@ -37,7 +36,7 @@ export function TempleDeleteBlockedModal({
                     c="teal.7"
                   >
                     {member.label}
-                  </Text>
+                  </TextLink>
                 </List.Item>
               ))}
             </List>

@@ -83,12 +83,6 @@ export function mergeDocumentPath(
   }
 }
 
-export function pathsFromTypeFiles(files: MemberDocumentFiles): string[] {
-  return [files.frontPath, files.backPath, files.filePath].filter(
-    (path): path is string => Boolean(path),
-  )
-}
-
 export function removeDocumentSide(
   current: MemberDocuments,
   typeId: DocumentTypeId,
@@ -121,14 +115,4 @@ export function extForContentType(contentType: string): 'jpg' | 'png' | 'pdf' {
   if (contentType === 'image/png') return 'png'
   if (contentType === 'application/pdf') return 'pdf'
   throw new Error(`Unsupported content type: ${contentType}`)
-}
-
-export function memberDocumentObjectKey(
-  memberId: string,
-  typeId: DocumentTypeId,
-  side: DocumentSide,
-  contentType: string,
-): string {
-  const ext = extForContentType(contentType)
-  return `members/${memberId}/docs/${typeId}/${side}.${ext}`
 }

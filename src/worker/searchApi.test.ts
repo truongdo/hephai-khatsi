@@ -56,10 +56,6 @@ function makeEnv(overrides: Partial<Env> = {}): Env {
     ASSETS: {} as Fetcher,
     PHOTOS: {} as R2Bucket,
     DB: {} as D1Database,
-    R2_ACCOUNT_ID: 'acct',
-    R2_ACCESS_KEY_ID: 'key',
-    R2_SECRET_ACCESS_KEY: 'secret',
-    R2_BUCKET_NAME: 'photos',
     FIREBASE_PROJECT_ID: PROJECT_ID,
     FIREBASE_SERVICE_ACCOUNT_JSON: '{}',
     TYPESENSE_API_KEY: 'test-typesense-key',
@@ -264,7 +260,7 @@ describe('handleSearchApi', () => {
     it('import-from-db imports one page read from D1 and returns its cursor', async () => {
       verifyHePhaiAdminToken.mockResolvedValue({ uid: 'hp-admin' })
       const bind = vi.fn(() => ({ all: async () => ({ results: [] }) }))
-      const prepare = vi.fn(() => ({ bind }))
+      const prepare = vi.fn((_sql: string) => ({ bind }))
       const { handleSearchApi } = await import('./searchApi')
 
       const response = await handleSearchApi(

@@ -43,8 +43,6 @@ export function createD1MemberRepo(api: DataApiClient = dataApi): MemberStore {
     },
     setPhotoPath: (memberId, photoPath, audit) =>
       api.post('members/set-photo', { memberId, photoPath, audit }),
-    setDocumentPaths: (memberId, documents) =>
-      api.post('members/set-documents', { memberId, documents }),
     setTinhTrang: (memberId, tinhTrang, audit) =>
       api.post('members/set-tinh-trang', { memberId, tinhTrang, audit }),
     mergeDocumentSide: (memberId, typeId, side, filePath, audit) =>

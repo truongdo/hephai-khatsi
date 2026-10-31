@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Member } from '#/domain/types'
 import {
-  catalogMembersExcelColumns,
   defaultMembersExcelColumnIds,
   membersExcelExportColumns,
 } from '#/domain/memberExcelColumns'

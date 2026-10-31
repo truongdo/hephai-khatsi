@@ -158,7 +158,7 @@ Endpoints are shaped around the existing `*Store` methods and screens (guideline
 | `invites/{get,create}` | `inviteRepo` (`create` builds the invite from `kind` / `retreatId`) | admin, filler |
 | `members/{get,get-by-cccd,list-by-phone}` | `getById`, `getByCccd` (public), `listByOrgSanghaAndPhone` (invite token or directory writer) | filler, admin |
 | `members/{list,list-ha-lap,count-ha-lap,by-temples,secretaries}` | `memberRepo` list reads; export = `list` with `limit` up to 500 | admin |
-| `members/{save-draft,save-and-lock,update,request-edit,lock,unlock,set-photo,set-documents,set-tinh-trang,merge-document,remove-document,delete-many}` | `memberRepo` writes (each returns what the store method returns) | admin, filler |
+| `members/{save-draft,save-and-lock,update,request-edit,lock,unlock,set-photo,set-tinh-trang,merge-document,remove-document,delete-many}` | `memberRepo` writes (each returns what the store method returns) | admin, filler |
 | `temples/{get,list-by-phone,list,save-draft,save-and-lock,request-edit,lock,unlock,set-photo,delete-many}` | `templeRepo` | admin, filler |
 | `retreats/{get,list,create,update,set-status,delete}` | `retreatRepo` | admin |
 | `registrations/{get,list-by-retreat,create,review}` | `retreatRegistrationRepo` (`create` runs the use case's checks on the server; `review` returns the updated registrations) | admin, `/r/$token` |

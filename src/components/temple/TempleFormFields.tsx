@@ -94,11 +94,14 @@ export type TempleFormFieldsProps = {
   onUploadError?: (message: string) => void
   apiRef: React.MutableRefObject<TempleFormFieldsApi | null>
   onDraftChange?: (draft: TempleDraft) => void
+  /** The existing photo can be neither replaced nor removed (filler on an admin-made draft that has one). */
+  photoReadOnly?: boolean
 }
 
 export function TempleFormFields({
   initial,
   disabled = false,
+  photoReadOnly = false,
   templeId,
   inviteToken,
   getIdToken,
@@ -145,7 +148,7 @@ export function TempleFormFields({
         audit={audit}
         photoPath={photoPath}
         photoUpdatedAt={initial.updatedAt ?? null}
-        disabled={disabled}
+        disabled={disabled || photoReadOnly}
         pendingFile={pendingPhoto}
         onPendingFileChange={setPendingPhoto}
         onPhotoPathChange={setPhotoPath}
@@ -203,12 +206,8 @@ export function TempleFormFields({
         setDraft={setDraft}
         errors={{
           tangSoHienTru: {
+            // Only the tỳ kheo count is required (templeRequiredValidation).
             tyKheo: mapRequiredError(fieldErrors.tangSoHienTru?.tyKheo),
-            thucXoaMaNa: mapRequiredError(
-              fieldErrors.tangSoHienTru?.thucXoaMaNa,
-            ),
-            saDi: mapRequiredError(fieldErrors.tangSoHienTru?.saDi),
-            tapSu: mapRequiredError(fieldErrors.tangSoHienTru?.tapSu),
           },
           soPhatTuQuyY: mapRequiredError(fieldErrors.soPhatTuQuyY),
           soPhatTuThuongXuyen: mapRequiredError(

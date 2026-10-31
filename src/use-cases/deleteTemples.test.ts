@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import type { AuthClaims } from '#/domain/authClaims'
 import type { Member, Temple } from '#/domain/types'
 import {
@@ -58,7 +58,7 @@ describe('deleteTemples', () => {
 
     const result = await deleteTemples(
       HE_PHAI_CLAIMS,
-      { ids: [], idToken: 'token' },
+      { ids: [] },
       { templeStore, memberStore },
     )
 
@@ -77,7 +77,7 @@ describe('deleteTemples', () => {
 
     const result = await deleteTemples(
       HE_PHAI_CLAIMS,
-      { ids: ['t1', 't2'], idToken: 'token' },
+      { ids: ['t1', 't2'] },
       { templeStore, memberStore },
     )
 
@@ -109,7 +109,7 @@ describe('deleteTemples', () => {
 
     const result = await deleteTemples(
       HE_PHAI_CLAIMS,
-      { ids: ['t1', 't2', 't3'], idToken: 'token' },
+      { ids: ['t1', 't2', 't3'] },
       { templeStore, memberStore },
     )
 
@@ -144,7 +144,7 @@ describe('deleteTemples', () => {
 
     const result = await deleteTemples(
       HE_PHAI_CLAIMS,
-      { ids: ['t1'], idToken: 'token' },
+      { ids: ['t1'] },
       { templeStore, memberStore },
     )
 
@@ -164,7 +164,7 @@ describe('deleteTemples', () => {
 
     const result = await deleteTemples(
       HE_PHAI_CLAIMS,
-      { ids: ['t1'], idToken: 'token' },
+      { ids: ['t1'] },
       { templeStore, memberStore },
     )
 
@@ -179,43 +179,38 @@ describe('deleteTemples', () => {
     })
   })
 
-  it('calls photo deleter for each temple id after successful delete', async () => {
+  it('deletes every given temple', async () => {
     const templeStore = createMemoryTempleStore([
       temple({ id: 't1' }),
       temple({ id: 't2' }),
     ])
     const memberStore = createMemoryMemberStore([])
-    const deletePhoto = vi.fn().mockResolvedValue(undefined)
 
     const result = await deleteTemples(
       HE_PHAI_CLAIMS,
-      { ids: ['t1', 't2'], idToken: 'admin-token' },
+      { ids: ['t1', 't2'] },
       { templeStore, memberStore },
-      deletePhoto,
     )
 
     expect(result).toEqual({ ok: true })
-    expect(deletePhoto).toHaveBeenCalledTimes(2)
-    expect(deletePhoto).toHaveBeenCalledWith('t1')
-    expect(deletePhoto).toHaveBeenCalledWith('t2')
+    expect(await templeStore.getById('t1')).toBeNull()
+    expect(await templeStore.getById('t2')).toBeNull()
   })
 
-  it('does not call photo deleter when delete is blocked', async () => {
+  it('keeps the temple when delete is blocked', async () => {
     const templeStore = createMemoryTempleStore([temple({ id: 't1' })])
     const memberStore = createMemoryMemberStore([
       member({ id: 'm1', currentTempleId: 't1' }),
     ])
-    const deletePhoto = vi.fn().mockResolvedValue(undefined)
 
     const result = await deleteTemples(
       HE_PHAI_CLAIMS,
-      { ids: ['t1'], idToken: 'token' },
+      { ids: ['t1'] },
       { templeStore, memberStore },
-      deletePhoto,
     )
 
     expect(result.ok).toBe(false)
-    expect(deletePhoto).not.toHaveBeenCalled()
+    expect(await templeStore.getById('t1')).not.toBeNull()
   })
 
   it('rejects cross-org delete for giao_doan_admin', async () => {
@@ -227,7 +222,7 @@ describe('deleteTemples', () => {
     await expect(
       deleteTemples(
         GIAO_DOAN_CLAIMS,
-        { ids: ['t1'], idToken: 'token' },
+        { ids: ['t1'] },
         { templeStore, memberStore },
       ),
     ).rejects.toMatchObject({

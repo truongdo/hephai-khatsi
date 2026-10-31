@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { theme } from '../../theme'
 import { MembersListPage } from './MembersListPage'
+import type { AdminClaimState } from '#/auth/useAdminClaim'
 
 const memberItems = [
   {
@@ -52,8 +53,8 @@ const memberItems = [
 ]
 
 const deleteMembersMock = vi.fn()
-const exportMembersExcelMock = vi.fn(async () => {})
-const exportMembersPdfMock = vi.fn(async () => ({
+const exportMembersExcelMock = vi.fn(async (..._args: unknown[]) => {})
+const exportMembersPdfMock = vi.fn(async (..._args: unknown[]) => ({
   filename: 'members.pdf',
   failedDocumentCount: 0,
 }))
@@ -70,7 +71,7 @@ const membersHaLapTabCountsQueryMock = vi.fn((filters: unknown = {}) => ({
   staleTime: 0,
 }))
 
-const useAdminClaimMock = vi.fn(() => ({
+const useAdminClaimMock = vi.fn<() => AdminClaimState>(() => ({
   status: 'admin' as const,
   uid: 'admin-uid',
   role: 'he_phai_admin' as const,
@@ -105,8 +106,8 @@ vi.mock('#/use-cases/unlockMember', () => ({
   unlockMember: (...args: unknown[]) => unlockMemberMock(...args),
 }))
 
-vi.mock('@tanstack/react-router', () => ({
-  Link: ({
+vi.mock('@tanstack/react-router', () => {
+  const Link = ({
     children,
     to,
     params,
@@ -127,8 +128,12 @@ vi.mock('@tanstack/react-router', () => ({
         {children}
       </a>
     )
-  },
-}))
+  }
+  return {
+    Link,
+    createLink: () => Link,
+  }
+})
 
 vi.mock('#/query/adminQueries', () => ({
   membersByHaLapTabQuery: (filters: unknown) =>
@@ -291,10 +296,7 @@ describe('MembersListPage', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Xóa' }))
     expect(deleteMembersMock).toHaveBeenCalledWith(
       { role: 'he_phai_admin', orgUnitId: null },
-      {
-        ids: ['m1'],
-        idToken: 'admin-id-token',
-      },
+      { ids: ['m1'] },
     )
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['admin', 'membersByHaLapTab'],

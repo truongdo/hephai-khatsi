@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { DomainError } from '#/domain/errors'
 import type { Temple } from '#/domain/types'
 import { FILLER_AUDIT } from '#/test/auditActors'
@@ -21,25 +21,17 @@ const draftTemple: Temple = {
 }
 
 describe('deleteTemplePhoto', () => {
-  it('deletes R2 object and clears photoPath', async () => {
+  it('clears photoPath', async () => {
     const store = createMemoryTempleStore([draftTemple])
-    const deleteObject = vi.fn(async () => undefined)
 
     await deleteTemplePhoto(
       {
         templeId: 'temple-1',
-        inviteToken: 'invite-1',
         audit: FILLER_AUDIT,
       },
       store,
-      deleteObject,
     )
 
-    expect(deleteObject).toHaveBeenCalledWith({
-      templeId: 'temple-1',
-      inviteToken: 'invite-1',
-      idToken: undefined,
-    })
     expect((await store.getById('temple-1'))?.photoPath).toBeNull()
   })
 
@@ -52,19 +44,18 @@ describe('deleteTemplePhoto', () => {
         lockedBy: 'admin-1',
       },
     ])
-    const deleteObject = vi.fn(async () => undefined)
 
     await expect(
       deleteTemplePhoto(
         {
           templeId: 'temple-1',
-          inviteToken: 'invite-1',
-          audit: FILLER_AUDIT,
+            audit: FILLER_AUDIT,
         },
         store,
-        deleteObject,
       ),
     ).rejects.toMatchObject({ code: 'RECORD_LOCKED' } satisfies Partial<DomainError>)
-    expect(deleteObject).not.toHaveBeenCalled()
+    expect((await store.getById('temple-1'))?.photoPath).toBe(
+      'temples/temple-1/photo.jpg',
+    )
   })
 })

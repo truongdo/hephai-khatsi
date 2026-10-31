@@ -18,6 +18,7 @@ pnpm dev                 # Vite on :3000; proxies /api → 127.0.0.1:8787
 pnpm exec wrangler dev   # Worker on :8787 (all /api: data, photos, docs, search, directory-role); secrets in .dev.vars
 pnpm build               # vite build → dist/
 pnpm exec tsc            # typecheck (tsconfig has noEmit); there is no lint script
+pnpm cf-typegen          # regenerate worker-configuration.d.ts (Workers runtime types) after a compatibility date bump
 pnpm test                # compiles paraglide messages, then vitest run (unit, dom and worker-d1 projects)
 pnpm exec vitest run src/domain/haLapSortKey.test.ts   # single test file
 pnpm exec vitest run -t "name of test"                  # single test by name
@@ -65,7 +66,7 @@ Roles come from Firebase Auth **custom claims** (`domain/authClaims.ts`): `he_ph
 
 ### Worker (`src/worker/`)
 
-Routes in `src/worker.ts`: `/api/data/*` (the data API above), `/api/photos` and `/api/docs` (presigned R2 PUT + delete for portraits and member documents), `/api/admin/directory-role`, and Typesense search (`searchApi.ts`: search, reindex from D1). The Worker verifies Firebase ID tokens (`verifyFirebaseAdmin.ts`) or invite tokens and reads D1. Client-side wrappers live in `src/data/`, `src/photos/`, `src/search/`, `src/directoryRole/`. Images are read publicly from `VITE_PHOTOS_PUBLIC_BASE + photoPath`.
+Routes in `src/worker.ts`: `/api/data/*` (the data API above), `/api/photos` and `/api/docs` (multipart uploads of portraits and member documents: the Worker checks scope / invite, size and the type from the file bytes, and writes R2 under a per-upload key; the data API deletes the files a record drops or a deleted record had, and moves them when a member changes org unit), `/api/admin/directory-role`, and Typesense search (`searchApi.ts`: search, reindex from D1). The Worker verifies Firebase ID tokens (`verifyFirebaseAdmin.ts`) or invite tokens and reads D1. Client-side wrappers live in `src/data/`, `src/photos/`, `src/search/`, `src/directoryRole/`. Images are read publicly from `VITE_PHOTOS_PUBLIC_BASE + photoPath`.
 
 ### i18n
 

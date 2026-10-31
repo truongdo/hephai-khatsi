@@ -10,6 +10,7 @@ import {
 } from '@mantine/core'
 import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { PHOTO_MAX_BYTES } from '#/domain/uploadContent'
 import { m } from '#/paraglide/messages'
 import type { AuditActor } from '#/domain/auditLog'
 import { deleteTemplePhoto } from '#/use-cases/deleteTemplePhoto'
@@ -104,6 +105,10 @@ export function TemplePortraitField({
       setTypeError(m.filler_photo_invalid_type())
       return
     }
+    if (file.size > PHOTO_MAX_BYTES) {
+      setTypeError(m.filler_photo_too_large())
+      return
+    }
 
     setTypeError(null)
 
@@ -150,7 +155,6 @@ export function TemplePortraitField({
       const idToken = (await getIdToken?.()) ?? undefined
       await deleteTemplePhoto({
         templeId,
-        inviteToken,
         idToken,
         audit: audit ?? { actorType: 'filler', actorId: 'filler' },
       })

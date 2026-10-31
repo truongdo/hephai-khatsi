@@ -10,11 +10,11 @@ import {
   Title,
 } from '@mantine/core'
 import { Link } from '@tanstack/react-router'
+import { TextLink } from '#/components/routing/MantineRouterLinks'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
-import { useAuth } from '#/auth/useAuth'
 import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
@@ -60,7 +60,6 @@ const STATUS_OPTIONS: { value: StatusFilterValue; label: () => string }[] = [
 
 export function TemplesListPage() {
   const claim = useAdminClaim()
-  const { user } = useAuth()
   const queryClient = useQueryClient()
 
   const manageDirectory =
@@ -163,11 +162,7 @@ export function TemplesListPage() {
   const deleteMutation = useMutation({
     mutationFn: async () => {
       if (!claims) throw new Error('Not signed in as admin')
-      const idToken = await user!.getIdToken()
-      return deleteTemples(claims, {
-        ids: [...selection.selectedIds],
-        idToken,
-      })
+      return deleteTemples(claims, { ids: [...selection.selectedIds] })
     },
     onSuccess: (result) => {
       if (!result.ok) {
@@ -359,15 +354,14 @@ export function TemplesListPage() {
                     />
                   </Table.Td>
                   <Table.Td>
-                    <Text
-                      component={Link}
+                    <TextLink
                       to="/admin/temples/$id"
                       params={{ id: temple.id }}
                       c="teal.7"
                       fw={600}
                     >
                       {temple.danhHieu ?? temple.id}
-                    </Text>
+                    </TextLink>
                   </Table.Td>
                   <Table.Td>
                     {emptyCell(

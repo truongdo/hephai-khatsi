@@ -17,6 +17,7 @@ import {
   NOW,
   callData,
   expectDomainError,
+  fileCalls,
   fullTableScans,
   queryPlansOf,
   searchCalls,
@@ -50,6 +51,7 @@ async function managerPhonesOf(templeId: string): Promise<string[]> {
 beforeEach(async () => {
   await clearData()
   searchCalls.length = 0
+  fileCalls.length = 0
 })
 
 describe('temples/save-draft and save-and-lock', () => {
@@ -180,7 +182,7 @@ describe('temple lifecycle writes', () => {
     await seedInvite()
     await seedTemples(templeLocked())
     const id = templeLocked().id
-    await callData('temples/set-photo', { templeId: id, photoPath: 'temples/x.jpg', audit: FILLER_ACTOR }, anon)
+    await callData('temples/set-photo', { templeId: id, photoPath: `temples/${id}/photo.jpg`, audit: FILLER_ACTOR }, anon)
     await expectDomainError(
       callData('temples/set-photo', { templeId: id, photoPath: 'temples/y.jpg', audit: FILLER_ACTOR }, anon),
       'FORBIDDEN',
@@ -193,6 +195,19 @@ describe('temple lifecycle writes', () => {
     expect(await callData('temples/get', { id: templeDraft().id })).toBeNull()
     expect(await managerPhonesOf(templeDraft().id)).toEqual([])
     expect(searchCalls).toEqual([{ action: 'deleteTemple', id: templeDraft().id }])
+  })
+
+  it('deletes the photo a temple drops or is deleted with', async () => {
+    const photoPath = `temples/${templeDraft().id}/photo.jpg`
+    await seedTemples(templeDraft({ photoPath }))
+    await callData('temples/set-photo', { templeId: templeDraft().id, photoPath: null, audit: ADMIN_ACTOR }, gdAdmin)
+    expect(fileCalls).toEqual([{ action: 'delete', paths: [photoPath] }])
+
+    await clearData()
+    fileCalls.length = 0
+    await seedTemples(templeDraft({ photoPath }))
+    await callData('temples/delete-many', { ids: [templeDraft().id] }, gdAdmin)
+    expect(fileCalls).toEqual([{ action: 'delete', paths: [photoPath] }])
   })
 
   it('refuses deleting another org unit’s temple', async () => {

@@ -10,6 +10,7 @@ import { openRetreat } from '#/use-cases/openRetreat'
 import { updateRetreat } from '#/use-cases/updateRetreat'
 import { theme } from '../../theme'
 import { RetreatFormPage } from './RetreatFormPage'
+import type { AdminClaimState } from '#/auth/useAdminClaim'
 
 const baseRetreat = {
   id: 'r1',
@@ -33,7 +34,7 @@ const baseRetreat = {
 
 const navigateMock = vi.fn()
 
-const useAdminClaimMock = vi.fn(() => ({
+const useAdminClaimMock = vi.fn<() => AdminClaimState>(() => ({
   status: 'admin' as const,
   uid: 'admin-uid',
   role: 'giao_doan_admin' as const,
@@ -51,8 +52,8 @@ vi.mock('#/auth/useAuth', () => ({
   }),
 }))
 
-vi.mock('@tanstack/react-router', () => ({
-  Link: ({
+vi.mock('@tanstack/react-router', () => {
+  const Link = ({
     children,
     to,
     ...props
@@ -63,9 +64,13 @@ vi.mock('@tanstack/react-router', () => ({
     <a href={to} {...props}>
       {children}
     </a>
-  ),
-  useNavigate: () => navigateMock,
-}))
+  )
+  return {
+    Link,
+    createLink: () => Link,
+    useNavigate: () => navigateMock,
+  }
+})
 
 let retreatFixture = baseRetreat
 

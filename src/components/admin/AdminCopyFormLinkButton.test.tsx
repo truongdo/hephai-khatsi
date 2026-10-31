@@ -6,7 +6,7 @@ import { m } from '#/paraglide/messages'
 import { theme } from '../../theme'
 import { AdminCopyFormLinkButton } from './AdminCopyFormLinkButton'
 
-const ensureMock = vi.fn(async () => ({
+const ensureMock = vi.fn(async (..._args: unknown[]) => ({
   id: 'public',
   token: 'public',
   createdBy: 'admin-uid',

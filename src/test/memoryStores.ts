@@ -3,12 +3,9 @@ import { buildAuditChanges } from '#/domain/buildAuditChanges'
 import { DomainError } from '#/domain/errors'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
 import { normalizeVnPhone } from '#/domain/normalize'
-import type { MemberDocuments } from '#/domain/memberDocumentTypes'
 import type { MemberTinhTrang } from '#/domain/memberTinhTrang'
 import {
   mergeDocumentPath,
-  pathFieldForSide,
-  pathsFromTypeFiles,
   removeDocumentSide,
   removeDocumentType,
   type DocumentSide,
@@ -570,17 +567,6 @@ export function createMemoryMemberStore(
       )
       return member
     },
-    async setDocumentPaths(memberId: string, documents: MemberDocuments) {
-      const existing = members.get(memberId)
-      if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
-      const member = {
-        ...existing,
-        documents,
-        updatedAt: '2026-07-19T00:00:00.000Z',
-      }
-      members.set(memberId, member)
-      return member
-    },
     async setTinhTrang(
       memberId: string,
       tinhTrang: MemberTinhTrang | null,
@@ -615,8 +601,6 @@ export function createMemoryMemberStore(
       const existing = members.get(memberId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
       const current = existing.documents ?? {}
-      const pathField = pathFieldForSide(side)
-      const previousPath = current[typeId]?.[pathField]
       const documents = mergeDocumentPath(current, typeId, side, filePath)
       const now = '2026-07-19T00:00:00.000Z'
       const member = {
@@ -636,7 +620,7 @@ export function createMemoryMemberStore(
           after: member,
         },
       )
-      return { member, previousPath }
+      return member
     },
     async removeDocumentPaths(
       memberId: string,
@@ -647,16 +631,6 @@ export function createMemoryMemberStore(
       const existing = members.get(memberId)
       if (!existing) throw new DomainError('NOT_FOUND', 'Member not found')
       const current = existing.documents ?? {}
-      const typeFiles = current[typeId]
-      const removedPaths = side
-        ? (() => {
-            const pathField = pathFieldForSide(side)
-            const path = typeFiles?.[pathField]
-            return path ? [path] : []
-          })()
-        : typeFiles
-          ? pathsFromTypeFiles(typeFiles)
-          : []
       const documents = side
         ? removeDocumentSide(current, typeId, side)
         : removeDocumentType(current, typeId)
@@ -678,7 +652,7 @@ export function createMemoryMemberStore(
           after: member,
         },
       )
-      return { member, removedPaths }
+      return member
     },
     async lock(memberId: string, lockedBy: string, audit: AuditActor) {
       const existing = members.get(memberId)

@@ -4,7 +4,6 @@ import {
   extForContentType,
   getDocumentType,
   isValidDocumentSide,
-  memberDocumentObjectKey,
   pathFieldForSide,
 } from './memberDocumentTypes'
 
@@ -27,9 +26,6 @@ describe('memberDocumentTypes', () => {
   it('builds R2 keys with content-type extension', () => {
     expect(extForContentType('image/jpeg')).toBe('jpg')
     expect(extForContentType('application/pdf')).toBe('pdf')
-    expect(
-      memberDocumentObjectKey('m1', 'cccd', 'front', 'image/png'),
-    ).toBe('members/m1/docs/cccd/front.png')
     expect(pathFieldForSide('back')).toBe('backPath')
   })
 })

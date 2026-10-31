@@ -1,10 +1,9 @@
 import { Button, Group, Select, Stack, Text, Title } from '@mantine/core'
-import { Link } from '@tanstack/react-router'
+import { ButtonLink } from '#/components/routing/MantineRouterLinks'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
 import { useAdminClaim } from '#/auth/useAdminClaim'
-import { useAuth } from '#/auth/useAuth'
 import { AdminDenied } from '#/components/admin/AdminDenied'
 import { AdminConfirmDeleteModal } from '#/components/admin/AdminConfirmDeleteModal'
 import { AdminDataTable } from '#/components/admin/AdminDataTable'
@@ -110,7 +109,6 @@ export function MembersListPage({
   onActiveTabChange,
 }: MembersListPageProps) {
   const claim = useAdminClaim()
-  const { user } = useAuth()
   const queryClient = useQueryClient()
 
   const manageDirectory =
@@ -300,11 +298,7 @@ export function MembersListPage({
   const deleteMutation = useMutation({
     mutationFn: async () => {
       if (!claims) throw new Error('Not signed in as admin')
-      const idToken = await user!.getIdToken()
-      await deleteMembers(claims, {
-        ids: [...selection.selectedIds],
-        idToken,
-      })
+      await deleteMembers(claims, { ids: [...selection.selectedIds] })
     },
     onSuccess: () => {
       selection.clear()
@@ -553,13 +547,12 @@ export function MembersListPage({
           >
             {m.admin_members_export_pdf()}
           </Button>
-          <Button
-            component={Link}
+          <ButtonLink
             to="/admin/members/new"
             search={{ sanghaType }}
           >
             {m.admin_members_create()}
-          </Button>
+          </ButtonLink>
         </Group>
       </Group>
 
