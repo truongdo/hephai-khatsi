@@ -70,9 +70,7 @@ describe('getGoogleAccessToken', () => {
         expect(payload.iss).toBe(CLIENT_EMAIL)
         expect(payload.sub).toBe(CLIENT_EMAIL)
         expect(payload.aud).toBe('https://oauth2.googleapis.com/token')
-        expect(payload.scope).toBe(
-          'https://www.googleapis.com/auth/identitytoolkit https://www.googleapis.com/auth/datastore',
-        )
+        expect(payload.scope).toBe('https://www.googleapis.com/auth/identitytoolkit')
 
         return new Response(JSON.stringify({ access_token: 'ya29.test-token' }))
       }),

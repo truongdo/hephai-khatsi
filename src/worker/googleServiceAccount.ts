@@ -1,10 +1,7 @@
 import * as jose from 'jose'
 
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token'
-const GOOGLE_SCOPES = [
-  'https://www.googleapis.com/auth/identitytoolkit',
-  'https://www.googleapis.com/auth/datastore',
-].join(' ')
+const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/identitytoolkit'
 
 export type ServiceAccount = {
   clientEmail: string

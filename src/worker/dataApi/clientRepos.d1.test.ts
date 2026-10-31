@@ -24,7 +24,6 @@ import { clearData } from './test/db'
 
 const workerEnv = {
   DB: env.DB,
-  DATA_BACKEND: 'd1',
   FIREBASE_PROJECT_ID: 'test-project',
   TYPESENSE_API_KEY: 'test-key',
 } as unknown as Env

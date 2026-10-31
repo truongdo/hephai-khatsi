@@ -6,11 +6,8 @@ import { inviteToRow } from './dataApi/rows/invite'
 import { templeToRow } from './dataApi/rows/temple'
 import { clearData, insertStatement } from './dataApi/test/db'
 import { fillerInvite } from './dataApi/test/fixtures'
-import type { Env } from './env'
-import { d1DirectoryMemberSource, recordSource } from './recordSource'
+import { directoryMemberSource, recordSource } from './recordSource'
 import { readSearchDocsPage } from './searchApi'
-
-const d1Env = { DB: env.DB, DATA_BACKEND: 'd1', FIREBASE_PROJECT_ID: 'unused' } as unknown as Env
 
 const secretaryMember = memberDraft({
   email: 'su.co@gmail.com',
@@ -31,9 +28,9 @@ beforeEach(async () => {
   ])
 })
 
-describe('recordSource on D1', () => {
+describe('recordSource', () => {
   it('reads the member and temple fields the photo and document routes check', async () => {
-    const source = recordSource(d1Env)
+    const source = recordSource(env)
     expect(await source.getMember(memberDraft().id)).toEqual({
       id: memberDraft().id,
       orgUnitId: 'gd-i',
@@ -51,14 +48,14 @@ describe('recordSource on D1', () => {
   })
 
   it('checks that an invite exists', async () => {
-    const source = recordSource(d1Env)
+    const source = recordSource(env)
     expect(await source.inviteExists('public')).toBe(true)
     expect(await source.inviteExists('nope')).toBe(false)
   })
 })
 
-describe('d1DirectoryMemberSource', () => {
-  const source = () => d1DirectoryMemberSource(env.DB)
+describe('directoryMemberSource', () => {
+  const source = () => directoryMemberSource(env)
 
   it('reads admin fields and lists secretaries', async () => {
     expect(await source().getMemberAdminFields('gd-i_ni_1')).toEqual({
@@ -68,7 +65,7 @@ describe('d1DirectoryMemberSource', () => {
       directoryRole: 'giao_doan_admin',
       directoryAuthUid: 'uid-1',
     })
-    // No email: not a candidate (same as the Firestore REST reader).
+    // No email: not a candidate.
     expect(await source().getMemberAdminFields(memberDraft().id)).toBeNull()
     expect(await source().listSecretaries()).toEqual([
       {

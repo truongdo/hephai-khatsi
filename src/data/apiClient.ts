@@ -22,7 +22,6 @@ async function toError(route: string, response: Response): Promise<Error> {
     const message = 'message' in body && typeof body.message === 'string' ? body.message : body.code
     return new DomainError(body.code, message)
   }
-  // A plain-text 404 for every route means the Worker's DATA_BACKEND is not d1.
   return new Error(`Data API ${route} failed (${response.status})`)
 }
 

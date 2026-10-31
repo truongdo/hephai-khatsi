@@ -1,5 +1,5 @@
 import { DomainError } from '#/domain/errors'
-import { usesD1, type Env } from '../env'
+import type { Env } from '../env'
 import { verifyFirebaseUser } from '../verifyFirebaseAdmin'
 import type { DataContext } from './context'
 import { auditLogRoutes } from './handlers/auditLogs'
@@ -15,7 +15,7 @@ import type { Body } from './input'
 import type { DataRoute } from './route'
 import { createSearchSync } from './searchSync'
 
-// /api/data/<name>: the client repositories' calls once the data lives in D1
+// /api/data/<name>: the client repositories' calls to D1
 // (see docs/superpowers/plans/2026-10-30-firestore-to-d1-migration.md). Every
 // route is a POST of a JSON body (org units also answer GET, cacheable);
 // staff send `Authorization: Bearer <Firebase ID token>`, fillers nothing.
@@ -51,8 +51,6 @@ export async function handleDataApi(
 ): Promise<Response | null> {
   const { pathname } = new URL(request.url)
   if (!pathname.startsWith(PREFIX)) return null
-  // Off until the cutover, so nothing writes to D1 while Firestore is live.
-  if (!usesD1(env)) return new Response('Not found', { status: 404 })
 
   const name = pathname.slice(PREFIX.length)
   const isCacheableGet = request.method === 'GET' && CACHEABLE_GET_ROUTES.has(name)
