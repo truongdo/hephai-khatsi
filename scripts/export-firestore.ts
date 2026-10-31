@@ -5,14 +5,15 @@ import { applicationDefault, initializeApp } from 'firebase-admin/app'
 import {
   FieldPath,
   getFirestore,
-  Timestamp,
   type Query,
   type QueryDocumentSnapshot,
 } from 'firebase-admin/firestore'
 import type { SanghaType } from '../src/domain/types'
 import {
   AUDIT_LOGS_FILE,
+  auditLogParentFromPath,
   EXPORTED_COLLECTIONS,
+  exportValue,
   type ExportedAuditLog,
   type ExportedDoc,
   type ExportManifest,
@@ -21,7 +22,9 @@ import { EXPORT_ROOT, MANIFEST_FILE, ndjsonPath } from './lib/d1Migration'
 
 // Phase 5 of the D1 migration: every collection the app reads, plus both
 // `auditLogs` subcollections, as NDJSON in a git-ignored folder, with
-// Firestore's own counts in manifest.json for verify-d1-import.
+// Firestore's own counts in manifest.json for verify-d1-import. The counts are
+// taken after the reads: run it while Firestore is read-only (or expect verify
+// to report the records written in between).
 //
 //   GOOGLE_APPLICATION_CREDENTIALS=<service account json> \
 //     pnpm export:firestore [--out <dir>]
@@ -39,24 +42,8 @@ const outDir = values.out ?? join(EXPORT_ROOT, `export-${exportedAt.replaceAll('
 initializeApp({ credential: applicationDefault(), projectId })
 const db = getFirestore()
 
-/** Firestore values as the JSON the web SDK repositories see; nothing is dropped silently. */
-function toJson(value: unknown, path: string): unknown {
-  if (value instanceof Timestamp) return value.toDate().toISOString()
-  if (Array.isArray(value)) return value.map((item, i) => toJson(item, `${path}.${i}`))
-  if (typeof value === 'number' && !Number.isFinite(value)) {
-    throw new Error(`Non-finite number at ${path}`)
-  }
-  if (value === null || typeof value !== 'object') return value
-  if (Object.getPrototypeOf(value) !== Object.prototype) {
-    throw new Error(`Unsupported Firestore value (${value.constructor.name}) at ${path}`)
-  }
-  return Object.fromEntries(
-    Object.entries(value).map(([key, item]) => [key, toJson(item, `${path}.${key}`)]),
-  )
-}
-
 function exportedDoc(snap: QueryDocumentSnapshot): ExportedDoc {
-  return { id: snap.id, data: toJson(snap.data(), snap.ref.path) as Record<string, unknown> }
+  return { id: snap.id, data: exportValue(snap.data(), snap.ref.path) as Record<string, unknown> }
 }
 
 async function readAll(query: Query): Promise<QueryDocumentSnapshot[]> {
@@ -71,12 +58,8 @@ async function readAll(query: Query): Promise<QueryDocumentSnapshot[]> {
 }
 
 function auditLogDoc(snap: QueryDocumentSnapshot): ExportedAuditLog {
-  const parent = snap.ref.parent.parent
-  const parentType = parent?.parent.id
-  if (!parent || (parentType !== 'members' && parentType !== 'temples')) {
-    throw new Error(`Audit log outside members / temples: ${snap.ref.path}`)
-  }
-  return { ...exportedDoc(snap), parentType, parentId: parent.id }
+  const parent = auditLogParentFromPath(snap.ref.path)
+  return { ...exportedDoc(snap), parentType: parent.type, parentId: parent.id }
 }
 
 async function count(query: Query): Promise<number> {

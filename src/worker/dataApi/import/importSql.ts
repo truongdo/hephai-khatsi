@@ -28,7 +28,7 @@ export type ImportProblems = {
 }
 
 /** NOT NULL and CHECK constraints of migrations/0001_init.sql. */
-const COLUMN_RULES: Record<ImportTable, { required: string[]; allowed?: Record<string, string[]> }> = {
+export const COLUMN_RULES: Record<ImportTable, { required: string[]; allowed?: Record<string, string[]> }> = {
   org_units: { required: ['id', 'code', 'name', 'kind', 'sort_order', 'allows_tang', 'allows_ni'] },
   invites: { required: ['id', 'kind', 'disabled', 'created_at', 'created_by'] },
   members: {
@@ -153,7 +153,7 @@ function duplicates(keys: Array<[key: string, id: string]>): string[][] {
   return [...byKey.values()].filter((ids) => ids.length > 1)
 }
 
-function orphanWarning(what: string, ids: string[]): string[] {
+function countWarning(what: string, ids: string[]): string[] {
   return ids.length ? [`${ids.length} ${what}: ${sample(ids)}`] : []
 }
 
@@ -191,7 +191,7 @@ export function checkImport(records: ImportRecords): ImportProblems {
   for (const { table, rows } of tables) {
     for (const column of SORT_COLUMNS[table] ?? []) {
       const ids = rows.filter((row) => row[column] == null).map((row) => rowKey(table, row))
-      warnings.push(...orphanWarning(`${table} without ${column} (hidden from lists sorted by it)`, ids))
+      warnings.push(...countWarning(`${table} without ${column} (hidden from lists sorted by it)`, ids))
     }
   }
 
@@ -200,21 +200,21 @@ export function checkImport(records: ImportRecords): ImportProblems {
   const templeIds = new Set(records.temples.map((t) => t.id))
   const retreatIds = new Set(records.retreats.map((r) => r.id))
   warnings.push(
-    ...orphanWarning(
+    ...countWarning(
       'members of an unknown org unit',
       records.members.filter((m) => !orgUnitIds.has(m.orgUnitId)).map((m) => m.id),
     ),
-    ...orphanWarning(
+    ...countWarning(
       'temples of an unknown org unit',
       records.temples.filter((t) => !orgUnitIds.has(t.orgUnitId)).map((t) => t.id),
     ),
-    ...orphanWarning(
+    ...countWarning(
       'audit logs of a deleted record',
       records.auditLogs
         .filter(({ parent }) => !(parent.type === 'members' ? memberIds : templeIds).has(parent.id))
         .map(({ parent, entry }) => `${parent.type}/${parent.id}/${entry.id}`),
     ),
-    ...orphanWarning(
+    ...countWarning(
       'registrations of a missing retreat or member',
       records.registrations
         .filter((r) => !retreatIds.has(r.retreatId) || !memberIds.has(r.memberId))

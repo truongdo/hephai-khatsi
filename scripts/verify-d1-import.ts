@@ -10,7 +10,8 @@ import { d1Target, queryRows, readExport, type D1Target } from './lib/d1Migratio
 //
 //   pnpm verify:d1-import --export <dir> --database <name> --remote|--local
 
-const PAGE_SIZE = 500
+// Rows can hold up to ~100 KB of JSON: keep one --json response small.
+const PAGE_SIZE = 200
 const SHOWN_KEYS = 10
 
 const { values } = parseArgs({

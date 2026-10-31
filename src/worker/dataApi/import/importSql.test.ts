@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { fixtureExport } from '../test/exportFixture'
-import { exportToRecords, type FirestoreExport } from './exportFormat'
+import {
+  auditLogParentFromPath,
+  exportToRecords,
+  exportValue,
+  type FirestoreExport,
+} from './exportFormat'
 import {
   chunkStatements,
   checkImport,
@@ -28,6 +33,40 @@ describe('exportToRecords', () => {
       entry: { id: 'log-1', action: 'updated' },
     })
   })
+})
+
+describe('exportValue', () => {
+  it('turns timestamps into ISO strings at any depth', () => {
+    const at = { seconds: 1, nanoseconds: 0, toDate: () => new Date('2026-07-19T00:00:00.000Z') }
+    expect(exportValue({ a: [{ at }], b: null, c: 'x' }, 'members/m')).toEqual({
+      a: [{ at: '2026-07-19T00:00:00.000Z' }],
+      b: null,
+      c: 'x',
+    })
+  })
+
+  it('fails on values the app cannot have written', () => {
+    class DocumentReference {}
+    expect(() => exportValue({ ref: new DocumentReference() }, 'members/m')).toThrow(
+      'Unsupported Firestore value (DocumentReference) at members/m.ref',
+    )
+    expect(() => exportValue({ n: [Number.NaN] }, 'members/m')).toThrow(
+      'Non-finite number at members/m.n.0',
+    )
+  })
+})
+
+describe('auditLogParentFromPath', () => {
+  it('reads the parent record', () => {
+    expect(auditLogParentFromPath('temples/t-1/auditLogs/log-1')).toEqual({ type: 'temples', id: 't-1' })
+  })
+
+  it.each(['retreats/r-1/auditLogs/log-1', 'members/m-1/notes/n-1', 'a/b/members/m-1/auditLogs/l'])(
+    'fails outside members / temples: %s',
+    (path) => {
+      expect(() => auditLogParentFromPath(path)).toThrow('Audit log outside members / temples')
+    },
+  )
 })
 
 describe('checkImport', () => {

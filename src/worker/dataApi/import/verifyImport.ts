@@ -1,12 +1,13 @@
-import { auditLogFromRow, type AuditLogRow } from '../rows/auditLog'
-import { inviteFromRow, type InviteRow } from '../rows/invite'
-import { memberFromRow, type MemberRow } from '../rows/member'
-import { orgUnitFromRow, type OrgUnitRow } from '../rows/orgUnit'
-import { registrationFromRow, type RegistrationRow } from '../rows/registration'
-import { retreatFromRow, type RetreatRow } from '../rows/retreat'
+import { auditLogFromRow, auditLogToRow, type AuditLogRow } from '../rows/auditLog'
+import { inviteFromRow, inviteToRow, type InviteRow } from '../rows/invite'
+import { memberFromRow, memberToRow, type MemberRow } from '../rows/member'
+import { orgUnitFromRow, orgUnitToRow, type OrgUnitRow } from '../rows/orgUnit'
+import { registrationFromRow, registrationToRow, type RegistrationRow } from '../rows/registration'
+import { retreatFromRow, retreatToRow, type RetreatRow } from '../rows/retreat'
 import {
   templeFromRow,
   templeManagerPhoneRows,
+  templeToRow,
   type TempleManagerPhoneRow,
   type TempleRow,
 } from '../rows/temple'
@@ -58,13 +59,21 @@ export function canonicalJson(record: object): string {
   return JSON.stringify(sortKeys(Object.fromEntries(present)))
 }
 
-function compare(
-  table: ImportTable,
-  expected: Array<[key: string, record: object]>,
-  actual: Array<[key: string, record: object]>,
-): TableCheck {
-  const expectedByKey = new Map(expected.map(([key, record]) => [key, canonicalJson(record)]))
-  const actualByKey = new Map(actual.map(([key, record]) => [key, canonicalJson(record)]))
+/** A record as the app reads it, and the row it is stored in. */
+type Entry = [key: string, record: object, row: Record<string, unknown>]
+
+/**
+ * The row is compared too: the derived columns (`members.phone`, sort keys)
+ * are not read back into the record, but lists and lookups depend on them.
+ */
+function entryJson(record: object, row: Record<string, unknown>): string {
+  const { version: _version, ...columns } = row
+  return `${canonicalJson(record)}\n${JSON.stringify(sortKeys(columns))}`
+}
+
+function compare(table: ImportTable, expected: Entry[], actual: Entry[]): TableCheck {
+  const expectedByKey = new Map(expected.map(([key, record, row]) => [key, entryJson(record, row)]))
+  const actualByKey = new Map(actual.map(([key, record, row]) => [key, entryJson(record, row)]))
   const missing: string[] = []
   const different: string[] = []
   for (const [key, json] of expectedByKey) {
@@ -82,44 +91,70 @@ function compare(
   }
 }
 
-function byId<T extends { id: string }>(records: T[]): Array<[string, T]> {
-  return records.map((record) => [record.id, record])
+function expectedEntries<T extends { id: string }>(
+  records: T[],
+  toRow: (record: T) => Record<string, unknown>,
+): Entry[] {
+  return records.map((record) => [record.id, record, toRow(record)])
 }
 
-function phoneKey(row: TempleManagerPhoneRow): string {
-  return `${row.org_unit_id}/${row.phone}/${row.temple_id}`
+function actualEntries<R extends { id: string }>(rows: R[], fromRow: (row: R) => object): Entry[] {
+  return rows.map((row) => [row.id, fromRow(row), row])
 }
 
-function auditKey(parentType: string, parentId: string, id: string): string {
-  return `${parentType}/${parentId}/${id}`
+function phoneEntry(row: TempleManagerPhoneRow): Entry {
+  return [`${row.org_unit_id}/${row.phone}/${row.temple_id}`, row, row]
 }
 
-/** Each exported record against its D1 row read back through the row mapper. */
+function auditKey(row: AuditLogRow): string {
+  return `${row.parent_type}/${row.parent_id}/${row.id}`
+}
+
+/** Each exported record and its expected row against the D1 row and its record. */
 export function compareTables(records: ImportRecords, d1: D1Snapshot): TableCheck[] {
-  const expectedPhones = records.temples.flatMap(templeManagerPhoneRows)
   return [
-    compare('org_units', byId(records.orgUnits), byId(d1.org_units.map(orgUnitFromRow))),
-    compare('invites', byId(records.invites), byId(d1.invites.map(inviteFromRow))),
-    compare('members', byId(records.members), byId(d1.members.map(memberFromRow))),
-    compare('temples', byId(records.temples), byId(d1.temples.map(templeFromRow))),
+    compare(
+      'org_units',
+      expectedEntries(records.orgUnits, orgUnitToRow),
+      actualEntries(d1.org_units, orgUnitFromRow),
+    ),
+    compare(
+      'invites',
+      expectedEntries(records.invites, inviteToRow),
+      actualEntries(d1.invites, inviteFromRow),
+    ),
+    compare(
+      'members',
+      expectedEntries(records.members, memberToRow),
+      actualEntries(d1.members, memberFromRow),
+    ),
+    compare(
+      'temples',
+      expectedEntries(records.temples, templeToRow),
+      actualEntries(d1.temples, templeFromRow),
+    ),
     compare(
       'temple_manager_phones',
-      expectedPhones.map((row) => [phoneKey(row), row]),
-      d1.temple_manager_phones.map((row) => [phoneKey(row), { ...row }]),
+      records.temples.flatMap(templeManagerPhoneRows).map(phoneEntry),
+      d1.temple_manager_phones.map(phoneEntry),
     ),
     compare(
       'audit_logs',
-      records.auditLogs.map(({ parent, entry }) => [auditKey(parent.type, parent.id, entry.id), entry]),
-      d1.audit_logs.map((row) => [
-        auditKey(row.parent_type, row.parent_id, row.id),
-        auditLogFromRow(row),
-      ]),
+      records.auditLogs.map(({ parent, entry }) => {
+        const row = auditLogToRow(parent, entry)
+        return [auditKey(row), entry, row]
+      }),
+      d1.audit_logs.map((row) => [auditKey(row), auditLogFromRow(row), row]),
     ),
-    compare('retreats', byId(records.retreats), byId(d1.retreats.map(retreatFromRow))),
+    compare(
+      'retreats',
+      expectedEntries(records.retreats, retreatToRow),
+      actualEntries(d1.retreats, retreatFromRow),
+    ),
     compare(
       'retreat_registrations',
-      byId(records.registrations),
-      byId(d1.retreat_registrations.map(registrationFromRow)),
+      expectedEntries(records.registrations, registrationToRow),
+      actualEntries(d1.retreat_registrations, registrationFromRow),
     ),
   ]
 }

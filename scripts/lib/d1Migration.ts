@@ -51,26 +51,22 @@ export function d1Target(values: { database?: string; remote?: boolean; local?: 
   return { database: values.database, location: values.remote ? '--remote' : '--local' }
 }
 
-function wrangler(args: string[], options: { capture: boolean }): string {
-  return execFileSync('pnpm', ['exec', 'wrangler', ...args], {
-    encoding: 'utf8',
-    maxBuffer: 256 * 1024 * 1024,
-    stdio: options.capture ? ['ignore', 'pipe', 'inherit'] : 'inherit',
-  }) ?? ''
-}
+const WRANGLER = ['exec', 'wrangler', 'd1', 'execute']
 
 export function executeSqlFile(target: D1Target, file: string): void {
-  wrangler(['d1', 'execute', target.database, target.location, '--yes', '--file', file], {
-    capture: false,
+  execFileSync('pnpm', [...WRANGLER, target.database, target.location, '--yes', '--file', file], {
+    stdio: 'inherit',
   })
 }
 
 /** Rows of one read-only query (`wrangler d1 execute --json`). */
 export function queryRows<T>(target: D1Target, sql: string): T[] {
-  const output = wrangler(
-    ['d1', 'execute', target.database, target.location, '--json', '--command', sql],
-    { capture: true },
+  const output = execFileSync(
+    'pnpm',
+    [...WRANGLER, target.database, target.location, '--json', '--command', sql],
+    { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: ['ignore', 'pipe', 'inherit'] },
   )
-  const [result] = JSON.parse(output) as Array<{ results: T[] }>
-  return result?.results ?? []
+  const [result] = JSON.parse(output) as Array<{ results?: T[] }>
+  if (!result?.results) throw new Error(`Unexpected wrangler output for: ${sql}`)
+  return result.results
 }

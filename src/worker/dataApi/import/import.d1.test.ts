@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { clearData } from '../test/db'
 import { fixtureExport, fixtureManifest } from '../test/exportFixture'
 import { exportToRecords } from './exportFormat'
-import { checkImport, importRows, importStatements } from './importSql'
+import { checkImport, COLUMN_RULES, importRows, importStatements } from './importSql'
 import { verifyImport, type D1Snapshot } from './verifyImport'
 
 const records = exportToRecords(fixtureExport())
@@ -54,6 +54,20 @@ describe('Firestore export → D1 import', () => {
     await expect(runImport(false)).rejects.toThrow(/UNIQUE constraint failed/)
     await runImport(true)
     expect(verifyImport(fixtureManifest(), records, await snapshot()).ok).toBe(true)
+  })
+
+  it('checks every NOT NULL column of the schema', async () => {
+    for (const { table, rows } of importRows(records)) {
+      const info = await env.DB.prepare(`SELECT name, "notnull", dflt_value FROM pragma_table_info(?)`)
+        .bind(table)
+        .all<{ name: string; notnull: number; dflt_value: string | null }>()
+      const notNull = info.results
+        .filter((column) => column.notnull && column.dflt_value === null)
+        .map((column) => column.name)
+      // Every column the import writes, and nothing it leaves to a default.
+      expect(notNull.filter((column) => !(column in rows[0]!))).toEqual([])
+      expect(COLUMN_RULES[table].required).toEqual(expect.arrayContaining(notNull))
+    }
   })
 
   it('reports a record changed after the import', async () => {
