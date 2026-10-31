@@ -10,8 +10,10 @@ import {
   buildRankStatRows,
   type MemberDirectoryStats,
 } from '#/domain/memberDirectoryStats'
+import { DATA_BACKEND } from '#/data/dataBackend'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
+import { d1MemberStatsRepo } from '#/repositories/d1/stats'
 
 export type MemberDirectoryStatsScope = {
   /** null = hệ phái global; string = thư ký giáo đoàn scope */
@@ -101,4 +103,5 @@ export function createMemberStatsRepo(countMembers: CountMembersFn): {
   }
 }
 
-export const memberStatsRepo = createMemberStatsRepo(defaultCountMembers)
+export const memberStatsRepo =
+  DATA_BACKEND === 'd1' ? d1MemberStatsRepo : createMemberStatsRepo(defaultCountMembers)

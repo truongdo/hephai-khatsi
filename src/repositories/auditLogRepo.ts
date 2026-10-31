@@ -18,11 +18,18 @@ import type {
   AuditLogWrite,
 } from '#/domain/auditLog'
 import { buildAuditLogWrite } from '#/domain/auditLogWrite'
+import { DATA_BACKEND } from '#/data/dataBackend'
 import { getClientFirestore } from '#/firebase/firestore'
+import { d1ListAuditLogs } from '#/repositories/d1/auditLogRepo'
 
 export { shouldWriteAudit } from '#/domain/auditLogWrite'
 
 export type AuditParent = { collection: 'members' | 'temples'; id: string }
+
+export type ListAuditLogs = (
+  parent: AuditParent,
+  opts: { limit: number; startAfterAt?: string },
+) => Promise<{ entries: AuditLogEntry[]; nextStartAfterAt: string | null }>
 
 export function auditParentKey(parent: AuditParent): string {
   return `${parent.collection}:${parent.id}`
@@ -94,10 +101,7 @@ export function copyAuditLogDocsInTransaction(
   }
 }
 
-export async function listAuditLogs(
-  parent: AuditParent,
-  opts: { limit: number; startAfterAt?: string },
-): Promise<{ entries: AuditLogEntry[]; nextStartAfterAt: string | null }> {
+const firestoreListAuditLogs: ListAuditLogs = async (parent, opts) => {
   const db = requireDb()
   const constraints: QueryConstraint[] = [orderBy('at', 'desc')]
   if (opts.startAfterAt) {
@@ -113,3 +117,6 @@ export async function listAuditLogs(
     snap.docs.length === opts.limit ? entries[entries.length - 1]!.at : null
   return { entries, nextStartAfterAt }
 }
+
+export const listAuditLogs: ListAuditLogs =
+  DATA_BACKEND === 'd1' ? d1ListAuditLogs : firestoreListAuditLogs

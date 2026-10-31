@@ -9,8 +9,10 @@ import {
   buildCityStatRows,
   type TempleDirectoryStats,
 } from '#/domain/templeDirectoryStats'
+import { DATA_BACKEND } from '#/data/dataBackend'
 import { COLLECTIONS } from '#/firebase/collections'
 import { getClientFirestore } from '#/firebase/firestore'
+import { d1TempleStatsRepo } from '#/repositories/d1/stats'
 
 export type TempleDirectoryStatsScope = {
   /** null = hệ phái global; string = thư ký giáo đoàn scope */
@@ -81,4 +83,5 @@ export function createTempleStatsRepo(countTemples: CountTemplesFn): {
   }
 }
 
-export const templeStatsRepo = createTempleStatsRepo(defaultCountTemples)
+export const templeStatsRepo =
+  DATA_BACKEND === 'd1' ? d1TempleStatsRepo : createTempleStatsRepo(defaultCountTemples)

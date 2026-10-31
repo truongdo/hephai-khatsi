@@ -230,11 +230,17 @@ Decided in phase 3:
 
 ### Phase 4 — Client repositories over HTTP (behind a flag)
 
-- [ ] `src/data/apiClient.ts`: `fetch` wrapper that adds the Firebase ID token (from `authRepo`) or the invite token, parses `DomainError` responses.
-- [ ] New `src/repositories/d1/{memberRepo,templeRepo,retreatRepo,retreatRegistrationRepo,inviteRepo,orgUnitRepo,auditLogRepo,stats}.ts` implementing the existing `*Store` interfaces.
-- [ ] Select the implementation in one place per store with `VITE_DATA_BACKEND=firestore|d1` (default `firestore`) — `export const memberRepo = DATA_BACKEND === 'd1' ? d1MemberRepo : firestoreMemberRepo`. Worker reads `DATA_BACKEND` from `vars`.
-- [ ] Drop client-side search notifications when the backend is `d1` (the Worker syncs).
-- [ ] Run the existing unit, DOM and Cypress suites with `VITE_DATA_BACKEND=d1` against `wrangler dev` + local D1; fix gaps. Query keys / `staleTime` / `setQueryData` seeding stay as they are.
+- [x] `src/data/apiClient.ts`: `fetch` wrapper that adds the Firebase ID token (`getCurrentUserIdToken` in `authRepo`, which waits for `authStateReady()` so loaders on page load are not anonymous), parses `{ code, message }` responses back into the same `DomainError`, retries a write once on `CONFLICT` (409). Public GETs (`org-units/list`) carry no token so the shared cache works.
+- [x] New `src/repositories/d1/{memberRepo,templeRepo,retreatRepo,retreatRegistrationRepo,inviteRepo,orgUnitRepo,auditLogRepo,stats}.ts` implementing the existing `*Store` interfaces (factories `createD1*(api)` for tests; `paging.ts`: chunking to the Worker's 500-id cap, export pages of 500).
+- [x] Select the implementation in one place per store with `VITE_DATA_BACKEND=firestore|d1` (`src/data/dataBackend.ts`, anything but `d1` is Firestore) — `export const memberRepo = DATA_BACKEND === 'd1' ? d1MemberRepo : firestoreMemberRepo`. Worker reads `DATA_BACKEND` from `vars`.
+- [x] Drop client-side search notifications when the backend is `d1` (the Worker syncs): `notifySearchIndex.ts` returns early.
+- [x] Run the existing unit and DOM suites with `VITE_DATA_BACKEND=d1`; tests that cover the Firestore implementation pin `#/data/dataBackend` to `firestore`. `src/worker/dataApi/clientRepos.d1.test.ts` runs every D1 repository through `fetch` → `handleDataApi` → local D1 (filler, admin, retreat/registration journeys), so a request shape the handlers do not accept fails in CI. Not done here: Cypress against `wrangler dev` + local D1 (needs a browser and seeded data; part of the phase 5 dry run). Query keys / `staleTime` / `setQueryData` seeding stay as they are.
+
+Decided in phase 4:
+- Phone lookups pass the filler's invite token: `MemberPhoneLookupInput` / `TemplePhoneLookupInput` gain an optional `inviteToken` (the use cases pass the route token; Firestore ignores it).
+- Values the Worker sets are not sent: `createdBy` of retreats / invites, the whole server-built registration (only `retreatId`, `memberId`, `registeredVia`, `extraAnswers`), the reviewer and timestamps of a review.
+- `getOrgUnitById` stays Firestore-only: only the Firestore repositories use it (the Worker loads org unit names itself); `org-units/get` has no client caller yet.
+- The admin "reindex search" button keeps rebuilding from the client lists (works on both backends); switching it to the Worker's `import-from-db` phase is left to the cutover (phase 6).
 
 ### Phase 5 — Data export / import
 

@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+// These cover the Firestore implementation, whatever VITE_DATA_BACKEND is.
+vi.mock('#/data/dataBackend', () => ({ DATA_BACKEND: 'firestore' }))
+
 const getDocsMock = vi.fn()
 
 vi.mock('firebase/firestore', () => ({
