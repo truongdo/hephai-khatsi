@@ -24,3 +24,5 @@ project.inlang/cache
 .superpowers/
 .serena/project.yml
 *.swp
+.env.prod
+.env.dev
