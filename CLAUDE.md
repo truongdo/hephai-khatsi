@@ -31,6 +31,8 @@ pnpm db:migrate:preview  # apply them to hephai-khatsi-preview (preview_database
 pnpm export:firestore    # D1 migration phase 5: Firestore → NDJSON in .d1-migration/ (git-ignored)
 pnpm import:d1 --export <dir> [--replace] [--apply --database <name> --remote|--local]
 pnpm verify:d1-import --export <dir> --database <name> --remote|--local
+pnpm rules:generate-frozen  # regenerate firebase/firestore.frozen.rules after editing firestore.rules
+pnpm rules:freeze        # D1 cutover: deploy the read-only Firestore rules (rules:unfreeze restores firestore.rules)
 ```
 
 - `pnpm test` runs `paraglide` first; if running vitest directly and `src/paraglide` is stale after editing `messages/vi.json`, run `pnpm paraglide`.

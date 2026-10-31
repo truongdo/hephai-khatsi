@@ -274,12 +274,46 @@ Runbook (dry run, then cutover in phase 6):
 
 Recommended: a short write freeze rather than dual writes (dual writes from the browser cannot be atomic across two databases and would need all of phase 2 anyway).
 
+Prepared in code (2026-10-31, no production change):
+- [x] Maintenance banner: `VITE_MAINTENANCE_MODE=true` at build time shows `MaintenanceBanner` (copy in `messages/vi.json`) above every page (`__root.tsx`); any other value, or none, hides it.
+- [x] Read-only rules: `firebase/firestore.frozen.rules` is generated from `firestore.rules` (`pnpm rules:generate-frozen`, `src/firebase/frozenRules.ts`): every write rule becomes `if false`, every read rule stays, so the frozen app keeps reading. A unit test fails when the two files drift; `frozenRules.integration.test.ts` checks reads pass and staff / filler writes fail on the emulator. Deploy with `pnpm rules:freeze` (`firebase.frozen.json`), revert with `pnpm rules:unfreeze`.
+- [x] Search reindex from D1: on the D1 backend the admin "Tạo lại chỉ mục tìm kiếm" button (`OrgUnitsPage`) runs `ensure`, then the Worker's `import-from-db` page by page (`reindexDirectorySearchFromDb`); nothing is loaded in the browser. On Firestore it keeps rebuilding from the client lists.
+
+Cutover steps (requester runs them; each needs Wrangler and Firebase CLI logins with production access):
 - [ ] Get the requester's explicit go-ahead and date (freeze of up to 1 hour approved; do not start without this confirmation).
 - [ ] Announce the window (form fillers and admins). Deploy a build with a maintenance banner and Firestore rules set to read-only (`allow write: if false`).
 - [ ] Export → import → verify (phase 5 scripts).
 - [ ] Set `VITE_DATA_BACKEND=d1` / Worker `DATA_BACKEND=d1`, `pnpm deploy`, reindex Typesense from D1, smoke test (login per role, filler lookup by phone/CCCD, save-and-lock, photo upload, retreat registration, export Excel/PDF, stats).
 - [ ] Rollback plan: redeploy the previous build and restore Firestore write rules (Firestore data is untouched while frozen). Writes made to D1 after cutover would be lost on rollback, so decide go / no-go within the window.
 - [ ] Keep Firestore read-only for 30 days as a backup; D1 Time Travel gives point-in-time restore from then on.
+
+Runbook (times are for ~800 members; the phase 5 dry run fit well inside the hour):
+
+Before the window (any day before):
+1. `git pull` on `main`; `pnpm install`; `pnpm test` green.
+2. Production database schema: `pnpm db:migrate:remote` (applies `0001`–`0003` to `hephai-khatsi`, seeds org units). Check it holds no data rows: `pnpm exec wrangler d1 execute hephai-khatsi --remote --command "SELECT (SELECT COUNT(*) FROM members) + (SELECT COUNT(*) FROM temples) + (SELECT COUNT(*) FROM audit_logs) + (SELECT COUNT(*) FROM retreats) AS n"` must print `0` (the import has no `--replace` on production; empty it by hand if a test wrote to it).
+3. Run the pending `backfill:*` scripts against Firestore (phase 0), so no row lacks a sort column.
+4. `firebase login` / `pnpm exec wrangler whoami` on the machine that runs the cutover; `.env` holds `FIREBASE_SERVICE_ACCOUNT_JSON` (or `GOOGLE_APPLICATION_CREDENTIALS`) for the export.
+5. Prepare the cutover commit on a branch, not merged yet: `wrangler.jsonc` `vars.DATA_BACKEND` → `"d1"`. It is merged into `main` in step 10 so every later `pnpm deploy` keeps the D1 backend.
+6. Announce the date and the read-only hour to admins and form fillers.
+
+Freeze (T+0):
+7. Banner build on Firestore: in `.env` set `VITE_MAINTENANCE_MODE=true` (keep `VITE_DATA_BACKEND=firestore`), `pnpm deploy`. Open the site: the yellow banner shows.
+8. `pnpm rules:freeze`. From now on every Firestore write is refused (saves show their usual error). Do not grant or revoke directory roles in the window: that route writes Firestore with the service account, which the rules do not stop, and the change would not reach D1. Wait ~1 minute for in-flight saves.
+
+Move the data (T+5):
+9. `pnpm export:firestore` → `.d1-migration/export-<time>/`; then
+   `pnpm import:d1 --export .d1-migration/export-<time> --apply --database hephai-khatsi --remote` (a `checkImport` error writes nothing: fix the data in Firestore, which needs `pnpm rules:unfreeze` and a new freeze, or stop the window); then
+   `pnpm verify:d1-import --export .d1-migration/export-<time> --database hephai-khatsi --remote` must print `OK`. Record a restore point: `pnpm exec wrangler d1 time-travel info hephai-khatsi`.
+
+Switch (T+15):
+10. Merge the cutover commit (step 5). In `.env` set `VITE_DATA_BACKEND=d1` and remove `VITE_MAINTENANCE_MODE`; `pnpm deploy` (Worker `DATA_BACKEND=d1` and the D1 client ship together; they must match).
+11. Signed in as hệ phái admin: Giáo đoàn (`/admin/org-units`) → "Tạo lại chỉ mục tìm kiếm" (now rebuilt by the Worker from D1); the counts match verify's members / temples.
+12. Smoke test, one pass each: login as hệ phái admin, giáo đoàn admin, kiểm soát; member and temple lists (tăng / ni, hạ lạp tabs, sort), search; open a record and its history; filler `/f/public`: lookup by phone and by CCCD, save-and-lock, edit request; portrait and document upload; admin lock / unlock; retreat create, invite link, `/r/<token>` self registration, review; Excel / PDF export; members and temples stats. Firestore must see no new writes (rules stay frozen).
+
+Go / no-go (by T+60):
+13. Go: keep Firestore frozen (do not run `rules:unfreeze`) for 30 days as the backup; delete `.d1-migration/export-<time>/` (personal data); announce the end of the window.
+14. No-go (rollback): revert the cutover commit, `.env` back to `VITE_DATA_BACKEND=firestore` without `VITE_MAINTENANCE_MODE`, `pnpm deploy`, `pnpm rules:unfreeze`. Firestore is as it was at the freeze; anything written to D1 after step 10 is lost, so decide before users write much. Empty `hephai-khatsi` before the next attempt (step 2).
 
 ### Phase 7 — Cleanup
 
