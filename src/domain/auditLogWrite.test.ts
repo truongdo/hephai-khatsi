@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { shouldWriteAudit } from './auditLogRepo'
+import { shouldWriteAudit } from './auditLogWrite'
 
 describe('shouldWriteAudit', () => {
   it('skips empty updated', () => {

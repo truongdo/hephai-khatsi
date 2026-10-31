@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
 import { normalizeVnPhone } from '#/domain/normalize'
 import type { Member } from '#/domain/types'
 import { createMemoryMemberStore } from '#/test/memoryStores'
@@ -49,34 +48,25 @@ describe('member listByCurrentTempleIds (memory store)', () => {
 })
 
 describe('member deleteMany (memory store)', () => {
-  it('removes members and shrinks the phone index', async () => {
+  it('removes members from the phone lookup', async () => {
     const phone = normalizeVnPhone('0901234567')
     const store = createMemoryMemberStore([
       member({ id: 'm1', dienThoai: phone, cccd: '111111111111' }),
       member({ id: 'm2', dienThoai: phone, cccd: '222222222222' }),
     ])
-    const indexKey = memberPhoneIndexId('gd-i', 'tang', phone)
-    expect(store.phoneIndex.get(indexKey)).toEqual(['m1', 'm2'])
+    const lookup = () =>
+      store.listByOrgSanghaAndPhone({
+        orgUnitId: 'gd-i',
+        sanghaType: 'tang',
+        phone,
+      })
+    expect((await lookup()).map((m) => m.id).sort()).toEqual(['m1', 'm2'])
 
     await store.deleteMany(['m1'])
 
     expect(await store.getById('m1')).toBeNull()
     expect(await store.getById('m2')).not.toBeNull()
-    expect(store.phoneIndex.get(indexKey)).toEqual(['m2'])
-  })
-
-  it('deletes the phone index doc when the last member is removed', async () => {
-    const phone = normalizeVnPhone('0901234567')
-    const store = createMemoryMemberStore([
-      member({ id: 'm1', dienThoai: phone }),
-    ])
-    const indexKey = memberPhoneIndexId('gd-i', 'tang', phone)
-    expect(store.phoneIndex.has(indexKey)).toBe(true)
-
-    await store.deleteMany(['m1'])
-
-    expect(store.phoneIndex.has(indexKey)).toBe(false)
-    expect(await store.getById('m1')).toBeNull()
+    expect((await lookup()).map((m) => m.id)).toEqual(['m2'])
   })
 
   it('skips missing ids without throwing', async () => {

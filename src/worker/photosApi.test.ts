@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Env } from './env'
-import type { WorkerMember, WorkerTemple } from './firestoreRest'
+import type { WorkerMember, WorkerTemple } from './recordSource'
 
 const getMemberDocument = vi.fn()
 const getTempleDocument = vi.fn()
@@ -9,10 +9,12 @@ const inviteExists = vi.fn()
 const verifyFirebaseAdminToken = vi.fn()
 const createR2PresignedPutUrl = vi.fn()
 
-vi.mock('./firestoreRest', () => ({
-  getMemberDocument,
-  getTempleDocument,
-  inviteExists,
+vi.mock('./recordSource', () => ({
+  recordSource: () => ({
+    getMember: getMemberDocument,
+    getTemple: getTempleDocument,
+    inviteExists,
+  }),
 }))
 
 vi.mock('./verifyFirebaseAdmin', () => ({
@@ -307,7 +309,7 @@ describe('handlePhotosApi', () => {
         photoPath: 'members/m1/photo.jpg',
       })
       expect(verifyFirebaseAdminToken).not.toHaveBeenCalled()
-      expect(inviteExists).toHaveBeenCalledWith(PROJECT_ID, 'public')
+      expect(inviteExists).toHaveBeenCalledWith('public')
     })
 
     it('returns 403 when invite does not exist', async () => {

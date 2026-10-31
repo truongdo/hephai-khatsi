@@ -8,8 +8,7 @@ import {
 } from '#/domain/searchDocs'
 import { memberFromRow, type MemberRow } from './dataApi/rows/member'
 import { templeFromRow, type TempleRow } from './dataApi/rows/temple'
-import { usesD1, type Env } from './env'
-import { recordSource } from './recordSource'
+import type { Env } from './env'
 import { createTypesenseClient } from './typesenseClient'
 import {
   verifyFirebaseAdminToken,
@@ -21,16 +20,9 @@ const SEARCH_PER_PAGE = 8
 type SearchCollection = 'members' | 'temples'
 
 type SearchBody = { q?: string }
-type UpsertBody = {
-  collection?: SearchCollection
-  document?: MemberSearchDoc | TempleSearchDoc
-  inviteToken?: string
-}
-type DeleteBody = { collection?: SearchCollection; id?: string }
 type ReindexBody = {
-  phase?: 'ensure' | 'import' | 'import-from-db'
+  phase?: 'ensure' | 'import-from-db'
   collection?: SearchCollection
-  documents?: object[]
   /** `import-from-db`: the last id of the previous page. */
   cursor?: string
 }
@@ -111,58 +103,6 @@ async function handleSearch(request: Request, env: Env): Promise<Response> {
   return Response.json(results)
 }
 
-async function handleUpsert(request: Request, env: Env): Promise<Response> {
-  let body: UpsertBody
-  try {
-    body = (await request.json()) as UpsertBody
-  } catch {
-    return jsonError('Invalid JSON', 400)
-  }
-
-  const { collection, document, inviteToken } = body
-  if (!isSearchCollection(collection) || !document || typeof document !== 'object') {
-    return jsonError('Missing required fields', 400)
-  }
-
-  const token = bearerToken(request)
-  if (token) {
-    const admin = await verifyFirebaseAdminToken(token, env.FIREBASE_PROJECT_ID)
-    if (!admin) return jsonError('Unauthorized', 401)
-  } else if (inviteToken) {
-    const exists = await recordSource(env).inviteExists(inviteToken)
-    if (!exists) return jsonError('Unauthorized', 401)
-  } else {
-    return jsonError('Unauthorized', 401)
-  }
-
-  const client = createTypesenseClient(env)
-  await client.upsert(toTypesenseCollection(collection), document)
-
-  return Response.json({ ok: true })
-}
-
-async function handleDelete(request: Request, env: Env): Promise<Response> {
-  const auth = await requireDirectoryAdmin(request, env)
-  if (!auth.ok) return auth.response
-
-  let body: DeleteBody
-  try {
-    body = (await request.json()) as DeleteBody
-  } catch {
-    return jsonError('Invalid JSON', 400)
-  }
-
-  const { collection, id } = body
-  if (!isSearchCollection(collection) || !id) {
-    return jsonError('Missing required fields', 400)
-  }
-
-  const client = createTypesenseClient(env)
-  await client.deleteDocument(toTypesenseCollection(collection), id)
-
-  return Response.json({ ok: true })
-}
-
 async function handleReindex(request: Request, env: Env): Promise<Response> {
   const token = bearerToken(request)
   if (!token) return jsonError('Unauthorized', 401)
@@ -184,16 +124,7 @@ async function handleReindex(request: Request, env: Env): Promise<Response> {
     return Response.json({ ok: true })
   }
 
-  if (body.phase === 'import') {
-    const { collection, documents } = body
-    if (!isSearchCollection(collection) || !Array.isArray(documents)) {
-      return jsonError('Missing required fields', 400)
-    }
-    await client.importDocuments(toTypesenseCollection(collection), documents)
-    return Response.json({ ok: true, imported: documents.length })
-  }
-
-  if (body.phase === 'import-from-db' && usesD1(env)) {
+  if (body.phase === 'import-from-db') {
     const { collection, cursor } = body
     if (!isSearchCollection(collection)) {
       return jsonError('Missing required fields', 400)
@@ -237,14 +168,6 @@ export async function handleSearchApi(
 
   if (pathname === '/api/search' && request.method === 'POST') {
     return handleSearch(request, env)
-  }
-
-  if (pathname === '/api/search/upsert' && request.method === 'POST') {
-    return handleUpsert(request, env)
-  }
-
-  if (pathname === '/api/search/delete' && request.method === 'POST') {
-    return handleDelete(request, env)
   }
 
   if (pathname === '/api/search/reindex' && request.method === 'POST') {

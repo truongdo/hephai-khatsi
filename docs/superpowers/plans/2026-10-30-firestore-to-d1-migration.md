@@ -245,7 +245,7 @@ Decided in phase 4:
 
 Follow-ups after phase 4 (not blocking the cutover):
 - Calls per screen are the same as on Firestore, not fewer: `resumeMemberByPhone` makes 3 requests (invite, then tăng and ni lookups; one if `members/list-by-phone` took an optional `sanghaType`), `createRetreatRegistration` 4 and `ensureRetreatRegistrationInvite` 3, re-reading what the Worker checks again; `reviewRetreatRegistrations` reads each registration before the review. Trim these use cases once Firestore is gone.
-- Both implementations ship in every build (the ternary is not tree-shaken); phase 7 removes the Firestore side.
+- Both implementations ship in every build (the ternary is not tree-shaken); phase 7 removes the Firestore side (done).
 - An unknown route answers `NOT_FOUND` like a missing record; consider a plain 404 for unknown routes.
 
 ### Phase 5 — Data export / import
@@ -317,10 +317,11 @@ Go / no-go (by T+60):
 
 ### Phase 7 — Cleanup
 
-- [ ] Remove the Firestore implementations and the flag, `src/firebase/firestore.ts`, `collections.ts`, `src/test/memoryStores.ts` (or rewrite it on the D1 test harness), `firestoreRest.ts`, `firestoreAdminRest.ts` (keep `googleServiceAccount.ts` / `identityToolkit.ts` for directory roles), `firebase/firestore.rules`, `firebase/firestore.indexes.json`, Firestore emulator wiring and `*.integration.test.ts` that only cover Firestore, the obsolete `backfill:*` / `seed:org-units` scripts, `@firebase/rules-unit-testing`.
-- [ ] Keep `firebase` (Auth only) and `firebase-admin` (claims script).
-- [ ] Update `CLAUDE.md`, `README.md` and `.cursor/rules/firebase-tanstack.mdc`: data layering becomes `repositories → /api/data → D1`, authz lives in `src/domain/authz`, new commands (`db:migrate:*`), D1 in deploy steps.
-- [ ] Delete the Firestore database after the 30-day backup period (separate, explicit decision).
+- [x] Remove the Firestore implementations and the flag (`VITE_DATA_BACKEND`, Worker `DATA_BACKEND`, `src/data/dataBackend.ts`): each `src/repositories/*Repo.ts` keeps its `*Store` types and exports the `src/repositories/d1/*` implementation; the data API is always on. Removed `src/firebase/firestore.ts`, `collections.ts`, `firestoreRest.ts`, `firestoreAdminRest.ts` (record and directory-member reads are D1-only in `recordSource.ts`; `googleServiceAccount.ts` / `identityToolkit.ts` stay for directory roles, the service account token loses the `datastore` scope), `firebase/` (rules, frozen rules, indexes), `firebase.json`, `firebase.frozen.json`, `.firebaserc`, the emulator wiring, `vitest.integration.config.ts` and every `*.integration.test.ts` (all covered Firestore only), the `backfill:*` / `seed:org-units` / `rules:*` scripts, `@firebase/rules-unit-testing` and `firebase-tools`. `src/test/memoryStores.ts` stays as the in-memory `MemberStore` / `TempleStore` fake of the use-case tests, without the Firestore phone index (phones are looked up directly; member lookups are capped at 20 like the Worker).
+- [x] Also removed (requester, 2026-10-31): the phase 5 migration tools (`export-firestore` / `import-d1` / `verify-d1-import`, `scripts/lib/d1Migration.ts`, `src/worker/dataApi/import/`), the client-side search notifications (`notifySearchIndex.ts`) with the Worker routes they called (`/api/search/upsert`, `/api/search/delete`, reindex phase `import`): the Worker syncs Typesense on every write and the reindex button always runs `import-from-db`. `saveFailure.ts` maps the Worker's `FORBIDDEN` (instead of Firestore's `permission-denied`) to "signed in as staff" / "permission denied".
+- [x] Keep `firebase` (Auth only) and `firebase-admin` (claims script). The maintenance banner (`VITE_MAINTENANCE_MODE`) stays for later maintenance windows.
+- [x] Update `CLAUDE.md`, `README.md` and `.cursor/rules/firebase-tanstack.mdc` / `tech-stack.mdc`: data layering becomes `repositories → /api/data → D1`, authz lives in `src/domain/authz`, `db:migrate:*` in the deploy steps.
+- [ ] Delete the Firestore database after the 30-day backup period (separate, explicit decision). Until then it stays read-only with the frozen rules deployed at the cutover; nothing in the repo can redeploy Firestore rules any more (restore them from git history if ever needed).
 
 ## Effects to expect
 

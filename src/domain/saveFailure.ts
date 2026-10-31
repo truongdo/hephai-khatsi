@@ -23,17 +23,11 @@ export type SaveFailureContext = {
 
 export type ClassifiedSaveFailure = {
   reason: SaveFailureReason
-  /** DomainError code, Firebase error code, or error name. */
+  /** DomainError code, Firebase Auth error code, or error name. */
   code: string
 }
 
-const NETWORK_CODES = new Set([
-  'unavailable',
-  'deadline-exceeded',
-  'firestore/unavailable',
-  'firestore/deadline-exceeded',
-  'auth/network-request-failed',
-])
+const NETWORK_CODES = new Set(['auth/network-request-failed'])
 
 export function errorCodeOf(error: unknown): string {
   if (isDomainError(error)) return error.code
@@ -61,6 +55,14 @@ export function classifySaveFailure(
 
   if (isDomainError(error)) {
     switch (error.code) {
+      case 'FORBIDDEN':
+        // The Worker refuses public-form writes from signed-in staff
+        // accounts, so a denial with a staff session in this browser is
+        // almost always that.
+        return {
+          reason: context.signedInRole ? 'signed_in_staff' : 'permission_denied',
+          code,
+        }
       case 'RECORD_LOCKED':
         return { reason: 'record_locked', code }
       case 'INVITE_NOT_FOUND':
@@ -75,15 +77,6 @@ export function classifySaveFailure(
         return { reason: 'invalid_input', code }
       default:
         return { reason: 'unknown', code }
-    }
-  }
-
-  if (code === 'permission-denied' || code === 'firestore/permission-denied') {
-    // Public-form rules reject writes from signed-in staff accounts, so a
-    // denial with a staff session in this browser is almost always that.
-    return {
-      reason: context.signedInRole ? 'signed_in_staff' : 'permission_denied',
-      code,
     }
   }
 

@@ -1,24 +1,47 @@
-import { usesD1, type Env } from './env'
-import {
-  getMemberDocument,
-  getTempleDocument,
-  inviteExists,
-  type WorkerMember,
-  type WorkerTemple,
-} from './firestoreRest'
-import {
-  getMemberAdminFields,
-  listSecretaries,
-  patchMemberDirectoryFields,
-  type MemberAdminFields,
-  type MemberDirectoryPatchFields,
-  type SecretaryListItem,
-} from './firestoreAdminRest'
+import type { Env } from './env'
+
+export type WorkerMember = {
+  id: string
+  orgUnitId: string
+  cccd: string
+  status: 'draft' | 'locked'
+  photoPath: string | null
+}
+
+export type WorkerTemple = {
+  id: string
+  orgUnitId: string
+  status: 'draft' | 'locked'
+  photoPath: string | null
+}
+
+export type MemberAdminFields = {
+  id: string
+  orgUnitId: string
+  email: string
+  directoryRole: string | null
+  directoryAuthUid: string | null
+}
+
+export type SecretaryListItem = {
+  id: string
+  orgUnitId: string
+  email: string
+  phapDanh?: string
+  theDanh?: string
+  directoryRoleGrantedAt?: string
+}
+
+export type MemberDirectoryPatchFields = {
+  directoryRole?: string | null
+  directoryAuthUid?: string | null
+  directoryRoleGrantedAt?: string | null
+  directoryRoleGrantedBy?: string | null
+}
 
 // The records the photo, document and search routes check before acting, and
-// the member fields the directory-role route reads and writes: from Firestore
-// until the cutover, from D1 once DATA_BACKEND is `d1` (they must read the
-// same database as the client).
+// the member fields the directory-role route reads and writes, read from D1
+// outside the data API.
 
 export type RecordSource = {
   getMember(memberId: string): Promise<WorkerMember | null>
@@ -32,29 +55,8 @@ export type DirectoryMemberSource = {
   patchMemberDirectoryFields(memberId: string, fields: MemberDirectoryPatchFields): Promise<void>
 }
 
-export function recordSource(env: Env): RecordSource {
-  if (usesD1(env)) return d1RecordSource(env.DB)
-  const projectId = env.FIREBASE_PROJECT_ID
-  return {
-    getMember: (memberId) => getMemberDocument(projectId, memberId),
-    getTemple: (templeId) => getTempleDocument(projectId, templeId),
-    inviteExists: (inviteId) => inviteExists(projectId, inviteId),
-  }
-}
-
-/** `accessToken` is the service account's (Firestore REST); D1 needs none. */
-export function directoryMemberSource(env: Env, accessToken: string): DirectoryMemberSource {
-  if (usesD1(env)) return d1DirectoryMemberSource(env.DB)
-  const projectId = env.FIREBASE_PROJECT_ID
-  return {
-    getMemberAdminFields: (memberId) => getMemberAdminFields(accessToken, projectId, memberId),
-    listSecretaries: () => listSecretaries(accessToken, projectId),
-    patchMemberDirectoryFields: (memberId, fields) =>
-      patchMemberDirectoryFields(accessToken, projectId, memberId, fields),
-  }
-}
-
-export function d1RecordSource(db: D1Database): RecordSource {
+export function recordSource(env: Pick<Env, 'DB'>): RecordSource {
+  const db = env.DB
   return {
     async getMember(memberId) {
       const row = await db
@@ -104,7 +106,8 @@ const DIRECTORY_MEMBER_COLUMNS = `id, org_unit_id, directory_role, directory_aut
 /** JSON fields of `data` the directory-role route patches (the others are columns). */
 const DATA_PATCH_FIELDS = ['directoryRoleGrantedAt', 'directoryRoleGrantedBy'] as const
 
-export function d1DirectoryMemberSource(db: D1Database): DirectoryMemberSource {
+export function directoryMemberSource(env: Pick<Env, 'DB'>): DirectoryMemberSource {
+  const db = env.DB
   return {
     async getMemberAdminFields(memberId) {
       const row = await db
@@ -135,8 +138,8 @@ export function d1DirectoryMemberSource(db: D1Database): DirectoryMemberSource {
         return [item]
       })
     },
-    // A service write outside the data API (no authz, no audit), like the
-    // Firestore REST patch it replaces; the version bump fences concurrent saves.
+    // A service write outside the data API (no authz, no audit); the version
+    // bump fences concurrent saves.
     async patchMemberDirectoryFields(memberId, fields) {
       const assignments: string[] = []
       const params: Array<string | null> = []

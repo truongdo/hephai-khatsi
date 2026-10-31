@@ -1,9 +1,8 @@
 import { Alert } from '@mantine/core'
 import { m } from '#/paraglide/messages'
 
-// Build flag for the write freeze of the D1 cutover: the build deployed
-// during the window shows this banner on every page (Firestore rules are
-// read-only meanwhile, so saves fail anyway).
+// Build flag for a maintenance window: the build deployed during the window
+// shows this banner on every page. It does not block writes by itself.
 
 /** Only the exact value `true` turns the banner on. */
 export function parseMaintenanceMode(value: string | undefined): boolean {

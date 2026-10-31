@@ -1,16 +1,15 @@
 // @vitest-environment node
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Env } from './env'
-import type { WorkerMember } from './firestoreRest'
+import type { WorkerMember } from './recordSource'
 
 const getMemberDocument = vi.fn()
 const inviteExists = vi.fn()
 const verifyFirebaseAdminToken = vi.fn()
 const createR2PresignedPutUrl = vi.fn()
 
-vi.mock('./firestoreRest', () => ({
-  getMemberDocument,
-  inviteExists,
+vi.mock('./recordSource', () => ({
+  recordSource: () => ({ getMember: getMemberDocument, inviteExists }),
 }))
 
 vi.mock('./verifyFirebaseAdmin', () => ({
@@ -158,7 +157,7 @@ describe('handleDocsApi', () => {
       )
 
       expect(response.status).toBe(200)
-      expect(inviteExists).toHaveBeenCalledWith(PROJECT_ID, 'public')
+      expect(inviteExists).toHaveBeenCalledWith('public')
       await expect(response.json()).resolves.toEqual({
         uploadUrl:
           'https://acct.r2.cloudflarestorage.com/photos/members/m1/docs/cccd/front.jpg?signed=1',

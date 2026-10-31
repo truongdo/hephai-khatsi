@@ -28,13 +28,7 @@ import {
   canManageDirectory,
 } from '#/domain/authClaims'
 import { revokeDirectoryRole } from '#/directoryRole/directoryRoleApiClient'
-import { memberRepo } from '#/repositories/memberRepo'
-import { templeRepo } from '#/repositories/templeRepo'
-import { DATA_BACKEND } from '#/data/dataBackend'
-import {
-  reindexDirectorySearch,
-  reindexDirectorySearchFromDb,
-} from '#/search/reindexDirectory'
+import { reindexDirectorySearch } from '#/search/reindexDirectory'
 import {
   directorySecretariesQuery,
   hePhaiSecretariesQuery,
@@ -116,12 +110,7 @@ export function OrgUnitsPage() {
   const reindexMutation = useMutation({
     mutationFn: async () => {
       const idToken = await user!.getIdToken()
-      if (DATA_BACKEND === 'd1') return reindexDirectorySearchFromDb({ idToken })
-      return reindexDirectorySearch({
-        idToken,
-        listMembers: (input) => memberRepo.listAllForExport(input),
-        listTemples: () => templeRepo.listAllForExport({}),
-      })
+      return reindexDirectorySearch({ idToken })
     },
     onSuccess: (result) => {
       setReindexConfirmOpen(false)

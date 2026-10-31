@@ -9,7 +9,7 @@ import {
 const signedOut = { signedInRole: null, online: true }
 
 function firebaseError(code: string) {
-  return Object.assign(new Error('Missing or insufficient permissions.'), {
+  return Object.assign(new Error('Firebase: Error.'), {
     name: 'FirebaseError',
     code,
   })
@@ -22,24 +22,24 @@ describe('classifySaveFailure', () => {
     ).toEqual({ reason: 'record_locked', code: 'RECORD_LOCKED' })
   })
 
-  it('maps permission-denied with a staff session to signed_in_staff', () => {
+  it('maps FORBIDDEN with a staff session to signed_in_staff', () => {
     expect(
-      classifySaveFailure(firebaseError('permission-denied'), {
+      classifySaveFailure(new DomainError('FORBIDDEN', 'x'), {
         signedInRole: 'giao_doan_admin',
         online: true,
       }),
-    ).toEqual({ reason: 'signed_in_staff', code: 'permission-denied' })
+    ).toEqual({ reason: 'signed_in_staff', code: 'FORBIDDEN' })
   })
 
-  it('maps permission-denied without a session to permission_denied', () => {
+  it('maps FORBIDDEN without a session to permission_denied', () => {
     expect(
-      classifySaveFailure(firebaseError('permission-denied'), signedOut).reason,
+      classifySaveFailure(new DomainError('FORBIDDEN', 'x'), signedOut).reason,
     ).toBe('permission_denied')
   })
 
-  it('maps unavailable and offline to network', () => {
+  it('maps network failures and offline to network', () => {
     expect(
-      classifySaveFailure(firebaseError('unavailable'), signedOut).reason,
+      classifySaveFailure(firebaseError('auth/network-request-failed'), signedOut).reason,
     ).toBe('network')
     expect(
       classifySaveFailure(new Error('boom'), {

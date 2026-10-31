@@ -141,12 +141,6 @@ vi.mock('#/use-cases/uploadTemplePhoto', () => ({
     photoPath: 'temples/created-temple/photo.jpg',
   })),
 }))
-vi.mock('#/search/notifySearchIndex', () => ({
-  notifyMemberUpsert: vi.fn().mockResolvedValue(undefined),
-  notifyMemberDelete: vi.fn().mockResolvedValue(undefined),
-  notifyTempleUpsert: vi.fn().mockResolvedValue(undefined),
-  notifyTempleDelete: vi.fn().mockResolvedValue(undefined),
-}))
 vi.mock('#/repositories/auditLogRepo', () => ({
   listAuditLogs: vi.fn(async () => ({ entries: [], nextStartAfterAt: null })),
 }))

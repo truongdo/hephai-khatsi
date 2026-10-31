@@ -21,10 +21,12 @@ vi.mock('./googleServiceAccount', () => ({
   getGoogleAccessToken,
 }))
 
-vi.mock('./firestoreAdminRest', () => ({
-  getMemberAdminFields,
-  listSecretaries,
-  patchMemberDirectoryFields,
+vi.mock('./recordSource', () => ({
+  directoryMemberSource: () => ({
+    getMemberAdminFields,
+    listSecretaries,
+    patchMemberDirectoryFields,
+  }),
 }))
 
 vi.mock('./identityToolkit', () => ({
@@ -134,8 +136,6 @@ describe('handleDirectoryRoleApi', () => {
         { role: 'giao_doan_admin', orgUnitId: 'gd-i' },
       )
       expect(patchMemberDirectoryFields).toHaveBeenCalledWith(
-        ACCESS_TOKEN,
-        PROJECT_ID,
         MEMBER_ID,
         expect.objectContaining({
           directoryRole: 'giao_doan_admin',
@@ -143,7 +143,7 @@ describe('handleDirectoryRoleApi', () => {
           directoryRoleGrantedBy: HP_ADMIN_UID,
         }),
       )
-      const patchFields = patchMemberDirectoryFields.mock.calls[0][3]
+      const patchFields = patchMemberDirectoryFields.mock.calls[0][1]
       expect(patchFields.directoryRoleGrantedAt).toMatch(
         /^\d{4}-\d{2}-\d{2}T/,
       )
@@ -337,8 +337,6 @@ describe('handleDirectoryRoleApi', () => {
         { role: 'he_phai_secretary' },
       )
       expect(patchMemberDirectoryFields).toHaveBeenCalledWith(
-        ACCESS_TOKEN,
-        PROJECT_ID,
         MEMBER_ID,
         expect.objectContaining({
           directoryRole: 'he_phai_secretary',
@@ -424,8 +422,6 @@ describe('handleDirectoryRoleApi', () => {
         {},
       )
       expect(patchMemberDirectoryFields).toHaveBeenCalledWith(
-        ACCESS_TOKEN,
-        PROJECT_ID,
         MEMBER_ID,
         {
           directoryRole: null,

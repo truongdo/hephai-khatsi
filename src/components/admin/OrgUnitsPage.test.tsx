@@ -42,18 +42,6 @@ vi.mock('#/search/reindexDirectory', () => ({
   reindexDirectorySearch: vi.fn(),
 }))
 
-vi.mock('#/repositories/memberRepo', () => ({
-  memberRepo: {
-    listAllForExport: vi.fn(),
-  },
-}))
-
-vi.mock('#/repositories/templeRepo', () => ({
-  templeRepo: {
-    listAllForExport: vi.fn(),
-  },
-}))
-
 vi.mock('#/query/adminQueries', () => ({
   orgUnitsQuery: () => ({
     queryKey: ['admin', 'orgUnits'],

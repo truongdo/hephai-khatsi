@@ -7,7 +7,6 @@ import { clearData } from './test/db'
 
 const workerEnv = {
   DB: env.DB,
-  DATA_BACKEND: 'd1',
   FIREBASE_PROJECT_ID: 'test-project',
   TYPESENSE_API_KEY: 'test-key',
 } as unknown as Env
@@ -19,10 +18,10 @@ async function verify(token: string) {
   return token === 'gd-admin' ? gdAdmin : null
 }
 
-function call(path: string, init: RequestInit = {}, envOverride: Partial<Env> = {}) {
+function call(path: string, init: RequestInit = {}) {
   return handleDataApi(
     new Request(`https://app.test${path}`, init),
-    { ...workerEnv, ...envOverride },
+    workerEnv,
     executionCtx,
     verify,
   )
@@ -41,11 +40,6 @@ beforeEach(clearData)
 describe('handleDataApi', () => {
   it('ignores paths outside /api/data', async () => {
     expect(await call('/api/search', { method: 'POST' })).toBeNull()
-  })
-
-  it('is off unless DATA_BACKEND is d1', async () => {
-    const response = await call('/api/data/org-units/list', {}, { DATA_BACKEND: 'firestore' })
-    expect(response?.status).toBe(404)
   })
 
   it('serves the org units on a cacheable GET', async () => {

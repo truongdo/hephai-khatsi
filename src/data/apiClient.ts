@@ -3,8 +3,8 @@ import { getCurrentUserIdToken } from '#/repositories/authRepo'
 
 // Client of the Worker's /api/data/<route> (src/worker/dataApi). Staff calls
 // carry the Firebase ID token; fillers are anonymous and name their invite
-// token in the body where a route needs it. Errors come back as the same
-// DomainError the Firestore repositories throw.
+// token in the body where a route needs it. Errors come back as the
+// DomainError the handler threw.
 
 const PREFIX = '/api/data/'
 
@@ -22,7 +22,6 @@ async function toError(route: string, response: Response): Promise<Error> {
     const message = 'message' in body && typeof body.message === 'string' ? body.message : body.code
     return new DomainError(body.code, message)
   }
-  // A plain-text 404 for every route means the Worker's DATA_BACKEND is not d1.
   return new Error(`Data API ${route} failed (${response.status})`)
 }
 

@@ -22,7 +22,7 @@
       "binding": "DB",
       "database_name": "hephai-khatsi",
       "database_id": "2cd8ee1d-a474-412c-aa19-f7088d4374a1",
-      // hephai-khatsi-preview: import dry runs (pnpm db:migrate:preview).
+      // hephai-khatsi-preview: wrangler dev --remote / previews (pnpm db:migrate:preview).
       "preview_database_id": "998c50bd-5c8e-41bc-9fe0-a255ba1c45d2",
       "migrations_dir": "migrations"
     }
@@ -30,8 +30,6 @@
   "vars": {
     "R2_ACCOUNT_ID": "f263bbfd7be32d7002a58899a8dbd30b",
     "R2_BUCKET_NAME": "member-photos",
-    "FIREBASE_PROJECT_ID": "hephaikhatsi-82658",
-    // firestore | d1: the cutover switch (see src/worker/env.ts).
-    "DATA_BACKEND": "d1"
+    "FIREBASE_PROJECT_ID": "hephaikhatsi-82658"
   }
 }

@@ -82,7 +82,7 @@ async function handleGrant(
 
   try {
     const accessToken = await getServiceAccessToken(env)
-    const members = directoryMemberSource(env, accessToken)
+    const members = directoryMemberSource(env)
     const member = await members.getMemberAdminFields(memberId)
     if (!member) {
       return jsonError({ error: 'Member not found' }, 404)
@@ -187,7 +187,7 @@ async function handleRevoke(
 
   try {
     const accessToken = await getServiceAccessToken(env)
-    const members = directoryMemberSource(env, accessToken)
+    const members = directoryMemberSource(env)
     const member = await members.getMemberAdminFields(memberId)
     if (!member) {
       return jsonError({ error: 'Member not found' }, 404)

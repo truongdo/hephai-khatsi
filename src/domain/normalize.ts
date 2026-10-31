@@ -14,7 +14,7 @@ export function normalizeMemberDanh(raw: string): string {
   return raw.toLocaleUpperCase('vi-VN')
 }
 
-/** Trim and uppercase Thế danh / Pháp danh for Firestore storage. */
+/** Trim and uppercase Thế danh / Pháp danh for storage. */
 export function normalizeMemberDanhForStorage(
   raw: string,
 ): string | undefined {
