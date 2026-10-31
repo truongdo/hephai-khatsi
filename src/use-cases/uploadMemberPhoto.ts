@@ -1,10 +1,7 @@
 import { DomainError } from '#/domain/errors'
 import type { AuditActor } from '#/domain/auditLog'
 import { normalizeCccd } from '#/domain/normalize'
-import {
-  putToPresignedUrl,
-  requestMemberPhotoUploadUrl,
-} from '#/photos/photosApiClient'
+import { uploadMemberPhotoFile } from '#/photos/photosApiClient'
 import { memberRepo, type MemberStore } from '#/repositories/memberRepo'
 
 export type StoragePort = {
@@ -15,7 +12,7 @@ export type StoragePort = {
     contentType: string,
     inviteToken?: string,
     idToken?: string,
-  ): Promise<void>
+  ): Promise<string>
 }
 
 export type UploadMemberPhotoInput = {
@@ -36,19 +33,16 @@ export type UploadMemberPhotoResult = {
 
 const clientStorage: StoragePort = {
   async put(memberId, cccd, bytes, contentType, inviteToken, idToken) {
-    const { uploadUrl } = await requestMemberPhotoUploadUrl({
+    const { photoPath } = await uploadMemberPhotoFile({
       memberId,
       cccd,
+      bytes,
       contentType,
       inviteToken,
       idToken,
     })
-    await putToPresignedUrl(uploadUrl, bytes, contentType)
+    return photoPath
   },
-}
-
-function memberPhotoPath(memberId: string): string {
-  return `members/${memberId}/photo.jpg`
 }
 
 export async function uploadMemberPhoto(
@@ -83,8 +77,7 @@ export async function uploadMemberPhoto(
     throw new DomainError('FORBIDDEN', 'Photo already set on locked member')
   }
 
-  const photoPath = memberPhotoPath(input.memberId)
-  await storage.put(
+  const photoPath = await storage.put(
     input.memberId,
     cccd,
     input.bytes,

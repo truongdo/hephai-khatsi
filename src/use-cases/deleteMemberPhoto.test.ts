@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { DomainError } from '#/domain/errors'
 import type { Member } from '#/domain/types'
 import { createMemoryMemberStore } from '#/test/memoryStores'
@@ -23,27 +23,18 @@ const draftMember: Member = {
 }
 
 describe('deleteMemberPhoto', () => {
-  it('deletes R2 object and clears photoPath', async () => {
+  it('clears photoPath', async () => {
     const store = createMemoryMemberStore([draftMember])
-    const deleteObject = vi.fn(async () => undefined)
 
     await deleteMemberPhoto(
       {
         memberId: 'member-1',
         cccd: '012345678901',
-        inviteToken: 'invite-1',
         audit: FILLER_AUDIT,
       },
       store,
-      deleteObject,
     )
 
-    expect(deleteObject).toHaveBeenCalledWith({
-      memberId: 'member-1',
-      cccd: '012345678901',
-      inviteToken: 'invite-1',
-      idToken: undefined,
-    })
     expect((await store.getById('member-1'))?.photoPath).toBeNull()
   })
 
@@ -56,20 +47,19 @@ describe('deleteMemberPhoto', () => {
         lockedBy: 'admin-1',
       },
     ])
-    const deleteObject = vi.fn(async () => undefined)
 
     await expect(
       deleteMemberPhoto(
         {
           memberId: 'member-1',
           cccd: '012345678901',
-          inviteToken: 'invite-1',
-          audit: FILLER_AUDIT,
+            audit: FILLER_AUDIT,
         },
         store,
-        deleteObject,
       ),
     ).rejects.toMatchObject({ code: 'RECORD_LOCKED' } satisfies Partial<DomainError>)
-    expect(deleteObject).not.toHaveBeenCalled()
+    expect((await store.getById('member-1'))?.photoPath).toBe(
+      'members/member-1/photo.jpg',
+    )
   })
 })

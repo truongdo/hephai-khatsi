@@ -55,9 +55,9 @@ const retreat = {
   updatedAt: '2026-07-19T10:00:00.000Z',
 }
 
-const getRegistrationMock = vi.fn<() => Promise<unknown>>(async () => null)
+const getRegistrationMock = vi.fn<(...args: unknown[]) => Promise<unknown>>(async () => null)
 
-const createRegistrationMock = vi.fn(async () => ({
+const createRegistrationMock = vi.fn(async (..._args: unknown[]) => ({
   id: 'r1_m1',
   retreatId: 'r1',
   memberId: 'm1',

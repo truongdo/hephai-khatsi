@@ -107,13 +107,13 @@ export type MemberStore = {
     side: DocumentSide,
     filePath: string,
     audit: AuditActor,
-  ): Promise<{ member: Member; previousPath?: string }>
+  ): Promise<Member>
   removeDocumentPaths(
     memberId: string,
     typeId: DocumentTypeId,
     side: DocumentSide | undefined,
     audit: AuditActor,
-  ): Promise<{ member: Member; removedPaths: string[] }>
+  ): Promise<Member>
   lock(memberId: string, lockedBy: string, audit: AuditActor): Promise<Member>
   unlock(memberId: string, audit: AuditActor): Promise<Member>
   listDirectorySecretaries(): Promise<Member[]>

@@ -30,7 +30,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
     const redirect = path === '/' ? undefined : path
     void navigate({
       to: '/login',
-      search: redirect ? { redirect } : {},
+      search: { redirect },
       replace: true,
     })
   }, [

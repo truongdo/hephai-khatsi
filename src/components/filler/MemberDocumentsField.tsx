@@ -235,7 +235,6 @@ export function MemberDocumentsField({
           cccd,
           typeId,
           current: documents,
-          inviteToken,
           idToken,
           audit: audit ?? { actorType: 'filler', actorId: 'filler' },
         })

@@ -1,7 +1,6 @@
 import type { Member } from '#/domain/types'
 import { canAccessOrgUnit, type AuthClaims } from '#/domain/authClaims'
 import { DomainError } from '#/domain/errors'
-import { deleteTemplePhotoObject } from '#/photos/photosApiClient'
 import { memberRepo, type MemberStore } from '#/repositories/memberRepo'
 import { templeRepo, type TempleStore } from '#/repositories/templeRepo'
 
@@ -21,10 +20,8 @@ function memberLabel(member: Member): string {
 
 export async function deleteTemples(
   claims: AuthClaims,
-  input: { ids: string[]; idToken: string },
+  input: { ids: string[] },
   deps?: { templeStore?: TempleStore; memberStore?: MemberStore },
-  deletePhoto: (templeId: string) => Promise<void> = (id) =>
-    deleteTemplePhotoObject({ templeId: id, idToken: input.idToken }),
 ): Promise<DeleteTemplesResult> {
   if (input.ids.length === 0) {
     return { ok: true }
@@ -68,7 +65,7 @@ export async function deleteTemples(
     return { ok: false, blockers }
   }
 
+  // The data API deletes the temples' photos with them.
   await templeStore.deleteMany(input.ids)
-  await Promise.allSettled(input.ids.map((id) => deletePhoto(id)))
   return { ok: true }
 }

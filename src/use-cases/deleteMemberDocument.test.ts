@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { DomainError } from '#/domain/errors'
 import type { MemberDocuments } from '#/domain/memberDocumentTypes'
 import type { Member } from '#/domain/types'
@@ -33,9 +33,8 @@ const draftMember: Member = {
 }
 
 describe('deleteMemberDocument', () => {
-  it('deletes a single side and updates documents map', async () => {
+  it('removes a single side and updates documents map', async () => {
     const store = createMemoryMemberStore([draftMember])
-    const deleteObjects = vi.fn(async () => undefined)
     const current: MemberDocuments = {
       cccd: {
         frontPath: 'members/member-1/docs/cccd/front.jpg',
@@ -49,22 +48,12 @@ describe('deleteMemberDocument', () => {
         cccd: '012345678901',
         typeId: 'cccd',
         side: 'front',
-        inviteToken: 'invite-1',
         current,
         audit: FILLER_AUDIT,
       },
       store,
-      deleteObjects,
     )
 
-    expect(deleteObjects).toHaveBeenCalledWith({
-      memberId: 'member-1',
-      typeId: 'cccd',
-      paths: ['members/member-1/docs/cccd/front.jpg'],
-      cccd: '012345678901',
-      inviteToken: 'invite-1',
-      idToken: undefined,
-    })
     expect(result.documents).toEqual({
       cccd: { backPath: 'members/member-1/docs/cccd/back.jpg' },
       diep_sa_di: {
@@ -76,9 +65,8 @@ describe('deleteMemberDocument', () => {
     )
   })
 
-  it('deletes all paths for a type when side is omitted', async () => {
+  it('removes all paths for a type when side is omitted', async () => {
     const store = createMemoryMemberStore([draftMember])
-    const deleteObjects = vi.fn(async () => undefined)
     const current: MemberDocuments = {
       cccd: {
         frontPath: 'members/member-1/docs/cccd/front.jpg',
@@ -94,25 +82,12 @@ describe('deleteMemberDocument', () => {
         memberId: 'member-1',
         cccd: '012345678901',
         typeId: 'cccd',
-        inviteToken: 'invite-1',
         current,
         audit: FILLER_AUDIT,
       },
       store,
-      deleteObjects,
     )
 
-    expect(deleteObjects).toHaveBeenCalledWith({
-      memberId: 'member-1',
-      typeId: 'cccd',
-      paths: [
-        'members/member-1/docs/cccd/front.jpg',
-        'members/member-1/docs/cccd/back.jpg',
-      ],
-      cccd: '012345678901',
-      inviteToken: 'invite-1',
-      idToken: undefined,
-    })
     expect(result.documents).toEqual({
       diep_sa_di: {
         filePath: 'members/member-1/docs/diep_sa_di/file.pdf',
@@ -120,9 +95,8 @@ describe('deleteMemberDocument', () => {
     })
   })
 
-  it('deletes from server state when client current is stale', async () => {
+  it('removes from server state when client current is stale', async () => {
     const store = createMemoryMemberStore([draftMember])
-    const deleteObjects = vi.fn(async () => undefined)
     const staleCurrent: MemberDocuments = {
       cccd: { frontPath: 'members/member-1/docs/cccd/front.jpg' },
     }
@@ -133,22 +107,12 @@ describe('deleteMemberDocument', () => {
         cccd: '012345678901',
         typeId: 'cccd',
         side: 'back',
-        inviteToken: 'invite-1',
         current: staleCurrent,
         audit: FILLER_AUDIT,
       },
       store,
-      deleteObjects,
     )
 
-    expect(deleteObjects).toHaveBeenCalledWith({
-      memberId: 'member-1',
-      typeId: 'cccd',
-      paths: ['members/member-1/docs/cccd/back.jpg'],
-      cccd: '012345678901',
-      inviteToken: 'invite-1',
-      idToken: undefined,
-    })
     expect(result.documents).toEqual({
       cccd: { frontPath: 'members/member-1/docs/cccd/front.jpg' },
       diep_sa_di: {
@@ -166,7 +130,6 @@ describe('deleteMemberDocument', () => {
         lockedBy: 'admin-1',
       },
     ])
-    const deleteObjects = vi.fn(async () => undefined)
 
     await expect(
       deleteMemberDocument(
@@ -175,14 +138,14 @@ describe('deleteMemberDocument', () => {
           cccd: '012345678901',
           typeId: 'cccd',
           side: 'front',
-          inviteToken: 'invite-1',
           current: { cccd: { frontPath: 'members/member-1/docs/cccd/front.jpg' } },
           audit: FILLER_AUDIT,
         },
         store,
-        deleteObjects,
       ),
     ).rejects.toMatchObject({ code: 'RECORD_LOCKED' } satisfies Partial<DomainError>)
-    expect(deleteObjects).not.toHaveBeenCalled()
+    expect((await store.getById('member-1'))?.documents).toEqual(
+      draftMember.documents,
+    )
   })
 })

@@ -6,8 +6,8 @@ import type { Member } from '#/domain/types'
 import { theme } from '../../theme'
 import { MembersHaLapTabs } from './MembersHaLapTabs'
 
-vi.mock('@tanstack/react-router', () => ({
-  Link: ({
+vi.mock('@tanstack/react-router', () => {
+  const Link = ({
     children,
     to,
     params,
@@ -24,8 +24,12 @@ vi.mock('@tanstack/react-router', () => ({
         {children}
       </a>
     )
-  },
-}))
+  }
+  return {
+    Link,
+    createLink: () => Link,
+  }
+})
 
 const activeTabMembers = [
   {

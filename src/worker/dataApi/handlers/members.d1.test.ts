@@ -21,6 +21,7 @@ import {
   NOW,
   callData,
   expectDomainError,
+  fileCalls,
   fullTableScans,
   queryPlansOf,
   searchCalls,
@@ -52,6 +53,7 @@ async function auditLogsOf(id: string): Promise<AuditLogEntry[]> {
 beforeEach(async () => {
   await clearData()
   searchCalls.length = 0
+  fileCalls.length = 0
 })
 
 describe('members/save-draft and save-and-lock', () => {
@@ -272,24 +274,58 @@ describe('members lifecycle writes', () => {
     )
   })
 
-  it('merges and removes document sides', async () => {
+  it('merges and removes document sides, deleting the files they drop', async () => {
     await seedMembers(memberDraft())
     const id = memberDraft().id
+    const docs = `members/${id}/docs/cccd`
     const ref = { memberId: id, typeId: 'cccd', audit: ADMIN_ACTOR }
-    await callData('members/merge-document', { ...ref, side: 'front', filePath: 'a.jpg' }, gdAdmin)
-    const merged = await callData<{ member: Member; previousPath?: string }>(
+    await callData('members/merge-document', { ...ref, side: 'front', filePath: `${docs}/front.jpg` }, gdAdmin)
+    // Same path again (re-upload in place): nothing to delete.
+    await callData('members/merge-document', { ...ref, side: 'front', filePath: `${docs}/front.jpg` }, gdAdmin)
+    expect(fileCalls).toEqual([])
+    const merged = await callData<Member>(
       'members/merge-document',
-      { ...ref, side: 'front', filePath: 'b.jpg' },
+      { ...ref, side: 'front', filePath: `${docs}/front.pdf` },
       gdAdmin,
     )
-    expect(merged.previousPath).toBe('a.jpg')
-    expect(merged.member.documents).toEqual({ cccd: { frontPath: 'b.jpg' } })
-    const removed = await callData<{ member: Member; removedPaths: string[] }>(
-      'members/remove-document',
-      ref,
+    expect(merged.documents).toEqual({ cccd: { frontPath: `${docs}/front.pdf` } })
+    expect(fileCalls).toEqual([{ action: 'delete', paths: [`${docs}/front.jpg`] }])
+    const removed = await callData<Member>('members/remove-document', ref, gdAdmin)
+    expect(removed.documents).toEqual({})
+    expect(fileCalls.at(-1)).toEqual({ action: 'delete', paths: [`${docs}/front.pdf`] })
+  })
+
+  it('never deletes a file outside the member folder', async () => {
+    await seedMembers(memberDraft({ photoPath: 'members/someone-else/photo.jpg' }))
+    await callData(
+      'members/set-photo',
+      { memberId: memberDraft().id, photoPath: null, audit: ADMIN_ACTOR },
       gdAdmin,
     )
-    expect(removed.removedPaths).toEqual(['b.jpg'])
+    expect(fileCalls).toEqual([])
+  })
+
+  it('deletes the photo a member drops', async () => {
+    const photoPath = `members/${memberDraft().id}/photo.jpg`
+    await seedMembers(memberDraft({ photoPath }))
+    await callData('members/set-photo', { memberId: memberDraft().id, photoPath: null, audit: ADMIN_ACTOR }, gdAdmin)
+    expect(fileCalls).toEqual([{ action: 'delete', paths: [photoPath] }])
+  })
+
+  it('lets a filler replace a document of a locked member but not remove it', async () => {
+    await seedInvite()
+    const id = memberLocked().id
+    const front = `members/${id}/docs/cccd/front.jpg`
+    await seedMembers(memberLocked({ documents: { cccd: { frontPath: front } } }))
+    const ref = { memberId: id, typeId: 'cccd', audit: FILLER_ACTOR }
+    await expectDomainError(callData('members/remove-document', ref, anon), 'FORBIDDEN')
+    const replaced = await callData<Member>(
+      'members/merge-document',
+      { ...ref, side: 'front', filePath: `members/${id}/docs/cccd/front.pdf` },
+      anon,
+    )
+    expect(replaced.documents?.cccd?.frontPath).toBe(`members/${id}/docs/cccd/front.pdf`)
+    expect(fileCalls).toEqual([{ action: 'delete', paths: [front] }])
   })
 
   it('rejects a side the document type does not have', async () => {
@@ -326,6 +362,29 @@ describe('members/update', () => {
     expect(searchCalls.slice(-2)).toEqual([
       { action: 'deleteMember', id: oldId },
       { action: 'upsertMember', id: member.id },
+    ])
+  })
+
+  it('moves the member files to the new id and deletes the old ones after the write', async () => {
+    const oldId = memberDraft().id
+    const newId = 'gd-ii_tang_012345678901'
+    await seedMembers(
+      memberDraft({
+        photoPath: `members/${oldId}/photo.jpg`,
+        documents: { cccd: { frontPath: `members/${oldId}/docs/cccd/front.jpg` } },
+      }),
+    )
+    const member = await callData<Member>(
+      'members/update',
+      { memberId: oldId, patch: {}, allowOrgUnitChange: true, orgUnitId: 'gd-ii', audit: ADMIN_ACTOR },
+      hePhaiAdmin,
+    )
+    expect(member.photoPath).toBe(`members/${newId}/photo.jpg`)
+    expect(member.documents).toEqual({ cccd: { frontPath: `members/${newId}/docs/cccd/front.jpg` } })
+    expect(fileCalls).toEqual([
+      { action: 'copy', from: `members/${oldId}/docs/cccd/front.jpg`, to: `members/${newId}/docs/cccd/front.jpg` },
+      { action: 'copy', from: `members/${oldId}/photo.jpg`, to: `members/${newId}/photo.jpg` },
+      { action: 'delete', paths: [`members/${oldId}/photo.jpg`, `members/${oldId}/docs/cccd/front.jpg`] },
     ])
   })
 
@@ -403,6 +462,20 @@ describe('members/delete-many', () => {
     await callData('members/delete-many', { ids }, gdAdmin)
     expect(await callData('members/get', { id: ids[0] })).toBeNull()
     expect(searchCalls).toEqual(ids.map((id) => ({ action: 'deleteMember', id })))
+  })
+
+  it('deletes the files of the deleted members', async () => {
+    const id = memberDraft().id
+    await seedMembers(
+      memberDraft({
+        photoPath: `members/${id}/photo.jpg`,
+        documents: { diep_sa_di: { filePath: `members/${id}/docs/diep_sa_di/file.pdf` } },
+      }),
+    )
+    await callData('members/delete-many', { ids: [id] }, gdAdmin)
+    expect(fileCalls).toEqual([
+      { action: 'delete', paths: [`members/${id}/photo.jpg`, `members/${id}/docs/diep_sa_di/file.pdf`] },
+    ])
   })
 
   it('deletes more members than fit in one statement', async () => {

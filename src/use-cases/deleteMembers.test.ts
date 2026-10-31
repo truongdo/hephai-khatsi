@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import type { AuthClaims } from '#/domain/authClaims'
 import type { Member } from '#/domain/types'
 import { createMemoryMemberStore } from '#/test/memoryStores'
@@ -38,7 +38,7 @@ describe('deleteMembers', () => {
       member({ id: 'm2' }),
     ])
 
-    await deleteMembers(HE_PHAI_CLAIMS, { ids: ['m1'], idToken: 'token' }, store)
+    await deleteMembers(HE_PHAI_CLAIMS, { ids: ['m1'] }, store)
 
     expect(await store.getById('m1')).toBeNull()
     expect(await store.getById('m2')).not.toBeNull()
@@ -51,83 +51,11 @@ describe('deleteMembers', () => {
       member({ id: 'm3' }),
     ])
 
-    await deleteMembers(HE_PHAI_CLAIMS, { ids: ['m1', 'm3'], idToken: 'token' }, store)
+    await deleteMembers(HE_PHAI_CLAIMS, { ids: ['m1', 'm3'] }, store)
 
     expect(await store.getById('m1')).toBeNull()
     expect(await store.getById('m2')).not.toBeNull()
     expect(await store.getById('m3')).toBeNull()
-  })
-
-  it('calls photo deleter for each member id after store delete', async () => {
-    const store = createMemoryMemberStore([member({ id: 'm1' }), member({ id: 'm2' })])
-    const deletePhoto = vi.fn().mockResolvedValue(undefined)
-
-    await deleteMembers(
-      HE_PHAI_CLAIMS,
-      { ids: ['m1', 'm2'], idToken: 'admin-token' },
-      store,
-      deletePhoto,
-    )
-
-    expect(deletePhoto).toHaveBeenCalledTimes(2)
-    expect(deletePhoto).toHaveBeenCalledWith('m1')
-    expect(deletePhoto).toHaveBeenCalledWith('m2')
-  })
-
-  it('does not throw when photo delete fails (best-effort)', async () => {
-    const store = createMemoryMemberStore([member({ id: 'm1' })])
-    const deletePhoto = vi.fn().mockRejectedValue(new Error('R2 delete failed'))
-    const deleteDocsPrefix = vi.fn().mockResolvedValue(undefined)
-
-    await expect(
-      deleteMembers(
-        HE_PHAI_CLAIMS,
-        { ids: ['m1'], idToken: 'token' },
-        store,
-        deletePhoto,
-        deleteDocsPrefix,
-      ),
-    ).resolves.toBeUndefined()
-
-    expect(await store.getById('m1')).toBeNull()
-    expect(deletePhoto).toHaveBeenCalledWith('m1')
-  })
-
-  it('calls docs prefix deleter for each member id after store delete', async () => {
-    const store = createMemoryMemberStore([member({ id: 'm1' }), member({ id: 'm2' })])
-    const deletePhoto = vi.fn().mockResolvedValue(undefined)
-    const deleteDocsPrefix = vi.fn().mockResolvedValue(undefined)
-
-    await deleteMembers(
-      HE_PHAI_CLAIMS,
-      { ids: ['m1', 'm2'], idToken: 'admin-token' },
-      store,
-      deletePhoto,
-      deleteDocsPrefix,
-    )
-
-    expect(deleteDocsPrefix).toHaveBeenCalledTimes(2)
-    expect(deleteDocsPrefix).toHaveBeenCalledWith('m1')
-    expect(deleteDocsPrefix).toHaveBeenCalledWith('m2')
-  })
-
-  it('does not throw when docs prefix delete fails (best-effort)', async () => {
-    const store = createMemoryMemberStore([member({ id: 'm1' })])
-    const deletePhoto = vi.fn().mockResolvedValue(undefined)
-    const deleteDocsPrefix = vi.fn().mockRejectedValue(new Error('R2 prefix delete failed'))
-
-    await expect(
-      deleteMembers(
-        HE_PHAI_CLAIMS,
-        { ids: ['m1'], idToken: 'token' },
-        store,
-        deletePhoto,
-        deleteDocsPrefix,
-      ),
-    ).resolves.toBeUndefined()
-
-    expect(await store.getById('m1')).toBeNull()
-    expect(deleteDocsPrefix).toHaveBeenCalledWith('m1')
   })
 
   it('rejects cross-org delete for giao_doan_admin', async () => {
@@ -138,7 +66,7 @@ describe('deleteMembers', () => {
     await expect(
       deleteMembers(
         GIAO_DOAN_CLAIMS,
-        { ids: ['m1'], idToken: 'token' },
+        { ids: ['m1'] },
         store,
       ),
     ).rejects.toMatchObject({

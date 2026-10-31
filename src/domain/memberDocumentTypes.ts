@@ -83,12 +83,6 @@ export function mergeDocumentPath(
   }
 }
 
-export function pathsFromTypeFiles(files: MemberDocumentFiles): string[] {
-  return [files.frontPath, files.backPath, files.filePath].filter(
-    (path): path is string => Boolean(path),
-  )
-}
-
 export function removeDocumentSide(
   current: MemberDocuments,
   typeId: DocumentTypeId,

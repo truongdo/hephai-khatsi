@@ -1,5 +1,5 @@
-import { Badge, Button, Group, Select, Text } from '@mantine/core'
-import { Link } from '@tanstack/react-router'
+import { Badge, Button, Group, Select } from '@mantine/core'
+import { TextLink } from '#/components/routing/MantineRouterLinks'
 import type { ReactNode } from 'react'
 import { emptyCell } from '#/components/admin/emptyCell'
 import { RecordStatusBadge } from '#/components/admin/RecordStatusBadge'
@@ -43,15 +43,14 @@ export function renderMemberTableCell(
 ): ReactNode {
   if (columnId === 'phapDanh') {
     return member.phapDanh ? (
-      <Text
-        component={Link}
+      <TextLink
         to="/admin/members/$id"
         params={{ id: member.id }}
         c="teal.7"
         fw={600}
       >
         {member.phapDanh}
-      </Text>
+      </TextLink>
     ) : (
       emptyCell(member.phapDanh)
     )

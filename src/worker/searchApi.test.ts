@@ -264,7 +264,7 @@ describe('handleSearchApi', () => {
     it('import-from-db imports one page read from D1 and returns its cursor', async () => {
       verifyHePhaiAdminToken.mockResolvedValue({ uid: 'hp-admin' })
       const bind = vi.fn(() => ({ all: async () => ({ results: [] }) }))
-      const prepare = vi.fn(() => ({ bind }))
+      const prepare = vi.fn((_sql: string) => ({ bind }))
       const { handleSearchApi } = await import('./searchApi')
 
       const response = await handleSearchApi(

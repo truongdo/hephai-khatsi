@@ -111,12 +111,12 @@ async function handleGrant(
       member.email,
     )
     if (!authUser) {
-      authUser = await createAuthUserWithEmail(
+      const created = await createAuthUserWithEmail(
         accessToken,
         env.FIREBASE_PROJECT_ID,
         member.email,
       )
-      authUser = { localId: authUser.localId, customClaims: {} }
+      authUser = { localId: created.localId, customClaims: {} }
     } else if (
       blocksSecretaryGrantOnAuthClaims(
         authUser.customClaims,

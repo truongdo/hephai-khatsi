@@ -1,11 +1,10 @@
 import { DomainError } from '#/domain/errors'
 import type { AuditActor } from '#/domain/auditLog'
-import { deleteTemplePhotoObject } from '#/photos/photosApiClient'
 import { templeRepo, type TempleStore } from '#/repositories/templeRepo'
 
 export type DeleteTemplePhotoInput = {
   templeId: string
-  inviteToken?: string
+  /** Staff only: a filler cannot remove the photo of a locked temple. */
   idToken?: string
   audit: AuditActor
 }
@@ -13,7 +12,6 @@ export type DeleteTemplePhotoInput = {
 export async function deleteTemplePhoto(
   input: DeleteTemplePhotoInput,
   templeStore: TempleStore = templeRepo,
-  deleteObject: typeof deleteTemplePhotoObject = deleteTemplePhotoObject,
 ): Promise<void> {
   const temple = await templeStore.getById(input.templeId)
 
@@ -25,10 +23,6 @@ export async function deleteTemplePhoto(
     throw new DomainError('RECORD_LOCKED', 'Temple is locked')
   }
 
-  await deleteObject({
-    templeId: input.templeId,
-    inviteToken: input.inviteToken,
-    idToken: input.idToken,
-  })
+  // The data API deletes the photo it drops.
   await templeStore.setPhotoPath(input.templeId, null, input.audit)
 }

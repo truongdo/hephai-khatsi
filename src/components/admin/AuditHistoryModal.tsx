@@ -9,10 +9,7 @@ import {
   directorySecretariesQuery,
   hePhaiSecretariesQuery,
 } from '#/query/adminQueries'
-import {
-  memberAuditLogsQuery,
-  templeAuditLogsQuery,
-} from '#/query/auditLogQueries'
+import { auditLogsQuery } from '#/query/auditLogQueries'
 import { listAuditLogs, type AuditParent } from '#/repositories/auditLogRepo'
 import { memberRepo } from '#/repositories/memberRepo'
 import { templeRepo } from '#/repositories/templeRepo'
@@ -67,12 +64,6 @@ function actorLabel(
   return `${label} · ${displayName}`
 }
 
-function auditLogsQuery(parent: AuditParent) {
-  return parent.collection === 'members'
-    ? memberAuditLogsQuery(parent.id, PAGE_SIZE)
-    : templeAuditLogsQuery(parent.id, PAGE_SIZE)
-}
-
 export function AuditHistoryModal({
   opened,
   onClose,
@@ -80,7 +71,7 @@ export function AuditHistoryModal({
   parent,
 }: AuditHistoryModalProps) {
   const { data, isLoading, isError } = useQuery({
-    ...auditLogsQuery(parent),
+    ...auditLogsQuery(parent, PAGE_SIZE),
     enabled: opened && !!parent.id,
   })
   const parentMemberQuery = useQuery({

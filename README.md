@@ -110,19 +110,17 @@ This project uses [Mantine](https://mantine.dev/) for UI components and theming 
 
 ## Member photos (R2 + Worker)
 
-Portraits upload to R2 via presigned PUT URLs from `/api/photos/*`; the client displays them from
-`VITE_PHOTOS_PUBLIC_BASE` + `photoPath`. Admin delete removes the R2 object through the Worker.
+Portraits and member documents upload through the Worker (`POST /api/photos/member|temple`,
+`POST /api/docs/member`, multipart), which checks the size and the file type by content and writes
+them to the `PHOTOS` R2 binding; the client displays them from `VITE_PHOTOS_PUBLIC_BASE` + `photoPath`.
+The data API deletes the R2 objects a record stops referencing (photo or document removed or replaced,
+record deleted) and moves them when a member changes giáo đoàn.
 
 ### One-time ops checklist (Cloudflare dashboard)
 
 1. Create R2 bucket **`member-photos`** (optional preview bucket **`member-photos-preview`** — names must match `wrangler.jsonc`).
 2. Enable a **public development URL** (`*.r2.dev`) or attach a **custom domain** for the bucket; set the base (no trailing slash) as `VITE_PHOTOS_PUBLIC_BASE` in `.env` / deploy env.
-3. Create an **R2 API token** with Object Read & Write scoped to the bucket. Non-secret vars (`R2_ACCOUNT_ID`, `R2_BUCKET_NAME`, `FIREBASE_PROJECT_ID`) live in `wrangler.jsonc` under `vars` (already set for this project). Put **secrets** with Wrangler from the repo root (use `pnpm exec` — Wrangler is a local dep, not a global CLI):
-
-   ```bash
-   pnpm exec wrangler secret put R2_ACCESS_KEY_ID
-   pnpm exec wrangler secret put R2_SECRET_ACCESS_KEY
-   ```
+3. Non-secret vars (`FIREBASE_PROJECT_ID`) live in `wrangler.jsonc` under `vars`. Put **secrets** (`FIREBASE_SERVICE_ACCOUNT_JSON`, `TYPESENSE_API_KEY`) with Wrangler from the repo root (use `pnpm exec` — Wrangler is a local dep, not a global CLI), e.g. `pnpm exec wrangler secret put TYPESENSE_API_KEY`. No R2 API token is needed: the Worker writes through the bucket binding.
 
 4. Deploy: `pnpm run deploy` builds the SPA (`dist/`) and publishes the Worker + Assets via Wrangler (not `pnpm deploy`: under pnpm 11 that is pnpm's own workspace command).
 
@@ -140,8 +138,6 @@ Terminal A — Worker (needs the R2 / D1 bindings + secrets in `.dev.vars`, giti
 
 ```bash
 # .dev.vars example (secrets; plain vars come from wrangler.jsonc in prod):
-# R2_ACCESS_KEY_ID=...
-# R2_SECRET_ACCESS_KEY=...
 # FIREBASE_SERVICE_ACCOUNT_JSON must be the raw JSON string (one line), NOT a file path.
 # Example (minify your *-firebase-adminsdk-*.json first):
 #   node -e 'console.log(JSON.stringify(require("./hephaikhatsi-….json")))'

@@ -1,13 +1,12 @@
 import { DomainError } from '#/domain/errors'
 import type { AuditActor } from '#/domain/auditLog'
 import { normalizeCccd } from '#/domain/normalize'
-import { deleteMemberPhotoObject } from '#/photos/photosApiClient'
 import { memberRepo, type MemberStore } from '#/repositories/memberRepo'
 
 export type DeleteMemberPhotoInput = {
   memberId: string
   cccd: string
-  inviteToken?: string
+  /** Staff only: a filler cannot remove the photo of a locked member. */
   idToken?: string
   audit: AuditActor
 }
@@ -15,7 +14,6 @@ export type DeleteMemberPhotoInput = {
 export async function deleteMemberPhoto(
   input: DeleteMemberPhotoInput,
   memberStore: MemberStore = memberRepo,
-  deleteObject: typeof deleteMemberPhotoObject = deleteMemberPhotoObject,
 ): Promise<void> {
   const cccd = normalizeCccd(input.cccd)
   const member = await memberStore.getById(input.memberId)
@@ -32,11 +30,6 @@ export async function deleteMemberPhoto(
     throw new DomainError('RECORD_LOCKED', 'Member is locked')
   }
 
-  await deleteObject({
-    memberId: input.memberId,
-    cccd,
-    inviteToken: input.inviteToken,
-    idToken: input.idToken,
-  })
+  // The data API deletes the photo it drops.
   await memberStore.setPhotoPath(input.memberId, null, input.audit)
 }

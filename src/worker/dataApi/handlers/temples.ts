@@ -6,6 +6,7 @@ import { canCreateTemple, canDeleteTemple, canUpdateTemple } from '#/domain/auth
 import { DATA_API_MAX_IDS as MAX_IDS, DATA_API_MAX_PAGE_SIZE as MAX_PAGE_SIZE } from '#/domain/dataApiLimits'
 import { DomainError } from '#/domain/errors'
 import { buildTempleListSortKeys } from '#/domain/listSortKeys'
+import { droppedFiles, templeFilePaths, templeFolder } from '#/domain/recordFiles'
 import type { Temple } from '#/domain/types'
 import type { TempleAdminSortBy } from '#/repositories/adminListTypes'
 import type { TempleProfilePatch } from '#/repositories/templeRepo'
@@ -145,6 +146,11 @@ async function writeTemple(
   }
   await runBatch(db, statements)
   ctx.search.upsertTemple(after)
+  if (before) {
+    ctx.files.deleteLater(
+      droppedFiles(templeFilePaths(before.temple), templeFilePaths(after), templeFolder(after.id)),
+    )
+  }
 }
 
 async function updateTemple(
@@ -323,6 +329,9 @@ async function deleteMany(ctx: DataContext, input: { ids: string[] }): Promise<{
     deleteVersionedRowsStatements(db, 'temples', rows),
   )
   for (const row of rows) ctx.search.deleteTemple(row.id)
+  ctx.files.deleteLater(
+    rows.flatMap((row) => droppedFiles(templeFilePaths(templeFromRow(row)), [], templeFolder(row.id))),
+  )
   return { ok: true }
 }
 

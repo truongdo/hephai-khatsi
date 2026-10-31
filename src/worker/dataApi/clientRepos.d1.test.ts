@@ -24,11 +24,23 @@ import { clearData } from './test/db'
 
 const workerEnv = {
   DB: env.DB,
+  PHOTOS: env.PHOTOS,
   FIREBASE_PROJECT_ID: 'test-project',
   TYPESENSE_API_KEY: 'test-key',
 } as unknown as Env
 
 const CALLERS: Record<string, Caller> = { 'hp-admin': hePhaiAdmin, 'gd-admin': gdAdmin }
+
+/** Work the Worker left for after its responses (R2 deletes, search sync). */
+const pending: Promise<unknown>[] = []
+
+async function settled(): Promise<void> {
+  await Promise.allSettled(pending.splice(0))
+}
+
+async function storedKeys(prefix: string): Promise<string[]> {
+  return (await env.PHOTOS.list({ prefix })).objects.map((object) => object.key).sort()
+}
 
 /** The signed-in user's token (null = filler). */
 let idToken: string | null = null
@@ -56,7 +68,7 @@ beforeEach(async () => {
     const response = await handleDataApi(
       new Request(new URL(input, 'https://app.test'), init),
       workerEnv,
-      { waitUntil: () => {} },
+      { waitUntil: (promise) => void pending.push(promise) },
       async (token) => CALLERS[token] ?? null,
     )
     return response ?? new Response('Not found', { status: 404 })
@@ -201,22 +213,29 @@ describe('admin members', () => {
     expect(templeStats.totals).toEqual({ all: 0 })
   })
 
-  it('sets the portrait and the documents', async () => {
+  it('sets the portrait and the documents, keeping R2 in step', async () => {
     signInAs('hp-admin')
     const member = await saveDraft('012345678901')
+    const folder = `members/${member.id}/`
+    const front = `${folder}docs/cccd/front.jpg`
+    const frontPdf = `${folder}docs/cccd/front.pdf`
+    for (const key of [`${folder}photo.jpg`, front, frontPdf]) await env.PHOTOS.put(key, 'x')
 
-    const withPhoto = await memberRepo.setPhotoPath(member.id, `members/${member.id}/portrait.jpg`, adminAudit)
-    expect(withPhoto.photoPath).toBe(`members/${member.id}/portrait.jpg`)
+    const withPhoto = await memberRepo.setPhotoPath(member.id, `${folder}photo.jpg`, adminAudit)
+    expect(withPhoto.photoPath).toBe(`${folder}photo.jpg`)
 
-    const front = `members/${member.id}/docs/cccd/front.jpg`
     const merged = await memberRepo.mergeDocumentSide(member.id, 'cccd', 'front', front, adminAudit)
-    expect(merged.member.documents).toEqual({ cccd: { frontPath: front } })
-    expect(merged.previousPath).toBeUndefined()
-    const replaced = await memberRepo.mergeDocumentSide(member.id, 'cccd', 'front', `${front}?v2`, adminAudit)
-    expect(replaced.previousPath).toBe(front)
+    expect(merged.documents).toEqual({ cccd: { frontPath: front } })
+    const replaced = await memberRepo.mergeDocumentSide(member.id, 'cccd', 'front', frontPdf, adminAudit)
+    expect(replaced.documents).toEqual({ cccd: { frontPath: frontPdf } })
+    await settled()
+    expect(await storedKeys(folder)).toEqual([frontPdf, `${folder}photo.jpg`])
 
     const removed = await memberRepo.removeDocumentPaths(member.id, 'cccd', undefined, adminAudit)
-    expect(removed.removedPaths).toEqual([`${front}?v2`])
+    expect(removed.documents).toEqual({})
+    await memberRepo.setPhotoPath(member.id, null, adminAudit)
+    await settled()
+    expect(await storedKeys(folder)).toEqual([])
 
     const diep = { diep_sa_di: { filePath: `members/${member.id}/docs/diep_sa_di/file.pdf` } }
     expect((await memberRepo.setDocumentPaths(member.id, diep)).documents).toEqual(diep)

@@ -20,6 +20,7 @@ function fakeStorage() {
   const storage: StoragePort = {
     async put(memberId, cccd, bytes, contentType, inviteToken, idToken) {
       calls.push({ memberId, cccd, bytes, contentType, inviteToken, idToken })
+      return `members/${memberId}/photo.jpg`
     },
   }
   return { storage, calls }

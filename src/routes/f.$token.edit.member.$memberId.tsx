@@ -6,9 +6,8 @@ import { m } from '#/paraglide/messages'
 import { fillerMemberQuery } from '#/query/fillerQueries'
 
 export const Route = createFileRoute('/f/$token/edit/member/$memberId')({
-  validateSearch: (search: Record<string, unknown>) => ({
-    phone: typeof search.phone === 'string' ? search.phone : '',
-  }),
+  validateSearch: (search: Record<string, unknown>): { phone?: string } =>
+    typeof search.phone === 'string' ? { phone: search.phone } : {},
   component: MemberEditRoute,
 })
 

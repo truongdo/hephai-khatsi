@@ -83,6 +83,10 @@ export function MemberEditorForm({
   const fieldsApiRef = useRef<MemberFormFieldsApi | null>(null)
   const [sessionCreatedId, setSessionCreatedId] = useState<string | undefined>()
   const effectiveMemberId = memberId ?? sessionCreatedId
+  // An admin-made draft names no invite until the filler's save-and-lock
+  // adopts one; until then the Worker refuses the filler's uploads, so the
+  // picked files wait and upload after the save.
+  const filesNeedSave = Boolean(memberId) && !initial.inviteId
   const isCreate = !effectiveMemberId
   const [cccdDraft, setCccdDraft] = useState(cccd ?? '')
   const resolvedCccd = memberId ? (cccd ?? '') : cccdDraft
@@ -192,6 +196,94 @@ export function MemberEditorForm({
     },
   })
 
+  /**
+   * Uploads the photo and documents picked before the record could take them
+   * (a new member, or an admin-made draft without an invite until this
+   * save-and-lock). Returns the member with their paths, or null after
+   * showing the failure.
+   */
+  const uploadPendingFiles = async (
+    api: MemberFormFieldsApi,
+    saved: Member,
+    saveAudit: ReturnType<typeof fillerAuditFromPhone>,
+  ): Promise<Member | null> => {
+    let savedMember = saved
+    const pendingPhoto = api.getPendingPhoto()
+    if (pendingPhoto) {
+      try {
+        const bytes = new Uint8Array(await pendingPhoto.arrayBuffer())
+        const uploadResult = await uploadMemberPhoto({
+          memberId: savedMember.id,
+          cccd: resolvedCccd,
+          bytes,
+          contentType: pendingPhoto.type,
+          inviteToken: token,
+          audit: saveAudit,
+        })
+        api.setPhotoPath(uploadResult.photoPath)
+        api.clearPendingPhoto()
+        savedMember = { ...savedMember, photoPath: uploadResult.photoPath }
+      } catch (error) {
+        await showUploadFailure(error, 'photo', savedMember)
+        return null
+      }
+    }
+
+    const pendingDocs = api.getPendingDocuments()
+    if (Object.keys(pendingDocs).length > 0) {
+      try {
+        for (const typeId of Object.keys(pendingDocs) as DocumentTypeId[]) {
+          const sides = pendingDocs[typeId] ?? {}
+          for (const side of Object.keys(sides) as DocumentSide[]) {
+            const file = sides[side]
+            if (!file) continue
+            const bytes = new Uint8Array(await file.arrayBuffer())
+            const uploadResult = await uploadMemberDocument({
+              memberId: savedMember.id,
+              cccd: resolvedCccd,
+              typeId,
+              side,
+              bytes,
+              contentType: file.type,
+              inviteToken: token,
+              current: api.getDocuments(),
+              audit: saveAudit,
+            })
+            api.setDocuments(uploadResult.documents)
+            savedMember = {
+              ...savedMember,
+              documents: uploadResult.documents,
+            }
+          }
+        }
+        api.clearPendingDocuments()
+      } catch (error) {
+        await showUploadFailure(error, 'documents', savedMember)
+        return null
+      }
+    }
+    return savedMember
+  }
+
+  const showUploadFailure = async (
+    error: unknown,
+    stage: 'photo' | 'documents',
+    savedMember: Member,
+  ) => {
+    setValidationError(null)
+    setSaveSuccess(null)
+    setSaveError(
+      await describeFillerFailure({
+        error,
+        form: 'member',
+        stage,
+        orgUnitId,
+        sanghaType,
+      }),
+    )
+    queryClient.setQueryData(fillerKeys.member(savedMember.id), savedMember)
+  }
+
   const performSave = async () => {
     const api = fieldsApiRef.current
     if (!api) return
@@ -205,7 +297,6 @@ export function MemberEditorForm({
     setPostSavePending(true)
     try {
       let savedMember: Member
-      let createdThisSave = false
 
       if (sessionCreatedId) {
         const cached = queryClient.getQueryData<Member>(
@@ -227,104 +318,23 @@ export function MemberEditorForm({
         savedMember = saveResult.member
 
         if (saveResult.mode !== 'created') {
+          const withFiles = await uploadPendingFiles(api, savedMember, saveAudit)
+          if (!withFiles) return
           setSaveSuccess(m.filler_save_success())
-          queryClient.setQueryData(fillerKeys.member(savedMember.id), savedMember)
+          queryClient.setQueryData(fillerKeys.member(withFiles.id), withFiles)
           return
         }
 
-        createdThisSave = true
         setSessionCreatedId(savedMember.id)
       }
 
-      if (createdThisSave || sessionCreatedId) {
-        setSaveSuccess(m.filler_save_success())
-        const pendingPhoto = api.getPendingPhoto()
-        if (pendingPhoto) {
-          try {
-            const bytes = new Uint8Array(await pendingPhoto.arrayBuffer())
-            const uploadResult = await uploadMemberPhoto({
-              memberId: savedMember.id,
-              cccd: resolvedCccd,
-              bytes,
-              contentType: pendingPhoto.type,
-              inviteToken: token,
-              audit: saveAudit,
-            })
-            api.setPhotoPath(uploadResult.photoPath)
-            api.clearPendingPhoto()
-            savedMember = { ...savedMember, photoPath: uploadResult.photoPath }
-          } catch (error) {
-            setValidationError(null)
-            setSaveSuccess(null)
-            setSaveError(
-              await describeFillerFailure({
-                error,
-                form: 'member',
-                stage: 'photo',
-                orgUnitId,
-                sanghaType,
-              }),
-            )
-            queryClient.setQueryData(
-              fillerKeys.member(savedMember.id),
-              savedMember,
-            )
-            return
-          }
-        }
+      setSaveSuccess(m.filler_save_success())
+      const withFiles = await uploadPendingFiles(api, savedMember, saveAudit)
+      if (!withFiles) return
 
-        const pendingDocs = api.getPendingDocuments()
-        if (Object.keys(pendingDocs).length > 0) {
-          try {
-            for (const typeId of Object.keys(pendingDocs) as DocumentTypeId[]) {
-              const sides = pendingDocs[typeId] ?? {}
-              for (const side of Object.keys(sides) as DocumentSide[]) {
-                const file = sides[side]
-                if (!file) continue
-                const bytes = new Uint8Array(await file.arrayBuffer())
-                const uploadResult = await uploadMemberDocument({
-                  memberId: savedMember.id,
-                  cccd: resolvedCccd,
-                  typeId,
-                  side,
-                  bytes,
-                  contentType: file.type,
-                  inviteToken: token,
-                  current: api.getDocuments(),
-                  audit: saveAudit,
-                })
-                api.setDocuments(uploadResult.documents)
-                savedMember = {
-                  ...savedMember,
-                  documents: uploadResult.documents,
-                }
-              }
-            }
-            api.clearPendingDocuments()
-          } catch (error) {
-            setValidationError(null)
-            setSaveSuccess(null)
-            setSaveError(
-              await describeFillerFailure({
-                error,
-                form: 'member',
-                stage: 'documents',
-                orgUnitId,
-                sanghaType,
-              }),
-            )
-            queryClient.setQueryData(
-              fillerKeys.member(savedMember.id),
-              savedMember,
-            )
-            return
-          }
-        }
-
-        setSaveSuccess(m.filler_save_redirecting())
-        queryClient.setQueryData(fillerKeys.member(savedMember.id), savedMember)
-        await onCreated(savedMember.id)
-      }
+      setSaveSuccess(m.filler_save_redirecting())
+      queryClient.setQueryData(fillerKeys.member(withFiles.id), withFiles)
+      await onCreated(withFiles.id)
     } catch {
       // onError handles save failure
     } finally {
@@ -416,7 +426,7 @@ export function MemberEditorForm({
             dienThoai: initial.dienThoai ?? seedPhone,
           }}
           disabled={disabled}
-          memberId={effectiveMemberId}
+          memberId={filesNeedSave ? undefined : effectiveMemberId}
           orgUnitId={orgUnitId}
           cccd={resolvedCccd}
           onCccdChange={

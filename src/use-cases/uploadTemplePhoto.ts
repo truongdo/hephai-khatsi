@@ -1,9 +1,6 @@
 import { DomainError } from '#/domain/errors'
 import type { AuditActor } from '#/domain/auditLog'
-import {
-  putToPresignedUrl,
-  requestTemplePhotoUploadUrl,
-} from '#/photos/photosApiClient'
+import { uploadTemplePhotoFile } from '#/photos/photosApiClient'
 import { templeRepo, type TempleStore } from '#/repositories/templeRepo'
 
 export type TempleStoragePort = {
@@ -13,7 +10,7 @@ export type TempleStoragePort = {
     contentType: string,
     inviteToken?: string,
     idToken?: string,
-  ): Promise<void>
+  ): Promise<string>
 }
 
 export type UploadTemplePhotoInput = {
@@ -32,18 +29,15 @@ export type UploadTemplePhotoResult = {
 
 const clientStorage: TempleStoragePort = {
   async put(templeId, bytes, contentType, inviteToken, idToken) {
-    const { uploadUrl } = await requestTemplePhotoUploadUrl({
+    const { photoPath } = await uploadTemplePhotoFile({
       templeId,
+      bytes,
       contentType,
       inviteToken,
       idToken,
     })
-    await putToPresignedUrl(uploadUrl, bytes, contentType)
+    return photoPath
   },
-}
-
-function templePhotoPath(templeId: string): string {
-  return `temples/${templeId}/photo.jpg`
 }
 
 export async function uploadTemplePhoto(
@@ -73,8 +67,7 @@ export async function uploadTemplePhoto(
     throw new DomainError('FORBIDDEN', 'Photo already set on locked temple')
   }
 
-  const photoPath = templePhotoPath(input.templeId)
-  await storage.put(
+  const photoPath = await storage.put(
     input.templeId,
     input.bytes,
     input.contentType,

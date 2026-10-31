@@ -32,7 +32,7 @@ const reviewRetreatRegistrationsMock = vi.fn()
 
 const registrationItems: RetreatRegistration[] = []
 
-const ensureInviteMock = vi.fn(async () => ({
+const ensureInviteMock = vi.fn(async (..._args: unknown[]) => ({
   id: 'retreat_r1',
   token: 'retreat_r1',
   kind: 'retreat_registration' as const,
@@ -61,8 +61,8 @@ vi.mock('#/auth/useAdminClaim', () => ({
   }),
 }))
 
-vi.mock('@tanstack/react-router', () => ({
-  Link: ({
+vi.mock('@tanstack/react-router', () => {
+  const Link = ({
     children,
     to,
     params,
@@ -79,8 +79,12 @@ vi.mock('@tanstack/react-router', () => ({
         {children}
       </a>
     )
-  },
-}))
+  }
+  return {
+    Link,
+    createLink: () => Link,
+  }
+})
 
 vi.mock('#/query/adminQueries', () => ({
   retreatQuery: (id: string) => ({

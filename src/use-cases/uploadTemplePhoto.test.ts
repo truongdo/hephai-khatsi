@@ -20,6 +20,7 @@ function fakeStorage() {
   const storage: TempleStoragePort = {
     async put(templeId, bytes, contentType, inviteToken, idToken) {
       calls.push({ templeId, bytes, contentType, inviteToken, idToken })
+      return `temples/${templeId}/photo.jpg`
     },
   }
   return { storage, calls }

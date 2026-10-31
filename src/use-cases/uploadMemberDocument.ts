@@ -10,11 +10,7 @@ import {
   type MemberDocuments,
 } from '#/domain/memberDocumentTypes'
 import { normalizeCccd } from '#/domain/normalize'
-import {
-  deleteMemberDocumentObjects,
-  requestMemberDocumentUploadUrl,
-} from '#/photos/docsApiClient'
-import { putToPresignedUrl } from '#/photos/photosApiClient'
+import { uploadMemberDocumentFile } from '#/photos/docsApiClient'
 import { memberRepo, type MemberStore } from '#/repositories/memberRepo'
 
 export type DocumentStoragePort = {
@@ -61,16 +57,16 @@ const clientStorage: DocumentStoragePort = {
     inviteToken,
     idToken,
   ) {
-    const { uploadUrl, filePath } = await requestMemberDocumentUploadUrl({
+    const { filePath } = await uploadMemberDocumentFile({
       memberId,
       cccd,
       typeId,
       side,
+      bytes,
       contentType,
       inviteToken,
       idToken,
     })
-    await putToPresignedUrl(uploadUrl, bytes, contentType)
     return filePath
   },
 }
@@ -79,7 +75,6 @@ export async function uploadMemberDocument(
   input: UploadMemberDocumentInput,
   memberStore: MemberStore = memberRepo,
   storage: DocumentStoragePort = clientStorage,
-  deleteObjects: typeof deleteMemberDocumentObjects = deleteMemberDocumentObjects,
 ): Promise<UploadMemberDocumentResult> {
   const cccd = normalizeCccd(input.cccd)
   const member = await memberStore.getById(input.memberId)
@@ -124,28 +119,14 @@ export async function uploadMemberDocument(
     input.idToken,
   )
 
-  const { member: updated, previousPath } = await memberStore.mergeDocumentSide(
+  // The data API deletes the file this one replaces (another extension).
+  const updated = await memberStore.mergeDocumentSide(
     input.memberId,
     input.typeId,
     input.side,
     filePath,
     input.audit,
   )
-
-  if (previousPath && previousPath !== filePath) {
-    try {
-      await deleteObjects({
-        memberId: input.memberId,
-        typeId: input.typeId,
-        paths: [previousPath],
-        cccd,
-        inviteToken: input.inviteToken,
-        idToken: input.idToken,
-      })
-    } catch {
-      // best-effort cleanup of replaced object
-    }
-  }
 
   return { filePath, documents: updated.documents ?? {} }
 }

@@ -1,3 +1,12 @@
+// Client of the Worker's upload routes (src/worker/photosApi.ts,
+// src/worker/docsApi.ts): a multipart POST of the record's fields and the
+// file; staff send their Firebase ID token, fillers the invite token.
+
+export type UploadAuth = {
+  inviteToken?: string
+  idToken?: string
+}
+
 async function readApiError(response: Response): Promise<string> {
   try {
     const body = (await response.json()) as { error?: string }
@@ -8,142 +17,40 @@ async function readApiError(response: Response): Promise<string> {
   return `Request failed (${response.status})`
 }
 
-export async function requestMemberPhotoUploadUrl(input: {
-  memberId: string
-  cccd: string
-  contentType: string
-  inviteToken?: string
-  idToken?: string
-}): Promise<{ uploadUrl: string; photoPath: string }> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  }
-  if (input.idToken) {
-    headers.Authorization = `Bearer ${input.idToken}`
-  }
-
-  const body: Record<string, string> = {
-    memberId: input.memberId,
-    cccd: input.cccd,
-    contentType: input.contentType,
-  }
-  if (input.inviteToken) {
-    body.inviteToken = input.inviteToken
-  }
-
-  const response = await fetch('/api/photos/member-upload-url', {
+export async function postUpload<T>(
+  url: string,
+  fields: Record<string, string>,
+  file: { bytes: Uint8Array; contentType: string },
+  auth: UploadAuth,
+): Promise<T> {
+  const form = new FormData()
+  for (const [name, value] of Object.entries(fields)) form.append(name, value)
+  if (auth.inviteToken) form.append('inviteToken', auth.inviteToken)
+  form.append('file', new Blob([file.bytes], { type: file.contentType }))
+  const response = await fetch(url, {
     method: 'POST',
-    headers,
-    body: JSON.stringify(body),
+    headers: auth.idToken ? { Authorization: `Bearer ${auth.idToken}` } : {},
+    body: form,
   })
-
   if (!response.ok) {
     throw new Error(await readApiError(response))
   }
-
-  return (await response.json()) as { uploadUrl: string; photoPath: string }
+  return (await response.json()) as T
 }
 
-export async function putToPresignedUrl(
-  uploadUrl: string,
-  bytes: Uint8Array,
-  contentType: string,
-): Promise<void> {
-  const response = await fetch(uploadUrl, {
-    method: 'PUT',
-    body: bytes,
-    headers: { 'Content-Type': contentType },
-  })
-
-  if (!response.ok) {
-    throw new Error(`Photo upload failed (${response.status})`)
-  }
+export function uploadMemberPhotoFile(
+  input: { memberId: string; cccd: string; bytes: Uint8Array; contentType: string } & UploadAuth,
+): Promise<{ photoPath: string }> {
+  return postUpload(
+    '/api/photos/member',
+    { memberId: input.memberId, cccd: input.cccd },
+    input,
+    input,
+  )
 }
 
-export async function deleteMemberPhotoObject(input: {
-  memberId: string
-  cccd?: string
-  inviteToken?: string
-  idToken?: string
-}): Promise<void> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  }
-  if (input.idToken) {
-    headers.Authorization = `Bearer ${input.idToken}`
-  }
-
-  const body: Record<string, string> = { memberId: input.memberId }
-  if (input.cccd) body.cccd = input.cccd
-  if (input.inviteToken) body.inviteToken = input.inviteToken
-
-  const response = await fetch('/api/photos/member', {
-    method: 'DELETE',
-    headers,
-    body: JSON.stringify(body),
-  })
-
-  if (!response.ok) {
-    throw new Error(await readApiError(response))
-  }
-}
-
-export async function requestTemplePhotoUploadUrl(input: {
-  templeId: string
-  contentType: string
-  inviteToken?: string
-  idToken?: string
-}): Promise<{ uploadUrl: string; photoPath: string }> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  }
-  if (input.idToken) {
-    headers.Authorization = `Bearer ${input.idToken}`
-  }
-
-  const body: Record<string, string> = {
-    templeId: input.templeId,
-    contentType: input.contentType,
-  }
-  if (input.inviteToken) {
-    body.inviteToken = input.inviteToken
-  }
-
-  const response = await fetch('/api/photos/temple-upload-url', {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-  })
-
-  if (!response.ok) {
-    throw new Error(await readApiError(response))
-  }
-
-  return (await response.json()) as { uploadUrl: string; photoPath: string }
-}
-
-export async function deleteTemplePhotoObject(input: {
-  templeId: string
-  inviteToken?: string
-  idToken?: string
-}): Promise<void> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  }
-  if (input.idToken) {
-    headers.Authorization = `Bearer ${input.idToken}`
-  }
-
-  const body: Record<string, string> = { templeId: input.templeId }
-  if (input.inviteToken) body.inviteToken = input.inviteToken
-
-  const response = await fetch('/api/photos/temple', {
-    method: 'DELETE',
-    headers,
-    body: JSON.stringify(body),
-  })
-
-  if (!response.ok) {
-    throw new Error(await readApiError(response))
-  }
+export function uploadTemplePhotoFile(
+  input: { templeId: string; bytes: Uint8Array; contentType: string } & UploadAuth,
+): Promise<{ photoPath: string }> {
+  return postUpload('/api/photos/temple', { templeId: input.templeId }, input, input)
 }

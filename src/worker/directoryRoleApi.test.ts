@@ -155,7 +155,7 @@ describe('handleDirectoryRoleApi', () => {
       const { handleDirectoryRoleApi } = await import('./directoryRoleApi')
 
       const response = await handleDirectoryRoleApi(grantRequest(), makeEnv())
-      const body = await response.json()
+      const body = (await response.json()) as { directoryAuthUid: string }
 
       expect(response.status).toBe(200)
       expect(createAuthUserWithEmail).toHaveBeenCalledWith(

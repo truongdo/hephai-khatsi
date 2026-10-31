@@ -13,6 +13,7 @@ import { templeRoutes } from './handlers/temples'
 import { errorResponse, readJsonBody, resolveCaller, type VerifyIdToken } from './http'
 import type { Body } from './input'
 import type { DataRoute } from './route'
+import { createRecordFiles } from './recordFiles'
 import { createSearchSync } from './searchSync'
 
 // /api/data/<name>: the client repositories' calls to D1
@@ -63,6 +64,7 @@ export async function handleDataApi(
       caller: await resolveCaller(request, verify),
       now: new Date().toISOString(),
       search: createSearchSync(env, (promise) => executionCtx.waitUntil(promise)),
+      files: createRecordFiles(env.PHOTOS, (promise) => executionCtx.waitUntil(promise)),
     }
     const result = await runDataRoute(name, await readJsonBody(request), ctx)
     return Response.json(result, {

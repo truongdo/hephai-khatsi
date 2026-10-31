@@ -1,4 +1,5 @@
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
+import { documentSidesKept } from '#/domain/recordFiles'
 import type { Member } from '#/domain/types'
 import {
   canWriteDirectory,
@@ -39,6 +40,17 @@ const MEMBER_MEDIA_FIELDS = ['photoPath', 'documents']
 // neither set it on create nor change it on save-and-lock.
 function isMemberFillerSaveAndLock(before: Member, after: Member): boolean {
   return isFillerSaveAndLock(before, after) && unchanged(before, after, ['tinhTrang'])
+}
+
+/**
+ * A filler's photo / document change; on a locked member documents may be
+ * added or replaced but not removed (the data API deletes the dropped files).
+ */
+function isMemberFillerMediaUpdate(before: Member, after: Member): boolean {
+  return (
+    isFillerMediaUpdate(before, after, MEMBER_MEDIA_FIELDS) &&
+    (before.status !== 'locked' || documentSidesKept(before.documents, after.documents))
+  )
 }
 
 function isMemberFillerCreateShape(member: Member): boolean {
@@ -119,7 +131,7 @@ export function canUpdateMember(
     inviteKeptOrAdopted(before, after) &&
     (isMemberFillerSaveAndLock(before, after) ||
       isFillerEditRequest(before, after) ||
-      isFillerMediaUpdate(before, after, MEMBER_MEDIA_FIELDS))
+      isMemberFillerMediaUpdate(before, after))
   )
 }
 

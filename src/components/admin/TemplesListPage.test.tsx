@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { theme } from '../../theme'
 import { TemplesListPage } from './TemplesListPage'
+import type { AdminClaimState } from '#/auth/useAdminClaim'
 
 const templeItems = [
   {
@@ -32,13 +33,21 @@ const templeItems = [
 
 const deleteTemplesMock = vi.fn()
 const getIdTokenMock = vi.fn(async () => 'admin-id-token')
-const templesQueryMock = vi.fn((filters: unknown = {}) => ({
+type TemplesFilters = { cursor?: string; sortBy?: string }
+
+const templesQueryMock = vi.fn<
+  (filters?: TemplesFilters) => {
+    queryKey: unknown[]
+    queryFn: () => Promise<{ items: unknown[]; nextCursor: string | null }>
+    staleTime: number
+  }
+>((filters = {}) => ({
   queryKey: ['admin', 'temples', filters],
   queryFn: async () => ({ items: templeItems, nextCursor: null }),
   staleTime: 0,
 }))
 
-const useAdminClaimMock = vi.fn(() => ({
+const useAdminClaimMock = vi.fn<() => AdminClaimState>(() => ({
   status: 'admin' as const,
   uid: 'admin-uid',
   role: 'he_phai_admin' as const,
@@ -61,8 +70,8 @@ vi.mock('#/use-cases/deleteTemples', () => ({
   deleteTemples: (...args: unknown[]) => deleteTemplesMock(...args),
 }))
 
-vi.mock('@tanstack/react-router', () => ({
-  Link: ({
+vi.mock('@tanstack/react-router', () => {
+  const Link = ({
     children,
     to,
     params,
@@ -85,11 +94,15 @@ vi.mock('@tanstack/react-router', () => ({
         {children}
       </a>
     )
-  },
-}))
+  }
+  return {
+    Link,
+    createLink: () => Link,
+  }
+})
 
 vi.mock('#/query/adminQueries', () => ({
-  templesQuery: (filters: unknown) => templesQueryMock(filters),
+  templesQuery: (filters: TemplesFilters) => templesQueryMock(filters),
   orgUnitsQuery: () => ({
     queryKey: ['admin', 'orgUnits'],
     queryFn: async () => [

@@ -12,8 +12,6 @@ import {
   getDocumentType,
   isValidDocumentSide,
   mergeDocumentPath,
-  pathFieldForSide,
-  pathsFromTypeFiles,
   removeDocumentSide,
   removeDocumentType,
   type DocumentSide,
@@ -21,6 +19,7 @@ import {
   type MemberDocuments,
 } from '#/domain/memberDocumentTypes'
 import { MEMBER_TINH_TRANG_VALUES } from '#/domain/memberTinhTrang'
+import { droppedFiles, memberFilePaths, memberFolder, moveMemberFiles } from '#/domain/recordFiles'
 import type { Member, SanghaType } from '#/domain/types'
 import type { MemberAdminSortBy } from '#/repositories/adminListTypes'
 import type { MemberProfilePatch } from '#/repositories/memberRepo'
@@ -152,6 +151,11 @@ function withSortKeys(member: Member, orgUnitName: string): Member {
 
 type MemberAudit = { action: AuditAction; actor: AuditActor }
 
+/** The files of `before` (in its own folder) that `after` no longer references. */
+function droppedMemberFiles(before: Member, after: Member): string[] {
+  return droppedFiles(memberFilePaths(before), memberFilePaths(after), memberFolder(before.id))
+}
+
 /**
  * Creates (`before` null) or updates the member after the authz checks the
  * rules made on the same write, with its audit entry in the same batch.
@@ -184,6 +188,7 @@ async function writeMember(
   }
   await runBatch(db, statements)
   ctx.search.upsertMember(after)
+  if (before) ctx.files.deleteLater(droppedMemberFiles(before.member, after))
 }
 
 /** Loads the member, applies `change`, writes it; `change` returning null leaves it as is. */
@@ -309,7 +314,7 @@ async function updateById(ctx: DataContext, input: UpdateByIdInput): Promise<Mem
       'A member with this CCCD already exists in the target org unit',
     )
   }
-  const member = withSortKeys(
+  const updated = withSortKeys(
     {
       ...existing,
       ...input.patch,
@@ -330,14 +335,16 @@ async function updateById(ctx: DataContext, input: UpdateByIdInput): Promise<Mem
   )
   const audit = input.audit && { action: 'updated' as const, actor: input.audit }
   if (!orgChanged) {
-    await writeMember(ctx, stored, member, audit)
-    return member
+    await writeMember(ctx, stored, updated, audit)
+    return updated
   }
 
-  // Moving is a delete plus a create for the rules; the audit history moves
-  // with the member.
+  // Moving is a delete plus a create for the rules; the audit history and the
+  // files move with the member.
+  const { member, moves } = moveMemberFiles(updated, existing.id, nextId)
   const inviteExists = await loadInviteExists(db, [member.inviteId])
   authorize(canDeleteMember(caller, existing) && canCreateMember(caller, member, inviteExists))
+  for (const { from, to } of moves) await ctx.files.copy(from, to)
   const statements = [
     deleteVersionedStatement(db, 'members', existing.id, stored.version),
     conflictGuard(db),
@@ -357,6 +364,7 @@ async function updateById(ctx: DataContext, input: UpdateByIdInput): Promise<Mem
   await runBatch(db, statements)
   ctx.search.deleteMember(existing.id)
   ctx.search.upsertMember(member)
+  ctx.files.deleteLater(droppedMemberFiles(existing, member))
   return member
 }
 
@@ -457,40 +465,28 @@ function setTinhTrang(
 
 type DocumentRef = { memberId: string; typeId: DocumentTypeId; audit: AuditActor }
 
-async function mergeDocumentSide(
+/** A replaced file with another path (e.g. JPEG → PDF) is deleted with the write. */
+function mergeDocumentSide(
   ctx: DataContext,
   input: DocumentRef & { side: DocumentSide; filePath: string },
-): Promise<{ member: Member; previousPath?: string }> {
-  let previousPath: string | undefined
-  const member = await updateMember(ctx, input.memberId, (existing) => {
-    const current = existing.documents ?? {}
-    previousPath = current[input.typeId]?.[pathFieldForSide(input.side)]
-    return {
-      member: {
-        ...existing,
-        documents: mergeDocumentPath(current, input.typeId, input.side, input.filePath),
-        updatedAt: ctx.now,
-      },
-      audit: { action: 'document_uploaded', actor: input.audit },
-    }
-  })
-  return previousPath === undefined ? { member } : { member, previousPath }
+): Promise<Member> {
+  return updateMember(ctx, input.memberId, (existing) => ({
+    member: {
+      ...existing,
+      documents: mergeDocumentPath(existing.documents ?? {}, input.typeId, input.side, input.filePath),
+      updatedAt: ctx.now,
+    },
+    audit: { action: 'document_uploaded', actor: input.audit },
+  }))
 }
 
-async function removeDocumentPaths(
+/** The removed files are deleted with the write. */
+function removeDocumentPaths(
   ctx: DataContext,
   input: DocumentRef & { side?: DocumentSide },
-): Promise<{ member: Member; removedPaths: string[] }> {
-  let removedPaths: string[] = []
-  const member = await updateMember(ctx, input.memberId, (existing) => {
+): Promise<Member> {
+  return updateMember(ctx, input.memberId, (existing) => {
     const current = existing.documents ?? {}
-    const typeFiles = current[input.typeId]
-    if (input.side) {
-      const path = typeFiles?.[pathFieldForSide(input.side)]
-      removedPaths = path ? [path] : []
-    } else {
-      removedPaths = typeFiles ? pathsFromTypeFiles(typeFiles) : []
-    }
     return {
       member: {
         ...existing,
@@ -502,7 +498,6 @@ async function removeDocumentPaths(
       audit: { action: 'document_deleted', actor: input.audit },
     }
   })
-  return { member, removedPaths }
 }
 
 async function deleteMany(ctx: DataContext, input: { ids: string[] }): Promise<{ ok: true }> {
@@ -514,6 +509,9 @@ async function deleteMany(ctx: DataContext, input: { ids: string[] }): Promise<{
     deleteVersionedRowsStatements(db, 'members', rows),
   )
   for (const row of rows) ctx.search.deleteMember(row.id)
+  ctx.files.deleteLater(
+    rows.flatMap((row) => droppedFiles(memberFilePaths(memberFromRow(row)), [], memberFolder(row.id))),
+  )
   return { ok: true }
 }
 

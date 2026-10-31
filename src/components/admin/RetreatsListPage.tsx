@@ -9,6 +9,7 @@ import {
   Title,
 } from '@mantine/core'
 import { Link } from '@tanstack/react-router'
+import { TextLink } from '#/components/routing/MantineRouterLinks'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '#/paraglide/messages'
@@ -245,15 +246,14 @@ export function RetreatsListPage() {
               {allItems.map((retreat) => (
                 <Table.Tr key={retreat.id}>
                   <Table.Td>
-                    <Text
-                      component={Link}
+                    <TextLink
                       to="/admin/retreats/$id"
                       params={{ id: retreat.id }}
                       c="teal.7"
                       fw={600}
                     >
                       {retreat.name}
-                    </Text>
+                    </TextLink>
                   </Table.Td>
                   <Table.Td>
                     {emptyCell(orgUnitNameById.get(retreat.orgUnitId))}

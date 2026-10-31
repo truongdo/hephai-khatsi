@@ -224,6 +224,21 @@ describe('members', () => {
     ).toBe(true)
   })
 
+  it('denies filler removing a document side of a locked record, but allows replacing it', () => {
+    const documents = { cccd: { frontPath: 'members/x/docs/cccd/front.jpg', backPath: 'members/x/docs/cccd/back.jpg' } }
+    const locked = memberLocked({ documents })
+    const at = { updatedAt: '2026-01-02T00:00:00.000Z' }
+    const removed = patch(locked, { documents: { cccd: { frontPath: documents.cccd.frontPath } }, ...at })
+    const replaced = patch(locked, {
+      documents: { cccd: { ...documents.cccd, backPath: 'members/x/docs/cccd/back.pdf' } },
+      ...at,
+    })
+    expect(canUpdateMember(anon, locked, removed, seeded)).toBe(false)
+    expect(canUpdateMember(anon, locked, replaced, seeded)).toBe(true)
+    const draft = memberDraft({ documents })
+    expect(canUpdateMember(anon, draft, patch(draft, { documents: {}, ...at }), seeded)).toBe(true)
+  })
+
   it('lets admin lock and unlock regardless of current status, but not sneak in profile edits during a lock transition', () => {
     const draft = memberDraft()
     const locked = patch(draft, {

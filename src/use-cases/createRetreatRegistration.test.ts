@@ -6,7 +6,6 @@ import {
   type RetreatRegistration,
 } from '#/domain/retreatRegistration'
 import type { Member } from '#/domain/types'
-import type { MemberStore } from '#/repositories/memberRepo'
 import type { RetreatStore } from '#/repositories/retreatRepo'
 import type { RetreatRegistrationStore } from '#/repositories/retreatRegistrationRepo'
 import { createMemoryMemberStore } from '#/test/memoryStores'
