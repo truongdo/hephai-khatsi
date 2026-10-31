@@ -27,6 +27,7 @@ pnpm test:e2e            # starts dev server and runs Cypress headless (cypress/
 pnpm deploy              # build + wrangler deploy (Worker + static assets + R2 + D1 bindings)
 pnpm db:migrate:local    # apply migrations/*.sql to the local D1 (wrangler dev)
 pnpm db:migrate:remote   # apply them to the production D1
+pnpm db:migrate:preview  # apply them to hephai-khatsi-preview (preview_database_id; import dry runs)
 pnpm export:firestore    # D1 migration phase 5: Firestore → NDJSON in .d1-migration/ (git-ignored)
 pnpm import:d1 --export <dir> [--replace] [--apply --database <name> --remote|--local]
 pnpm verify:d1-import --export <dir> --database <name> --remote|--local

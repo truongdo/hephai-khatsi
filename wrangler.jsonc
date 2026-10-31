@@ -22,6 +22,8 @@
       "binding": "DB",
       "database_name": "hephai-khatsi",
       "database_id": "2cd8ee1d-a474-412c-aa19-f7088d4374a1",
+      // hephai-khatsi-preview: import dry runs (pnpm db:migrate:preview).
+      "preview_database_id": "998c50bd-5c8e-41bc-9fe0-a255ba1c45d2",
       "migrations_dir": "migrations"
     }
   ],

@@ -178,7 +178,7 @@ Each phase is a separate PR from `main`; phases 1–3 ship with Firestore still 
 ### Phase 0 — Decisions and prep (no code)
 
 - [ ] Read the decisions at the end of this document (all questions are settled; only the cutover date waits for the requester).
-- [ ] Create the D1 database in the APAC region: `pnpm exec wrangler d1 create hephai-khatsi --location apac`; record the id. Create a `hephai-khatsi-preview` database for `wrangler dev` / preview.
+- [ ] Create the D1 database in the APAC region: `pnpm exec wrangler d1 create hephai-khatsi --location apac`; record the id. Create a `hephai-khatsi-preview` database for `wrangler dev` / preview. Preview created 2026-10-31 (`998c50bd-5c8e-41bc-9fe0-a255ba1c45d2`, `preview_database_id` of the `DB` binding; schema with `pnpm db:migrate:preview`).
 - [ ] Run every pending `backfill:*` script against production Firestore so all denormalized fields exist before export.
 - [ ] Measure current data volume (docs per collection, largest member doc) to size the import batches.
 
@@ -264,6 +264,7 @@ Decided in phase 5:
 - The export (`exportValue`, `auditLogParentFromPath` in `exportFormat.ts`) fails on a Firestore value the app cannot have written (references, geo points, bytes, non-finite numbers); `Timestamp`s become ISO strings.
 
 Runbook (dry run, then cutover in phase 6):
+0. Dry run only: `pnpm db:migrate:preview` (the preview database is the `preview_database_id` of the `DB` binding, so the Worker gets no extra binding; import / verify find it by name).
 1. `pnpm export:firestore` (Firestore read-only during the cutover).
 2. `pnpm import:d1 --export .d1-migration/export-<time> --replace --apply --database hephai-khatsi-preview --remote` (cutover: the production database, migrated with `pnpm db:migrate:remote`, without `--replace` on an empty database).
 3. `pnpm verify:d1-import --export .d1-migration/export-<time> --database hephai-khatsi-preview --remote` must print `OK`.
