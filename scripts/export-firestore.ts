@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { parseArgs } from 'node:util'
-import { applicationDefault, initializeApp } from 'firebase-admin/app'
+import { applicationDefault, cert, initializeApp, type ServiceAccount } from 'firebase-admin/app'
 import {
   FieldPath,
   getFirestore,
@@ -26,8 +26,10 @@ import { EXPORT_ROOT, MANIFEST_FILE, ndjsonPath } from './lib/d1Migration'
 // taken after the reads: run it while Firestore is read-only (or expect verify
 // to report the records written in between).
 //
-//   GOOGLE_APPLICATION_CREDENTIALS=<service account json> \
-//     pnpm export:firestore [--out <dir>]
+//   pnpm export:firestore [--out <dir>]
+//
+// Credentials from .env: FIREBASE_SERVICE_ACCOUNT_JSON (the raw JSON string,
+// as for the Worker), else GOOGLE_APPLICATION_CREDENTIALS (a file path).
 
 const PAGE_SIZE = 500
 const SANGHA_TYPES: SanghaType[] = ['tang', 'ni']
@@ -39,7 +41,14 @@ if (!projectId) throw new Error('Missing env VITE_FIREBASE_PROJECT_ID')
 const exportedAt = new Date().toISOString()
 const outDir = values.out ?? join(EXPORT_ROOT, `export-${exportedAt.replaceAll(':', '-')}`)
 
-initializeApp({ credential: applicationDefault(), projectId })
+function credential() {
+  const json = process.env.FIREBASE_SERVICE_ACCOUNT_JSON
+  if (json) return cert(JSON.parse(json) as ServiceAccount)
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) return applicationDefault()
+  throw new Error('Set FIREBASE_SERVICE_ACCOUNT_JSON or GOOGLE_APPLICATION_CREDENTIALS in .env')
+}
+
+initializeApp({ credential: credential(), projectId })
 const db = getFirestore()
 
 function exportedDoc(snap: QueryDocumentSnapshot): ExportedDoc {
