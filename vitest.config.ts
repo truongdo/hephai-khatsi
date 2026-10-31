@@ -63,6 +63,9 @@ export default defineConfig({
           environment: 'jsdom',
           include: ['src/**/*.{test,spec}.tsx', ...domUnitTests],
           setupFiles: ['./src/test/setup.ts'],
+          // Rendering the full member / temple forms in jsdom takes 4–11 s per
+          // test on slower machines; the 5 s default fails them spuriously.
+          testTimeout: 30_000,
         },
       },
       {
