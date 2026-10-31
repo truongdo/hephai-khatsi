@@ -27,6 +27,9 @@ pnpm test:e2e            # starts dev server and runs Cypress headless (cypress/
 pnpm deploy              # build + wrangler deploy (Worker + static assets + R2 + D1 bindings)
 pnpm db:migrate:local    # apply migrations/*.sql to the local D1 (wrangler dev)
 pnpm db:migrate:remote   # apply them to the production D1
+pnpm export:firestore    # D1 migration phase 5: Firestore → NDJSON in .d1-migration/ (git-ignored)
+pnpm import:d1 --export <dir> [--replace] [--apply --database <name> --remote|--local]
+pnpm verify:d1-import --export <dir> --database <name> --remote|--local
 ```
 
 - `pnpm test` runs `paraglide` first; if running vitest directly and `src/paraglide` is stale after editing `messages/vi.json`, run `pnpm paraglide`.

@@ -250,10 +250,24 @@ Follow-ups after phase 4 (not blocking the cutover):
 
 ### Phase 5 — Data export / import
 
-- [ ] `scripts/export-firestore.ts` (`firebase-admin`, service account from `.env`): page through every collection and both `auditLogs` subcollections, write NDJSON per collection to a local, git-ignored folder.
-- [ ] `scripts/import-d1.ts`: map NDJSON → rows with the phase 1 mappers (phone index collections are not imported; `members.phone` and `temple_manager_phones` are rebuilt from the records), emit SQL files in chunks and apply with `wrangler d1 execute hephai-khatsi --remote --file`.
-- [ ] `scripts/verify-d1-import.ts`: per-table counts, per-org/sangha counts vs Firestore stats, and a content hash of each record (canonical JSON of `fromRow(row)` vs the Firestore doc) — must be 100 % equal.
-- [ ] Dry-run end to end against the preview database with a fresh production export; time it.
+- [x] `scripts/export-firestore.ts` (`pnpm export:firestore [--out <dir>]`; `firebase-admin` with the service account at `GOOGLE_APPLICATION_CREDENTIALS` from `.env`): page through every collection and both `auditLogs` subcollections (one `collectionGroup`), write NDJSON per collection to `.d1-migration/export-<time>/` (git-ignored), plus `manifest.json` with Firestore `count()`s per collection, per org unit × sangha (members) and per org unit (temples).
+- [x] `scripts/import-d1.ts` (`pnpm import:d1 --export <dir> [--replace] [--apply --database <name> --remote|--local]`): map NDJSON → domain records like the `*FromSnap` helpers, then → rows with the phase 1 mappers (phone index collections are not imported; `members.phone` and `temple_manager_phones` are rebuilt from the records), emit SQL files of ≤ 5 MB in `<dir>/sql/` and apply them with `wrangler d1 execute <name> --file`. Logic in `src/worker/dataApi/import/` (`exportFormat.ts`, `importSql.ts`), tested in Node and through D1 (`import.d1.test.ts`).
+- [x] `scripts/verify-d1-import.ts` (`pnpm verify:d1-import --export <dir> --database <name> --remote|--local`): per-table counts and per-org/sangha counts vs the manifest (Firestore) and the export, and each record (canonical JSON of `fromRow(row)` vs the exported doc mapped like the Firestore repos) — exits 1 unless 100 % equal (`verifyImport.ts`).
+- [ ] Dry-run end to end against the preview database with a fresh production export; time it. Done only locally with the fixture export (`--local`, import ~3 s); the production export needs the service account and the preview database (phase 0), see the runbook below.
+
+Decided in phase 5:
+- The import refuses to write any SQL when `checkImport` finds an error: a NOT NULL / CHECK column missing or of the wrong type, an invite whose token is not its id, two members with the same org unit + sangha + CCCD, a record over D1's 100 KB statement limit. Fix the data in Firestore and export again.
+- It only warns (imports as is): orphans (records of an unknown org unit, audit logs of a deleted record, registrations of a missing retreat / member, as the notes above expect) and rows without a sort column (hidden from the lists sorted by it: run the `backfill:*` scripts and export again).
+- Org units are written with `INSERT OR REPLACE` over the seed of `0002` (Firestore's copy wins); seeded units missing from Firestore stay and make verify fail on `org_units`, so they are seen.
+- `--replace` deletes every data row first so dry runs can be repeated on the same database; without it a second import fails on the primary key. Neither the import nor verify has a default database: `--database` is always typed.
+- Verify compares canonical JSON directly instead of hashes (the data fits in memory); a top-level `null` equals an absent field, the known deviation of phase 2. It reads D1 with `wrangler d1 execute --json`, 500 rows per query by `rowid`.
+- The export fails on a Firestore value the app cannot have written (references, geo points, bytes, non-finite numbers); `Timestamp`s become ISO strings.
+
+Runbook (dry run, then cutover in phase 6):
+1. `pnpm export:firestore` (Firestore read-only during the cutover).
+2. `pnpm import:d1 --export .d1-migration/export-<time> --replace --apply --database hephai-khatsi-preview --remote` (cutover: the production database, migrated with `pnpm db:migrate:remote`, without `--replace` on an empty database).
+3. `pnpm verify:d1-import --export .d1-migration/export-<time> --database hephai-khatsi-preview --remote` must print `OK`.
+4. Delete the export folder when done: it holds personal data.
 
 ### Phase 6 — Cutover (maintenance window)
 
