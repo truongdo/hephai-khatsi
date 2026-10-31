@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { AuthClaims } from '#/domain/authClaims'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
-import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
 import { ADMIN_AUDIT } from '#/test/auditActors'
 import { createMemoryMemberStore, createMemoryTempleStore } from '#/test/memoryStores'
 import { saveAdminMember } from './saveAdminMember'
@@ -258,13 +257,18 @@ describe('saveAdminMember', () => {
     expect(member.inviteId).toBe('inv-1')
     expect(member.photoPath).toBe('members/gd-i_tang_001099012345/photo.jpg')
     expect(store.members.get('gd-i_tang_001099012345')).toBeUndefined()
-    expect(
-      store.phoneIndex.get(memberPhoneIndexId('gd-i', 'tang', '0901234567')) ??
-        [],
-    ).not.toContain('gd-i_tang_001099012345')
-    expect(
-      store.phoneIndex.get(memberPhoneIndexId('gd-ii', 'tang', '0901234567')),
-    ).toContain('gd-ii_tang_001099012345')
+    const oldLookup = await store.listByOrgSanghaAndPhone({
+      orgUnitId: 'gd-i',
+      sanghaType: 'tang',
+      phone: '0901234567',
+    })
+    expect(oldLookup.map((m) => m.id)).not.toContain('gd-i_tang_001099012345')
+    const newLookup = await store.listByOrgSanghaAndPhone({
+      orgUnitId: 'gd-ii',
+      sanghaType: 'tang',
+      phone: '0901234567',
+    })
+    expect(newLookup.map((m) => m.id)).toContain('gd-ii_tang_001099012345')
   })
 
   it('carries audit history to the new member id after org reassignment', async () => {
@@ -771,8 +775,16 @@ describe('saveAdminTemple', () => {
     expect(temple.orgUnitId).toBe('gd-ii')
     expect(temple.danhHieu).toBe('New')
     expect(temple.inviteId).toBe('inv-1')
-    expect(store.phoneIndex.get('gd-i_0901234567') ?? []).not.toContain('t1')
-    expect(store.phoneIndex.get('gd-ii_0901234567')).toContain('t1')
+    const oldLookup = await store.listByOrgAndPhone({
+      orgUnitId: 'gd-i',
+      phone: '0901234567',
+    })
+    expect(oldLookup.map((t) => t.id)).not.toContain('t1')
+    const newLookup = await store.listByOrgAndPhone({
+      orgUnitId: 'gd-ii',
+      phone: '0901234567',
+    })
+    expect(newLookup.map((t) => t.id)).toContain('t1')
   })
 
   it('rejects org reassignment when temple is locked', async () => {

@@ -27,5 +27,3 @@ project.inlang/cache
 .env.prod
 .env.dev
 
-# Firestore export / D1 import of the D1 migration (scripts/export-firestore.ts)
-.d1-migration/

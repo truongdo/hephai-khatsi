@@ -143,7 +143,7 @@ describe('handleDirectoryRoleApi', () => {
           directoryRoleGrantedBy: HP_ADMIN_UID,
         }),
       )
-      const patchFields = patchMemberDirectoryFields.mock.calls[0][3]
+      const patchFields = patchMemberDirectoryFields.mock.calls[0][1]
       expect(patchFields.directoryRoleGrantedAt).toMatch(
         /^\d{4}-\d{2}-\d{2}T/,
       )

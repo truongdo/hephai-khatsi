@@ -2,7 +2,6 @@ import type { AuditAction, AuditActor, AuditLogEntry, AuditLogWrite } from '#/do
 import { buildAuditChanges } from '#/domain/buildAuditChanges'
 import { DomainError } from '#/domain/errors'
 import { memberCccdIndexId } from '#/domain/memberCccdIndex'
-import { memberPhoneIndexId } from '#/domain/memberPhoneIndex'
 import { normalizeVnPhone } from '#/domain/normalize'
 import type { MemberDocuments } from '#/domain/memberDocumentTypes'
 import type { MemberTinhTrang } from '#/domain/memberTinhTrang'
@@ -42,7 +41,8 @@ import type {
   TempleStore,
 } from '#/repositories/templeRepo'
 
-const PHONE_INDEX_CAP = 20
+// Same cap as the Worker's members/list-by-phone.
+const PHONE_LOOKUP_CAP = 20
 
 function resolveMemoryOrgUnitName(orgUnitId: string): string {
   const seeded = ORG_UNIT_SEED.find((u) => u.id === orgUnitId)
@@ -136,82 +136,6 @@ function maybeMemoryAppendAuditFromDiff(
   })
 }
 
-function appendPhoneIndex(
-  phoneIndex: Map<string, string[]>,
-  member: Member,
-) {
-  if (!member.dienThoai) return
-  let phone: string
-  try {
-    phone = normalizeVnPhone(member.dienThoai)
-  } catch {
-    return
-  }
-  const key = memberPhoneIndexId(member.orgUnitId, member.sanghaType, phone)
-  const existingIds = phoneIndex.get(key) ?? []
-  if (existingIds.includes(member.id) || existingIds.length >= PHONE_INDEX_CAP) {
-    return
-  }
-  phoneIndex.set(key, [...existingIds, member.id])
-}
-
-function templePhoneIndexId(orgUnitId: string, phone: string): string {
-  return `${orgUnitId}_${phone}`
-}
-
-function appendTemplePhoneIndex(
-  phoneIndex: Map<string, string[]>,
-  temple: Temple,
-) {
-  for (const phone of temple.managerPhones) {
-    const key = templePhoneIndexId(temple.orgUnitId, phone)
-    const existingIds = phoneIndex.get(key) ?? []
-    if (existingIds.includes(temple.id) || existingIds.length >= PHONE_INDEX_CAP) {
-      continue
-    }
-    phoneIndex.set(key, [...existingIds, temple.id])
-  }
-}
-
-function removeTempleFromPhoneIndex(
-  phoneIndex: Map<string, string[]>,
-  temple: Temple,
-) {
-  for (const phone of temple.managerPhones) {
-    const key = templePhoneIndexId(temple.orgUnitId, phone)
-    const existingIds = phoneIndex.get(key)
-    if (!existingIds) continue
-    const nextIds = existingIds.filter((id) => id !== temple.id)
-    if (nextIds.length === 0) {
-      phoneIndex.delete(key)
-    } else if (nextIds.length !== existingIds.length) {
-      phoneIndex.set(key, nextIds)
-    }
-  }
-}
-
-function removeFromPhoneIndex(
-  phoneIndex: Map<string, string[]>,
-  member: Member,
-) {
-  if (!member.dienThoai) return
-  let phone: string
-  try {
-    phone = normalizeVnPhone(member.dienThoai)
-  } catch {
-    return
-  }
-  const key = memberPhoneIndexId(member.orgUnitId, member.sanghaType, phone)
-  const existingIds = phoneIndex.get(key)
-  if (!existingIds) return
-  const nextIds = existingIds.filter((id) => id !== member.id)
-  if (nextIds.length === 0) {
-    phoneIndex.delete(key)
-  } else if (nextIds.length !== existingIds.length) {
-    phoneIndex.set(key, nextIds)
-  }
-}
-
 function listInMemory<T extends { id: string }>(
   all: Iterable<T>,
   input: { limit?: number; cursor?: string },
@@ -282,7 +206,6 @@ export function createMemoryMemberStore(
 ): MemberStore & {
   members: Map<string, Member>
   index: Map<string, string>
-  phoneIndex: Map<string, string[]>
   auditLogs: Map<string, AuditLogEntry[]>
   memoryAppendAudit: (parentKey: string, write: AuditLogWrite) => AuditLogEntry
   memoryListAudit: (
@@ -293,7 +216,6 @@ export function createMemoryMemberStore(
 } {
   const members = new Map(seed.map((member) => [member.id, member]))
   const index = new Map<string, string>()
-  const phoneIndex = new Map<string, string[]>()
   const audit = createMemoryAuditStore()
   const auditLogs = audit.auditLogs
   for (const member of seed) {
@@ -301,13 +223,11 @@ export function createMemoryMemberStore(
       memberCccdIndexId(member.orgUnitId, member.sanghaType, member.cccd),
       member.id,
     )
-    appendPhoneIndex(phoneIndex, member)
   }
 
   const store: MemberStore & {
     members: Map<string, Member>
     index: Map<string, string>
-    phoneIndex: Map<string, string[]>
     auditLogs: Map<string, AuditLogEntry[]>
     memoryAppendAudit: (parentKey: string, write: AuditLogWrite) => AuditLogEntry
     memoryListAudit: (
@@ -318,7 +238,6 @@ export function createMemoryMemberStore(
   } = {
     members,
     index,
-    phoneIndex,
     auditLogs,
     memoryAppendAudit: audit.memoryAppendAudit,
     memoryListAudit: audit.memoryListAudit,
@@ -346,7 +265,6 @@ export function createMemoryMemberStore(
           updatedAt: now,
         })
         members.set(existing.id, member)
-        appendPhoneIndex(phoneIndex, member)
         if (input.audit) {
           maybeMemoryAppendAuditFromDiff(
             auditLogs,
@@ -383,7 +301,6 @@ export function createMemoryMemberStore(
       })
       members.set(id, member)
       index.set(indexId, id)
-      appendPhoneIndex(phoneIndex, member)
       if (input.audit) {
         maybeMemoryAppendAuditFromDiff(
           auditLogs,
@@ -426,7 +343,6 @@ export function createMemoryMemberStore(
           updatedAt: now,
         })
         members.set(existing.id, member)
-        appendPhoneIndex(phoneIndex, member)
         maybeMemoryAppendAuditFromDiff(
           auditLogs,
           { collection: 'members', id: member.id },
@@ -461,7 +377,6 @@ export function createMemoryMemberStore(
       })
       members.set(id, member)
       index.set(indexId, id)
-      appendPhoneIndex(phoneIndex, member)
       maybeMemoryAppendAuditFromDiff(
         auditLogs,
         { collection: 'members', id: member.id },
@@ -562,7 +477,6 @@ export function createMemoryMemberStore(
         index.delete(
           memberCccdIndexId(existing.orgUnitId, existing.sanghaType, existing.cccd),
         )
-        removeFromPhoneIndex(phoneIndex, existing)
         const previousLogs =
           auditLogs.get(auditParentKey({ collection: 'members', id: memberId })) ??
           []
@@ -576,7 +490,6 @@ export function createMemoryMemberStore(
         memberCccdIndexId(member.orgUnitId, member.sanghaType, member.cccd),
         member.id,
       )
-      appendPhoneIndex(phoneIndex, member)
       if (options?.audit) {
         maybeMemoryAppendAuditFromDiff(
           auditLogs,
@@ -610,27 +523,19 @@ export function createMemoryMemberStore(
       sanghaType: SanghaType
       phone: string
     }) {
-      const phone = input.phone
-      const ids =
-        phoneIndex.get(
-          memberPhoneIndexId(input.orgUnitId, input.sanghaType, phone),
-        ) ?? []
-      return ids
-        .map((id) => members.get(id) ?? null)
-        .filter((m): m is Member => {
-          if (!m) return false
-          if (
-            m.orgUnitId !== input.orgUnitId ||
-            m.sanghaType !== input.sanghaType
-          ) {
-            return false
-          }
-          try {
-            return normalizeVnPhone(m.dienThoai ?? '') === phone
-          } catch {
-            return false
-          }
-        })
+      const matches: Member[] = []
+      for (const m of members.values()) {
+        if (matches.length >= PHONE_LOOKUP_CAP) break
+        if (m.orgUnitId !== input.orgUnitId || m.sanghaType !== input.sanghaType) {
+          continue
+        }
+        try {
+          if (normalizeVnPhone(m.dienThoai ?? '') === input.phone) matches.push(m)
+        } catch {
+          // invalid phones never match
+        }
+      }
+      return matches
     },
     async setPhotoPath(
       memberId: string,
@@ -883,7 +788,6 @@ export function createMemoryMemberStore(
       for (const memberId of ids) {
         const member = members.get(memberId)
         if (!member) continue
-        removeFromPhoneIndex(phoneIndex, member)
         index.delete(
           memberCccdIndexId(member.orgUnitId, member.sanghaType, member.cccd),
         )
@@ -899,7 +803,6 @@ export function createMemoryTempleStore(
   seed: Temple[] = [],
 ): TempleStore & {
   temples: Map<string, Temple>
-  phoneIndex: Map<string, string[]>
   auditLogs: Map<string, AuditLogEntry[]>
   memoryAppendAudit: (parentKey: string, write: AuditLogWrite) => AuditLogEntry
   memoryListAudit: (
@@ -909,16 +812,11 @@ export function createMemoryTempleStore(
   ) => { entries: AuditLogEntry[]; nextStartAfterAt: string | null }
 } {
   const temples = new Map(seed.map((temple) => [temple.id, temple]))
-  const phoneIndex = new Map<string, string[]>()
   const audit = createMemoryAuditStore()
   const auditLogs = audit.auditLogs
-  for (const temple of seed) {
-    appendTemplePhoneIndex(phoneIndex, temple)
-  }
 
   const store: TempleStore & {
     temples: Map<string, Temple>
-    phoneIndex: Map<string, string[]>
     auditLogs: Map<string, AuditLogEntry[]>
     memoryAppendAudit: (parentKey: string, write: AuditLogWrite) => AuditLogEntry
     memoryListAudit: (
@@ -928,7 +826,6 @@ export function createMemoryTempleStore(
     ) => { entries: AuditLogEntry[]; nextStartAfterAt: string | null }
   } = {
     temples,
-    phoneIndex,
     auditLogs,
     memoryAppendAudit: audit.memoryAppendAudit,
     memoryListAudit: audit.memoryListAudit,
@@ -949,7 +846,6 @@ export function createMemoryTempleStore(
           throw new DomainError('RECORD_LOCKED', 'Temple is locked')
         }
         if (orgChanged) {
-          removeTempleFromPhoneIndex(phoneIndex, existing)
         }
         const temple = applyTempleListSortKeys({
           ...existing,
@@ -974,7 +870,6 @@ export function createMemoryTempleStore(
           editRequestedBy: existing.editRequestedBy,
         })
         temples.set(temple.id, temple)
-        appendTemplePhoneIndex(phoneIndex, temple)
         if (input.audit) {
           maybeMemoryAppendAuditFromDiff(
             auditLogs,
@@ -1008,7 +903,6 @@ export function createMemoryTempleStore(
         editRequestedBy: null,
       })
       temples.set(id, temple)
-      appendTemplePhoneIndex(phoneIndex, temple)
       if (input.audit) {
         maybeMemoryAppendAuditFromDiff(
           auditLogs,
@@ -1059,7 +953,6 @@ export function createMemoryTempleStore(
           editRequestedBy: null,
         })
         temples.set(temple.id, temple)
-        appendTemplePhoneIndex(phoneIndex, temple)
         maybeMemoryAppendAuditFromDiff(
           auditLogs,
           { collection: 'temples', id: temple.id },
@@ -1091,7 +984,6 @@ export function createMemoryTempleStore(
         editRequestedBy: null,
       })
       temples.set(id, temple)
-      appendTemplePhoneIndex(phoneIndex, temple)
       maybeMemoryAppendAuditFromDiff(
         auditLogs,
         { collection: 'temples', id: temple.id },
@@ -1256,7 +1148,6 @@ export function createMemoryTempleStore(
       for (const templeId of ids) {
         const temple = temples.get(templeId)
         if (!temple) continue
-        removeTempleFromPhoneIndex(phoneIndex, temple)
         temples.delete(templeId)
       }
     },

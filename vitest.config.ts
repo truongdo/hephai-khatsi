@@ -25,8 +25,6 @@ function woffUrlAsFilePath(): Plugin {
   }
 }
 
-const integrationExclude = 'src/**/*.integration.test.{ts,tsx}'
-
 /** Worker tests against a local D1 (Miniflare), run inside workerd. */
 const d1Tests = 'src/worker/**/*.d1.test.ts'
 
@@ -36,8 +34,6 @@ const domUnitTests = [
   'src/components/admin/useAdminListSelection.test.ts',
   'src/lib/scrollToFirstFieldError.test.ts',
   'src/lib/formLocalDraft.test.ts',
-  // Firebase web SDK initializes only when `window` exists.
-  'src/firebase/firestore.test.ts',
 ]
 
 export default defineConfig({
@@ -55,7 +51,7 @@ export default defineConfig({
           name: 'unit',
           environment: 'node',
           include: ['src/**/*.{test,spec}.ts'],
-          exclude: [integrationExclude, d1Tests, ...domUnitTests],
+          exclude: [d1Tests, ...domUnitTests],
           // No RTL/jsdom setup for pure unit tests.
           setupFiles: [],
         },
@@ -66,7 +62,6 @@ export default defineConfig({
           name: 'dom',
           environment: 'jsdom',
           include: ['src/**/*.{test,spec}.tsx', ...domUnitTests],
-          exclude: [integrationExclude],
           setupFiles: ['./src/test/setup.ts'],
         },
       },
