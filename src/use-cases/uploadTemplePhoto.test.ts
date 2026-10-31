@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { DomainError } from '#/domain/errors'
 import type { Temple } from '#/domain/types'
-import type { AuditActor } from '#/domain/auditLog'
-import type { TempleStore } from '#/repositories/templeRepo'
 import { ADMIN_AUDIT, FILLER_AUDIT } from '#/test/auditActors'
+import { createMemoryTempleStore } from '#/test/memoryStores'
 import {
   uploadTemplePhoto,
   type TempleStoragePort,
@@ -26,48 +24,6 @@ function fakeStorage() {
   return { storage, calls }
 }
 
-function templeStoreWith(temples: Temple[]): TempleStore & {
-  temples: Map<string, Temple>
-} {
-  const map = new Map(temples.map((t) => [t.id, t]))
-  return {
-    temples: map,
-    async createOrUpdateDraft() {
-      throw new Error('not implemented')
-    },
-    async getById(templeId: string) {
-      return map.get(templeId) ?? null
-    },
-    async listByOrgAndPhone() {
-      return []
-    },
-    async list() {
-      return { items: [], nextCursor: null }
-    },
-    async lock() {
-      throw new Error('not implemented')
-    },
-    async unlock() {
-      throw new Error('not implemented')
-    },
-    async setPhotoPath(
-      templeId: string,
-      photoPath: string | null,
-      _audit: AuditActor,
-    ) {
-      const existing = map.get(templeId)
-      if (!existing) throw new DomainError('NOT_FOUND', 'Temple not found')
-      const temple = {
-        ...existing,
-        photoPath,
-        updatedAt: '2026-07-19T00:00:00.000Z',
-      }
-      map.set(templeId, temple)
-      return temple
-    },
-    async deleteMany() {},
-  }
-}
 
 const draftTemple: Temple = {
   id: 'temple-1',
@@ -86,7 +42,7 @@ const draftTemple: Temple = {
 
 describe('uploadTemplePhoto', () => {
   it('uploads a draft temple photo and updates photoPath', async () => {
-    const store = templeStoreWith([draftTemple])
+    const store = createMemoryTempleStore([draftTemple])
     const { storage, calls } = fakeStorage()
     const bytes = new Uint8Array([1, 2, 3])
 
@@ -112,13 +68,13 @@ describe('uploadTemplePhoto', () => {
         idToken: undefined,
       },
     ])
-    expect(store.temples.get('temple-1')?.photoPath).toBe(
+    expect((await store.getById('temple-1'))?.photoPath).toBe(
       'temples/temple-1/photo.jpg',
     )
   })
 
   it('allows filler upload for locked temples with inviteToken when photoPath is null', async () => {
-    const store = templeStoreWith([
+    const store = createMemoryTempleStore([
       {
         ...draftTemple,
         status: 'locked',
@@ -143,13 +99,13 @@ describe('uploadTemplePhoto', () => {
 
     expect(result).toEqual({ photoPath: 'temples/temple-1/photo.jpg' })
     expect(calls[0]?.inviteToken).toBe('invite-1')
-    expect(store.temples.get('temple-1')?.photoPath).toBe(
+    expect((await store.getById('temple-1'))?.photoPath).toBe(
       'temples/temple-1/photo.jpg',
     )
   })
 
   it('rejects filler upload for locked temples that already have a photo', async () => {
-    const store = templeStoreWith([
+    const store = createMemoryTempleStore([
       {
         ...draftTemple,
         status: 'locked',
@@ -176,7 +132,7 @@ describe('uploadTemplePhoto', () => {
   })
 
   it('rejects locked upload without inviteToken or idToken', async () => {
-    const store = templeStoreWith([
+    const store = createMemoryTempleStore([
       {
         ...draftTemple,
         status: 'locked',
@@ -201,7 +157,7 @@ describe('uploadTemplePhoto', () => {
   })
 
   it('allows admin upload for locked temples and passes idToken to storage', async () => {
-    const store = templeStoreWith([
+    const store = createMemoryTempleStore([
       {
         ...draftTemple,
         status: 'locked',
@@ -225,7 +181,7 @@ describe('uploadTemplePhoto', () => {
 
     expect(result).toEqual({ photoPath: 'temples/temple-1/photo.jpg' })
     expect(calls[0]?.idToken).toBe('admin-id-token')
-    expect(store.temples.get('temple-1')?.photoPath).toBe(
+    expect((await store.getById('temple-1'))?.photoPath).toBe(
       'temples/temple-1/photo.jpg',
     )
   })

@@ -26,7 +26,7 @@ export async function postUpload<T>(
   const form = new FormData()
   for (const [name, value] of Object.entries(fields)) form.append(name, value)
   if (auth.inviteToken) form.append('inviteToken', auth.inviteToken)
-  form.append('file', new Blob([file.bytes], { type: file.contentType }))
+  form.append('file', new Blob([new Uint8Array(file.bytes)], { type: file.contentType }))
   const response = await fetch(url, {
     method: 'POST',
     headers: auth.idToken ? { Authorization: `Bearer ${auth.idToken}` } : {},

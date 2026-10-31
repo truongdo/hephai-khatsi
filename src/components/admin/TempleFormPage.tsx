@@ -93,7 +93,7 @@ export function TempleFormPage({ mode, templeId }: TempleFormPageProps) {
     mode,
     temple.data,
     claim.status,
-    claim.role,
+    claim.status === 'admin' ? claim.role : null,
     claim.status === 'admin' ? claim.orgUnitId : null,
   ])
 

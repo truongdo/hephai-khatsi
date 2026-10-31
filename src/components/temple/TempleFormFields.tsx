@@ -203,12 +203,8 @@ export function TempleFormFields({
         setDraft={setDraft}
         errors={{
           tangSoHienTru: {
+            // Only the tỳ kheo count is required (templeRequiredValidation).
             tyKheo: mapRequiredError(fieldErrors.tangSoHienTru?.tyKheo),
-            thucXoaMaNa: mapRequiredError(
-              fieldErrors.tangSoHienTru?.thucXoaMaNa,
-            ),
-            saDi: mapRequiredError(fieldErrors.tangSoHienTru?.saDi),
-            tapSu: mapRequiredError(fieldErrors.tangSoHienTru?.tapSu),
           },
           soPhatTuQuyY: mapRequiredError(fieldErrors.soPhatTuQuyY),
           soPhatTuThuongXuyen: mapRequiredError(

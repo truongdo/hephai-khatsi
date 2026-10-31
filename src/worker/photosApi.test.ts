@@ -59,7 +59,7 @@ function upload(
 ): Promise<Response> {
   const form = new FormData()
   for (const [name, value] of Object.entries(fields)) form.append(name, value)
-  form.append('file', new Blob([options.bytes ?? JPEG], { type: 'image/jpeg' }))
+  form.append('file', new Blob([new Uint8Array(options.bytes ?? JPEG)], { type: 'image/jpeg' }))
   return handlePhotosApi(
     new Request(`https://example.com${path}`, {
       method: 'POST',

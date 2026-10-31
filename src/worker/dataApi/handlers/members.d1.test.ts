@@ -446,7 +446,9 @@ describe('members/update', () => {
       runDataRoute(
         'members/update',
         { memberId: id, patch: { phapDanh: 'B' }, audit: ADMIN_ACTOR },
-        { db: racingDb, caller: gdAdmin, now: NOW, search: { upsertMember() {}, upsertTemple() {}, deleteMember() {}, deleteTemple() {} } },
+        { db: racingDb, caller: gdAdmin, now: NOW, search: { upsertMember() {}, upsertTemple() {}, deleteMember() {}, deleteTemple() {} },
+          files: { copy: async () => {}, deleteLater() {} },
+        },
       ),
       'CONFLICT',
     )

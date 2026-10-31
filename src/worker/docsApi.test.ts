@@ -37,7 +37,7 @@ function upload(
 ): Promise<Response> {
   const form = new FormData()
   for (const [name, value] of Object.entries(fields)) form.append(name, value)
-  form.append('file', new Blob([options.bytes ?? PDF], { type: 'application/pdf' }))
+  form.append('file', new Blob([new Uint8Array(options.bytes ?? PDF)], { type: 'application/pdf' }))
   return handleDocsApi(
     new Request('https://example.com/api/docs/member', {
       method: 'POST',

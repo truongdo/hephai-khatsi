@@ -330,10 +330,7 @@ describe('TemplesListPage', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Xóa' }))
     expect(deleteTemplesMock).toHaveBeenCalledWith(
       { role: 'he_phai_admin', orgUnitId: null },
-      {
-        ids: ['t1'],
-        idToken: 'admin-id-token',
-      },
+      { ids: ['t1'] },
     )
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['admin', 'temples'],

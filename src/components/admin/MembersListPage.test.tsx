@@ -296,10 +296,7 @@ describe('MembersListPage', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Xóa' }))
     expect(deleteMembersMock).toHaveBeenCalledWith(
       { role: 'he_phai_admin', orgUnitId: null },
-      {
-        ids: ['m1'],
-        idToken: 'admin-id-token',
-      },
+      { ids: ['m1'] },
     )
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: ['admin', 'membersByHaLapTab'],
