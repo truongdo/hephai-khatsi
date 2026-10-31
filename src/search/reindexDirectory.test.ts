@@ -1,15 +1,17 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import type { Member, Temple } from '#/domain/types'
-import { reindexEnsure, reindexImport } from '#/search/searchApiClient'
-import { reindexDirectorySearch } from '#/search/reindexDirectory'
+import { reindexEnsure, reindexImport, reindexImportFromDb } from '#/search/searchApiClient'
+import { reindexDirectorySearch, reindexDirectorySearchFromDb } from '#/search/reindexDirectory'
 
 vi.mock('#/search/searchApiClient', () => ({
   reindexEnsure: vi.fn(),
   reindexImport: vi.fn(),
+  reindexImportFromDb: vi.fn(),
 }))
 
 const reindexEnsureMock = vi.mocked(reindexEnsure)
 const reindexImportMock = vi.mocked(reindexImport)
+const reindexImportFromDbMock = vi.mocked(reindexImportFromDb)
 
 function member(id: string, sanghaType: 'tang' | 'ni'): Member {
   return {
@@ -54,6 +56,7 @@ beforeEach(() => {
   reindexImportMock.mockReset()
   reindexEnsureMock.mockResolvedValue(undefined)
   reindexImportMock.mockResolvedValue({ imported: 0 })
+  reindexImportFromDbMock.mockReset()
 })
 
 describe('reindexDirectorySearch', () => {
@@ -95,5 +98,37 @@ describe('reindexDirectorySearch', () => {
     expect(templeImports[0]![0].documents).toHaveLength(5)
 
     expect(result).toEqual({ members: 45, temples: 5 })
+  })
+})
+
+describe('reindexDirectorySearchFromDb', () => {
+  it('ensures collections, then lets the Worker import every page of each collection', async () => {
+    const pages: Record<string, Array<{ imported: number; nextCursor: string | null }>> = {
+      members: [
+        { imported: 250, nextCursor: 'm-250' },
+        { imported: 250, nextCursor: 'm-500' },
+        { imported: 11, nextCursor: null },
+      ],
+      temples: [{ imported: 176, nextCursor: null }],
+    }
+    reindexImportFromDbMock.mockImplementation(async ({ collection }) => pages[collection]!.shift()!)
+
+    const result = await reindexDirectorySearchFromDb({ idToken: 'token-1' })
+
+    expect(reindexEnsureMock).toHaveBeenCalledWith({ idToken: 'token-1' })
+    expect(reindexImportFromDbMock.mock.calls.map(([input]) => [input.collection, input.cursor])).toEqual([
+      ['members', null],
+      ['members', 'm-250'],
+      ['members', 'm-500'],
+      ['temples', null],
+    ])
+    expect(result).toEqual({ members: 511, temples: 176 })
+  })
+
+  it('stops when ensuring the collections fails', async () => {
+    reindexEnsureMock.mockRejectedValueOnce(new Error('Forbidden'))
+
+    await expect(reindexDirectorySearchFromDb({ idToken: 'token-1' })).rejects.toThrow('Forbidden')
+    expect(reindexImportFromDbMock).not.toHaveBeenCalled()
   })
 })

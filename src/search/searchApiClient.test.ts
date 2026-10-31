@@ -4,6 +4,7 @@ import {
   deleteSearchDocument,
   reindexEnsure,
   reindexImport,
+  reindexImportFromDb,
   searchDirectory,
   upsertSearchDocument,
 } from './searchApiClient'
@@ -202,5 +203,55 @@ describe('reindexImport', () => {
         documents,
       }),
     })
+  })
+})
+
+describe('reindexImportFromDb', () => {
+  it('POSTs import-from-db phase with the cursor of the previous page', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ ok: true, imported: 250, nextCursor: 'm250' }),
+    })
+
+    const result = await reindexImportFromDb({
+      idToken: 'he-phai-token',
+      collection: 'members',
+      cursor: 'm0',
+    })
+
+    expect(result).toEqual({ imported: 250, nextCursor: 'm250' })
+    expect(fetchMock).toHaveBeenCalledWith('/api/search/reindex', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer he-phai-token',
+      },
+      body: JSON.stringify({ phase: 'import-from-db', collection: 'members', cursor: 'm0' }),
+    })
+  })
+
+  it('omits the cursor on the first page', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ ok: true, imported: 3, nextCursor: null }),
+    })
+
+    await reindexImportFromDb({ idToken: 'he-phai-token', collection: 'temples', cursor: null })
+
+    expect(fetchMock.mock.calls[0]![1].body).toBe(
+      JSON.stringify({ phase: 'import-from-db', collection: 'temples' }),
+    )
+  })
+
+  it('throws the API error when the Worker refuses the phase', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+      json: async () => ({ error: 'Invalid phase' }),
+    })
+
+    await expect(
+      reindexImportFromDb({ idToken: 'he-phai-token', collection: 'members', cursor: null }),
+    ).rejects.toThrow('Invalid phase')
   })
 })
