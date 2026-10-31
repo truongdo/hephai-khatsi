@@ -1,12 +1,13 @@
 import type { Env } from './worker/env'
 import { handleClientErrorsApi } from './worker/clientErrorsApi'
+import { handleDataApi } from './worker/dataApi'
 import { handleDirectoryRoleApi } from './worker/directoryRoleApi'
 import { handleDocsApi } from './worker/docsApi'
 import { handlePhotosApi } from './worker/photosApi'
 import { handleSearchApi } from './worker/searchApi'
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url)
     if (url.pathname === '/api/health') {
       return Response.json({ ok: true })
@@ -22,6 +23,10 @@ export default {
     }
     if (url.pathname.startsWith('/api/admin/directory-role')) {
       return handleDirectoryRoleApi(request, env)
+    }
+    const dataResponse = await handleDataApi(request, env, ctx)
+    if (dataResponse !== null) {
+      return dataResponse
     }
     const searchResponse = await handleSearchApi(request, env)
     if (searchResponse !== null) {

@@ -21,6 +21,12 @@ const NI_RANK_ORDER = [
   'tap_su',
 ] as const
 
+/** Giáo phẩm hệ phái ranks per sangha, highest first (same values as the form options). */
+export const GIAO_PHAM_HE_PHAI_RANKS: Record<SanghaType, readonly string[]> = {
+  tang: TANG_RANK_ORDER,
+  ni: NI_RANK_ORDER,
+}
+
 export function giaoPhamHePhaiRankOrder(
   rank: string | undefined,
   sanghaType: SanghaType,

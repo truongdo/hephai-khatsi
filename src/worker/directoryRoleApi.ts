@@ -2,11 +2,6 @@ import { blocksSecretaryGrantOnAuthClaims } from '#/domain/authClaims'
 import { isGmailEmail, normalizeEmail } from '#/domain/gmail'
 import type { Env } from './env'
 import {
-  getMemberAdminFields,
-  listSecretaries,
-  patchMemberDirectoryFields,
-} from './firestoreAdminRest'
-import {
   createAuthUserWithEmail,
   lookupAuthUserByEmail,
   setAuthCustomClaims,
@@ -15,6 +10,7 @@ import {
   getGoogleAccessToken,
   parseServiceAccountJson,
 } from './googleServiceAccount'
+import { directoryMemberSource } from './recordSource'
 import { verifyHePhaiAdminToken } from './verifyFirebaseAdmin'
 
 type DirectoryRoleKind = 'giao_doan_admin' | 'he_phai_secretary'
@@ -86,11 +82,8 @@ async function handleGrant(
 
   try {
     const accessToken = await getServiceAccessToken(env)
-    const member = await getMemberAdminFields(
-      accessToken,
-      env.FIREBASE_PROJECT_ID,
-      memberId,
-    )
+    const members = directoryMemberSource(env, accessToken)
+    const member = await members.getMemberAdminFields(memberId)
     if (!member) {
       return jsonError({ error: 'Member not found' }, 404)
     }
@@ -103,10 +96,7 @@ async function handleGrant(
       return jsonError({ code: 'ALREADY_SECRETARY' }, 400)
     }
 
-    const secretaries = await listSecretaries(
-      accessToken,
-      env.FIREBASE_PROJECT_ID,
-    )
+    const secretaries = await members.listSecretaries()
     const normalizedEmail = normalizeEmail(member.email)
     const duplicate = secretaries.find(
       (s) => s.id !== memberId && normalizeEmail(s.email) === normalizedEmail,
@@ -152,17 +142,12 @@ async function handleGrant(
     )
 
     try {
-      await patchMemberDirectoryFields(
-        accessToken,
-        env.FIREBASE_PROJECT_ID,
-        memberId,
-        {
-          directoryRole: role,
-          directoryAuthUid,
-          directoryRoleGrantedAt: new Date().toISOString(),
-          directoryRoleGrantedBy: grantedByUid,
-        },
-      )
+      await members.patchMemberDirectoryFields(memberId, {
+        directoryRole: role,
+        directoryAuthUid,
+        directoryRoleGrantedAt: new Date().toISOString(),
+        directoryRoleGrantedBy: grantedByUid,
+      })
     } catch {
       await setAuthCustomClaims(
         accessToken,
@@ -202,11 +187,8 @@ async function handleRevoke(
 
   try {
     const accessToken = await getServiceAccessToken(env)
-    const member = await getMemberAdminFields(
-      accessToken,
-      env.FIREBASE_PROJECT_ID,
-      memberId,
-    )
+    const members = directoryMemberSource(env, accessToken)
+    const member = await members.getMemberAdminFields(memberId)
     if (!member) {
       return jsonError({ error: 'Member not found' }, 404)
     }
@@ -224,17 +206,12 @@ async function handleRevoke(
       )
     }
 
-    await patchMemberDirectoryFields(
-      accessToken,
-      env.FIREBASE_PROJECT_ID,
-      memberId,
-      {
-        directoryRole: null,
-        directoryAuthUid: null,
-        directoryRoleGrantedAt: null,
-        directoryRoleGrantedBy: null,
-      },
-    )
+    await members.patchMemberDirectoryFields(memberId, {
+      directoryRole: null,
+      directoryAuthUid: null,
+      directoryRoleGrantedAt: null,
+      directoryRoleGrantedBy: null,
+    })
 
     return Response.json({ memberId })
   } catch (err) {
